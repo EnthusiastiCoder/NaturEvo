@@ -81,3 +81,15 @@ impl Hero {
         10.0 + self.level as f32 * 0.5
     }
 }
+
+struct Mon {
+    species: usize,
+    level: u32,
+    hp: i32,
+    max_hp: i32,
+    atk: f32,
+    def: f32,
+    spd: f32,
+    behavior: Behavior,
+    packed: u32,
+}
