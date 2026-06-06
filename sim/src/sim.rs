@@ -66,3 +66,18 @@ struct Hero {
     weapon: usize,
     armor: usize,
 }
+
+impl Hero {
+    fn max_hp_for(level: u32) -> i32 {
+        50 + 14 * level as i32
+    }
+    fn atk(&self) -> f32 {
+        8.0 + 3.0 * self.level as f32 + WEAPONS[self.weapon].2 as f32
+    }
+    fn def(&self) -> f32 {
+        3.0 + 1.5 * self.level as f32 + ARMORS[self.armor].2 as f32
+    }
+    fn spd(&self) -> f32 {
+        10.0 + self.level as f32 * 0.5
+    }
+}
