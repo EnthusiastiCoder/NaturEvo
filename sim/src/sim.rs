@@ -191,3 +191,37 @@ impl Sim {
             );
         }
     }
+
+    fn shop(&mut self) {
+        self.buy_potions(3);
+        loop {
+            let mut bought = false;
+            let next_w = self.hero.weapon + 1;
+            if next_w < WEAPONS.len() && self.hero.gold >= WEAPONS[next_w].1 {
+                // buy best affordable weapon
+                let mut b = next_w;
+                while b + 1 < WEAPONS.len() && self.hero.gold >= WEAPONS[b + 1].1 {
+                    b += 1;
+                }
+                self.hero.gold -= WEAPONS[b].1;
+                self.hero.weapon = b;
+                self.emit("shop", format!("Bought {} for {} gold", WEAPONS[b].0, WEAPONS[b].1), None);
+                bought = true;
+            }
+            let next_a = self.hero.armor + 1;
+            if next_a < ARMORS.len() && self.hero.gold >= ARMORS[next_a].1 {
+                let mut b = next_a;
+                while b + 1 < ARMORS.len() && self.hero.gold >= ARMORS[b + 1].1 {
+                    b += 1;
+                }
+                self.hero.gold -= ARMORS[b].1;
+                self.hero.armor = b;
+                self.emit("shop", format!("Bought {} for {} gold", ARMORS[b].0, ARMORS[b].1), None);
+                bought = true;
+            }
+            if !bought {
+                break;
+            }
+        }
+        self.buy_potions(5);
+    }
