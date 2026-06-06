@@ -44,3 +44,8 @@ pub struct Run {
     pub deaths: u32,
     pub final_level: u32,
 }
+
+/// XP needed to go from `level` to `level + 1`.
+pub fn xp_to_next(level: u32) -> u32 {
+    8 * level * level + 22 * level + 10
+}
