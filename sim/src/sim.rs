@@ -103,3 +103,9 @@ struct Sim {
     won: bool,
     done: bool,
 }
+
+enum Outcome {
+    Won,
+    Died,
+    Fled,
+}
