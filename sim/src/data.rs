@@ -54,3 +54,22 @@ macro_rules! sp {
 }
 
 pub const BOSS: usize = 15;
+
+pub static SPECIES: [Species; 16] = [
+    sp!("Jungle Rat", "🐀", 20.0, 6.0, 2.0, 10.0, Pack, 8.0, 1.0),
+    sp!("Vine Snake", "🐍", 26.0, 7.0, 3.0, 12.0, Venomous, 10.0, 1.2),
+    sp!("Monkey Thief", "🐒", 28.0, 8.0, 3.0, 16.0, Trickster, 11.0, 2.0),
+    sp!("Wild Boar", "🐗", 40.0, 10.0, 5.0, 8.0, Charger, 13.0, 1.5),
+    sp!("Giant Spider", "🕷️", 34.0, 11.0, 4.0, 13.0, Venomous, 14.0, 1.8),
+    sp!("Jaguar", "🐆", 48.0, 14.0, 6.0, 15.0, Aggressive, 17.0, 2.0),
+    sp!("Crocodile", "🐊", 70.0, 15.0, 10.0, 6.0, Defensive, 20.0, 2.4),
+    sp!("Poison Frog", "🐸", 30.0, 9.0, 3.0, 14.0, Pack, 12.0, 1.4),
+    sp!("Swamp Troll", "🧌", 110.0, 18.0, 9.0, 5.0, Healer, 26.0, 3.0),
+    sp!("Stone Golem", "🗿", 130.0, 20.0, 16.0, 3.0, Defensive, 30.0, 3.5),
+    sp!("Ruin Wraith", "👻", 80.0, 22.0, 6.0, 17.0, Trickster, 28.0, 3.2),
+    sp!("Gorilla", "🦍", 120.0, 24.0, 10.0, 10.0, Berserker, 32.0, 3.6),
+    sp!("Cave Bat", "🦇", 40.0, 12.0, 4.0, 20.0, Pack, 16.0, 1.6),
+    sp!("Thunder Raptor", "🦖", 100.0, 28.0, 8.0, 22.0, Charger, 36.0, 4.0),
+    sp!("Ancient Serpent", "🐉", 160.0, 30.0, 12.0, 14.0, Venomous, 40.0, 4.5),
+    sp!("Jungle King", "👑", 420.0, 38.0, 18.0, 14.0, Berserker, 500.0, 60.0),
+];
