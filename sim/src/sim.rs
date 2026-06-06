@@ -93,3 +93,13 @@ struct Mon {
     behavior: Behavior,
     packed: u32,
 }
+
+struct Sim {
+    rng: Rng,
+    hero: Hero,
+    events: Vec<Event>,
+    deaths: u32,
+    boss_deaths: u32,
+    won: bool,
+    done: bool,
+}
