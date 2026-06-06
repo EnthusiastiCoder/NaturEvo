@@ -286,3 +286,10 @@ impl Sim {
             format!("Hero meets a level {} {} ({})", m.level, name, s.behavior.name()),
             Some(&m),
         );
+
+        let mut round = 0u32;
+        let mut mon_actions = 0u32;
+        let mut poison = 0u32;
+        let mut braced = false;
+        let mut stunned = false;
+        let (mut cd_power, mut cd_stun, mut cd_brace, mut cd_heal) = (0u32, 0u32, 0u32, 0u32);
