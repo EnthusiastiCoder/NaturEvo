@@ -172,3 +172,10 @@ impl Sim {
         let z = &ZONES[to];
         self.emit("travel", format!("Hero travels to {} {}", z.emoji, z.name), None);
     }
+
+    fn rest(&mut self) {
+        if self.hero.hp < self.hero.max_hp {
+            self.hero.hp = self.hero.max_hp;
+            self.emit("rest", "Hero rests at Base Camp and recovers fully".to_string(), None);
+        }
+    }
