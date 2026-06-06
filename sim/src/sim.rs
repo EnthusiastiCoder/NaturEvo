@@ -253,3 +253,20 @@ impl Sim {
             self.hero.xp = 0;
         }
     }
+
+    fn spawn(&mut self, species: usize, level: u32) -> Mon {
+        let s = &SPECIES[species];
+        let mut hp = monster_stat(s.hp, level);
+        let mut atk = monster_stat(s.atk, level);
+        let def = monster_stat(s.def, level);
+        let spd = monster_stat(s.spd, level);
+        let mut packed = 1;
+        if s.behavior == Behavior::Pack {
+            packed = self.rng.range(2, 3) as u32;
+            // weak copies bundled into one stronger foe
+            hp *= 0.6 * packed as f32;
+            atk *= 1.0 + 0.25 * (packed - 1) as f32;
+        }
+        let hp = (hp as i32).max(1);
+        Mon { species, level, hp, max_hp: hp, atk, def, spd, behavior: s.behavior, packed }
+    }
