@@ -179,3 +179,15 @@ impl Sim {
             self.emit("rest", "Hero rests at Base Camp and recovers fully".to_string(), None);
         }
     }
+
+    fn buy_potions(&mut self, upto: u32) {
+        while self.hero.potions < upto && self.hero.gold >= POTION_COST {
+            self.hero.gold -= POTION_COST;
+            self.hero.potions += 1;
+            self.emit(
+                "shop",
+                format!("Bought a potion for {} gold ({} held)", POTION_COST, self.hero.potions),
+                None,
+            );
+        }
+    }
