@@ -49,3 +49,8 @@ pub struct Run {
 pub fn xp_to_next(level: u32) -> u32 {
     8 * level * level + 22 * level + 10
 }
+
+/// Pokemon-like stat scaling: grows linearly with level.
+pub fn monster_stat(base: f32, level: u32) -> f32 {
+    base * (0.6 + 0.116 * level as f32)
+}
