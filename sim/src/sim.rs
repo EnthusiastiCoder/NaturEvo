@@ -293,3 +293,17 @@ impl Sim {
         let mut braced = false;
         let mut stunned = false;
         let (mut cd_power, mut cd_stun, mut cd_brace, mut cd_heal) = (0u32, 0u32, 0u32, 0u32);
+
+        loop {
+            if self.done {
+                return Outcome::Fled;
+            }
+            round += 1;
+            if round > MAX_ROUNDS {
+                self.emit("rest", format!("Hero flees from the {}", s.name), Some(&m));
+                return Outcome::Fled;
+            }
+            cd_power = cd_power.saturating_sub(1);
+            cd_stun = cd_stun.saturating_sub(1);
+            cd_brace = cd_brace.saturating_sub(1);
+            cd_heal = cd_heal.saturating_sub(1);
