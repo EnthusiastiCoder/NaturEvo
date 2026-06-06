@@ -413,3 +413,11 @@ impl Sim {
                     break;
                 }
             }
+
+            // end of round: poison
+            if self.hero.hp > 0 && m.hp > 0 && poison > 0 {
+                poison -= 1;
+                let d = (self.hero.max_hp / 25).max(1);
+                self.hero.hp = (self.hero.hp - d).max(0);
+                self.emit("hit_taken", format!("Poison deals {} to the hero", d), Some(&m));
+            }
