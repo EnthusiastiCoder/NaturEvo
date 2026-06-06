@@ -163,3 +163,12 @@ impl Sim {
         }
         best
     }
+
+    fn travel(&mut self, to: usize) {
+        if self.hero.zone == to {
+            return;
+        }
+        self.hero.zone = to;
+        let z = &ZONES[to];
+        self.emit("travel", format!("Hero travels to {} {}", z.emoji, z.name), None);
+    }
