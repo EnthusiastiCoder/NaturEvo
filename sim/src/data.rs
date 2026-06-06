@@ -85,3 +85,13 @@ pub static ZONES: [Zone; 9] = [
     Zone { name: "Serpent Temple", emoji: "🛕", min: 26, max: 32, species: &[14, 13, 10, 11] },
     Zone { name: "King's Grove", emoji: "👑", min: 32, max: 34, species: &[BOSS] },
 ];
+
+pub const WEAPONS: [(&str, u32, i32); 7] = [
+    ("Wooden Stick", 0, 0),
+    ("Stone Axe", 60, 4),
+    ("Iron Machete", 200, 9),
+    ("Steel Blade", 500, 16),
+    ("Obsidian Edge", 1100, 26),
+    ("Thunder Spear", 2400, 40),
+    ("Jungle Fang", 5000, 60),
+];
