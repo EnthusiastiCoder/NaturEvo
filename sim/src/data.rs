@@ -44,3 +44,5 @@ pub struct Zone {
     pub max: u32,
     pub species: &'static [usize],
 }
+
+use Behavior::*;
