@@ -109,3 +109,9 @@ enum Outcome {
     Died,
     Fled,
 }
+
+fn damage(rng: &mut Rng, atk: f32, def: f32) -> i32 {
+    let base = (atk - def * 0.5).max(atk * 0.1).max(1.0);
+    let v = base * (0.85 + 0.3 * rng.f());
+    (v as i32).max(1)
+}
