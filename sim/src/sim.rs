@@ -225,3 +225,31 @@ impl Sim {
         }
         self.buy_potions(5);
     }
+
+    fn gain_xp(&mut self, amount: u32) {
+        if self.hero.level >= MAX_LEVEL {
+            return;
+        }
+        self.hero.xp += amount;
+        while self.hero.level < MAX_LEVEL && self.hero.xp >= xp_to_next(self.hero.level) {
+            self.hero.xp -= xp_to_next(self.hero.level);
+            self.hero.level += 1;
+            let new_max = Hero::max_hp_for(self.hero.level);
+            let gain = new_max - self.hero.max_hp;
+            self.hero.max_hp = new_max;
+            self.hero.hp = (self.hero.hp + gain).min(new_max);
+            let lvl = self.hero.level;
+            let mut text = format!("Hero reaches level {}", lvl);
+            match lvl {
+                3 => text.push_str(" and learns Power Strike"),
+                6 => text.push_str(" and learns Brace"),
+                10 => text.push_str(" and learns Stun"),
+                14 => text.push_str(" and learns Heal"),
+                _ => {}
+            }
+            self.emit("level_up", text, None);
+        }
+        if self.hero.level >= MAX_LEVEL {
+            self.hero.xp = 0;
+        }
+    }
