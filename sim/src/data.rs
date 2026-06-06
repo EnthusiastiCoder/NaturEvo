@@ -24,3 +24,15 @@ impl Behavior {
         }
     }
 }
+
+pub struct Species {
+    pub name: &'static str,
+    pub emoji: &'static str,
+    pub hp: f32,
+    pub atk: f32,
+    pub def: f32,
+    pub spd: f32,
+    pub behavior: Behavior,
+    pub xp: f32,
+    pub gold: f32,
+}
