@@ -421,3 +421,42 @@ impl Sim {
                 self.hero.hp = (self.hero.hp - d).max(0);
                 self.emit("hit_taken", format!("Poison deals {} to the hero", d), Some(&m));
             }
+
+            if self.hero.hp <= 0 {
+                self.deaths += 1;
+                if boss {
+                    self.boss_deaths += 1;
+                }
+                self.emit("death", format!("Hero is slain by the {}", s.name), Some(&m));
+                let lost = self.hero.gold / 4;
+                self.hero.gold -= lost;
+                self.hero.zone = 0;
+                self.hero.hp = self.hero.max_hp;
+                self.hero.potions = self.hero.potions.min(5);
+                self.emit(
+                    "respawn",
+                    format!("Hero wakes at Base Camp, having lost {} gold", lost),
+                    None,
+                );
+                return Outcome::Died;
+            }
+            if m.hp <= 0 {
+                let xp = ((s.xp * (0.5 + 0.25 * m.level as f32)) as u32 * m.packed.max(1)).max(1);
+                let gold = ((s.gold * m.level as f32 * 2.0) as u32 * m.packed.max(1)).max(1);
+                self.hero.gold += gold;
+                let mut text = format!("Hero defeats the {} and gains {} xp, {} gold", s.name, xp, gold);
+                if !boss && self.hero.potions < 9 && self.rng.chance(0.15) {
+                    self.hero.potions += 1;
+                    text.push_str(", finds a potion");
+                }
+                self.emit("victory_fight", text, Some(&m));
+                if boss {
+                    self.won = true;
+                    self.emit("win", "The Jungle King falls. The jungle is saved!".to_string(), Some(&m));
+                    return Outcome::Won;
+                }
+                self.gain_xp(xp);
+                return Outcome::Won;
+            }
+        }
+    }
