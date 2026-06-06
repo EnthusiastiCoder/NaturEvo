@@ -307,3 +307,109 @@ impl Sim {
             cd_stun = cd_stun.saturating_sub(1);
             cd_brace = cd_brace.saturating_sub(1);
             cd_heal = cd_heal.saturating_sub(1);
+
+            let hero_first = self.hero.spd() >= m.spd;
+            for step in 0..2 {
+                let hero_turn = (step == 0) == hero_first;
+                if hero_turn {
+                    // --- hero turn ---
+                    let lvl = self.hero.level;
+                    let hp = self.hero.hp;
+                    let max = self.hero.max_hp;
+                    let charge_next = m.behavior == Behavior::Charger && mon_actions % 3 == 2;
+                    if hp * 100 < max * 35 && self.hero.potions > 0 {
+                        self.hero.potions -= 1;
+                        let heal = max / 2;
+                        self.hero.hp = (hp + heal).min(max);
+                        self.emit("potion", format!("Hero drinks a potion and heals {}", self.hero.hp - hp), Some(&m));
+                    } else if lvl >= 14 && hp * 2 < max && cd_heal == 0 {
+                        cd_heal = 5;
+                        let heal = max * 3 / 10;
+                        self.hero.hp = (hp + heal).min(max);
+                        self.emit("skill", format!("Hero casts Heal and recovers {}", self.hero.hp - hp), Some(&m));
+                    } else if lvl >= 6 && charge_next && cd_brace == 0 && !braced {
+                        braced = true;
+                        cd_brace = 3;
+                        self.emit("skill", "Hero uses Brace to absorb the charge".to_string(), Some(&m));
+                    } else if lvl >= 10
+                        && cd_stun == 0
+                        && !stunned
+                        && (m.behavior == Behavior::Charger || m.behavior == Behavior::Berserker)
+                    {
+                        cd_stun = 5;
+                        stunned = true;
+                        let d = damage(&mut self.rng, self.hero.atk() * 0.5, m.def);
+                        m.hp = (m.hp - d).max(0);
+                        self.emit("skill", format!("Hero Stuns the {} for {}", s.name, d), Some(&m));
+                    } else {
+                        let (power, label) = if lvl >= 3 && cd_power == 0 {
+                            cd_power = 3;
+                            (true, "Power Strike")
+                        } else {
+                            (false, "attack")
+                        };
+                        let dodged = m.behavior == Behavior::Trickster && self.rng.chance(0.25);
+                        if dodged {
+                            self.emit("attack", format!("Hero's {} misses, the {} dodges", label, s.name), Some(&m));
+                        } else {
+                            let mut a = self.hero.atk();
+                            if power {
+                                a *= 1.8;
+                            }
+                            let mut d = damage(&mut self.rng, a, m.def);
+                            if m.behavior == Behavior::Defensive && round <= 2 {
+                                d = (d / 2).max(1);
+                            }
+                            m.hp = (m.hp - d).max(0);
+                            let kind = if power { "skill" } else { "attack" };
+                            self.emit(kind, format!("Hero uses {} on the {} for {}", label, s.name, d), Some(&m));
+                        }
+                    }
+                } else {
+                    // --- monster turn ---
+                    if m.hp > 0 {
+                        mon_actions += 1;
+                        if stunned {
+                            stunned = false;
+                            self.emit("attack", format!("The {} is stunned and loses its turn", s.name), Some(&m));
+                        } else if m.behavior == Behavior::Healer && m.hp < m.max_hp {
+                            let heal = (m.max_hp / 10).max(1);
+                            m.hp = (m.hp + heal).min(m.max_hp);
+                            self.emit("attack", format!("The {} regenerates {}", s.name, heal), Some(&m));
+                        } else {
+                            let mut atk = m.atk;
+                            let mut note = String::new();
+                            match m.behavior {
+                                Behavior::Aggressive => atk *= 1.25,
+                                Behavior::Berserker if m.hp * 2 < m.max_hp => {
+                                    atk *= 1.6;
+                                    note = " in a frenzy".to_string();
+                                }
+                                Behavior::Charger if mon_actions % 3 == 0 => {
+                                    atk *= 2.2;
+                                    note = " with a mighty charge".to_string();
+                                }
+                                _ => {}
+                            }
+                            let mut d = damage(&mut self.rng, atk, self.hero.def());
+                            if braced && note.contains("charge") {
+                                d = (d * 3 / 10).max(1);
+                                braced = false;
+                                note.push_str(" (braced)");
+                            } else if braced && mon_actions % 3 != 0 {
+                                // brace only lasts until the next hit lands
+                                braced = false;
+                            }
+                            self.hero.hp = (self.hero.hp - d).max(0);
+                            if m.behavior == Behavior::Venomous && self.rng.chance(0.6) {
+                                poison = 3;
+                                note.push_str(" and poisons the hero");
+                            }
+                            self.emit("hit_taken", format!("The {} hits the hero{} for {}", s.name, note, d), Some(&m));
+                        }
+                    }
+                }
+                if self.hero.hp <= 0 || m.hp <= 0 {
+                    break;
+                }
+            }
