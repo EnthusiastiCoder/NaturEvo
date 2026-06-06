@@ -54,3 +54,15 @@ pub fn xp_to_next(level: u32) -> u32 {
 pub fn monster_stat(base: f32, level: u32) -> f32 {
     base * (0.6 + 0.116 * level as f32)
 }
+
+struct Hero {
+    level: u32,
+    hp: i32,
+    max_hp: i32,
+    xp: u32,
+    gold: u32,
+    potions: u32,
+    zone: usize,
+    weapon: usize,
+    armor: usize,
+}
