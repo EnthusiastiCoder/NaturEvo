@@ -270,3 +270,19 @@ impl Sim {
         let hp = (hp as i32).max(1);
         Mon { species, level, hp, max_hp: hp, atk, def, spd, behavior: s.behavior, packed }
     }
+
+    fn fight(&mut self, species: usize, level: u32) -> Outcome {
+        let mut m = self.spawn(species, level);
+        let s = &SPECIES[species];
+        let boss = species == BOSS;
+        let name = if m.packed > 1 {
+            format!("pack of {} {} {}", m.packed, s.name, s.emoji)
+        } else {
+            format!("{} {}", s.name, s.emoji)
+        };
+        let kind = if boss { "boss" } else { "encounter" };
+        self.emit(
+            kind,
+            format!("Hero meets a level {} {} ({})", m.level, name, s.behavior.name()),
+            Some(&m),
+        );
