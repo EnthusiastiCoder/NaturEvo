@@ -35,3 +35,12 @@ pub struct Event {
     pub hero: HeroSnap,
     pub mon: Option<MonSnap>,
 }
+
+#[derive(Clone, Debug)]
+pub struct Run {
+    pub seed: u64,
+    pub events: Vec<Event>,
+    pub won: bool,
+    pub deaths: u32,
+    pub final_level: u32,
+}
