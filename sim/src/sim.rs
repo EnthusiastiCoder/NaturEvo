@@ -115,3 +115,37 @@ fn damage(rng: &mut Rng, atk: f32, def: f32) -> i32 {
     let v = base * (0.85 + 0.3 * rng.f());
     (v as i32).max(1)
 }
+
+impl Sim {
+    fn emit(&mut self, kind: &'static str, text: String, mon: Option<&Mon>) {
+        if self.done {
+            return;
+        }
+        if self.events.len() >= EVENT_CAP {
+            self.done = true;
+            return;
+        }
+        let h = &self.hero;
+        let hero = HeroSnap {
+            level: h.level,
+            hp: h.hp.clamp(0, h.max_hp),
+            max_hp: h.max_hp,
+            xp: h.xp,
+            gold: h.gold,
+            potions: h.potions,
+            zone: h.zone,
+            weapon: h.weapon,
+            armor: h.armor,
+        };
+        let mon = mon.map(|m| MonSnap {
+            species: m.species,
+            level: m.level,
+            hp: m.hp.clamp(0, m.max_hp),
+            max_hp: m.max_hp,
+        });
+        let idx = self.events.len() as u32;
+        self.events.push(Event { idx, kind, text, hero, mon });
+        if self.events.len() >= EVENT_CAP {
+            self.done = true;
+        }
+    }
