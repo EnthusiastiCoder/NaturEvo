@@ -52,3 +52,5 @@ macro_rules! sp {
         Species { name: $n, emoji: $e, hp: $hp, atk: $atk, def: $def, spd: $spd, behavior: $b, xp: $xp, gold: $g }
     };
 }
+
+pub const BOSS: usize = 15;
