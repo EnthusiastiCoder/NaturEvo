@@ -36,3 +36,11 @@ pub struct Species {
     pub xp: f32,
     pub gold: f32,
 }
+
+pub struct Zone {
+    pub name: &'static str,
+    pub emoji: &'static str,
+    pub min: u32,
+    pub max: u32,
+    pub species: &'static [usize],
+}
