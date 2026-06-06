@@ -95,3 +95,13 @@ pub const WEAPONS: [(&str, u32, i32); 7] = [
     ("Thunder Spear", 2400, 40),
     ("Jungle Fang", 5000, 60),
 ];
+
+pub const ARMORS: [(&str, u32, i32); 7] = [
+    ("Rags", 0, 0),
+    ("Leaf Wrap", 50, 3),
+    ("Hide Vest", 180, 7),
+    ("Bone Mail", 450, 12),
+    ("Scale Armor", 1000, 19),
+    ("Stoneplate", 2200, 28),
+    ("Ancient Aegis", 4500, 40),
+];
