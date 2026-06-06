@@ -73,3 +73,15 @@ pub static SPECIES: [Species; 16] = [
     sp!("Ancient Serpent", "🐉", 160.0, 30.0, 12.0, 14.0, Venomous, 40.0, 4.5),
     sp!("Jungle King", "👑", 420.0, 38.0, 18.0, 14.0, Berserker, 500.0, 60.0),
 ];
+
+pub static ZONES: [Zone; 9] = [
+    Zone { name: "Base Camp", emoji: "⛺", min: 0, max: 0, species: &[] },
+    Zone { name: "Jungle Edge", emoji: "🌿", min: 1, max: 4, species: &[0, 1, 2] },
+    Zone { name: "Dense Jungle", emoji: "🌳", min: 4, max: 9, species: &[3, 4, 5, 2] },
+    Zone { name: "River Bank", emoji: "🏞️", min: 8, max: 13, species: &[6, 7, 1, 5] },
+    Zone { name: "Misty Swamp", emoji: "🌫️", min: 12, max: 18, species: &[8, 7, 4, 6] },
+    Zone { name: "Ancient Ruins", emoji: "🏛️", min: 16, max: 23, species: &[9, 10, 11] },
+    Zone { name: "Bat Caves", emoji: "🕳️", min: 21, max: 28, species: &[12, 13, 11, 9] },
+    Zone { name: "Serpent Temple", emoji: "🛕", min: 26, max: 32, species: &[14, 13, 10, 11] },
+    Zone { name: "King's Grove", emoji: "👑", min: 32, max: 34, species: &[BOSS] },
+];
