@@ -507,3 +507,19 @@ impl Sim {
         }
     }
 }
+
+pub fn simulate(seed: u64) -> Run {
+    let max_hp = Hero::max_hp_for(1);
+    let mut sim = Sim {
+        rng: Rng::new(seed),
+        hero: Hero { level: 1, hp: max_hp, max_hp, xp: 0, gold: 0, potions: 0, zone: 0, weapon: 0, armor: 0 },
+        events: Vec::new(),
+        deaths: 0,
+        boss_deaths: 0,
+        won: false,
+        done: false,
+    };
+    sim.emit("travel", "Hero begins the journey at Base Camp".to_string(), None);
+    sim.run();
+    Run { seed, final_level: sim.hero.level, won: sim.won, deaths: sim.deaths, events: sim.events }
+}
