@@ -46,3 +46,9 @@ pub struct Zone {
 }
 
 use Behavior::*;
+
+macro_rules! sp {
+    ($n:expr, $e:expr, $hp:expr, $atk:expr, $def:expr, $spd:expr, $b:expr, $xp:expr, $g:expr) => {
+        Species { name: $n, emoji: $e, hp: $hp, atk: $atk, def: $def, spd: $spd, behavior: $b, xp: $xp, gold: $g }
+    };
+}
