@@ -18,3 +18,11 @@ pub struct HeroSnap {
     pub weapon: usize,
     pub armor: usize,
 }
+
+#[derive(Clone, Debug)]
+pub struct MonSnap {
+    pub species: usize,
+    pub level: u32,
+    pub hp: i32,
+    pub max_hp: i32,
+}
