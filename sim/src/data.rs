@@ -105,3 +105,5 @@ pub const ARMORS: [(&str, u32, i32); 7] = [
     ("Stoneplate", 2200, 28),
     ("Ancient Aegis", 4500, 40),
 ];
+
+pub const POTION_COST: u32 = 25;
