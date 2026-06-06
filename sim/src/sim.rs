@@ -460,3 +460,50 @@ impl Sim {
             }
         }
     }
+
+    fn run(&mut self) {
+        while !self.done && !self.won {
+            // at camp
+            self.travel(0);
+            self.rest();
+            self.shop();
+            let target = self.target_zone();
+            self.travel(target);
+            loop {
+                if self.done || self.won {
+                    break;
+                }
+                let z = &ZONES[self.hero.zone];
+                let species = if self.hero.zone == 8 {
+                    BOSS
+                } else {
+                    z.species[self.rng.range(0, z.species.len() as i32 - 1) as usize]
+                };
+                let level = self.rng.range(z.min as i32, z.max as i32) as u32;
+                if self.hero.zone == 8 {
+                    // boss fights at full health
+                }
+                match self.fight(species, level) {
+                    Outcome::Died => break,
+                    Outcome::Fled => {
+                        self.travel(0);
+                        break;
+                    }
+                    Outcome::Won => {}
+                }
+                if self.won || self.done {
+                    break;
+                }
+                let h = &self.hero;
+                if h.potions == 0 && h.hp * 2 < h.max_hp {
+                    self.travel(0);
+                    break;
+                }
+                if self.target_zone() != self.hero.zone {
+                    self.travel(0);
+                    break;
+                }
+            }
+        }
+    }
+}
