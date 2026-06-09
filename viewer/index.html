@@ -36,3 +36,4 @@ var SP=[["Jungle Rat","🐀"],["Vine Snake","🐍"],["Monkey Thief","🐒"],["Wi
 var ZN=[["Base Camp","⛺"],["Jungle Edge","🌿"],["Dense Jungle","🌳"],["River Bank","🏞️"],["Misty Swamp","🌫️"],["Ancient Ruins","🏛️"],["Bat Caves","🕳️"],["Serpent Temple","🛕"],["King's Grove","👑"]];
 var $=function(i){return document.getElementById(i)};
 var run=window.RUN||null, ev=(run&&run.events)||[], cur=0, timer=null, lines=[];
+function showTab(t){$("replay").className=t==="r"?"":"hidden";$("dashboard").className=t==="d"?"":"hidden";
