@@ -44,3 +44,4 @@ function render(){
  if(!ev.length){$("info").textContent=" No run data (data/run.js missing)";return;}
  var e=ev[cur],h=e.hero||{},m=e.mon;
  $("scrub").value=cur;
+ $("info").textContent=" event "+cur+" / "+(ev.length-1)+"  seed "+run.seed+(run.won?" WON":"");
