@@ -38,3 +38,4 @@ var $=function(i){return document.getElementById(i)};
 var run=window.RUN||null, ev=(run&&run.events)||[], cur=0, timer=null, lines=[];
 function showTab(t){$("replay").className=t==="r"?"":"hidden";$("dashboard").className=t==="d"?"":"hidden";
  $("tab-replay").className=t==="r"?"on":"";$("tab-dashboard").className=t==="d"?"on":"";if(t==="d")dash();}
+$("tab-replay").onclick=function(){showTab("r")};$("tab-dashboard").onclick=function(){showTab("d")};
