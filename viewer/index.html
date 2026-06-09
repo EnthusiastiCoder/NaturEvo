@@ -40,3 +40,4 @@ function showTab(t){$("replay").className=t==="r"?"":"hidden";$("dashboard").cla
  $("tab-replay").className=t==="r"?"on":"";$("tab-dashboard").className=t==="d"?"on":"";if(t==="d")dash();}
 $("tab-replay").onclick=function(){showTab("r")};$("tab-dashboard").onclick=function(){showTab("d")};
 function pct(a,b){return b>0?Math.max(0,Math.min(100,100*a/b)):0}
+function render(){
