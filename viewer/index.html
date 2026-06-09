@@ -48,3 +48,4 @@ function render(){
  $("hbar").style.width=pct(h.hp,h.max_hp)+"%";
  $("hhp").textContent="HP "+h.hp+"/"+h.max_hp;
  $("hmeta").textContent="Lv "+h.level+"  XP "+h.xp+"  Gold "+h.gold+"  Potions "+h.potions;
+ var z=ZN[h.zone]||["?",""];$("zone").textContent=z[1]+" "+z[0];
