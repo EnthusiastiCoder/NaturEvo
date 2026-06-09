@@ -42,3 +42,4 @@ $("tab-replay").onclick=function(){showTab("r")};$("tab-dashboard").onclick=func
 function pct(a,b){return b>0?Math.max(0,Math.min(100,100*a/b)):0}
 function render(){
  if(!ev.length){$("info").textContent=" No run data (data/run.js missing)";return;}
+ var e=ev[cur],h=e.hero||{},m=e.mon;
