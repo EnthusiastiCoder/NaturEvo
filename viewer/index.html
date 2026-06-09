@@ -51,3 +51,4 @@ function render(){
  var z=ZN[h.zone]||["?",""];$("zone").textContent=z[1]+" "+z[0];
  if(m){var s=SP[m.species]||["?","❓"];$("memo").textContent=s[1];$("mbar").style.width=pct(m.hp,m.max_hp)+"%";
   $("mhp").textContent=s[0]+" Lv "+m.level+"  HP "+m.hp+"/"+m.max_hp;}
+ else{$("memo").textContent="";$("mbar").style.width="0";$("mhp").textContent="";}
