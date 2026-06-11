@@ -52,3 +52,4 @@ function render(){
  if(m){var s=SP[m.species]||["?","❓"];$("memo").textContent=s[1];$("mbar").style.width=pct(m.hp,m.max_hp)+"%";
   $("mhp").textContent=s[0]+" Lv "+m.level+"  HP "+m.hp+"/"+m.max_hp;}
  else{$("memo").textContent="";$("mbar").style.width="0";$("mhp").textContent="";}
+ var L=$("log"),first=+(L.dataset.first||-1),last;
