@@ -55,3 +55,4 @@ function render(){
  var L=$("log"),first=+(L.dataset.first||-1),last;
  if(first<0||cur<first||cur>first+190){first=Math.max(0,cur-100);last=Math.min(ev.length-1,first+200);
   L.innerHTML="";lines=[];L.dataset.first=first;
+  for(var i=first;i<=last;i++){var d=document.createElement("div");d.textContent=i+" ["+ev[i].kind+"] "+ev[i].text;d.dataset.i=i;
