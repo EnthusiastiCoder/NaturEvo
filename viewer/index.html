@@ -57,3 +57,4 @@ function render(){
   L.innerHTML="";lines=[];L.dataset.first=first;
   for(var i=first;i<=last;i++){var d=document.createElement("div");d.textContent=i+" ["+ev[i].kind+"] "+ev[i].text;d.dataset.i=i;
    d.onclick=function(){cur=+this.dataset.i;render();};L.appendChild(d);}
+ }
