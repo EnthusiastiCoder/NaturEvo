@@ -54,3 +54,4 @@ function render(){
  else{$("memo").textContent="";$("mbar").style.width="0";$("mhp").textContent="";}
  var L=$("log"),first=+(L.dataset.first||-1),last;
  if(first<0||cur<first||cur>first+190){first=Math.max(0,cur-100);last=Math.min(ev.length-1,first+200);
+  L.innerHTML="";lines=[];L.dataset.first=first;
