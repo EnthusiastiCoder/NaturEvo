@@ -59,3 +59,4 @@ function render(){
    d.onclick=function(){cur=+this.dataset.i;render();};L.appendChild(d);}
  }
  var prev=L.querySelector(".cur");if(prev)prev.className="";
+ var c=L.children[cur-first];if(c){c.className="cur";L.scrollTop=c.offsetTop-L.clientHeight/2;}
