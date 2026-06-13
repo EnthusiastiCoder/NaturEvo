@@ -66,3 +66,4 @@ function timeline(){
  var cv=$("timeline"),g=cv.getContext("2d"),W=cv.width,H=cv.height,n=ev.length;
  g.clearRect(0,0,W,H);if(!n)return;
  var mx=1;for(var i=0;i<n;i++)mx=Math.max(mx,ev[i].hero.level);
+ g.strokeStyle="#6f6";g.beginPath();
