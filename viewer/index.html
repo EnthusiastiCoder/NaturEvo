@@ -72,3 +72,4 @@ function timeline(){
  g.stroke();g.strokeStyle="#fc0";var cx=cur/Math.max(1,n-1)*W;g.beginPath();g.moveTo(cx,0);g.lineTo(cx,H);g.stroke();
  g.fillStyle="#ccc";g.fillText("level (max "+mx+") vs event",4,10);
 }
+function step(){var sp=+$("speed").value;cur=Math.min(ev.length-1,cur+sp);render();if(cur>=ev.length-1)stop();}
