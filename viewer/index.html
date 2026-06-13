@@ -70,3 +70,4 @@ function timeline(){
  var step=Math.max(1,Math.floor(n/W));
  for(i=0;i<n;i+=step){var x=i/Math.max(1,n-1)*W,y=H-ev[i].hero.level/mx*(H-10)-2;i?g.lineTo(x,y):g.moveTo(x,y);}
  g.stroke();g.strokeStyle="#fc0";var cx=cur/Math.max(1,n-1)*W;g.beginPath();g.moveTo(cx,0);g.lineTo(cx,H);g.stroke();
+ g.fillStyle="#ccc";g.fillText("level (max "+mx+") vs event",4,10);
