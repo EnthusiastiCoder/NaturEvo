@@ -58,3 +58,4 @@ function render(){
   for(var i=first;i<=last;i++){var d=document.createElement("div");d.textContent=i+" ["+ev[i].kind+"] "+ev[i].text;d.dataset.i=i;
    d.onclick=function(){cur=+this.dataset.i;render();};L.appendChild(d);}
  }
+ var prev=L.querySelector(".cur");if(prev)prev.className="";
