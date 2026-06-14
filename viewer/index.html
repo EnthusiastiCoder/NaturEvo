@@ -78,3 +78,4 @@ $("play").onclick=function(){if(timer)return stop();if(cur>=ev.length-1)cur=0;$(
 $("scrub").oninput=function(){cur=+this.value;render();};
 $("scrub").max=Math.max(0,ev.length-1);
 function dash(){
+ var s=window.STATS,D=$("dstats"),H=$("hist");
