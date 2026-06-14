@@ -79,3 +79,4 @@ $("scrub").oninput=function(){cur=+this.value;render();};
 $("scrub").max=Math.max(0,ev.length-1);
 function dash(){
  var s=window.STATS,D=$("dstats"),H=$("hist");
+ if(!s){D.textContent="No stats data (data/stats.js missing)";H.textContent="";return;}
