@@ -81,3 +81,4 @@ function dash(){
  var s=window.STATS,D=$("dstats"),H=$("hist");
  if(!s){D.textContent="No stats data (data/stats.js missing)";H.textContent="";return;}
  var wr=s.runs?100*s.wins/s.runs:0,ad=s.avg_deaths,al=s.avg_final_level;
+ D.innerHTML="";
