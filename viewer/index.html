@@ -83,3 +83,4 @@ function dash(){
  var wr=s.runs?100*s.wins/s.runs:0,ad=s.avg_deaths,al=s.avg_final_level;
  D.innerHTML="";
  [["Win rate",wr.toFixed(1)+"%"],["Avg deaths",(+ad).toFixed(2)],["Avg final level",(+al).toFixed(1)],["Runs",s.runs]].forEach(function(p){
+  var d=document.createElement("span");d.className="stat";d.textContent=p[0]+": "+p[1];D.appendChild(d);});
