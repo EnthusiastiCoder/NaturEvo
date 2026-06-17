@@ -14,3 +14,31 @@ fn write(path: &str, content: &str) {
     }
     std::fs::write(path, content).expect("write file");
 }
+
+fn main() {
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    let t = Instant::now();
+    match args.first().map(|s| s.as_str()) {
+        Some("run") => {
+            let seed: u64 = arg(&args, "--seed").and_then(|v| v.parse().ok()).unwrap_or(1);
+            let out = arg(&args, "--out").unwrap_or_else(|| "viewer/data/run.js".into());
+            let r = simulate(seed);
+            write(&out, &run_json(&r));
+            println!("seed {} won={} deaths={} level={} events={} -> {} ({:?})",
+                seed, r.won, r.deaths, r.final_level, r.events.len(), out, t.elapsed());
+        }
+        Some("batch") => {
+            let runs: u32 = arg(&args, "--runs").and_then(|v| v.parse().ok()).unwrap_or(2000);
+            let out = arg(&args, "--out").unwrap_or_else(|| "viewer/data/stats.js".into());
+            let threads = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(4);
+            let s = batch(runs, threads);
+            write(&out, &stats_json(&s));
+            println!("runs {} win rate {:.1}% avg deaths {:.2} avg level {:.1} -> {} ({:?})",
+                s.runs, 100.0 * s.wins as f64 / s.runs.max(1) as f64, s.avg_deaths, s.avg_final_level, out, t.elapsed());
+        }
+        _ => {
+            eprintln!("usage: jungle-sim run --seed N [--out path] | batch --runs N [--out path]");
+            std::process::exit(2);
+        }
+    }
+}
