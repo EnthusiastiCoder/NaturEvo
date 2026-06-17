@@ -42,3 +42,12 @@ pub fn run_json(run: &Run) -> String {
     s.push_str("]};\n");
     s
 }
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct BatchStats {
+    pub runs: u32,
+    pub wins: u32,
+    pub avg_deaths: f64,
+    pub avg_final_level: f64,
+    pub level_hist: Vec<u32>,
+}
