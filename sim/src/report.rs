@@ -51,3 +51,40 @@ pub struct BatchStats {
     pub avg_final_level: f64,
     pub level_hist: Vec<u32>,
 }
+
+pub fn batch(runs: u32, threads: usize) -> BatchStats {
+    let threads = threads.max(1);
+    // (won, deaths, final_level) per seed, indexed by seed
+    let mut results = vec![(false, 0u32, 0u32); runs as usize];
+    let chunk = ((runs as usize + threads - 1) / threads).max(1);
+    std::thread::scope(|sc| {
+        for (ci, part) in results.chunks_mut(chunk).enumerate() {
+            sc.spawn(move || {
+                for (j, slot) in part.iter_mut().enumerate() {
+                    let r = simulate((ci * chunk + j) as u64);
+                    *slot = (r.won, r.deaths, r.final_level);
+                }
+            });
+        }
+    });
+    let mut wins = 0u32;
+    let mut deaths = 0u64;
+    let mut lv = 0u64;
+    let mut hist = vec![0u32; 41];
+    for (w, d, l) in &results {
+        if *w {
+            wins += 1;
+        }
+        deaths += *d as u64;
+        lv += *l as u64;
+        hist[(*l as usize).min(40)] += 1;
+    }
+    let n = runs.max(1) as f64;
+    BatchStats {
+        runs,
+        wins,
+        avg_deaths: deaths as f64 / n,
+        avg_final_level: lv as f64 / n,
+        level_hist: hist,
+    }
+}
