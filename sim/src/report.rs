@@ -88,3 +88,11 @@ pub fn batch(runs: u32, threads: usize) -> BatchStats {
         level_hist: hist,
     }
 }
+
+pub fn stats_json(s: &BatchStats) -> String {
+    let hist: Vec<String> = s.level_hist.iter().map(|v| v.to_string()).collect();
+    format!(
+        "window.STATS = {{\"runs\":{},\"wins\":{},\"avg_deaths\":{},\"avg_final_level\":{},\"level_hist\":[{}]}};\n",
+        s.runs, s.wins, s.avg_deaths, s.avg_final_level, hist.join(",")
+    )
+}
