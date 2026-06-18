@@ -35,3 +35,11 @@ impl Default for Config {
         }
     }
 }
+
+pub struct Knob {
+    pub key: &'static str,
+    pub label: &'static str,
+    pub min: f64,
+    pub max: f64,
+    pub default: f64,
+}
