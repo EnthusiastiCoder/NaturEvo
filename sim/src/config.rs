@@ -59,3 +59,7 @@ static KNOBS: [Knob; 13] = [
     Knob { key: "boss_level", label: "Level to challenge boss", min: 5.0, max: 40.0, default: 32.0 },
     Knob { key: "boss_attempts", label: "Boss attempts before loss", min: 1.0, max: 50.0, default: 8.0 },
 ];
+
+pub fn knobs() -> &'static [Knob] {
+    &KNOBS
+}
