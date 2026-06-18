@@ -71,7 +71,7 @@ pub static SPECIES: [Species; 16] = [
     sp!("Cave Bat", "🦇", 40.0, 12.0, 4.0, 20.0, Pack, 16.0, 1.6),
     sp!("Thunder Raptor", "🦖", 100.0, 28.0, 8.0, 22.0, Charger, 36.0, 4.0),
     sp!("Ancient Serpent", "🐉", 160.0, 30.0, 12.0, 14.0, Venomous, 40.0, 4.5),
-    sp!("Jungle King", "👑", 480.0, 39.0, 18.0, 14.0, Berserker, 500.0, 60.0),
+    sp!("Jungle King", "👑", 480.0, 38.0, 18.0, 14.0, Berserker, 500.0, 60.0),
 ];
 
 pub static ZONES: [Zone; 9] = [
