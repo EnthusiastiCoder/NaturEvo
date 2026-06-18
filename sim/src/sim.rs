@@ -5,6 +5,8 @@ const EVENT_CAP: usize = 300_000;
 const MAX_LEVEL: u32 = 40;
 const MAX_ROUNDS: u32 = 60;
 const BOSS_LEVEL: u32 = 32;
+/// Run ends as a loss after this many deaths to the Jungle King.
+const BOSS_ATTEMPTS: u32 = 8;
 
 #[derive(Clone, Debug)]
 pub struct HeroSnap {
@@ -426,6 +428,9 @@ impl Sim {
                 self.deaths += 1;
                 if boss {
                     self.boss_deaths += 1;
+                    if self.boss_deaths >= BOSS_ATTEMPTS {
+                        self.done = true;
+                    }
                 }
                 self.emit("death", format!("Hero is slain by the {}", s.name), Some(&m));
                 let lost = self.hero.gold / 4;
