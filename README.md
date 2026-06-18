@@ -4,3 +4,6 @@ A deterministic Rust simulation of a hero fighting through jungle zones to defea
 
 ## Build
 Requires Rust (std only, no dependencies).
+
+    cd sim
+    cargo build --release
