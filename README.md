@@ -15,3 +15,6 @@ From the repo root (paths are relative to it):
     cargo run --release --manifest-path sim/Cargo.toml -- batch --runs 2000 # writes viewer/data/stats.js
 
 Same seed gives byte-identical output. Batch results do not depend on thread count.
+
+## View
+Open `viewer/index.html` directly in a browser (file://). Scrub any event to see hero and monster HP and level.
