@@ -18,3 +18,11 @@ Same seed gives byte-identical output. Batch results do not depend on thread cou
 
 ## View
 Open `viewer/index.html` directly in a browser (file://). Scrub any event to see hero and monster HP and level.
+
+## Rules
+- Hero starts at level 1 in Base Camp, shops (best affordable weapon/armor, up to 5 potions), then travels to the highest zone allowed by level.
+- Zones: Jungle Edge, Dense Jungle, River Bank, Misty Swamp, Ancient Ruins, Bat Caves, Serpent Temple, and King's Grove (level 32+).
+- Monster stats scale with level; turn order by speed. Behaviors: Aggressive, Pack, Defensive, Berserker, Venomous, Trickster, Healer, Charger.
+- Hero skills: Power Strike (L3), Brace (L6), Stun (L10), Heal (L14). Potions are used below 35% HP.
+- Death respawns at camp with 25% gold lost. Winning means defeating the Jungle King.
+- Runs stop at 300,000 events.
