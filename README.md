@@ -13,3 +13,5 @@ From the repo root (paths are relative to it):
 
     cargo run --release --manifest-path sim/Cargo.toml -- run --seed 1      # writes viewer/data/run.js
     cargo run --release --manifest-path sim/Cargo.toml -- batch --runs 2000 # writes viewer/data/stats.js
+
+Same seed gives byte-identical output. Batch results do not depend on thread count.
