@@ -63,3 +63,7 @@ static KNOBS: [Knob; 13] = [
 pub fn knobs() -> &'static [Knob] {
     &KNOBS
 }
+
+fn knob(key: &str) -> Option<&'static Knob> {
+    KNOBS.iter().find(|k| k.key == key)
+}
