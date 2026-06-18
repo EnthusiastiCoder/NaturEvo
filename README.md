@@ -7,3 +7,6 @@ Requires Rust (std only, no dependencies).
 
     cd sim
     cargo build --release
+
+## Run
+From the repo root (paths are relative to it):
