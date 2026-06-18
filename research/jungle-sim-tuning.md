@@ -7,7 +7,11 @@ Findings (300 runs each, release):
 - Boss-only tuning (data.rs Jungle King), hp/atk -> win rate: 480/38 96.7%, 500/38 81%, 480/39 61.7%, 500/39 42.7%, 520/40 1.3%, 560/42 0%.
 - The curve is a cliff: boss atk +1 moves win rate ~20-40 points.
 
-Chosen: Jungle King hp 420 -> 480, atk 38 -> 39 (only change, in sim/src/data.rs).
+Chosen: Jungle King hp 420 -> 480, atk 38 (unchanged after retune) (only change, in sim/src/data.rs).
 Result: 500 runs ~62%; 2000 runs 64.0%, avg deaths 5020, avg level 40.0.
 
 Caveat: avg deaths is high (~5000) because losing runs retry the boss until the 300k event cap. Failed runs dominate the mean; the 2000-run batch takes ~24s, above the "seconds" target. Capping retries in sim.rs (out of scope here) would fix both.
+
+## Update: boss attempt cap
+Added BOSS_ATTEMPTS = 8 in sim.rs: the run ends as a loss after 8 deaths to the Jungle King. With the cap, 480/39 dropped to 22.9%, so atk was reverted to 38 (hp 480).
+Final: 2000 runs -> 53.8% wins, avg deaths 14.1, avg level 40.0, ~1.7s. (Earlier 480/39 numbers above predate the cap.)
