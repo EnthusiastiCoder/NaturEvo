@@ -74,3 +74,45 @@ fn check(k: &Knob, v: f64) -> Result<(), String> {
     }
     Ok(())
 }
+
+impl Config {
+    pub fn set(&mut self, key: &str, value: &str) -> Result<(), String> {
+        let k = knob(key).ok_or_else(|| format!("unknown parameter '{}'", key))?;
+        let bad = || format!("{}: invalid number '{}'", key, value);
+        let v = value.trim();
+        match key {
+            "hero_hp_base" | "hero_hp_per_level" => {
+                let n: i32 = v.parse().map_err(|_| bad())?;
+                check(k, n as f64)?;
+                if key == "hero_hp_base" {
+                    self.hero_hp_base = n;
+                } else {
+                    self.hero_hp_per_level = n;
+                }
+            }
+            "potion_cost" | "boss_level" | "boss_attempts" => {
+                let n: u32 = v.parse().map_err(|_| bad())?;
+                check(k, n as f64)?;
+                match key {
+                    "potion_cost" => self.potion_cost = n,
+                    "boss_level" => self.boss_level = n,
+                    _ => self.boss_attempts = n,
+                }
+            }
+            _ => {
+                let n: f32 = v.parse().map_err(|_| bad())?;
+                check(k, n as f64)?;
+                match key {
+                    "monster_hp_mult" => self.monster_hp_mult = n,
+                    "monster_atk_mult" => self.monster_atk_mult = n,
+                    "boss_hp_mult" => self.boss_hp_mult = n,
+                    "boss_atk_mult" => self.boss_atk_mult = n,
+                    "hero_atk_per_level" => self.hero_atk_per_level = n,
+                    "hero_def_per_level" => self.hero_def_per_level = n,
+                    "xp_mult" => self.xp_mult = n,
+                    _ => self.gold_mult = n,
+                }
+            }
+        }
+        Ok(())
+    }
