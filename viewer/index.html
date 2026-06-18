@@ -8,7 +8,7 @@ button,select{font-size:16px}
 #battle{display:flex;gap:30px;align-items:center;background:#243a24;padding:10px;margin:8px 0;border-radius:6px}
 .fighter{text-align:center;min-width:180px}.emo{font-size:48px}
 .bar{background:#522;height:14px;border-radius:7px;overflow:hidden}.bar>div{background:#4c4;height:100%}
-#log{height:260px;overflow:auto;background:#111;font-family:monospace;font-size:13px;margin-top:8px}
+#log{position:relative;height:260px;overflow:auto;background:#111;font-family:monospace;font-size:13px;margin-top:8px}
 #log div{padding:1px 6px;cursor:pointer;white-space:nowrap}#log div.cur{background:#665500}
 #scrub{width:100%}canvas{background:#111;display:block;margin-top:8px;max-width:100%}
 .stat{display:inline-block;margin:8px 16px 8px 0;font-size:20px}
@@ -35,7 +35,7 @@ button,select{font-size:16px}
 var SP=[["Jungle Rat","🐀"],["Vine Snake","🐍"],["Monkey Thief","🐒"],["Wild Boar","🐗"],["Giant Spider","🕷️"],["Jaguar","🐆"],["Crocodile","🐊"],["Poison Frog","🐸"],["Swamp Troll","🧌"],["Stone Golem","🗿"],["Ruin Wraith","👻"],["Gorilla","🦍"],["Cave Bat","🦇"],["Thunder Raptor","🦖"],["Ancient Serpent","🐉"],["Jungle King","👑"]];
 var ZN=[["Base Camp","⛺"],["Jungle Edge","🌿"],["Dense Jungle","🌳"],["River Bank","🏞️"],["Misty Swamp","🌫️"],["Ancient Ruins","🏛️"],["Bat Caves","🕳️"],["Serpent Temple","🛕"],["King's Grove","👑"]];
 var $=function(i){return document.getElementById(i)};
-var run=window.RUN||null, ev=(run&&run.events)||[], cur=0, timer=null, lines=[];
+var run=window.RUN||null, ev=(run&&run.events)||[], cur=0, timer=null, logFirst=-1, logLast=-1;
 function showTab(t){$("replay").className=t==="r"?"":"hidden";$("dashboard").className=t==="d"?"":"hidden";
  $("tab-replay").className=t==="r"?"on":"";$("tab-dashboard").className=t==="d"?"on":"";if(t==="d")dash();}
 $("tab-replay").onclick=function(){showTab("r")};$("tab-dashboard").onclick=function(){showTab("d")};
@@ -52,14 +52,13 @@ function render(){
  if(m){var s=SP[m.species]||["?","❓"];$("memo").textContent=s[1];$("mbar").style.width=pct(m.hp,m.max_hp)+"%";
   $("mhp").textContent=s[0]+" Lv "+m.level+"  HP "+m.hp+"/"+m.max_hp;}
  else{$("memo").textContent="";$("mbar").style.width="0";$("mhp").textContent="";}
- var L=$("log"),first=+(L.dataset.first||-1),last;
- if(first<0||cur<first||cur>first+190){first=Math.max(0,cur-100);last=Math.min(ev.length-1,first+200);
-  L.innerHTML="";lines=[];L.dataset.first=first;
-  for(var i=first;i<=last;i++){var d=document.createElement("div");d.textContent=i+" ["+ev[i].kind+"] "+ev[i].text;d.dataset.i=i;
-   d.onclick=function(){cur=+this.dataset.i;render();};L.appendChild(d);}
- }
+ var L=$("log");
+ if(logFirst<0||cur<logLast||cur>logLast+150){logFirst=Math.max(0,cur-150);logLast=logFirst-1;L.innerHTML="";}
+ for(var i=logLast+1;i<=cur;i++){var d=document.createElement("div");d.textContent=i+" ["+ev[i].kind+"] "+ev[i].text;d.dataset.i=String(i);
+  d.onclick=function(){cur=+this.dataset.i;render();};L.appendChild(d);}
+ logLast=cur;
  var prev=L.querySelector(".cur");if(prev)prev.className="";
- var c=L.children[cur-first];if(c){c.className="cur";L.scrollTop=c.offsetTop-L.clientHeight/2;}
+ var c=L.children[cur-logFirst];if(c){c.className="cur";L.scrollTop=c.offsetTop-L.clientHeight/2;}
  timeline();
 }
 function timeline(){
@@ -77,6 +76,9 @@ function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
 $("play").onclick=function(){if(timer)return stop();if(cur>=ev.length-1)cur=0;$("play").textContent="Pause";timer=setInterval(step,100);};
 $("scrub").oninput=function(){cur=+this.value;render();};
 $("scrub").max=Math.max(0,ev.length-1);
+window.__jv={setRun:function(r){run=r;ev=(r&&r.events)||[];cur=0;logFirst=-1;logLast=-1;$("scrub").max=Math.max(0,ev.length-1);render();},
+ goto:function(i){cur=i;render();},
+ logIndices:function(){var o=[],ch=$("log").children;for(var i=0;i<ch.length;i++)o.push(+ch[i].dataset.i);return o;}};
 function dash(){
  var s=window.STATS,D=$("dstats"),H=$("hist");
  if(!s){D.textContent="No stats data (data/stats.js missing)";H.textContent="";return;}
