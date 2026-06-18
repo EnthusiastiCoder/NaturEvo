@@ -26,3 +26,6 @@ Open `viewer/index.html` directly in a browser (file://). Scrub any event to see
 - Hero skills: Power Strike (L3), Brace (L6), Stun (L10), Heal (L14). Potions are used below 35% HP.
 - Death respawns at camp with 25% gold lost. Winning means defeating the Jungle King.
 - Runs stop at 300,000 events.
+
+## Balance
+Target win rate is 30-90%; currently about 62-64%. See `research/jungle-sim-tuning.md`.
