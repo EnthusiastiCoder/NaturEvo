@@ -67,3 +67,10 @@ pub fn knobs() -> &'static [Knob] {
 fn knob(key: &str) -> Option<&'static Knob> {
     KNOBS.iter().find(|k| k.key == key)
 }
+
+fn check(k: &Knob, v: f64) -> Result<(), String> {
+    if !v.is_finite() || v < k.min || v > k.max {
+        return Err(format!("{}: value must be between {} and {}", k.key, k.min, k.max));
+    }
+    Ok(())
+}
