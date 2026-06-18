@@ -29,3 +29,6 @@ Open `viewer/index.html` directly in a browser (file://). Scrub any event to see
 
 ## Balance
 Target win rate is 30-90%; currently about 62-64%. See `research/jungle-sim-tuning.md`.
+
+## Tests
+    cd sim && cargo test --release
