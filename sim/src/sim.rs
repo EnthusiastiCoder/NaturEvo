@@ -236,7 +236,7 @@ impl Sim {
         while self.hero.level < MAX_LEVEL && self.hero.xp >= xp_to_next(self.hero.level) {
             self.hero.xp -= xp_to_next(self.hero.level);
             self.hero.level += 1;
-            let new_max = Hero::max_hp_for(self.hero.level);
+            let new_max = Hero::max_hp_for(&self.cfg, self.hero.level);
             let gain = new_max - self.hero.max_hp;
             self.hero.max_hp = new_max;
             self.hero.hp = (self.hero.hp + gain).min(new_max);
