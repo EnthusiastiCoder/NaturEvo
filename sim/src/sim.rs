@@ -360,7 +360,7 @@ impl Sim {
                         if dodged {
                             self.emit("attack", format!("Hero's {} misses, the {} dodges", label, s.name), Some(&m));
                         } else {
-                            let mut a = self.hero.atk();
+                            let mut a = self.hero.atk(&self.cfg);
                             if power {
                                 a *= 1.8;
                             }
