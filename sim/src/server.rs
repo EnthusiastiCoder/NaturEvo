@@ -16,3 +16,7 @@ pub struct Response {
 }
 
 const JSON: &str = "application/json; charset=utf-8";
+
+fn json_resp(status: u16, body: String) -> Response {
+    Response { status, content_type: JSON, body: body.into_bytes() }
+}
