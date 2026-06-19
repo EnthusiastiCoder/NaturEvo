@@ -399,7 +399,7 @@ impl Sim {
                                 }
                                 _ => {}
                             }
-                            let mut d = damage(&mut self.rng, atk, self.hero.def());
+                            let mut d = damage(&mut self.rng, atk, self.hero.def(&self.cfg));
                             if braced && note.contains("charge") {
                                 d = (d * 3 / 10).max(1);
                                 braced = false;
