@@ -1,3 +1,4 @@
+use crate::config::Config;
 use crate::data::*;
 use crate::rng::Rng;
 
