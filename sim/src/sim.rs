@@ -346,7 +346,7 @@ impl Sim {
                     {
                         cd_stun = 5;
                         stunned = true;
-                        let d = damage(&mut self.rng, self.hero.atk() * 0.5, m.def);
+                        let d = damage(&mut self.rng, self.hero.atk(&self.cfg) * 0.5, m.def);
                         m.hp = (m.hp - d).max(0);
                         self.emit("skill", format!("Hero Stuns the {} for {}", s.name, d), Some(&m));
                     } else {
