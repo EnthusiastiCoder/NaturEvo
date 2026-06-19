@@ -71,8 +71,8 @@ impl Hero {
     fn max_hp_for(cfg: &Config, level: u32) -> i32 {
         cfg.hero_hp_base + cfg.hero_hp_per_level * level as i32
     }
-    fn atk(&self) -> f32 {
-        8.0 + 3.0 * self.level as f32 + WEAPONS[self.weapon].2 as f32
+    fn atk(&self, cfg: &Config) -> f32 {
+        8.0 + cfg.hero_atk_per_level * self.level as f32 + WEAPONS[self.weapon].2 as f32
     }
     fn def(&self) -> f32 {
         3.0 + 1.5 * self.level as f32 + ARMORS[self.armor].2 as f32
