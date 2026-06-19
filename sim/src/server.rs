@@ -14,3 +14,5 @@ pub struct Response {
     pub content_type: &'static str,
     pub body: Vec<u8>,
 }
+
+const JSON: &str = "application/json; charset=utf-8";
