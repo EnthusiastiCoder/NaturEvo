@@ -8,3 +8,9 @@ use std::time::Duration;
 
 const MAX_RUNS: u32 = 20000;
 const MAX_REQ: usize = 8 * 1024;
+
+pub struct Response {
+    pub status: u16,
+    pub content_type: &'static str,
+    pub body: Vec<u8>,
+}
