@@ -68,8 +68,8 @@ struct Hero {
 }
 
 impl Hero {
-    fn max_hp_for(level: u32) -> i32 {
-        50 + 14 * level as i32
+    fn max_hp_for(cfg: &Config, level: u32) -> i32 {
+        cfg.hero_hp_base + cfg.hero_hp_per_level * level as i32
     }
     fn atk(&self) -> f32 {
         8.0 + 3.0 * self.level as f32 + WEAPONS[self.weapon].2 as f32
