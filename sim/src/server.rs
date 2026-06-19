@@ -20,3 +20,8 @@ const JSON: &str = "application/json; charset=utf-8";
 fn json_resp(status: u16, body: String) -> Response {
     Response { status, content_type: JSON, body: body.into_bytes() }
 }
+
+fn err(status: u16, msg: &str) -> Response {
+    let esc: String = msg.chars().filter(|c| *c != '"' && *c != '\\' && (*c as u32) >= 0x20).collect();
+    json_resp(status, format!("{{\"error\":\"{}\"}}", esc))
+}
