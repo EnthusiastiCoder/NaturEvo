@@ -182,8 +182,9 @@ impl Sim {
     }
 
     fn buy_potions(&mut self, upto: u32) {
-        while self.hero.potions < upto && self.hero.gold >= POTION_COST {
-            self.hero.gold -= POTION_COST;
+        let cost = self.cfg.potion_cost;
+        while self.hero.potions < upto && self.hero.gold >= cost {
+            self.hero.gold -= cost;
             self.hero.potions += 1;
             self.emit(
                 "shop",
