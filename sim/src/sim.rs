@@ -261,6 +261,12 @@ impl Sim {
         let mut hp = monster_stat(s.hp, level);
         let mut atk = monster_stat(s.atk, level);
         let def = monster_stat(s.def, level);
+        hp *= self.cfg.monster_hp_mult;
+        atk *= self.cfg.monster_atk_mult;
+        if species == BOSS {
+            hp *= self.cfg.boss_hp_mult;
+            atk *= self.cfg.boss_atk_mult;
+        }
         let spd = monster_stat(s.spd, level);
         let mut packed = 1;
         if s.behavior == Behavior::Pack {
