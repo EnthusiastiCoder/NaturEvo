@@ -188,7 +188,7 @@ impl Sim {
             self.hero.potions += 1;
             self.emit(
                 "shop",
-                format!("Bought a potion for {} gold ({} held)", POTION_COST, self.hero.potions),
+                format!("Bought a potion for {} gold ({} held)", cost, self.hero.potions),
                 None,
             );
         }
