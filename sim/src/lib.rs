@@ -1,3 +1,4 @@
+pub mod config;
 pub mod data;
 pub mod rng;
 pub mod sim;
