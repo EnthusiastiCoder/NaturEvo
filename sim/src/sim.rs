@@ -434,7 +434,7 @@ impl Sim {
                 self.deaths += 1;
                 if boss {
                     self.boss_deaths += 1;
-                    if self.boss_deaths >= BOSS_ATTEMPTS {
+                    if self.boss_deaths >= self.cfg.boss_attempts {
                         self.done = true;
                     }
                 }
