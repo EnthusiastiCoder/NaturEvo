@@ -116,3 +116,26 @@ impl Config {
         }
         Ok(())
     }
+
+    pub fn validate(&self) -> Result<(), String> {
+        let vals: [(&str, f64); 13] = [
+            ("monster_hp_mult", self.monster_hp_mult as f64),
+            ("monster_atk_mult", self.monster_atk_mult as f64),
+            ("boss_hp_mult", self.boss_hp_mult as f64),
+            ("boss_atk_mult", self.boss_atk_mult as f64),
+            ("hero_hp_base", self.hero_hp_base as f64),
+            ("hero_hp_per_level", self.hero_hp_per_level as f64),
+            ("hero_atk_per_level", self.hero_atk_per_level as f64),
+            ("hero_def_per_level", self.hero_def_per_level as f64),
+            ("xp_mult", self.xp_mult as f64),
+            ("gold_mult", self.gold_mult as f64),
+            ("potion_cost", self.potion_cost as f64),
+            ("boss_level", self.boss_level as f64),
+            ("boss_attempts", self.boss_attempts as f64),
+        ];
+        for (key, v) in vals {
+            check(knob(key).unwrap(), v)?;
+        }
+        Ok(())
+    }
+}
