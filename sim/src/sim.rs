@@ -159,7 +159,7 @@ impl Sim {
                 best = z;
             }
         }
-        if lvl >= (BOSS_LEVEL + 2 * self.boss_deaths).min(MAX_LEVEL) {
+        if lvl >= (self.cfg.boss_level + 2 * self.boss_deaths).min(MAX_LEVEL) {
             best = 8;
         }
         best
