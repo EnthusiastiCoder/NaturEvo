@@ -74,8 +74,8 @@ impl Hero {
     fn atk(&self, cfg: &Config) -> f32 {
         8.0 + cfg.hero_atk_per_level * self.level as f32 + WEAPONS[self.weapon].2 as f32
     }
-    fn def(&self) -> f32 {
-        3.0 + 1.5 * self.level as f32 + ARMORS[self.armor].2 as f32
+    fn def(&self, cfg: &Config) -> f32 {
+        3.0 + cfg.hero_def_per_level * self.level as f32 + ARMORS[self.armor].2 as f32
     }
     fn spd(&self) -> f32 {
         10.0 + self.level as f32 * 0.5
