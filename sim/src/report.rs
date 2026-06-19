@@ -1,4 +1,5 @@
-use crate::sim::{simulate, Run};
+use crate::config::Config;
+use crate::sim::{simulate_with, Run};
 
 fn esc(s: &str) -> String {
     let mut o = String::with_capacity(s.len() + 2);
@@ -17,9 +18,13 @@ fn esc(s: &str) -> String {
 }
 
 pub fn run_json(run: &Run) -> String {
+    format!("window.RUN = {};\n", run_body(run))
+}
+
+pub fn run_body(run: &Run) -> String {
     let mut s = String::new();
     s.push_str(&format!(
-        "window.RUN = {{\"seed\":{},\"won\":{},\"deaths\":{},\"final_level\":{},\"events\":[",
+        "{{\"seed\":{},\"won\":{},\"deaths\":{},\"final_level\":{},\"events\":[",
         run.seed, run.won, run.deaths, run.final_level
     ));
     for (i, e) in run.events.iter().enumerate() {
@@ -39,7 +44,7 @@ pub fn run_json(run: &Run) -> String {
             None => s.push_str("null}"),
         }
     }
-    s.push_str("]};\n");
+    s.push_str("]}");
     s
 }
 
@@ -53,6 +58,10 @@ pub struct BatchStats {
 }
 
 pub fn batch(runs: u32, threads: usize) -> BatchStats {
+    batch_with(runs, threads, &Config::default())
+}
+
+pub fn batch_with(runs: u32, threads: usize, cfg: &Config) -> BatchStats {
     let threads = threads.max(1);
     // (won, deaths, final_level) per seed, indexed by seed
     let mut results = vec![(false, 0u32, 0u32); runs as usize];
@@ -61,7 +70,7 @@ pub fn batch(runs: u32, threads: usize) -> BatchStats {
         for (ci, part) in results.chunks_mut(chunk).enumerate() {
             sc.spawn(move || {
                 for (j, slot) in part.iter_mut().enumerate() {
-                    let r = simulate((ci * chunk + j) as u64);
+                    let r = simulate_with((ci * chunk + j) as u64, cfg);
                     *slot = (r.won, r.deaths, r.final_level);
                 }
             });
@@ -90,9 +99,13 @@ pub fn batch(runs: u32, threads: usize) -> BatchStats {
 }
 
 pub fn stats_json(s: &BatchStats) -> String {
+    format!("window.STATS = {};\n", stats_body(s))
+}
+
+pub fn stats_body(s: &BatchStats) -> String {
     let hist: Vec<String> = s.level_hist.iter().map(|v| v.to_string()).collect();
     format!(
-        "window.STATS = {{\"runs\":{},\"wins\":{},\"avg_deaths\":{},\"avg_final_level\":{},\"level_hist\":[{}]}};\n",
+        "{{\"runs\":{},\"wins\":{},\"avg_deaths\":{},\"avg_final_level\":{},\"level_hist\":[{}]}}",
         s.runs, s.wins, s.avg_deaths, s.avg_final_level, hist.join(",")
     )
 }
