@@ -95,6 +95,7 @@ struct Mon {
 }
 
 struct Sim {
+    cfg: Config,
     rng: Rng,
     hero: Hero,
     events: Vec<Event>,
