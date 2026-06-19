@@ -526,6 +526,7 @@ pub fn simulate(seed: u64) -> Run {
 pub fn simulate_with(seed: u64, cfg: &Config) -> Run {
     let max_hp = Hero::max_hp_for(cfg, 1);
     let mut sim = Sim {
+        cfg: cfg.clone(),
         rng: Rng::new(seed),
         hero: Hero { level: 1, hp: max_hp, max_hp, xp: 0, gold: 0, potions: 0, zone: 0, weapon: 0, armor: 0 },
         events: Vec::new(),
