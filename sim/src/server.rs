@@ -25,3 +25,20 @@ fn err(status: u16, msg: &str) -> Response {
     let esc: String = msg.chars().filter(|c| *c != '"' && *c != '\\' && (*c as u32) >= 0x20).collect();
     json_resp(status, format!("{{\"error\":\"{}\"}}", esc))
 }
+
+fn host_ok(host: Option<&str>) -> bool {
+    let h = match host {
+        Some(h) => h.trim(),
+        None => return false,
+    };
+    let (name, port) = match h.split_once(':') {
+        Some((n, p)) => (n, Some(p)),
+        None => (h, None),
+    };
+    if let Some(p) = port {
+        if p.is_empty() || p.len() > 5 || !p.bytes().all(|b| b.is_ascii_digit()) {
+            return false;
+        }
+    }
+    name == "127.0.0.1" || name.eq_ignore_ascii_case("localhost")
+}
