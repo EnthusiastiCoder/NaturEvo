@@ -42,3 +42,10 @@ fn host_ok(host: Option<&str>) -> bool {
     }
     name == "127.0.0.1" || name.eq_ignore_ascii_case("localhost")
 }
+
+fn parse_query(q: &str) -> Vec<(&str, &str)> {
+    q.split('&')
+        .filter(|s| !s.is_empty())
+        .map(|p| p.split_once('=').unwrap_or((p, "")))
+        .collect()
+}
