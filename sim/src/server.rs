@@ -49,3 +49,15 @@ fn parse_query(q: &str) -> Vec<(&str, &str)> {
         .map(|p| p.split_once('=').unwrap_or((p, "")))
         .collect()
 }
+
+fn build_config(pairs: &[(&str, &str)], skip: &[&str]) -> Result<Config, String> {
+    let mut cfg = Config::default();
+    for (k, v) in pairs {
+        if skip.contains(k) {
+            continue;
+        }
+        cfg.set(k, v)?;
+    }
+    cfg.validate()?;
+    Ok(cfg)
+}
