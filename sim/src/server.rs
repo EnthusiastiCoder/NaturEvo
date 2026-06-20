@@ -61,3 +61,16 @@ fn build_config(pairs: &[(&str, &str)], skip: &[&str]) -> Result<Config, String>
     cfg.validate()?;
     Ok(cfg)
 }
+
+fn config_body() -> String {
+    let items: Vec<String> = knobs()
+        .iter()
+        .map(|k| {
+            format!(
+                "{{\"key\":\"{}\",\"label\":\"{}\",\"min\":{},\"max\":{},\"default\":{}}}",
+                k.key, k.label, k.min, k.max, k.default
+            )
+        })
+        .collect();
+    format!("{{\"knobs\":[{}],\"max_runs\":{}}}", items.join(","), MAX_RUNS)
+}
