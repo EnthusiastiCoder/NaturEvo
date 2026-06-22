@@ -193,3 +193,12 @@ fn handle(mut stream: TcpStream, root: &Path) {
     let r = route(root, method, target, host.as_deref());
     write_resp(&mut stream, &r);
 }
+
+pub fn serve_listener(listener: TcpListener, root: PathBuf) {
+    for conn in listener.incoming() {
+        if let Ok(s) = conn {
+            let root = root.clone();
+            std::thread::spawn(move || handle(s, &root));
+        }
+    }
+}
