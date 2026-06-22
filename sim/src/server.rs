@@ -74,3 +74,10 @@ fn config_body() -> String {
         .collect();
     format!("{{\"knobs\":[{}],\"max_runs\":{}}}", items.join(","), MAX_RUNS)
 }
+
+fn static_file(root: &Path, name: &str, ct: &'static str) -> Response {
+    match std::fs::read(root.join(name)) {
+        Ok(b) => Response { status: 200, content_type: ct, body: b },
+        Err(_) => err(404, "not found"),
+    }
+}
