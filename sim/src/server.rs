@@ -81,3 +81,54 @@ fn static_file(root: &Path, name: &str, ct: &'static str) -> Response {
         Err(_) => err(404, "not found"),
     }
 }
+
+pub fn route(root: &Path, method: &str, target: &str, host: Option<&str>) -> Response {
+    if !host_ok(host) {
+        return err(403, "forbidden host");
+    }
+    if method != "GET" {
+        return err(405, "method not allowed");
+    }
+    let (path, query) = target.split_once('?').unwrap_or((target, ""));
+    let pairs = parse_query(query);
+    match path {
+        "/" => static_file(root, "index.html", "text/html; charset=utf-8"),
+        "/data/run.js" => static_file(root, "data/run.js", "application/javascript; charset=utf-8"),
+        "/data/stats.js" => static_file(root, "data/stats.js", "application/javascript; charset=utf-8"),
+        "/api/config" => json_resp(200, config_body()),
+        "/api/run" => {
+            let mut seed: u64 = 1;
+            for (k, v) in &pairs {
+                if *k == "seed" {
+                    seed = match v.parse() {
+                        Ok(s) => s,
+                        Err(_) => return err(400, "seed: not a valid u64"),
+                    };
+                }
+            }
+            match build_config(&pairs, &["seed"]) {
+                Ok(cfg) => json_resp(200, run_body(&simulate_with(seed, &cfg))),
+                Err(e) => err(400, &e),
+            }
+        }
+        "/api/batch" => {
+            let mut runs: u32 = 2000;
+            for (k, v) in &pairs {
+                if *k == "runs" {
+                    runs = match v.parse() {
+                        Ok(r) if (1..=MAX_RUNS).contains(&r) => r,
+                        _ => return err(400, "runs: must be an integer in 1..=20000"),
+                    };
+                }
+            }
+            match build_config(&pairs, &["runs"]) {
+                Ok(cfg) => {
+                    let t = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(4);
+                    json_resp(200, stats_body(&batch_with(runs, t, &cfg)))
+                }
+                Err(e) => err(400, &e),
+            }
+        }
+        _ => err(404, "not found"),
+    }
+}
