@@ -136,3 +136,15 @@ pub fn route(root: &Path, method: &str, target: &str, host: Option<&str>) -> Res
 pub fn bind(port: u16) -> std::io::Result<TcpListener> {
     TcpListener::bind((Ipv4Addr::LOCALHOST, port))
 }
+
+fn reason(s: u16) -> &'static str {
+    match s {
+        200 => "OK",
+        400 => "Bad Request",
+        403 => "Forbidden",
+        404 => "Not Found",
+        405 => "Method Not Allowed",
+        431 => "Request Header Fields Too Large",
+        _ => "Error",
+    }
+}
