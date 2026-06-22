@@ -132,3 +132,7 @@ pub fn route(root: &Path, method: &str, target: &str, host: Option<&str>) -> Res
         _ => err(404, "not found"),
     }
 }
+
+pub fn bind(port: u16) -> std::io::Result<TcpListener> {
+    TcpListener::bind((Ipv4Addr::LOCALHOST, port))
+}
