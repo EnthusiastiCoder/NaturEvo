@@ -158,3 +158,38 @@ fn write_resp(stream: &mut TcpStream, r: &Response) {
     let _ = stream.write_all(&r.body);
     let _ = stream.flush();
 }
+
+fn handle(mut stream: TcpStream, root: &Path) {
+    let _ = stream.set_read_timeout(Some(Duration::from_secs(5)));
+    let mut buf: Vec<u8> = Vec::new();
+    let mut chunk = [0u8; 1024];
+    loop {
+        if buf.windows(4).any(|w| w == b"\r\n\r\n") {
+            break;
+        }
+        if buf.len() > MAX_REQ {
+            write_resp(&mut stream, &err(431, "request too large"));
+            return;
+        }
+        match stream.read(&mut chunk) {
+            Ok(0) | Err(_) => return,
+            Ok(n) => buf.extend_from_slice(&chunk[..n]),
+        }
+    }
+    let end = buf.windows(4).position(|w| w == b"\r\n\r\n").unwrap();
+    if end > MAX_REQ {
+        write_resp(&mut stream, &err(431, "request too large"));
+        return;
+    }
+    let text = String::from_utf8_lossy(&buf[..end]).to_string();
+    let mut lines = text.split("\r\n");
+    let first = lines.next().unwrap_or("");
+    let mut parts = first.split(' ');
+    let (method, target) = (parts.next().unwrap_or(""), parts.next().unwrap_or(""));
+    let host = lines
+        .filter_map(|l| l.split_once(':'))
+        .find(|(k, _)| k.trim().eq_ignore_ascii_case("host"))
+        .map(|(_, v)| v.trim().to_string());
+    let r = route(root, method, target, host.as_deref());
+    write_resp(&mut stream, &r);
+}
