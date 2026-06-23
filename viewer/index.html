@@ -102,6 +102,7 @@ function dash(){
 }
 var knobList=[];
 function setStatus(t){$("run-status").textContent=t||"";}
+function setBusy(b){$("run-btn").disabled=b;$("batch-btn").disabled=b;}
 render();
 })();
 </script></body></html>
