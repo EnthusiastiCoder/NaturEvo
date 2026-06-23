@@ -36,8 +36,20 @@ fn main() {
             println!("runs {} win rate {:.1}% avg deaths {:.2} avg level {:.1} -> {} ({:?})",
                 s.runs, 100.0 * s.wins as f64 / s.runs.max(1) as f64, s.avg_deaths, s.avg_final_level, out, t.elapsed());
         }
+        Some("serve") => {
+            let port: u16 = arg(&args, "--port").and_then(|v| v.parse().ok()).unwrap_or(8080);
+            let root = arg(&args, "--root")
+                .map(std::path::PathBuf::from)
+                .unwrap_or_else(|| std::path::PathBuf::from(concat!(env!("CARGO_MANIFEST_DIR"), "/../viewer")));
+            let l = jungle_sim::server::bind(port).unwrap_or_else(|e| {
+                eprintln!("cannot bind 127.0.0.1:{}: {}", port, e);
+                std::process::exit(1);
+            });
+            println!("Serving http://127.0.0.1:{}/", port);
+            jungle_sim::server::serve_listener(l, root);
+        }
         _ => {
-            eprintln!("usage: jungle-sim run --seed N [--out path] | batch --runs N [--out path]");
+            eprintln!("usage: jungle-sim run --seed N [--out path] | batch --runs N [--out path] | serve [--port N] [--root DIR]");
             std::process::exit(2);
         }
     }
