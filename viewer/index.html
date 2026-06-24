@@ -115,6 +115,7 @@ function initControls(cfg){
  knobList=cfg.knobs||[];var K=$("knobs");K.innerHTML="";
  knobList.forEach(function(k){
   var l=document.createElement("label");l.textContent=k.label+" ";
+  var i=document.createElement("input");i.type="number";i.id="knob-"+k.key;i.value=String(k.default);
 render();
 })();
 </script></body></html>
