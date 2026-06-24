@@ -114,6 +114,7 @@ function api(url,label){
 function initControls(cfg){
  knobList=cfg.knobs||[];var K=$("knobs");K.innerHTML="";
  knobList.forEach(function(k){
+  var l=document.createElement("label");l.textContent=k.label+" ";
 render();
 })();
 </script></body></html>
