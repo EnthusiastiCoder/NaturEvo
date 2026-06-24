@@ -106,6 +106,7 @@ function setBusy(b){$("run-btn").disabled=b;$("batch-btn").disabled=b;}
 function knobQuery(){return knobList.map(function(k){return k.key+"="+encodeURIComponent($("knob-"+k.key).value);}).join("&");}
 function api(url,label){
  setBusy(true);setStatus(label);
+ return fetch(url).then(function(r){return r.json().then(function(j){
 render();
 })();
 </script></body></html>
