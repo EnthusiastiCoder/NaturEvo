@@ -113,6 +113,7 @@ function api(url,label){
 }
 function initControls(cfg){
  knobList=cfg.knobs||[];var K=$("knobs");K.innerHTML="";
+ knobList.forEach(function(k){
 render();
 })();
 </script></body></html>
