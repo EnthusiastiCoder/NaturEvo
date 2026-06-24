@@ -112,6 +112,7 @@ function api(url,label){
   function(e){setBusy(false);setStatus("Error: "+(e&&e.message||e));return null;});
 }
 function initControls(cfg){
+ knobList=cfg.knobs||[];var K=$("knobs");K.innerHTML="";
 render();
 })();
 </script></body></html>
