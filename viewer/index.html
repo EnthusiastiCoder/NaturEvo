@@ -122,6 +122,7 @@ function initControls(cfg){
 $("knobs-reset").onclick=function(){knobList.forEach(function(k){$("knob-"+k.key).value=String(k.default);});};
 $("random-seed").onclick=function(){$("seed").value=String(Math.floor(Math.random()*4294967296));};
 $("run-btn").onclick=function(){
+ var q="/api/run?seed="+encodeURIComponent($("seed").value)+(knobList.length?"&"+knobQuery():"");
 render();
 })();
 </script></body></html>
