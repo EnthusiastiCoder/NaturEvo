@@ -119,6 +119,7 @@ function initControls(cfg){
   i.min=String(k.min);i.max=String(k.max);i.step="any";l.appendChild(i);K.appendChild(l);});
  $("run-controls").classList.remove("hidden");
 }
+$("knobs-reset").onclick=function(){knobList.forEach(function(k){$("knob-"+k.key).value=String(k.default);});};
 render();
 })();
 </script></body></html>
