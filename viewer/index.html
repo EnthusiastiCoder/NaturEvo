@@ -111,6 +111,7 @@ function api(url,label){
  .then(function(j){setBusy(false);setStatus("");return j;},
   function(e){setBusy(false);setStatus("Error: "+(e&&e.message||e));return null;});
 }
+function initControls(cfg){
 render();
 })();
 </script></body></html>
