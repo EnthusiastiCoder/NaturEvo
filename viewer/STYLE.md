@@ -53,3 +53,5 @@ literals, no `px` font sizes, no inline `style=` in markup (JS may set dynamic w
 | `.hrow`, `.hfill` | simple histogram row and bar (dashboard) |
 
 Legacy ids (`#seed`, `#log`, `#hist`, ...) stay; they are hooks for tests and scripts, not styling vocabulary.
+
+## Icons
