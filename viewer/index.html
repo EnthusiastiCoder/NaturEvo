@@ -131,6 +131,7 @@ $("batch-btn").onclick=function(){
 };
 if(/^https?:$/.test(location.protocol)){
  fetch("/api/config").then(function(r){return r.ok?r.json():null;}).then(function(c){if(c)initControls(c);},function(){});
+}
 render();
 })();
 </script></body></html>
