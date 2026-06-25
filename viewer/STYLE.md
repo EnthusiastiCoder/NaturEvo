@@ -14,3 +14,5 @@ literals, no `px` font sizes, no inline `style=` in markup (JS may set dynamic w
 - Radii: `--r-sm`, `--r-md` (8px)
 - Font sizes: `--fs-xs` 12, `--fs-sm` 13, `--fs-md` 14, `--fs-lg` 18, `--fs-kpi` 28
 - Sizes: `--icon` 16px, `--control-h` 32px; elevation `--shadow-pop`
+
+## Components
