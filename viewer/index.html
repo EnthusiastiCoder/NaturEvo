@@ -127,6 +127,7 @@ $("run-btn").onclick=function(){
 };
 $("batch-btn").onclick=function(){
  var q="/api/batch?runs="+encodeURIComponent($("batch-runs").value)+(knobList.length?"&"+knobQuery():"");
+ api(q,"Running batch...").then(function(j){if(j){window.STATS=j;showTab("d");}});
 render();
 })();
 </script></body></html>
