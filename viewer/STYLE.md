@@ -55,3 +55,8 @@ literals, no `px` font sizes, no inline `style=` in markup (JS may set dynamic w
 Legacy ids (`#seed`, `#log`, `#hist`, ...) stay; they are hooks for tests and scripts, not styling vocabulary.
 
 ## Icons
+
+Lucide (ISC licence, notice kept in the sprite comment). One inline sprite `<svg class="hidden" aria-hidden="true">` at the top
+of `<body>` holds `<symbol id="i-NAME" viewBox="0 0 24 24">` (stroke `currentColor`, width 2, round caps/joins, no fill).
+Use `<svg class="icon" aria-hidden="true"><use href="#i-NAME"/></svg>`. No emoji or text glyphs as UI chrome; the only
+emoji are the sprite arrays `SP` and `ZN` in the script.
