@@ -125,6 +125,7 @@ $("run-btn").onclick=function(){
  var q="/api/run?seed="+encodeURIComponent($("seed").value)+(knobList.length?"&"+knobQuery():"");
  api(q,"Running...").then(function(j){if(j){window.__jv.setRun(j);showTab("r");}});
 };
+$("batch-btn").onclick=function(){
 render();
 })();
 </script></body></html>
