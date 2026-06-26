@@ -72,3 +72,7 @@ Generated (knobs, KPIs): JS `tipHtml(id, name, text)` builds the same markup; te
 The tooltip is `position:fixed`, placed by a tiny script so scroll containers never clip it; Escape hides it.
 
 ## Theming
+
+Two token sets, `:root[data-theme="dark"]` and `:root[data-theme="light"]`, each define every colour token. Add a colour by
+adding the token to BOTH blocks, then use `var(--name)`. Charts read tokens with `getComputedStyle` and redraw on the
+`jv-themechange` event (fired on theme or accent change).
