@@ -60,3 +60,6 @@ Lucide (ISC licence, notice kept in the sprite comment). One inline sprite `<svg
 of `<body>` holds `<symbol id="i-NAME" viewBox="0 0 24 24">` (stroke `currentColor`, width 2, round caps/joins, no fill).
 Use `<svg class="icon" aria-hidden="true"><use href="#i-NAME"/></svg>`. No emoji or text glyphs as UI chrome; the only
 emoji are the sprite arrays `SP` and `ZN` in the script.
+
+To add an icon: copy its SVG child elements from lucide.dev into a new `<symbol id="i-NAME" viewBox="0 0 24 24">` in the
+sprite, then reference it with `<use>`.
