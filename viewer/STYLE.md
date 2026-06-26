@@ -80,3 +80,9 @@ adding the token to BOTH blocks, then use `var(--name)`. Charts read tokens with
 Initial theme: `localStorage jv-theme`, else `prefers-color-scheme`, else dark. The toolbar toggle `#theme-toggle` switches
 and persists. Accent: `#accent-btn` opens `#accent-box` (presets, `#accent-custom` colour input, `#accent-reset` back to
 jungle green `#2e7d4f`); persisted as `jv-accent`. All storage access is try/catch (file:// may throw).
+
+Accent derivation (set together with `--accent`): `--accent-fg` is black or white, whichever has the higher WCAG contrast
+with the accent. `--accent-text` equals the accent when its contrast against `--bg` is at least 3:1, otherwise the accent
+is mixed toward white (dark theme) or black (light theme) until it reaches 3:1. Use `--accent-text` for accent-coloured
+text/borders/lines and `--accent` + `--accent-fg` for filled accent surfaces. Helpers: `window.__jv.theme = {get, set,
+accent: {get, set, reset}, contrast(a, b)}`.
