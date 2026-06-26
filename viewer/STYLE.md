@@ -65,3 +65,8 @@ To add an icon: copy its SVG child elements from lucide.dev into a new `<symbol 
 sprite, then reference it with `<use>`.
 
 ## Tooltips and info buttons
+
+Static: `<span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About X" aria-describedby="tip-x"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-x" class="tip">Text</span></span>`.
+Generated (knobs, KPIs): JS `tipHtml(id, name, text)` builds the same markup; texts live in the `INFO` map. Knob tooltips add
+"Range min to max, default d" from `/api/config`. Every icon-only button needs `aria-label` and a tooltip.
+The tooltip is `position:fixed`, placed by a tiny script so scroll containers never clip it; Escape hides it.
