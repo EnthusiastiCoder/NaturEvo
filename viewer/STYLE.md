@@ -63,3 +63,5 @@ emoji are the sprite arrays `SP` and `ZN` in the script.
 
 To add an icon: copy its SVG child elements from lucide.dev into a new `<symbol id="i-NAME" viewBox="0 0 24 24">` in the
 sprite, then reference it with `<use>`.
+
+## Tooltips and info buttons
