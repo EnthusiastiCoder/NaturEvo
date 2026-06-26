@@ -76,3 +76,7 @@ The tooltip is `position:fixed`, placed by a tiny script so scroll containers ne
 Two token sets, `:root[data-theme="dark"]` and `:root[data-theme="light"]`, each define every colour token. Add a colour by
 adding the token to BOTH blocks, then use `var(--name)`. Charts read tokens with `getComputedStyle` and redraw on the
 `jv-themechange` event (fired on theme or accent change).
+
+Initial theme: `localStorage jv-theme`, else `prefers-color-scheme`, else dark. The toolbar toggle `#theme-toggle` switches
+and persists. Accent: `#accent-btn` opens `#accent-box` (presets, `#accent-custom` colour input, `#accent-reset` back to
+jungle green `#2e7d4f`); persisted as `jv-accent`. All storage access is try/catch (file:// may throw).
