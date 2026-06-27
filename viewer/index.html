@@ -194,8 +194,14 @@ html.tips-off .tip{visibility:hidden!important;opacity:0!important}
  <div id="battle" class="card"><div class="fighter"><div class="emo" id="hemo"></div><div class="bar"><div id="hbar"></div></div><div id="hhp"></div></div>
  <div id="zone"></div>
  <div class="fighter"><div class="emo" id="memo"></div><div class="bar"><div id="mbar"></div></div><div id="mhp"></div></div></div>
- <canvas id="timeline" width="800" height="140"></canvas>
- <div id="log"></div>
+ <div id="timeline-card" class="card"><div class="card-title">Hero level over the run<span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About timeline" aria-describedby="tip-timeline"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-timeline" class="tip">Hero level at each event. The vertical line marks the current event.</span></span></div>
+ <div id="timeline-wrap"><canvas id="timeline" width="800" height="140"></canvas></div></div>
+ <div class="drawers">
+  <details id="log-box" class="expander drawer"><summary class="btn btn-outline"><svg class="icon" aria-hidden="true"><use href="#i-list"/></svg>Event log</summary>
+   <div class="drawer-body card"><div class="card-title">Event log<span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About event log" aria-describedby="tip-log"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-log" class="tip">Every event up to the current one. Click a line to jump to it.</span></span></div><div id="log" class="scroll"></div></div></details>
+  <details id="more-box" class="expander drawer"><summary class="btn btn-outline"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg>Hero details</summary>
+   <div class="drawer-body card"><div class="card-title">Hero details</div><div id="hmeta"></div></div></details>
+ </div>
 </div>
 <div id="dashboard" class="hidden">
  <div id="dstats"></div>
