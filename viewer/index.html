@@ -339,7 +339,10 @@ function render(){
  timeline();
 }
 function timeline(){
- var cv=$("timeline");if(cv.clientWidth>0&&cv.width!==cv.clientWidth)cv.width=cv.clientWidth;var g=cv.getContext("2d"),W=cv.width,H=cv.height,n=ev.length;
+ var cv=$("timeline");
+ if(cv.clientWidth>0&&cv.width!==cv.clientWidth)cv.width=cv.clientWidth;
+ if(cv.clientHeight>0&&cv.height!==cv.clientHeight)cv.height=cv.clientHeight;
+ var g=cv.getContext("2d"),W=cv.width,H=cv.height,n=ev.length;
  g.clearRect(0,0,W,H);if(!n)return;
  var mx=1;for(var i=0;i<n;i++)mx=Math.max(mx,ev[i].hero.level);
  g.strokeStyle="#6f6";g.beginPath();
