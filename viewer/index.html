@@ -372,8 +372,12 @@ function dash(){
  if(!s){D.textContent="No stats data (data/stats.js missing)";H.textContent="";return;}
  var wr=s.runs?100*s.wins/s.runs:0,ad=s.avg_deaths,al=s.avg_final_level;
  D.innerHTML="";
- [["Win rate",wr.toFixed(1)+"%"],["Avg deaths",(+ad).toFixed(2)],["Avg final level",(+al).toFixed(1)],["Runs",s.runs]].forEach(function(p){
-  var d=document.createElement("span");d.className="stat";d.textContent=p[0]+": "+p[1];D.appendChild(d);});
+ [["win-rate","Win rate",wr.toFixed(1)+"%"],["avg-deaths","Avg deaths",(+ad).toFixed(2)],["avg-level","Avg final level",(+al).toFixed(1)],["runs","Runs",s.runs]].forEach(function(p){
+  var d=document.createElement("div");d.className="kpi";
+  var lb=document.createElement("div");lb.className="kpi-label";lb.textContent=p[1];
+  var tp=document.createElement("span");tp.innerHTML=tipHtml("kpi-"+p[0],p[1],INFO[p[0]]);lb.appendChild(tp);
+  var vl=document.createElement("div");vl.className="kpi-value";vl.textContent=String(p[2]);
+  d.appendChild(lb);d.appendChild(vl);D.appendChild(d);});
  var hs=s.level_hist||[],mx=Math.max.apply(null,hs.concat([1]));H.innerHTML="";
  hs.forEach(function(v,l){var r=document.createElement("div");r.style.cssText="display:flex;align-items:center;font-size:12px";
   r.innerHTML='<span style="width:40px;flex:none">L'+l+'</span><div style="background:#4a8;height:12px;width:'+(v/mx*60)+'%"></div>&nbsp;'+v;H.appendChild(r);});
