@@ -218,8 +218,102 @@ var ZN=[["Base Camp","⛺"],["Jungle Edge","🌿"],["Dense Jungle","🌳"],["Riv
 var $=function(i){return document.getElementById(i)};
 var root=document.documentElement;
 var run=window.RUN||null, ev=(run&&run.events)||[], cur=0, timer=null, logFirst=-1, logLast=-1;
-function showTab(t){$("replay").className=t==="r"?"":"hidden";$("dashboard").className=t==="d"?"":"hidden";
- $("tab-replay").className=t==="r"?"on":"";$("tab-dashboard").className=t==="d"?"on":"";if(t==="d")dash();}
+
+/* ---- tooltip text map and helper (see viewer/STYLE.md) ---- */
+var INFO={"win-rate":"Share of simulated runs that ended with the hero winning.","avg-deaths":"Average number of hero deaths per run.","avg-level":"Average hero level at the end of a run.","runs":"Number of simulated runs in this batch."};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]});}
+function tipHtml(id,name,text){
+ return '<span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About '+esc(name)+'" aria-describedby="tip-'+esc(id)+'"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-'+esc(id)+'" class="tip">'+esc(text)+'</span></span>';
+}
+function placeTip(e){
+ var t=e&&e.target;if(!t||!t.closest)return;
+ root.classList.remove("tips-off");
+ var w=t.closest(".tipwrap");if(!w)return;
+ var tip=w.querySelector(".tip"),b=w.firstElementChild;if(!tip||!b)return;
+ var r=b.getBoundingClientRect(),tw=tip.offsetWidth,th=tip.offsetHeight,vw=window.innerWidth,vh=window.innerHeight;
+ var x=Math.max(8,Math.min(vw-tw-8,r.left+r.width/2-tw/2)),y=r.bottom+6;
+ if(y+th>vh-8)y=Math.max(8,r.top-th-6);
+ tip.style.left=x+"px";tip.style.top=y+"px";
+}
+document.addEventListener("mouseover",placeTip);
+document.addEventListener("focusin",placeTip);
+
+/* ---- theme and accent (tokens read via getComputedStyle, redraw on jv-themechange) ---- */
+function sget(k){try{return window.localStorage.getItem(k);}catch(e){return null;}}
+function sset(k,v){try{window.localStorage.setItem(k,v);}catch(e){}}
+function sdel(k){try{window.localStorage.removeItem(k);}catch(e){}}
+function tok(n){try{return String(window.getComputedStyle(root).getPropertyValue(n)||"").trim();}catch(e){return "";}}
+function toRgb(c){c=String(c||"").trim().toLowerCase();var m=c.match(/^#([0-9a-f]{6})$/);
+ if(m)return[0,2,4].map(function(i){return parseInt(m[1].slice(i,i+2),16);});
+ m=c.match(/^#([0-9a-f]{3})$/);if(m)return m[1].split("").map(function(x){return parseInt(x+x,16);});
+ m=c.match(/^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)/);return m?[+m[1],+m[2],+m[3]]:null;}
+function toHex(a){return"#"+a.map(function(v){v=Math.max(0,Math.min(255,Math.round(v)));return(v<16?"0":"")+v.toString(16);}).join("");}
+function lum(a){var l=a.map(function(v){v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);});return 0.2126*l[0]+0.7152*l[1]+0.0722*l[2];}
+function contrast(a,b){var x=toRgb(a),y=toRgb(b);if(!x||!y)return 1;var p=lum(x),q=lum(y);return(Math.max(p,q)+0.05)/(Math.min(p,q)+0.05);}
+function mix(a,b,f){return a.map(function(v,i){return v+(b[i]-v)*f;});}
+var BLACK=[0,0,0],WHITE=[255,255,255];
+var DEFAULT_ACCENT=toHex(toRgb(tok("--accent"))||[46,125,79]);
+var theme="dark",accent=DEFAULT_ACCENT;
+function changed(){try{window.dispatchEvent(new CustomEvent("jv-themechange"));}catch(e){}}
+function paintAccent(){
+ var a=toRgb(accent);
+ root.style.setProperty("--accent",accent);
+ root.style.setProperty("--accent-fg",contrast(accent,toHex(BLACK))>=contrast(accent,toHex(WHITE))?toHex(BLACK):toHex(WHITE));
+ var bg=tok("--bg"),t=a;
+ if(toRgb(bg)&&contrast(accent,bg)<3){
+  var to=theme==="light"?BLACK:WHITE;
+  for(var f=0.05;f<=1.0001;f+=0.05){t=mix(a,to,f);if(contrast(toHex(t),bg)>=3)break;}
+ }
+ root.style.setProperty("--accent-text",toHex(t));
+}
+function setTheme(t,persist){
+ if(t!=="dark"&&t!=="light")return;
+ theme=t;root.setAttribute("data-theme",t);
+ if(persist)sset("jv-theme",t);
+ paintAccent();syncThemeIcon();if(persist!==null)changed();
+}
+function setAccent(c,persist,silent){
+ var a=toRgb(c);if(!a||!/^#/.test(String(c).trim()))return;
+ accent=toHex(a);paintAccent();
+ var cu=$("accent-custom");if(cu)cu.value=accent;
+ if(persist)sset("jv-accent",accent);
+ if(!silent)changed();
+}
+function resetAccent(){sdel("jv-accent");setAccent(DEFAULT_ACCENT,false);}
+function syncThemeIcon(){var b=$("theme-toggle");if(b)b.innerHTML='<svg class="icon" aria-hidden="true"><use href="#i-'+(theme==="dark"?"sun":"moon")+'"/></svg>';}
+function initialTheme(){
+ var s=sget("jv-theme");if(s==="dark"||s==="light")return s;
+ try{if(window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches)return"light";}catch(e){}
+ return"dark";
+}
+setTheme(initialTheme(),false);
+(function(){var s=sget("jv-accent");if(s&&/^#[0-9a-fA-F]{6}$/.test(s))setAccent(s,false,true);})();
+$("theme-toggle").onclick=function(){setTheme(theme==="dark"?"light":"dark",true);};
+$("accent-custom").oninput=function(){setAccent(this.value,true);};
+$("accent-custom").onchange=function(){setAccent(this.value,true);};
+$("accent-reset").onclick=resetAccent;
+$("accent-btn").onclick=function(){var b=$("accent-box");b.open=!b.open;};
+Array.prototype.forEach.call(document.querySelectorAll(".swatch"),function(s){
+ var c=s.dataset.accent;if(s.style&&s.style.setProperty)s.style.setProperty("--sw",c);
+ s.onclick=function(){setAccent(c,true);};
+});
+
+/* ---- popovers and drawers: opening one closes its siblings, Escape closes popovers and tooltips ---- */
+var POP=["batch-box","knob-box","accent-box"],DRW=["log-box","more-box"];
+function group(ids){var els=ids.map($).filter(Boolean);els.forEach(function(d){
+ d.addEventListener("toggle",function(){if(d.open)els.forEach(function(o){if(o!==d)o.open=false;});});});return els;}
+var pops=group(POP);group(DRW);
+document.addEventListener("keydown",function(e){
+ if(e.key==="Escape"){root.classList.add("tips-off");pops.forEach(function(d){d.open=false;});}
+});
+document.addEventListener("click",function(e){
+ var t=e.target;if(!t||!t.closest)return;
+ pops.forEach(function(d){if(d.open&&!d.contains(t)&&!t.closest("#accent-btn"))d.open=false;});
+});
+
+/* ---- replay ---- */
+function showTab(t){$("replay").className=t==="r"?"view":"view hidden";$("dashboard").className=t==="d"?"view":"view hidden";
+ $("tab-replay").className=t==="r"?"tab on":"tab";$("tab-dashboard").className=t==="d"?"tab on":"tab";if(t==="d")dash();else timeline();}
 $("tab-replay").onclick=function(){showTab("r")};$("tab-dashboard").onclick=function(){showTab("d")};
 function pct(a,b){return b>0?Math.max(0,Math.min(100,100*a/b)):0}
 function render(){
