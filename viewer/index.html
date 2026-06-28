@@ -75,13 +75,15 @@ body{height:100dvh;margin:0;background:var(--bg);color:var(--fg);font-family:sys
 .tipwrap{position:relative;display:inline-flex;align-items:center}
 .tip{position:fixed;left:0;top:0;z-index:100;visibility:hidden;opacity:0;pointer-events:none;width:max-content;max-width:260px;padding:var(--s1) var(--s2);border-radius:var(--r-sm);background:var(--fg);color:var(--bg);font-size:var(--fs-xs);font-weight:400;line-height:1.4;text-align:left;box-shadow:var(--shadow-pop);transition:opacity .12s}
 .tipwrap:hover .tip,.tipwrap:focus-within .tip{visibility:visible;opacity:1}
-html.tips-off .tip{visibility:hidden!important;opacity:0!important}
+.tipwrap.quiet .tip,html.tips-off .tip{visibility:hidden!important;opacity:0!important}
 
 /* popovers and drawers */
 .expander>summary{list-style:none;cursor:pointer}
 .expander>summary::-webkit-details-marker{display:none}
 .expander[open]>summary.btn{background:var(--card-2)}
-.popover{position:relative}
+.popover,.anchor{position:relative}
+.anchor{display:inline-flex}
+#accent-box{position:static}
 .popover>summary.sr{position:absolute}
 .pop-body{position:absolute;top:calc(100% + var(--s1));right:0;z-index:30;width:max-content;max-width:min(560px,92vw);display:flex;flex-direction:column;gap:var(--s2);box-shadow:var(--shadow-pop)}
 .pop-head{display:flex;align-items:center;gap:var(--s1);font-size:var(--fs-sm);font-weight:600}
@@ -122,30 +124,30 @@ html.tips-off .tip{visibility:hidden!important;opacity:0!important}
 </style></head><body>
 <!-- Icons: Lucide (https://lucide.dev), ISC License. Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2022 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors. Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies. -->
 <svg class="hidden" width="0" height="0" aria-hidden="true" focusable="false">
-<symbol id="i-play" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></symbol>
-<symbol id="i-pause" viewBox="0 0 24 24"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></symbol>
-<symbol id="i-dices" viewBox="0 0 24 24"><rect width="12" height="12" x="2" y="10" rx="2" ry="2"/><path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"/><path d="M6 18h.01"/><path d="M10 14h.01"/><path d="M15 6h.01"/><path d="M18 9h.01"/></symbol>
-<symbol id="i-flask-conical" viewBox="0 0 24 24"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/><path d="M6.453 15h11.094"/><path d="M8.5 2h7"/></symbol>
-<symbol id="i-flask-round" viewBox="0 0 24 24"><path d="M10 2v7.31"/><path d="M14 9.3V1.99"/><path d="M8.5 2h7"/><path d="M14 9.3a6.5 6.5 0 1 1-4 0"/><path d="M5.52 16h12.96"/></symbol>
-<symbol id="i-layers" viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></symbol>
-<symbol id="i-bar-chart-3" viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol>
-<symbol id="i-sliders-horizontal" viewBox="0 0 24 24"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></symbol>
-<symbol id="i-list" viewBox="0 0 24 24"><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><rect x="14" y="3" width="5" height="18" rx="1"/> <rect x="5" y="3" width="5" height="18" rx="1"/></symbol>
+<symbol id="i-dices" viewBox="0 0 24 24"><rect width="12" height="12" x="2" y="10" rx="2" ry="2"/> <path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"/> <path d="M6 18h.01"/> <path d="M10 14h.01"/> <path d="M15 6h.01"/> <path d="M18 9h.01"/></symbol>
+<symbol id="i-flask-conical" viewBox="0 0 24 24"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/> <path d="M6.453 15h11.094"/> <path d="M8.5 2h7"/></symbol>
+<symbol id="i-flask-round" viewBox="0 0 24 24"><path d="M10 2v6.292a7 7 0 1 0 4 0V2"/> <path d="M5 15h14"/> <path d="M8.5 2h7"/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/> <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/> <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></symbol>
+<symbol id="i-chart-column" viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16"/> <path d="M18 17V9"/> <path d="M13 17V5"/> <path d="M8 17v-3"/></symbol>
+<symbol id="i-sliders-horizontal" viewBox="0 0 24 24"><path d="M10 5H3"/> <path d="M12 19H3"/> <path d="M14 3v4"/> <path d="M16 17v4"/> <path d="M21 12h-9"/> <path d="M21 19h-5"/> <path d="M21 5h-7"/> <path d="M8 10v4"/> <path d="M8 12H3"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M3 5h.01"/> <path d="M3 12h.01"/> <path d="M3 19h.01"/> <path d="M8 5h13"/> <path d="M8 12h13"/> <path d="M8 19h13"/></symbol>
 <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
 <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
-<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
-<symbol id="i-rotate-ccw" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
-<symbol id="i-trophy" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></symbol>
-<symbol id="i-skull" viewBox="0 0 24 24"><path d="m12.5 17-.5-1-.5 1h1z"/><path d="M15 22a1 1 0 0 0 1-1v-1a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20v1a1 1 0 0 0 1 1z"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="12" r="1"/></symbol>
-<symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
-<symbol id="i-coins" viewBox="0 0 24 24"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></symbol>
-<symbol id="i-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/> <path d="M12 16v-4"/> <path d="M12 8h.01"/></symbol>
+<symbol id="i-rotate-ccw" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/> <path d="M3 3v5h5"/></symbol>
+<symbol id="i-trophy" viewBox="0 0 24 24"><path d="M10 14.66V17a1 1 0 0 1-1 1 2 2 0 0 0-2 2v2"/> <path d="M14 14.66V17a1 1 0 0 0 1 1 2 2 0 0 1 2 2v2"/> <path d="M17.916 10H19.5A2.5 2.5 0 0 0 22 7.5V5a1 1 0 0 0-1-1h-3"/> <path d="M4 22h16"/> <path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/> <path d="M6.084 10H4.5A2.5 2.5 0 0 1 2 7.5V5a1 1 0 0 1 1-1h3"/></symbol>
+<symbol id="i-skull" viewBox="0 0 24 24"><path d="m12.5 17-.5-1-.5 1h1z"/> <path d="M15 22a1 1 0 0 0 1-1v-1a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20v1a1 1 0 0 0 1 1z"/> <circle cx="15" cy="12" r="1"/> <circle cx="9" cy="12" r="1"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></symbol>
+<symbol id="i-coins" viewBox="0 0 24 24"><path d="M13.744 17.736a6 6 0 1 1-7.48-7.48"/> <path d="M15 6h1v4"/> <path d="m6.134 14.768.866-.5 2 3.464"/> <circle cx="16" cy="8" r="6"/></symbol>
+<symbol id="i-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/> <circle cx="12" cy="10" r="3"/></symbol>
 <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></symbol>
-<symbol id="i-layout-dashboard" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></symbol>
-<symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
-<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
-<symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
-<symbol id="i-palette" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></symbol>
+<symbol id="i-layout-dashboard" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/> <rect width="7" height="5" x="14" y="3" rx="1"/> <rect width="7" height="9" x="14" y="12" rx="1"/> <rect width="7" height="5" x="3" y="16" rx="1"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/> <path d="m6 6 12 12"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/> <path d="M12 2v2"/> <path d="M12 20v2"/> <path d="m4.93 4.93 1.41 1.41"/> <path d="m17.66 17.66 1.41 1.41"/> <path d="M2 12h2"/> <path d="M20 12h2"/> <path d="m6.34 17.66-1.41 1.41"/> <path d="m19.07 4.93-1.41 1.41"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></symbol>
+<symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/> <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
 </svg>
 <div class="app">
 <header class="toolbar">
@@ -160,7 +162,7 @@ html.tips-off .tip{visibility:hidden!important;opacity:0!important}
    <div class="pop-body card">
     <div class="pop-head">Batch run<span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About batch runs" aria-describedby="tip-batch"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-batch" class="tip">Simulates many runs with the current knobs and shows the totals on the Dashboard tab.</span></span></div>
     <span class="field"><label class="label" for="batch-runs">Batch runs</label><input id="batch-runs" class="input" type="number" min="1" max="20000" value="2000"></span>
-    <button type="button" id="batch-btn" class="btn btn-primary"><svg class="icon" aria-hidden="true"><use href="#i-bar-chart-3"/></svg>Run batch</button>
+    <button type="button" id="batch-btn" class="btn btn-primary"><svg class="icon" aria-hidden="true"><use href="#i-chart-column"/></svg>Run batch</button>
    </div></details>
   <details id="knob-box" class="expander popover"><summary class="btn btn-outline"><svg class="icon" aria-hidden="true"><use href="#i-sliders-horizontal"/></svg>Tuning</summary>
    <div class="pop-body card">
@@ -171,14 +173,14 @@ html.tips-off .tip{visibility:hidden!important;opacity:0!important}
   <span id="run-status" class="badge"></span>
  </div>
  <div class="tool-group">
-  <span class="tipwrap"><button type="button" id="accent-btn" class="btn-icon" aria-label="Accent colour" aria-describedby="tip-accent"><svg class="icon" aria-hidden="true"><use href="#i-palette"/></svg></button><span role="tooltip" id="tip-accent" class="tip">Choose the accent colour.</span></span>
-  <details id="accent-box" class="expander popover"><summary class="sr">Accent colour</summary>
+  <span class="anchor"><span class="tipwrap"><button type="button" id="accent-btn" class="btn-icon" aria-label="Accent colour" aria-describedby="tip-accent"><svg class="icon" aria-hidden="true"><use href="#i-palette"/></svg></button><span role="tooltip" id="tip-accent" class="tip">Choose the accent colour.</span></span>
+  <details id="accent-box" class="expander popover"><summary class="sr" tabindex="-1" aria-hidden="true">Accent colour</summary>
    <div class="pop-body card">
     <div class="pop-head">Accent colour</div>
     <div class="swatches"><button type="button" class="swatch" data-accent="#2e7d4f" aria-label="Jungle green"><span class="sr">Jungle green</span></button><button type="button" class="swatch" data-accent="#7b3fa0" aria-label="Purple"><span class="sr">Purple</span></button><button type="button" class="swatch" data-accent="#2563eb" aria-label="Blue"><span class="sr">Blue</span></button><button type="button" class="swatch" data-accent="#c2410c" aria-label="Orange"><span class="sr">Orange</span></button><button type="button" class="swatch" data-accent="#be185d" aria-label="Pink"><span class="sr">Pink</span></button><button type="button" class="swatch" data-accent="#0e7490" aria-label="Teal"><span class="sr">Teal</span></button></div>
     <span class="field"><label class="label" for="accent-custom">Custom</label><input id="accent-custom" type="color" value="#2e7d4f"></span>
     <button type="button" id="accent-reset" class="btn btn-outline"><svg class="icon" aria-hidden="true"><use href="#i-rotate-ccw"/></svg>Reset to jungle green</button>
-   </div></details>
+   </div></details></span>
   <span class="tipwrap"><button type="button" id="theme-toggle" class="btn-icon" aria-label="Toggle light or dark theme" aria-describedby="tip-theme"><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg></button><span role="tooltip" id="tip-theme" class="tip">Switch between light and dark theme.</span></span>
  </div>
 </header>
@@ -229,6 +231,7 @@ function placeTip(e){
  var t=e&&e.target;if(!t||!t.closest)return;
  root.classList.remove("tips-off");
  var w=t.closest(".tipwrap");if(!w)return;
+ Array.prototype.forEach.call(document.querySelectorAll(".tipwrap"),function(o){o.classList.toggle("quiet",o!==w);});
  var tip=w.querySelector(".tip"),b=w.firstElementChild;if(!tip||!b)return;
  var r=b.getBoundingClientRect(),tw=tip.offsetWidth,th=tip.offsetHeight,vw=window.innerWidth,vh=window.innerHeight;
  var x=Math.max(8,Math.min(vw-tw-8,r.left+r.width/2-tw/2)),y=r.bottom+6;
