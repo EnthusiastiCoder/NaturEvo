@@ -362,7 +362,11 @@ $("scrub").oninput=function(){cur=+this.value;render();};
 $("scrub").max=Math.max(0,ev.length-1);
 window.__jv={setRun:function(r){run=r;ev=(r&&r.events)||[];cur=0;logFirst=-1;logLast=-1;$("scrub").max=Math.max(0,ev.length-1);render();},
  goto:function(i){cur=i;render();},
- logIndices:function(){var o=[],ch=$("log").children;for(var i=0;i<ch.length;i++)o.push(+ch[i].dataset.i);return o;}};
+ logIndices:function(){var o=[],ch=$("log").children;for(var i=0;i<ch.length;i++)o.push(+ch[i].dataset.i);return o;},
+ theme:{get:function(){return theme;},set:function(t){setTheme(t,true);},
+  accent:{get:function(){return accent;},set:function(c){setAccent(c,true);},reset:resetAccent},contrast:contrast}};
+
+/* ---- dashboard (basic; KPI cards and chart are reworked in the dashboard workstream) ---- */
 function dash(){
  var s=window.STATS,D=$("dstats"),H=$("hist");
  if(!s){D.textContent="No stats data (data/stats.js missing)";H.textContent="";return;}
