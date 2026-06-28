@@ -352,6 +352,8 @@ function timeline(){
  g.stroke();g.lineWidth=1;g.strokeStyle=tok("--warn");var cx=cur/Math.max(1,n-1)*W;g.beginPath();g.moveTo(cx,0);g.lineTo(cx,H);g.stroke();
  g.fillStyle=tok("--muted");g.fillText("level (max "+mx+") vs event",4,12);
 }
+window.addEventListener("resize",function(){timeline();});
+window.addEventListener("jv-themechange",function(){timeline();if(!$("dashboard").classList.contains("hidden"))dash();});
 function step(){var sp=+$("speed").value;cur=Math.min(ev.length-1,cur+sp);render();if(cur>=ev.length-1)stop();}
 function stop(){clearInterval(timer);timer=null;$("play").textContent="Play";}
 $("play").onclick=function(){if(timer)return stop();if(cur>=ev.length-1)cur=0;$("play").textContent="Pause";timer=setInterval(step,100);};
