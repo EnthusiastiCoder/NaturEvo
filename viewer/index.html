@@ -396,10 +396,12 @@ function api(url,label){
 }
 function initControls(cfg){
  knobList=cfg.knobs||[];var K=$("knobs");K.innerHTML="";
- knobList.forEach(function(k){
-  var l=document.createElement("label");l.textContent=k.label+" ";
-  var i=document.createElement("input");i.type="number";i.id="knob-"+k.key;i.value=String(k.default);
-  i.min=String(k.min);i.max=String(k.max);i.step="any";l.appendChild(i);K.appendChild(l);});
+ K.innerHTML=knobList.map(function(k){
+  var text=(k.description||k.desc||INFO[k.key]||k.label)+". Range "+k.min+" to "+k.max+", default "+k.default+".";
+  return '<div class="knob"><label class="label" for="knob-'+esc(k.key)+'">'+esc(k.label)+'</label>'+tipHtml("knob-"+k.key,k.label,text)+'<input class="input" id="knob-'+esc(k.key)+'" type="number"></div>';
+ }).join("");
+ knobList.forEach(function(k){var i=$("knob-"+k.key);
+  i.value=String(k.default);i.min=String(k.min);i.max=String(k.max);i.step="any";});
  $("run-controls").classList.remove("hidden");
 }
 $("knobs-reset").onclick=function(){knobList.forEach(function(k){$("knob-"+k.key).value=String(k.default);});};
