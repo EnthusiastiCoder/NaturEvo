@@ -379,8 +379,9 @@ function dash(){
   var vl=document.createElement("div");vl.className="kpi-value";vl.textContent=String(p[2]);
   d.appendChild(lb);d.appendChild(vl);D.appendChild(d);});
  var hs=s.level_hist||[],mx=Math.max.apply(null,hs.concat([1]));H.innerHTML="";
- hs.forEach(function(v,l){var r=document.createElement("div");r.style.cssText="display:flex;align-items:center;font-size:12px";
-  r.innerHTML='<span style="width:40px;flex:none">L'+l+'</span><div style="background:#4a8;height:12px;width:'+(v/mx*60)+'%"></div>&nbsp;'+v;H.appendChild(r);});
+ hs.forEach(function(v,l){var r=document.createElement("div");r.className="hrow";
+  r.innerHTML='<span>L'+l+'</span><div class="hfill" id="hf'+l+'"></div><span>'+v+'</span>';H.appendChild(r);
+  var f=r.querySelector(".hfill");if(f)f.style.width=(v/mx*60)+"%";});
 }
 var knobList=[];
 function setStatus(t){$("run-status").textContent=t||"";}
