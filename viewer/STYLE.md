@@ -48,6 +48,7 @@ literals, no `px` font sizes, no inline `style=` in markup (JS may set dynamic w
 | `.knob` | one tuning knob row (label, info, input) |
 | `.fighter`, `.emo`, `.bar` | battle panel parts: sprite box, emoji sprite, HP bar |
 | `.playback` | playback card layout |
+| `.anchor` | positioning wrapper for a toolbar button plus its popover |
 | `.sr` | visually hidden text for screen readers |
 | `.hidden` | `display:none` helper (also a legacy-id helper for `#run-controls`, `#replay`, `#dashboard`) |
 | `.hrow`, `.hfill` | simple histogram row and bar (dashboard) |
