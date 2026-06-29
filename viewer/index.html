@@ -353,6 +353,16 @@ function render(){
  if(m){var s=SP[m.species]||["?","?"];$("memo").textContent=s[1];$("mbar").style.width=pct(m.hp,m.max_hp)+"%";
   $("mhp").textContent=s[0]+" Lv "+m.level+"  HP "+m.hp+"/"+m.max_hp;}
  else{$("memo").textContent="";$("mbar").style.width="0";$("mhp").textContent="";}
+ var last=cur>=ev.length-1,oc=$("outcome");
+ $("sum-level").textContent=String(h.level);
+ $("sum-hp").textContent=h.hp+"/"+h.max_hp;
+ $("sum-hpbar").style.width=pct(h.hp,h.max_hp)+"%";
+ $("sum-zone").textContent=z[1]+" "+z[0];
+ $("sum-progress").textContent=cur+" / "+(ev.length-1);
+ $("sum-gold").textContent=String(h.gold);
+ $("sum-potions").textContent=String(h.potions);
+ oc.textContent=last?(run.won?"WON":"LOST"):"In progress at event "+cur;
+ oc.className=last?(run.won?"badge badge-good":"badge badge-bad"):"badge";
  var L=$("log");
  if(logFirst<0||cur<logLast||cur>logLast+150){logFirst=Math.max(0,cur-150);logLast=logFirst-1;L.innerHTML="";}
  for(var i=logLast+1;i<=cur;i++){var d=document.createElement("div");d.textContent=i+" ["+ev[i].kind+"] "+ev[i].text;d.dataset.i=String(i);
