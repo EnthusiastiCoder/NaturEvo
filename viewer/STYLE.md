@@ -91,3 +91,11 @@ with the accent. `--accent-text` equals the accent when its contrast against `--
 is mixed toward white (dark theme) or black (light theme) until it reaches 3:1. Use `--accent-text` for accent-coloured
 text/borders/lines and `--accent` + `--accent-fg` for filled accent surfaces. Helpers: `window.__jv.theme = {get, set,
 accent: {get, set, reset}, contrast(a, b)}`.
+
+## Battle card and drawers
+
+- `.fighter` is one combatant (emoji, `.fname` name, `.bar` HP bar, `.fhp` HP text); `.mon` mirrors it to the right side.
+- `.center` is the middle column of the battle card (zone and last action).
+- `.drawer-body` opens in the layout (not as an overlay) with a bounded height and scrolls inside itself; `.short` sizes
+  it to its content (used by Hero details).
+- Number inputs are right-aligned.
