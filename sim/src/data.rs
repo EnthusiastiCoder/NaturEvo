@@ -132,3 +132,7 @@ pub static EVOLUTIONS: [[&str; 5]; 16] = [
     ["Ancient Serpent", "Elder Serpent", "Primeval Drake", "Dread Wyrm", "World Serpent"],
     ["Jungle King", "Jungle King", "Jungle King", "Jungle King", "Jungle King"],
 ];
+
+pub fn stage_name(species: usize, stage: usize) -> &'static str {
+    EVOLUTIONS[species][stage.min(MAX_STAGE)]
+}
