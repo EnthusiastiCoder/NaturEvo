@@ -110,6 +110,11 @@ body{height:100dvh;margin:0;background:var(--bg);color:var(--fg);font-family:sys
 #log div.cur{background:var(--card-2);box-shadow:inset 2px 0 var(--accent-text)}
 
 /* replay */
+.summary{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s5)}
+.sitem{display:inline-flex;align-items:center;gap:var(--s2);font-size:var(--fs-sm);min-width:0}
+.sitem .icon{color:var(--muted)}
+.sitem .bar{width:80px}
+.sval{font-weight:600}
 .playback{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s3)}
 .playback .range{flex:1 1 200px;width:auto}
 #info{color:var(--muted);font-size:var(--fs-sm)}
