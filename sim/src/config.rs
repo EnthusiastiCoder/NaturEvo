@@ -14,7 +14,12 @@ pub struct Config {
     pub potion_cost: u32,
     pub boss_level: u32,
     pub boss_attempts: u32,
+    pub event_cap: u32,
+    pub postgame_level_cap: u32,
+    pub evolve_kills: u32,
 }
+
+pub const MAX_EVENT_CAP: u32 = 1_048_576;
 
 impl Default for Config {
     fn default() -> Self {
@@ -32,6 +37,9 @@ impl Default for Config {
             potion_cost: 25,
             boss_level: 32,
             boss_attempts: 8,
+            event_cap: 65536,
+            postgame_level_cap: 80,
+            evolve_kills: 300,
         }
     }
 }
@@ -44,7 +52,7 @@ pub struct Knob {
     pub default: f64,
 }
 
-static KNOBS: [Knob; 13] = [
+static KNOBS: [Knob; 16] = [
     Knob { key: "monster_hp_mult", label: "Monster HP multiplier", min: 0.1, max: 5.0, default: 1.0 },
     Knob { key: "monster_atk_mult", label: "Monster attack multiplier", min: 0.1, max: 5.0, default: 1.0 },
     Knob { key: "boss_hp_mult", label: "Boss HP multiplier", min: 0.1, max: 5.0, default: 1.0 },
@@ -58,6 +66,9 @@ static KNOBS: [Knob; 13] = [
     Knob { key: "potion_cost", label: "Potion cost (gold)", min: 1.0, max: 500.0, default: 25.0 },
     Knob { key: "boss_level", label: "Level to challenge boss", min: 5.0, max: 40.0, default: 32.0 },
     Knob { key: "boss_attempts", label: "Boss attempts before loss", min: 1.0, max: 50.0, default: 8.0 },
+    Knob { key: "event_cap", label: "Event cap (max events per run)", min: 100.0, max: 1048576.0, default: 65536.0 },
+    Knob { key: "postgame_level_cap", label: "Post-game hero level cap", min: 40.0, max: 200.0, default: 80.0 },
+    Knob { key: "evolve_kills", label: "Post-game kills per evolution", min: 10.0, max: 100000.0, default: 300.0 },
 ];
 
 pub fn knobs() -> &'static [Knob] {
@@ -90,13 +101,16 @@ impl Config {
                     self.hero_hp_per_level = n;
                 }
             }
-            "potion_cost" | "boss_level" | "boss_attempts" => {
+            "potion_cost" | "boss_level" | "boss_attempts" | "event_cap" | "postgame_level_cap" | "evolve_kills" => {
                 let n: u32 = v.parse().map_err(|_| bad())?;
                 check(k, n as f64)?;
                 match key {
                     "potion_cost" => self.potion_cost = n,
                     "boss_level" => self.boss_level = n,
-                    _ => self.boss_attempts = n,
+                    "boss_attempts" => self.boss_attempts = n,
+                    "event_cap" => self.event_cap = n,
+                    "postgame_level_cap" => self.postgame_level_cap = n,
+                    _ => self.evolve_kills = n,
                 }
             }
             _ => {
@@ -118,7 +132,7 @@ impl Config {
     }
 
     pub fn validate(&self) -> Result<(), String> {
-        let vals: [(&str, f64); 13] = [
+        let vals: [(&str, f64); 16] = [
             ("monster_hp_mult", self.monster_hp_mult as f64),
             ("monster_atk_mult", self.monster_atk_mult as f64),
             ("boss_hp_mult", self.boss_hp_mult as f64),
@@ -132,6 +146,9 @@ impl Config {
             ("potion_cost", self.potion_cost as f64),
             ("boss_level", self.boss_level as f64),
             ("boss_attempts", self.boss_attempts as f64),
+            ("event_cap", self.event_cap as f64),
+            ("postgame_level_cap", self.postgame_level_cap as f64),
+            ("evolve_kills", self.evolve_kills as f64),
         ];
         for (key, v) in vals {
             check(knob(key).unwrap(), v)?;
