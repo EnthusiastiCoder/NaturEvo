@@ -109,3 +109,6 @@ pub const ARMORS: [(&str, u32, i32); 7] = [
 pub const POTION_COST: u32 = 25;
 
 pub const MAX_STAGE: usize = 4;
+
+/// Stage multipliers applied to monster hp, atk and def.
+pub static STAGE_MULT: [f32; 5] = [1.0, 1.3, 1.7, 2.2, 3.0];
