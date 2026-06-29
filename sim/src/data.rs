@@ -107,3 +107,5 @@ pub const ARMORS: [(&str, u32, i32); 7] = [
 ];
 
 pub const POTION_COST: u32 = 25;
+
+pub const MAX_STAGE: usize = 4;
