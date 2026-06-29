@@ -51,6 +51,7 @@ literals, no `px` font sizes, no inline `style=` in markup (JS may set dynamic w
 | `.anchor` | positioning wrapper for a toolbar button plus its popover |
 | `.sr` | visually hidden text for screen readers |
 | `.hidden` | `display:none` helper (also a legacy-id helper for `#run-controls`, `#replay`, `#dashboard`) |
+| `.dash-grid` | dashboard two-column area (chart left, table right) |
 | `.chart-card`, `.chart-head` | dashboard chart card and its title/toggle row |
 | `.hsvg`, `.hbar`, `.hgrid`, `.htext` | histogram SVG, bars, gridlines, labels (token-coloured) |
 | `.summary`, `.sitem`, `.sval` | replay summary strip, one item, its value |
