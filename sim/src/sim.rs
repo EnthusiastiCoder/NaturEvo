@@ -43,6 +43,12 @@ pub struct Run {
     pub won: bool,
     pub deaths: u32,
     pub final_level: u32,
+    pub first_win_event: Option<u32>,
+    pub end_level: u32,
+    pub post_kills: u32,
+    pub post_deaths: u32,
+    pub max_stage: u8,
+    pub capped: bool,
 }
 
 /// XP needed to go from `level` to `level + 1`.
