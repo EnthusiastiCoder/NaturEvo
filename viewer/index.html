@@ -36,6 +36,7 @@ body{height:100dvh;margin:0;background:var(--bg);color:var(--fg);font-family:sys
 .btn-ghost{background:transparent;border-color:transparent}
 .btn-icon{display:inline-flex;align-items:center;justify-content:center;width:var(--control-h);height:var(--control-h);padding:0;cursor:pointer}
 .input{height:var(--control-h);padding:0 var(--s2);min-width:0}
+.input[type=number]{text-align:right}
 .input:focus-visible{outline:2px solid var(--ring);outline-offset:0}
 .label{font-size:var(--fs-xs);color:var(--muted)}
 .field{display:inline-flex;align-items:center;gap:var(--s1)}
@@ -71,8 +72,8 @@ body{height:100dvh;margin:0;background:var(--bg);color:var(--fg);font-family:sys
 .kpi-value .badge{vertical-align:middle;margin-left:var(--s2)}
 .chart-card{flex:1;min-height:0;display:flex;flex-direction:column;gap:var(--s2)}
 .chart-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s3)}
-#hist{flex:1;min-height:0;overflow:auto}
-.hsvg{display:block;width:100%;height:100%;min-height:120px}
+#hist{flex:1;min-height:0;overflow:auto;position:relative}
+.hsvg{display:block;position:absolute;left:0;top:0}
 .hbar{fill:var(--accent-text)}.hgrid{stroke:var(--border);stroke-width:1}.htext{fill:var(--muted);font-size:var(--fs-xs)}
 .hrow{display:flex;align-items:center;gap:var(--s2);font-size:var(--fs-xs);color:var(--muted)}
 .hrow span:first-child{width:var(--s6);flex:none}
@@ -109,10 +110,11 @@ body{height:100dvh;margin:0;background:var(--bg);color:var(--fg);font-family:sys
 .swatches{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
 .swatch{width:var(--s5);height:var(--s5);padding:0;border:2px solid var(--border);border-radius:50%;background:var(--sw);cursor:pointer}
 .swatch:hover{border-color:var(--fg)}
-.drawers{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:flex-start}
-.drawer{position:relative}
-.drawer-body{position:absolute;bottom:calc(100% + var(--s1));left:0;z-index:30;width:min(720px,calc(100vw - var(--s6)));max-height:min(45vh,360px);display:flex;flex-direction:column;box-shadow:var(--shadow-pop)}
-#log{position:relative;overflow:auto;min-height:0;max-height:min(45vh,300px);font-family:ui-monospace,Consolas,monospace;font-size:var(--fs-xs);line-height:1.5}
+.drawers{flex:none;display:flex;flex-wrap:wrap;gap:var(--s2);align-items:flex-start}
+.drawer[open]{flex:1 0 100%}
+.drawer-body{margin-top:var(--s2);height:clamp(96px,24dvh,240px);display:flex;flex-direction:column;min-height:0}
+.drawer-body.short{height:auto}
+#log{position:relative;flex:1;overflow:auto;min-height:0;font-family:ui-monospace,Consolas,monospace;font-size:var(--fs-xs);line-height:1.5}
 #log div{padding:0 var(--s2);cursor:pointer;white-space:nowrap}
 #log div:hover{background:var(--card-2)}
 #log div.cur{background:var(--card-2);box-shadow:inset 2px 0 var(--accent-text)}
@@ -126,12 +128,18 @@ body{height:100dvh;margin:0;background:var(--bg);color:var(--fg);font-family:sys
 .playback{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s3)}
 .playback .range{flex:1 1 200px;width:auto}
 #info{color:var(--muted);font-size:var(--fs-sm)}
-#battle{display:grid;grid-template-columns:1fr auto 1fr;gap:var(--s4);align-items:center}
-.fighter{text-align:center;min-width:0}
-.emo{font-size:var(--fs-lg);line-height:1.2;min-height:var(--s5)}
-.fighter .bar{max-width:260px;margin:var(--s1) auto}
+#battle{flex:none;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr);gap:var(--s4);align-items:center}
+.fighter{min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:var(--s3);align-items:center}
+.fighter .emo{grid-row:1/4}
+.fname{font-size:var(--fs-sm);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fighter.mon{text-align:right;grid-template-columns:minmax(0,1fr) auto}
+.fighter.mon .emo{grid-column:2}.fighter.mon .fname,.fighter.mon .bar,.fighter.mon .fhp{grid-column:1}
+.fighter .bar{height:var(--s3);margin:var(--s1) 0}
+.center{text-align:center;min-width:0;display:flex;flex-direction:column;gap:var(--s1)}
+#last{font-size:var(--fs-xs);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #hmeta,#mhp,#hhp{font-size:var(--fs-sm);color:var(--muted)}
-#zone{font-size:var(--fs-sm);text-align:center;color:var(--muted)}
+#zone{font-size:var(--fs-md);font-weight:600}
+.emo{font-size:var(--fs-kpi);line-height:1.2;min-width:var(--s6)}
 .bar{background:var(--card-2);height:var(--s2);border-radius:var(--s1);overflow:hidden}
 .bar>div{background:var(--good);height:100%}
 #mbar{background:var(--bad)}
@@ -139,7 +147,7 @@ body{height:100dvh;margin:0;background:var(--bg);color:var(--fg);font-family:sys
 #timeline-wrap{flex:1;min-height:0;position:relative}
 #timeline{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
 @media(max-width:900px){.toolbar{padding:var(--s2)}.main{padding:var(--s2)}}
-@media(max-width:700px){#battle{grid-template-columns:1fr 1fr}#zone{grid-column:1/3;order:-1}}
+@media(max-width:700px){#battle{grid-template-columns:1fr 1fr}.center{grid-column:1/3;order:-1}}
 </style></head><body>
 <!-- Icons: Lucide (https://lucide.dev), ISC License. Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2022 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors. Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies. -->
 <svg class="hidden" width="0" height="0" aria-hidden="true" focusable="false">
@@ -210,7 +218,7 @@ body{height:100dvh;margin:0;background:var(--bg);color:var(--fg);font-family:sys
   <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-trophy"/></svg>Level <span id="sum-level" class="sval"></span></span>
   <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg>HP <span id="sum-hp" class="sval"></span><span class="bar"><div id="sum-hpbar"></div></span></span>
   <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-map-pin"/></svg><span id="sum-zone" class="sval"></span></span>
-  <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-activity"/></svg>Event <span id="sum-progress" class="sval"></span></span>
+  <span id="sum-progress" class="sr"></span>
   <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-coins"/></svg>Gold <span id="sum-gold" class="sval"></span></span>
   <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-flask-round"/></svg>Potions <span id="sum-potions" class="sval"></span></span>
   <span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About run summary" aria-describedby="tip-summary"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-summary" class="tip">State of the hero at the current event. Outcome is only final at the last event.</span></span>
@@ -222,16 +230,16 @@ body{height:100dvh;margin:0;background:var(--bg);color:var(--fg);font-family:sys
   <span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About scrub bar" aria-describedby="tip-scrub"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-scrub" class="tip">Drag to jump to any event of the run.</span></span>
   <input id="scrub" class="range" type="range" min="0" max="0" value="0" aria-label="Scrub through events">
  </div>
- <div id="battle" class="card"><div class="fighter"><div class="emo" id="hemo"></div><div class="bar"><div id="hbar"></div></div><div id="hhp"></div></div>
- <div id="zone"></div>
- <div class="fighter"><div class="emo" id="memo"></div><div class="bar"><div id="mbar"></div></div><div id="mhp"></div></div></div>
+ <div id="battle" class="card"><div class="fighter"><div class="emo" id="hemo"></div><div class="fname">Hero</div><div class="bar"><div id="hbar"></div></div><div class="fhp" id="hhp"></div></div>
+ <div class="center"><div id="zone"></div><div id="last"></div></div>
+ <div class="fighter mon"><div class="emo" id="memo"></div><div class="fname" id="mname"></div><div class="bar"><div id="mbar"></div></div><div class="fhp" id="mhp"></div></div></div>
  <div id="timeline-card" class="card"><div class="card-title">Hero level over the run<span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About timeline" aria-describedby="tip-timeline"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-timeline" class="tip">Hero level at each event. The vertical line marks the current event.</span></span></div>
  <div id="timeline-wrap"><canvas id="timeline" width="800" height="140"></canvas></div></div>
  <div class="drawers">
   <details id="log-box" class="expander drawer"><summary class="btn btn-outline"><svg class="icon" aria-hidden="true"><use href="#i-list"/></svg>Event log</summary>
    <div class="drawer-body card"><div class="card-title">Event log<span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About event log" aria-describedby="tip-log"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-log" class="tip">Every event up to the current one. Click a line to jump to it.</span></span></div><div id="log" class="scroll"></div></div></details>
   <details id="more-box" class="expander drawer"><summary class="btn btn-outline"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg>Hero details</summary>
-   <div class="drawer-body card"><div class="card-title">Hero details</div><div id="hmeta"></div></div></details>
+   <div class="drawer-body short card"><div class="card-title">Hero details</div><div id="hmeta"></div></div></details>
  </div>
 </div>
 <div id="dashboard" class="view hidden">
@@ -352,18 +360,19 @@ function showTab(t){$("replay").className=t==="r"?"view":"view hidden";$("dashbo
 $("tab-replay").onclick=function(){showTab("r")};$("tab-dashboard").onclick=function(){showTab("d")};
 function pct(a,b){return b>0?Math.max(0,Math.min(100,100*a/b)):0}
 function render(){
- if(!ev.length){$("info").textContent=" No run data (data/run.js missing)";$("outcome").textContent="No run";return;}
+ if(!ev.length){$("info").textContent="No run data (data/run.js missing)";$("outcome").textContent="No run";
+  ["sum-level","sum-hp","sum-zone","sum-progress","sum-gold","sum-potions"].forEach(function(i){$(i).textContent="-";});$("sum-hpbar").style.width="0";return;}
  var e=ev[cur],h=e.hero||{},m=e.mon;
  $("scrub").value=cur;
- $("info").textContent=" event "+cur+" / "+(ev.length-1)+"  seed "+run.seed+(run.won?" WON":"");
+ $("info").textContent="seed "+run.seed+" · "+(ev.length-1)+" events";
  $("hemo").textContent=SP[SP.length-1][1];
  $("hbar").style.width=pct(h.hp,h.max_hp)+"%";
- $("hhp").textContent="HP "+h.hp+"/"+h.max_hp;
+ $("hhp").textContent="HP "+h.hp+"/"+h.max_hp+" · Lv "+h.level;$("last").textContent=e.text||"";$("last").title=e.text||"";
  $("hmeta").textContent="Lv "+h.level+"  XP "+h.xp+"  Gold "+h.gold+"  Potions "+h.potions;
  var z=ZN[h.zone]||["?",""];$("zone").textContent=z[1]+" "+z[0];
  if(m){var s=SP[m.species]||["?","?"];$("memo").textContent=s[1];$("mbar").style.width=pct(m.hp,m.max_hp)+"%";
-  $("mhp").textContent=s[0]+" Lv "+m.level+"  HP "+m.hp+"/"+m.max_hp;}
- else{$("memo").textContent="";$("mbar").style.width="0";$("mhp").textContent="";}
+  $("mname").textContent=s[0];$("mhp").textContent="HP "+m.hp+"/"+m.max_hp+" · Lv "+m.level;}
+ else{$("memo").textContent="";$("mbar").style.width="0";$("mname").textContent="No enemy";$("mhp").textContent="";}
  var last=cur>=ev.length-1,oc=$("outcome");
  $("sum-level").textContent=String(h.level);
  $("sum-hp").textContent=h.hp+"/"+h.max_hp;
@@ -435,18 +444,26 @@ function dash(){
  var T2='<table class="table"><thead><tr><th>Level</th><th>Runs</th><th>% of runs</th><th>Cumulative %</th></tr></thead><tbody>',c2=0;
  hh.forEach(function(v,l){if(v>0){c2+=v;T2+='<tr><td>'+l+'</td><td>'+v+'</td><td>'+(100*v/s.runs).toFixed(1)+'</td><td>'+(100*c2/s.runs).toFixed(1)+'</td></tr>';}});
  $("htable").innerHTML=T2+'</tbody></table>';
- var hs=s.level_hist||[],N=hs.length,per=Math.max(1,Math.ceil(N/20)),bins=[],i;
- for(i=0;i<N;i+=per){var sum=0;for(var j=i;j<Math.min(N,i+per);j++)sum+=hs[j];bins.push([i,Math.min(N,i+per)-1,sum]);}
- var lg=$("log-scale")&&$("log-scale").checked,f=function(v){return lg?Math.log(1+v):v;};
- var mx=Math.max.apply(null,bins.map(function(b){return f(b[2]);}).concat([1e-9]));
- var W=600,Ht=220,L=44,B=24,T=10,bw=bins.length?(W-L-4)/bins.length:1,out="";
- [0,.5,1].forEach(function(t){var y=T+(Ht-T-B)*(1-t),val=lg?Math.round(Math.exp(t*mx)-1):Math.round(t*mx);
-  out+='<line class="hgrid" x1="'+L+'" x2="'+W+'" y1="'+y+'" y2="'+y+'"/><text class="htext" x="'+(L-6)+'" y="'+(y+4)+'" text-anchor="end">'+val+'</text>';});
- bins.forEach(function(b,k){var h=(Ht-T-B)*f(b[2])/mx,x=L+k*bw;
-  out+='<rect class="hbar" x="'+(x+1)+'" y="'+(Ht-B-h)+'" width="'+Math.max(1,bw-2)+'" height="'+h+'"><title>Levels '+b[0]+'-'+b[1]+': '+b[2]+' runs</title></rect>';
-  if(k%2===0)out+='<text class="htext" x="'+(x+bw/2)+'" y="'+(Ht-8)+'" text-anchor="middle">'+(b[0]===b[1]?b[0]:b[0]+"-"+b[1])+'</text>';});
- H.innerHTML='<svg class="hsvg" viewBox="0 0 '+W+' '+Ht+'" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Final level distribution">'+out+'</svg>';
+ drawHist(s);
 }
+function drawHist(s){
+ var H=$("hist"),hs=s.level_hist||[],N=hs.length,per=Math.max(1,Math.ceil(N/20)),bins=[],i;
+ for(i=0;i<N;i+=per){var sum=0;for(var j=i;j<Math.min(N,i+per);j++)sum+=hs[j];bins.push([i,Math.min(N,i+per)-1,sum]);}
+ var lg=$("log-scale")&&$("log-scale").checked,f=function(v){return lg?Math.log10(1+v):v;};
+ var mx=Math.max.apply(null,bins.map(function(b){return f(b[2]);}).concat([1e-9]));
+ var W=Math.max(240,H.clientWidth||600),Ht=Math.max(120,H.clientHeight||220),L=44,B=22,T=8,bw=bins.length?(W-L-4)/bins.length:1,out="",ticks=[];
+ if(lg){for(var p=0;Math.pow(10,p)-1<=mx*Math.pow(10,0)&&f(Math.pow(10,p)-1)<=mx+1e-9;p++)ticks.push(Math.pow(10,p)-1);ticks=ticks.filter(function(v,k){return k===0||ticks.length<=5||k%2===0;});ticks.unshift(0);ticks=ticks.filter(function(v,k){return ticks.indexOf(v)===k;});}
+ else{var mv=Math.max.apply(null,bins.map(function(b){return b[2];}).concat([1]));ticks=[0,Math.round(mv/2),mv];}
+ ticks.forEach(function(v){var y=T+(Ht-T-B)*(1-f(v)/mx);
+  out+='<line class="hgrid" x1="'+L+'" x2="'+W+'" y1="'+y+'" y2="'+y+'"/><text class="htext" x="'+(L-6)+'" y="'+(y+4)+'" text-anchor="end">'+v+'</text>';});
+ bins.forEach(function(b,k){var h=(Ht-T-B)*f(b[2])/mx,x=L+k*bw;if(b[2]>0)h=Math.max(2,h);
+  out+='<rect class="hbar" x="'+(x+1)+'" y="'+(Ht-B-h)+'" width="'+Math.max(1,bw-2)+'" height="'+h+'"><title>Levels '+b[0]+'-'+b[1]+': '+b[2]+' runs</title></rect>';});
+ var gap=Math.max(1,Math.ceil(40/bw)),lastK=bins.length-1;
+ bins.forEach(function(b,k){if(k===lastK||(k%gap===0&&lastK-k>=gap)){var t=k===lastK?b[1]:b[0];
+  out+='<text class="htext" x="'+(L+k*bw+bw/2)+'" y="'+(Ht-6)+'" text-anchor="middle">'+t+'</text>';}});
+ H.innerHTML='<svg class="hsvg" width="'+W+'" height="'+Ht+'" viewBox="0 0 '+W+' '+Ht+'" role="img" aria-label="Final level distribution">'+out+'</svg>';
+}
+window.addEventListener("resize",function(){if(window.STATS&&!$("dashboard").classList.contains("hidden"))drawHist(window.STATS);});
 var knobList=[];
 (function(){var c=$("log-scale");if(c)c.addEventListener("change",dash);})();
 function setStatus(t){$("run-status").textContent=t||"";}
