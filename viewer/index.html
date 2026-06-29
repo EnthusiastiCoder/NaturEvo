@@ -65,7 +65,11 @@ body{height:100dvh;margin:0;background:var(--bg);color:var(--fg);font-family:sys
 .kpi-label{display:flex;align-items:center;gap:var(--s1);font-size:var(--fs-xs);color:var(--muted)}
 .kpi-value{font-size:var(--fs-kpi);font-weight:600;line-height:1.2}
 #dstats{display:flex;flex-wrap:wrap;gap:var(--s3)}
-#hist{flex:1;min-height:0;overflow:auto;padding:var(--s3)}
+.chart-card{flex:1;min-height:0;display:flex;flex-direction:column;gap:var(--s2)}
+.chart-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s3)}
+#hist{flex:1;min-height:0;overflow:auto}
+.hsvg{display:block;width:100%;height:100%;min-height:120px}
+.hbar{fill:var(--accent-text)}.hgrid{stroke:var(--border);stroke-width:1}.htext{fill:var(--muted);font-size:var(--fs-xs)}
 .hrow{display:flex;align-items:center;gap:var(--s2);font-size:var(--fs-xs);color:var(--muted)}
 .hrow span:first-child{width:var(--s6);flex:none}
 .hfill{height:var(--s3);background:var(--accent-text);border-radius:var(--r-sm)}
@@ -228,7 +232,7 @@ body{height:100dvh;margin:0;background:var(--bg);color:var(--fg);font-family:sys
 </div>
 <div id="dashboard" class="view hidden">
  <div id="dstats"></div>
- <div id="hist" class="card"></div>
+ <div class="card chart-card"><div class="chart-head"><span class="card-title">Final level distribution</span><label class="field" for="log-scale"><input type="checkbox" id="log-scale" name="log-scale"> Log scale</label></div><div id="hist"></div></div>
 </div>
 </main>
 </div>
@@ -412,12 +416,20 @@ function dash(){
   var tp=document.createElement("span");tp.innerHTML=tipHtml("kpi-"+p[0],p[1],INFO[p[0]]);lb.appendChild(tp);
   var vl=document.createElement("div");vl.className="kpi-value";vl.textContent=String(p[2]);
   d.appendChild(lb);d.appendChild(vl);D.appendChild(d);});
- var hs=s.level_hist||[],mx=Math.max.apply(null,hs.concat([1]));H.innerHTML="";
- hs.forEach(function(v,l){var r=document.createElement("div");r.className="hrow";
-  r.innerHTML='<span>L'+l+'</span><div class="hfill" id="hf'+l+'"></div><span>'+v+'</span>';H.appendChild(r);
-  var f=r.querySelector(".hfill");if(f)f.style.width=(v/mx*60)+"%";});
+ var hs=s.level_hist||[],N=hs.length,per=Math.max(1,Math.ceil(N/20)),bins=[],i;
+ for(i=0;i<N;i+=per){var sum=0;for(var j=i;j<Math.min(N,i+per);j++)sum+=hs[j];bins.push([i,Math.min(N,i+per)-1,sum]);}
+ var lg=$("log-scale")&&$("log-scale").checked,f=function(v){return lg?Math.log(1+v):v;};
+ var mx=Math.max.apply(null,bins.map(function(b){return f(b[2]);}).concat([1e-9]));
+ var W=600,Ht=220,L=44,B=24,T=10,bw=bins.length?(W-L-4)/bins.length:1,out="";
+ [0,.5,1].forEach(function(t){var y=T+(Ht-T-B)*(1-t),val=lg?Math.round(Math.exp(t*mx)-1):Math.round(t*mx);
+  out+='<line class="hgrid" x1="'+L+'" x2="'+W+'" y1="'+y+'" y2="'+y+'"/><text class="htext" x="'+(L-6)+'" y="'+(y+4)+'" text-anchor="end">'+val+'</text>';});
+ bins.forEach(function(b,k){var h=(Ht-T-B)*f(b[2])/mx,x=L+k*bw;
+  out+='<rect class="hbar" x="'+(x+1)+'" y="'+(Ht-B-h)+'" width="'+Math.max(1,bw-2)+'" height="'+h+'"><title>Levels '+b[0]+'-'+b[1]+': '+b[2]+' runs</title></rect>';
+  if(k%2===0)out+='<text class="htext" x="'+(x+bw/2)+'" y="'+(Ht-8)+'" text-anchor="middle">'+(b[0]===b[1]?b[0]:b[0]+"-"+b[1])+'</text>';});
+ H.innerHTML='<svg class="hsvg" viewBox="0 0 '+W+' '+Ht+'" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Final level distribution">'+out+'</svg>';
 }
 var knobList=[];
+(function(){var c=$("log-scale");if(c)c.addEventListener("change",dash);})();
 function setStatus(t){$("run-status").textContent=t||"";}
 function setBusy(b){$("run-btn").disabled=b;$("batch-btn").disabled=b;}
 function knobQuery(){return knobList.map(function(k){return k.key+"="+encodeURIComponent($("knob-"+k.key).value);}).join("&");}
