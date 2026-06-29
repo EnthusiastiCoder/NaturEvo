@@ -428,6 +428,16 @@ function api(url,label){
  .then(function(j){setBusy(false);setStatus("");return j;},
   function(e){setBusy(false);setStatus("Error: "+(e&&e.message||e));return null;});
 }
+function knobStep(k){
+ var ints=[k.min,k.max,k.default].every(function(v){return Math.floor(v)===v;});
+ if(ints)return 1;var r=k.max-k.min;return r<=1?0.01:0.1;
+}
+function snap(k,st,v){
+ v=Math.max(k.min,Math.min(k.max,v));
+ v=k.min+Math.round((v-k.min)/st)*st;
+ v=Math.max(k.min,Math.min(k.max,v));
+ return Number(v.toFixed(4));
+}
 function initControls(cfg){
  knobList=cfg.knobs||[];var K=$("knobs");K.innerHTML="";
  K.innerHTML=knobList.map(function(k){
