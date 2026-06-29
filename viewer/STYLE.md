@@ -51,7 +51,10 @@ literals, no `px` font sizes, no inline `style=` in markup (JS may set dynamic w
 | `.anchor` | positioning wrapper for a toolbar button plus its popover |
 | `.sr` | visually hidden text for screen readers |
 | `.hidden` | `display:none` helper (also a legacy-id helper for `#run-controls`, `#replay`, `#dashboard`) |
-| `.hrow`, `.hfill` | simple histogram row and bar (dashboard) |
+| `.chart-card`, `.chart-head` | dashboard chart card and its title/toggle row |
+| `.hsvg`, `.hbar`, `.hgrid`, `.htext` | histogram SVG, bars, gridlines, labels (token-coloured) |
+| `.summary`, `.sitem`, `.sval` | replay summary strip, one item, its value |
+| `.selectwrap` | wrapper placing the chevron icon over a native select |
 
 Legacy ids (`#seed`, `#log`, `#hist`, ...) stay; they are hooks for tests and scripts, not styling vocabulary.
 
