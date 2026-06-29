@@ -112,3 +112,23 @@ pub const MAX_STAGE: usize = 4;
 
 /// Stage multipliers applied to monster hp, atk and def.
 pub static STAGE_MULT: [f32; 5] = [1.0, 1.3, 1.7, 2.2, 3.0];
+
+/// Five-stage evolution lines (A->B->C->D->E), indexed like SPECIES.
+pub static EVOLUTIONS: [[&str; 5]; 16] = [
+    ["Jungle Rat", "Dire Rat", "Plague Rat", "Rat Lord", "Rat King"],
+    ["Vine Snake", "Thorn Snake", "Razor Viper", "Jade Serpent", "Emerald Wyrm"],
+    ["Monkey Thief", "Monkey Bandit", "Monkey Outlaw", "Monkey Warlord", "Monkey Emperor"],
+    ["Wild Boar", "Tusked Boar", "Ironhide Boar", "Warboar", "Boar Titan"],
+    ["Giant Spider", "Hunter Spider", "Venom Weaver", "Silk Queen", "Spider Matriarch"],
+    ["Jaguar", "Black Jaguar", "Shadow Panther", "Night Stalker", "Spirit Panther"],
+    ["Crocodile", "Bog Crocodile", "Armored Croc", "Death Roller", "Leviathan Croc"],
+    ["Poison Frog", "Toxic Frog", "Venom Toad", "Blight Toad", "Plague Toad King"],
+    ["Swamp Troll", "Bog Troll", "Mire Brute", "Marsh Giant", "Swamp Colossus"],
+    ["Stone Golem", "Granite Golem", "Iron Golem", "Obsidian Golem", "Titan Golem"],
+    ["Ruin Wraith", "Grave Wraith", "Banshee", "Soul Reaver", "Wraith Sovereign"],
+    ["Gorilla", "Silverback", "Rage Ape", "Ape Warlord", "Primal Kong"],
+    ["Cave Bat", "Dire Bat", "Blood Bat", "Night Fiend", "Bat Overlord"],
+    ["Thunder Raptor", "Storm Raptor", "Lightning Rex", "Tempest Rex", "Thunder Tyrant"],
+    ["Ancient Serpent", "Elder Serpent", "Primeval Drake", "Dread Wyrm", "World Serpent"],
+    ["Jungle King", "Jungle King", "Jungle King", "Jungle King", "Jungle King"],
+];
