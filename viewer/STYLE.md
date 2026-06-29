@@ -12,7 +12,7 @@ literals, no `px` font sizes, no inline `style=` in markup (JS may set dynamic w
 - Accent (user-settable): `--accent`, `--accent-fg` (text on accent), `--accent-text` (accent used as text/border)
 - Spacing: `--s1..--s6` = 4, 8, 12, 16, 24, 32 px
 - Radii: `--r-sm`, `--r-md` (8px)
-- Font sizes: `--fs-xs` 12, `--fs-sm` 13, `--fs-md` 14, `--fs-lg` 18, `--fs-kpi` 28
+- Font sizes: `--fs-2xs` 11 (chart axis text), `--fs-xs` 12, `--fs-sm` 13, `--fs-md` 14, `--fs-lg` 18, `--fs-kpi` 28
 - Sizes: `--icon` 16px, `--control-h` 32px; elevation `--shadow-pop`
 
 ## Components
@@ -99,3 +99,9 @@ accent: {get, set, reset}, contrast(a, b)}`.
 - `.drawer-body` opens in the layout (not as an overlay) with a bounded height and scrolls inside itself; `.short` sizes
   it to its content (used by Hero details).
 - Number inputs are right-aligned.
+
+## Chart axes
+
+Axes use round ticks: the max is rounded up to 1/2/5 x 10^n and 3 to 5 evenly spaced ticks are drawn (`niceTicks`). Log
+scale uses 0, 1, 10, 100, ... Histogram x labels are every Nth bin, anchored so the last bin is always labelled
+(e.g. `39-40`) and each label is centred under its bar.
