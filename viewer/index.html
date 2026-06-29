@@ -197,6 +197,16 @@ body{height:100dvh;margin:0;background:var(--bg);color:var(--fg);font-family:sys
 </header>
 <main class="main">
 <div id="replay" class="view">
+ <div id="summary" class="card summary">
+  <span id="outcome" class="badge">No run</span>
+  <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-trophy"/></svg>Level <span id="sum-level" class="sval"></span></span>
+  <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg>HP <span id="sum-hp" class="sval"></span><span class="bar"><div id="sum-hpbar"></div></span></span>
+  <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-map-pin"/></svg><span id="sum-zone" class="sval"></span></span>
+  <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-activity"/></svg>Event <span id="sum-progress" class="sval"></span></span>
+  <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-coins"/></svg>Gold <span id="sum-gold" class="sval"></span></span>
+  <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-flask-round"/></svg>Potions <span id="sum-potions" class="sval"></span></span>
+  <span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About run summary" aria-describedby="tip-summary"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-summary" class="tip">State of the hero at the current event. Outcome is only final at the last event.</span></span>
+ </div>
  <div class="card playback">
   <span class="tipwrap"><button type="button" id="play" class="btn-icon" aria-label="Play" aria-describedby="tip-play"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></button><span role="tooltip" id="tip-play" class="tip">Play or pause the replay.</span></span>
   <span class="field"><label class="label" for="speed">Speed</label><select id="speed" class="input"><option>1</option><option>4</option><option>16</option><option>64</option></select><span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About speed" aria-describedby="tip-speed"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-speed" class="tip">Events advanced per tick while playing.</span></span></span>
