@@ -444,8 +444,14 @@ function initControls(cfg){
   var text=(k.description||k.desc||INFO[k.key]||k.label)+". Range "+k.min+" to "+k.max+", default "+k.default+".";
   return '<div class="knob"><div class="knob-head"><label class="label" for="knob-'+esc(k.key)+'">'+esc(k.label)+'</label>'+tipHtml("knob-"+k.key,k.label,text)+'</div><input class="range" id="knob-'+esc(k.key)+'" type="range"><input class="input" id="knob-'+esc(k.key)+'-num" type="number" aria-label="'+esc(k.label)+' value"></div>';
  }).join("");
- knobList.forEach(function(k){var i=$("knob-"+k.key);
-  i.value=String(k.default);i.min=String(k.min);i.max=String(k.max);i.step="any";});
+ knobList.forEach(function(k){
+  var r=$("knob-"+k.key),n=$("knob-"+k.key+"-num"),st=knobStep(k);k.step=st;
+  [r,n].forEach(function(i){i.min=String(k.min);i.max=String(k.max);i.step=String(st);});
+  r.value=n.value=String(k.default);
+  r.oninput=function(){n.value=r.value;};
+  n.oninput=function(){var v=parseFloat(n.value);if(isFinite(v))r.value=String(snap(k,st,v));};
+  n.onchange=function(){var v=parseFloat(n.value);v=isFinite(v)?snap(k,st,v):k.default;n.value=r.value=String(v);};
+ });
  $("run-controls").classList.remove("hidden");
 }
 $("knobs-reset").onclick=function(){knobList.forEach(function(k){$("knob-"+k.key).value=String(k.default);});};
