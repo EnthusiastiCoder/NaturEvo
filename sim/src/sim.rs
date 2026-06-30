@@ -51,6 +51,49 @@ pub struct Run {
     pub capped: bool,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct Summary {
+    pub won: bool,
+    pub deaths: u32,
+    pub final_level: u32,
+    pub first_win_event: Option<u32>,
+    pub events: u32,
+    pub end_level: u32,
+    pub post_kills: u32,
+    pub post_deaths: u32,
+    pub max_stage: u8,
+    pub capped: bool,
+}
+
+impl Run {
+    pub fn summary(&self) -> Summary {
+        Summary {
+            won: self.won,
+            deaths: self.deaths,
+            final_level: self.final_level,
+            first_win_event: self.first_win_event,
+            events: self.events.len() as u32,
+            end_level: self.end_level,
+            post_kills: self.post_kills,
+            post_deaths: self.post_deaths,
+            max_stage: self.max_stage,
+            capped: self.capped,
+        }
+    }
+}
+
+/// Emit an event; in lean mode nothing is formatted or stored.
+macro_rules! ev {
+    ($s:expr, $kind:expr, $mon:expr, $($arg:tt)*) => {
+        if $s.lean {
+            $s.emit_lean();
+        } else {
+            let t = format!($($arg)*);
+            $s.emit($kind, t, $mon);
+        }
+    };
+}
+
 /// XP needed to go from `level` to `level + 1`.
 pub fn xp_to_next(level: u32) -> u32 {
     8 * level * level + 22 * level + 10
