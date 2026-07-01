@@ -176,7 +176,7 @@ fn damage(rng: &mut Rng, atk: f32, def: f32) -> i32 {
 }
 
 impl Sim {
-    fn emit(&mut self, kind: &'static str, text: String, mon: Option<&Mon>) {
+    fn emit_lean(&mut self) {
         if self.done {
             return;
         }
