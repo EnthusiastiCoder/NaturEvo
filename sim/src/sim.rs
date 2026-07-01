@@ -180,7 +180,8 @@ impl Sim {
         if self.done {
             return;
         }
-        if self.events.len() >= EVENT_CAP {
+        self.count += 1;
+        if self.count >= self.cfg.event_cap as usize {
             self.done = true;
             return;
         }
