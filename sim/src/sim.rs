@@ -331,7 +331,7 @@ impl Sim {
             }
             self.emit("level_up", text, None);
         }
-        if self.hero.level >= MAX_LEVEL {
+        if self.hero.level >= cap {
             self.hero.xp = 0;
         }
     }
