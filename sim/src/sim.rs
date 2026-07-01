@@ -200,6 +200,9 @@ impl Sim {
             self.emit_lean();
             return;
         }
+        if self.done {
+            return;
+        }
         let h = &self.hero;
         let hero = HeroSnap {
             level: h.level,
