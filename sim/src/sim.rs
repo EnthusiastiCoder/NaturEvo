@@ -141,6 +141,7 @@ struct Mon {
     spd: f32,
     behavior: Behavior,
     packed: u32,
+    stage: u8,
 }
 
 struct Sim {
