@@ -222,7 +222,7 @@ impl Sim {
             max_hp: m.max_hp,
             stage: m.stage,
         });
-        let idx = self.events.len() as u32;
+        let idx = self.count as u32;
         self.events.push(Event { idx, kind, text, hero, mon });
         if self.events.len() >= EVENT_CAP {
             self.done = true;
