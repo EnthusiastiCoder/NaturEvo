@@ -220,6 +220,7 @@ impl Sim {
             level: m.level,
             hp: m.hp.clamp(0, m.max_hp),
             max_hp: m.max_hp,
+            stage: m.stage,
         });
         let idx = self.events.len() as u32;
         self.events.push(Event { idx, kind, text, hero, mon });
