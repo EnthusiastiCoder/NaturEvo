@@ -369,11 +369,6 @@ impl Sim {
         let mut m = self.spawn(species, level, stage);
         let s = &SPECIES[species];
         let boss = species == BOSS;
-        let name = if m.packed > 1 {
-            format!("pack of {} {} {}", m.packed, s.name, s.emoji)
-        } else {
-            format!("{} {}", s.name, s.emoji)
-        };
         let kind = if boss { "boss" } else { "encounter" };
         self.emit(
             kind,
