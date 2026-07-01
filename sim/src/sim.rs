@@ -224,7 +224,8 @@ impl Sim {
         });
         let idx = self.count as u32;
         self.events.push(Event { idx, kind, text, hero, mon });
-        if self.events.len() >= EVENT_CAP {
+        self.count += 1;
+        if self.count >= self.cfg.event_cap as usize {
             self.done = true;
         }
     }
