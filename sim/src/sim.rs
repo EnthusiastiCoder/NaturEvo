@@ -227,6 +227,7 @@ impl Sim {
         self.count += 1;
         if self.count >= self.cfg.event_cap as usize {
             self.done = true;
+            self.capped = true;
         }
     }
 
