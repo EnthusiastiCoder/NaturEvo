@@ -305,7 +305,8 @@ impl Sim {
     }
 
     fn gain_xp(&mut self, amount: u32) {
-        if self.hero.level >= MAX_LEVEL {
+        let cap = self.level_cap();
+        if self.hero.level >= cap {
             return;
         }
         self.hero.xp += amount;
