@@ -310,7 +310,7 @@ impl Sim {
             return;
         }
         self.hero.xp += amount;
-        while self.hero.level < MAX_LEVEL && self.hero.xp >= xp_to_next(self.hero.level) {
+        while self.hero.level < cap && self.hero.xp >= xp_to_next(self.hero.level) {
             self.hero.xp -= xp_to_next(self.hero.level);
             self.hero.level += 1;
             let new_max = Hero::max_hp_for(&self.cfg, self.hero.level);
