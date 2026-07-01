@@ -365,8 +365,8 @@ impl Sim {
         Mon { species, level, hp, max_hp: hp, atk, def, spd, behavior: s.behavior, packed, stage }
     }
 
-    fn fight(&mut self, species: usize, level: u32) -> Outcome {
-        let mut m = self.spawn(species, level);
+    fn fight(&mut self, species: usize, level: u32, stage: u8) -> Outcome {
+        let mut m = self.spawn(species, level, stage);
         let s = &SPECIES[species];
         let boss = species == BOSS;
         let name = if m.packed > 1 {
