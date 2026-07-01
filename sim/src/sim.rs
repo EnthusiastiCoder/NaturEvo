@@ -340,7 +340,13 @@ impl Sim {
         let s = &SPECIES[species];
         let mut hp = monster_stat(s.hp, level);
         let mut atk = monster_stat(s.atk, level);
-        let def = monster_stat(s.def, level);
+        let mut def = monster_stat(s.def, level);
+        if stage > 0 {
+            let m = STAGE_MULT[stage as usize];
+            hp *= m;
+            atk *= m;
+            def *= m;
+        }
         hp *= self.cfg.monster_hp_mult;
         atk *= self.cfg.monster_atk_mult;
         if species == BOSS {
