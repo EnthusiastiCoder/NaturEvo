@@ -336,7 +336,7 @@ impl Sim {
         }
     }
 
-    fn spawn(&mut self, species: usize, level: u32) -> Mon {
+    fn spawn(&mut self, species: usize, level: u32, stage: u8) -> Mon {
         let s = &SPECIES[species];
         let mut hp = monster_stat(s.hp, level);
         let mut atk = monster_stat(s.atk, level);
