@@ -266,11 +266,7 @@ impl Sim {
         while self.hero.potions < upto && self.hero.gold >= cost {
             self.hero.gold -= cost;
             self.hero.potions += 1;
-            self.emit(
-                "shop",
-                format!("Bought a potion for {} gold ({} held)", cost, self.hero.potions),
-                None,
-            );
+            ev!(self, "shop", None, "Bought a potion for {} gold ({} held)", cost, self.hero.potions);
         }
     }
 
