@@ -370,11 +370,18 @@ impl Sim {
         let s = &SPECIES[species];
         let boss = species == BOSS;
         let kind = if boss { "boss" } else { "encounter" };
-        self.emit(
-            kind,
-            format!("Hero meets a level {} {} ({})", m.level, name, s.behavior.name()),
-            Some(&m),
-        );
+        if self.lean {
+            self.emit_lean();
+        } else {
+            let sn = stage_name(species, stage as usize);
+            let name = if m.packed > 1 {
+                format!("pack of {} {} {}", m.packed, sn, s.emoji)
+            } else {
+                format!("{} {}", sn, s.emoji)
+            };
+            let t = format!("Hero meets a level {} {} ({})", m.level, name, s.behavior.name());
+            self.emit(kind, t, Some(&m));
+        }
 
         let mut round = 0u32;
         let mut mon_actions = 0u32;
