@@ -283,7 +283,7 @@ impl Sim {
                 }
                 self.hero.gold -= WEAPONS[b].1;
                 self.hero.weapon = b;
-                self.emit("shop", format!("Bought {} for {} gold", WEAPONS[b].0, WEAPONS[b].1), None);
+                ev!(self, "shop", None, "Bought {} for {} gold", WEAPONS[b].0, WEAPONS[b].1);
                 bought = true;
             }
             let next_a = self.hero.armor + 1;
