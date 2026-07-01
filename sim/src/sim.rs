@@ -183,6 +183,21 @@ impl Sim {
         self.count += 1;
         if self.count >= self.cfg.event_cap as usize {
             self.done = true;
+            self.capped = true;
+        }
+    }
+
+    fn level_cap(&self) -> u32 {
+        if self.won {
+            self.cfg.postgame_level_cap
+        } else {
+            MAX_LEVEL
+        }
+    }
+
+    fn emit(&mut self, kind: &'static str, text: String, mon: Option<&Mon>) {
+        if self.lean {
+            self.emit_lean();
             return;
         }
         let h = &self.hero;
