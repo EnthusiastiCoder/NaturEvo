@@ -251,7 +251,7 @@ impl Sim {
         }
         self.hero.zone = to;
         let z = &ZONES[to];
-        self.emit("travel", format!("Hero travels to {} {}", z.emoji, z.name), None);
+        ev!(self, "travel", None, "Hero travels to {} {}", z.emoji, z.name);
     }
 
     fn rest(&mut self) {
