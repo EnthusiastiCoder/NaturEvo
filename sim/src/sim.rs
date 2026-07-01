@@ -153,6 +153,14 @@ struct Sim {
     boss_deaths: u32,
     won: bool,
     done: bool,
+    lean: bool,
+    count: usize,
+    capped: bool,
+    first_win_event: Option<u32>,
+    final_level: u32,
+    post_kills: u32,
+    post_deaths: u32,
+    stage: u8,
 }
 
 enum Outcome {
