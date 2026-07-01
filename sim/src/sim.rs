@@ -294,7 +294,7 @@ impl Sim {
                 }
                 self.hero.gold -= ARMORS[b].1;
                 self.hero.armor = b;
-                self.emit("shop", format!("Bought {} for {} gold", ARMORS[b].0, ARMORS[b].1), None);
+                ev!(self, "shop", None, "Bought {} for {} gold", ARMORS[b].0, ARMORS[b].1);
                 bought = true;
             }
             if !bought {
