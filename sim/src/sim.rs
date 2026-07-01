@@ -318,7 +318,10 @@ impl Sim {
             self.hero.max_hp = new_max;
             self.hero.hp = (self.hero.hp + gain).min(new_max);
             let lvl = self.hero.level;
-            let mut text = format!("Hero reaches level {}", lvl);
+            let mut text = String::new();
+            if !self.lean {
+                text = format!("Hero reaches level {}", lvl);
+            }
             match lvl {
                 3 => text.push_str(" and learns Power Strike"),
                 6 => text.push_str(" and learns Brace"),
