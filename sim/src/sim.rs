@@ -458,7 +458,7 @@ impl Sim {
                             }
                             m.hp = (m.hp - d).max(0);
                             let kind = if power { "skill" } else { "attack" };
-                            self.emit(kind, format!("Hero uses {} on the {} for {}", label, s.name, d), Some(&m));
+                            ev!(self, kind, Some(&m), "Hero uses {} on the {} for {}", label, s.name, d);
                         }
                     }
                 } else {
