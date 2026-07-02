@@ -396,7 +396,7 @@ impl Sim {
             }
             round += 1;
             if round > MAX_ROUNDS {
-                self.emit("rest", format!("Hero flees from the {}", s.name), Some(&m));
+                ev!(self, "rest", Some(&m), "Hero flees from the {}", s.name);
                 return Outcome::Fled;
             }
             cd_power = cd_power.saturating_sub(1);
