@@ -446,7 +446,7 @@ impl Sim {
                         };
                         let dodged = m.behavior == Behavior::Trickster && self.rng.chance(0.25);
                         if dodged {
-                            self.emit("attack", format!("Hero's {} misses, the {} dodges", label, s.name), Some(&m));
+                            ev!(self, "attack", Some(&m), "Hero's {} misses, the {} dodges", label, s.name);
                         } else {
                             let mut a = self.hero.atk(&self.cfg);
                             if power {
