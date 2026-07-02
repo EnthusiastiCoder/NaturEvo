@@ -519,7 +519,13 @@ impl Sim {
             }
 
             if self.hero.hp <= 0 {
-                self.deaths += 1;
+                if self.won {
+                    if !self.done {
+                        self.post_deaths += 1;
+                    }
+                } else {
+                    self.deaths += 1;
+                }
                 if boss {
                     self.boss_deaths += 1;
                     if self.boss_deaths >= self.cfg.boss_attempts {
