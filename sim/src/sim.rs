@@ -422,7 +422,7 @@ impl Sim {
                         cd_heal = 5;
                         let heal = max * 3 / 10;
                         self.hero.hp = (hp + heal).min(max);
-                        self.emit("skill", format!("Hero casts Heal and recovers {}", self.hero.hp - hp), Some(&m));
+                        ev!(self, "skill", Some(&m), "Hero casts Heal and recovers {}", self.hero.hp - hp);
                     } else if lvl >= 6 && charge_next && cd_brace == 0 && !braced {
                         braced = true;
                         cd_brace = 3;
