@@ -551,7 +551,9 @@ impl Sim {
                 }
                 if !boss && self.hero.potions < 9 && self.rng.chance(0.15) {
                     self.hero.potions += 1;
-                    text.push_str(", finds a potion");
+                    if !self.lean {
+                        text.push_str(", finds a potion");
+                    }
                 }
                 self.emit("victory_fight", text, Some(&m));
                 if boss {
