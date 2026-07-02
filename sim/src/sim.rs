@@ -538,11 +538,7 @@ impl Sim {
                 self.hero.zone = 0;
                 self.hero.hp = self.hero.max_hp;
                 self.hero.potions = self.hero.potions.min(5);
-                self.emit(
-                    "respawn",
-                    format!("Hero wakes at Base Camp, having lost {} gold", lost),
-                    None,
-                );
+                ev!(self, "respawn", None, "Hero wakes at Base Camp, having lost {} gold", lost);
                 return Outcome::Died;
             }
             if m.hp <= 0 {
