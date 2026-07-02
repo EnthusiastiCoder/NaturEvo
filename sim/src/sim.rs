@@ -426,7 +426,7 @@ impl Sim {
                     } else if lvl >= 6 && charge_next && cd_brace == 0 && !braced {
                         braced = true;
                         cd_brace = 3;
-                        self.emit("skill", "Hero uses Brace to absorb the charge".to_string(), Some(&m));
+                        ev!(self, "skill", Some(&m), "Hero uses Brace to absorb the charge");
                     } else if lvl >= 10
                         && cd_stun == 0
                         && !stunned
