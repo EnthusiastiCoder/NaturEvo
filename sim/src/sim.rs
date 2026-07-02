@@ -515,7 +515,7 @@ impl Sim {
                 poison -= 1;
                 let d = (self.hero.max_hp / 25).max(1);
                 self.hero.hp = (self.hero.hp - d).max(0);
-                self.emit("hit_taken", format!("Poison deals {} to the hero", d), Some(&m));
+                ev!(self, "hit_taken", Some(&m), "Poison deals {} to the hero", d);
             }
 
             if self.hero.hp <= 0 {
