@@ -467,7 +467,7 @@ impl Sim {
                         mon_actions += 1;
                         if stunned {
                             stunned = false;
-                            self.emit("attack", format!("The {} is stunned and loses its turn", s.name), Some(&m));
+                            ev!(self, "attack", Some(&m), "The {} is stunned and loses its turn", s.name);
                         } else if m.behavior == Behavior::Healer && m.hp < m.max_hp {
                             let heal = (m.max_hp / 10).max(1);
                             m.hp = (m.hp + heal).min(m.max_hp);
