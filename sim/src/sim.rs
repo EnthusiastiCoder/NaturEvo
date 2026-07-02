@@ -471,7 +471,7 @@ impl Sim {
                         } else if m.behavior == Behavior::Healer && m.hp < m.max_hp {
                             let heal = (m.max_hp / 10).max(1);
                             m.hp = (m.hp + heal).min(m.max_hp);
-                            self.emit("attack", format!("The {} regenerates {}", s.name, heal), Some(&m));
+                            ev!(self, "attack", Some(&m), "The {} regenerates {}", s.name, heal);
                         } else {
                             let mut atk = m.atk;
                             let mut note = String::new();
