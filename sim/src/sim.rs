@@ -417,7 +417,7 @@ impl Sim {
                         self.hero.potions -= 1;
                         let heal = max / 2;
                         self.hero.hp = (hp + heal).min(max);
-                        self.emit("potion", format!("Hero drinks a potion and heals {}", self.hero.hp - hp), Some(&m));
+                        ev!(self, "potion", Some(&m), "Hero drinks a potion and heals {}", self.hero.hp - hp);
                     } else if lvl >= 14 && hp * 2 < max && cd_heal == 0 {
                         cd_heal = 5;
                         let heal = max * 3 / 10;
