@@ -501,7 +501,7 @@ impl Sim {
                                 poison = 3;
                                 note.push_str(" and poisons the hero");
                             }
-                            self.emit("hit_taken", format!("The {} hits the hero{} for {}", s.name, note, d), Some(&m));
+                            ev!(self, "hit_taken", Some(&m), "The {} hits the hero{} for {}", s.name, note, d);
                         }
                     }
                 }
