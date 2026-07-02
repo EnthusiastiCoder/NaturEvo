@@ -545,7 +545,10 @@ impl Sim {
                 let xp = ((s.xp * (0.5 + 0.25 * m.level as f32) * self.cfg.xp_mult) as u32 * m.packed.max(1)).max(1);
                 let gold = ((s.gold * m.level as f32 * 2.0 * self.cfg.gold_mult) as u32 * m.packed.max(1)).max(1);
                 self.hero.gold += gold;
-                let mut text = format!("Hero defeats the {} and gains {} xp, {} gold", s.name, xp, gold);
+                let mut text = String::new();
+                if !self.lean {
+                    text = format!("Hero defeats the {} and gains {} xp, {} gold", s.name, xp, gold);
+                }
                 if !boss && self.hero.potions < 9 && self.rng.chance(0.15) {
                     self.hero.potions += 1;
                     text.push_str(", finds a potion");
