@@ -532,7 +532,7 @@ impl Sim {
                         self.done = true;
                     }
                 }
-                self.emit("death", format!("Hero is slain by the {}", s.name), Some(&m));
+                ev!(self, "death", Some(&m), "Hero is slain by the {}", s.name);
                 let lost = self.hero.gold / 4;
                 self.hero.gold -= lost;
                 self.hero.zone = 0;
