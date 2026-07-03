@@ -278,6 +278,13 @@ input[type=checkbox]{accent-color:var(--accent-text)}
 (function(){
 var SP=[["Jungle Rat","🐀"],["Vine Snake","🐍"],["Monkey Thief","🐒"],["Wild Boar","🐗"],["Giant Spider","🕷️"],["Jaguar","🐆"],["Crocodile","🐊"],["Poison Frog","🐸"],["Swamp Troll","🧌"],["Stone Golem","🗿"],["Ruin Wraith","👻"],["Gorilla","🦍"],["Cave Bat","🦇"],["Thunder Raptor","🦖"],["Ancient Serpent","🐉"],["Jungle King","👑"],["Hero","🧙"]];
 var ZN=[["Base Camp","⛺"],["Jungle Edge","🌿"],["Dense Jungle","🌳"],["River Bank","🏞️"],["Misty Swamp","🌫️"],["Ancient Ruins","🏛️"],["Bat Caves","🕳️"],["Serpent Temple","🛕"],["King's Grove","👑"]];
+var WP=[["Wooden Stick",0],["Stone Axe",4],["Iron Machete",9],["Steel Blade",16],["Obsidian Edge",26],["Thunder Spear",40],["Jungle Fang",60]];
+var AR=[["Rags",0],["Leaf Wrap",3],["Hide Vest",7],["Bone Mail",12],["Scale Armor",19],["Stoneplate",28],["Ancient Aegis",40]];
+try{var fl=document.createElement("link");fl.rel="icon";fl.href="data:,";document.head.appendChild(fl);}catch(e){}
+var cnt=null;
+function counts(){if(cnt&&cnt.ev===ev)return cnt;var k=[],d=[],sk=[],a=0,b=0,c=0;
+ for(var i=0;i<ev.length;i++){var t=ev[i].kind;if(t==="victory_fight")a++;else if(t==="death")b++;else if(t==="skill")c++;k.push(a);d.push(b);sk.push(c);}
+ cnt={ev:ev,k:k,d:d,s:sk};return cnt;}
 var $=function(i){return document.getElementById(i)};
 var root=document.documentElement;
 var run=window.RUN||null, ev=(run&&run.events)||[], cur=0, timer=null, logFirst=-1, logLast=-1;
