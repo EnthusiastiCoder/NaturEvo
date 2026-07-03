@@ -616,7 +616,7 @@ impl Sim {
                     }
                     Outcome::Won => {}
                 }
-                if self.won || self.done {
+                if self.done {
                     break;
                 }
                 let h = &self.hero;
