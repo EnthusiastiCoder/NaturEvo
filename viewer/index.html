@@ -336,6 +336,7 @@ function paintAccent(){
   for(var f=0.05;f<=1.0001;f+=0.05){t=mix(a,to,f);if(contrast(toHex(t),bg)>=3)break;}
  }
  root.style.setProperty("--accent-text",toHex(t));
+ Array.prototype.forEach.call(document.querySelectorAll(".swatch"),function(w){var on=String(w.dataset.accent).toLowerCase()===accent;w.classList.toggle("on",on);w.setAttribute("aria-pressed",on?"true":"false");});
 }
 function setTheme(t,persist){
  if(t!=="dark"&&t!=="light")return;
