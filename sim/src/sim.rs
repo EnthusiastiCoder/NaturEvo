@@ -560,6 +560,9 @@ impl Sim {
                 }
                 self.emit("victory_fight", text, Some(&m));
                 if boss {
+                    if self.done {
+                        return Outcome::Won;
+                    }
                     self.won = true;
                     self.emit("win", "The Jungle King falls. The jungle is saved!".to_string(), Some(&m));
                     return Outcome::Won;
