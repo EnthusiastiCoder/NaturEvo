@@ -659,5 +659,41 @@ fn run_sim(seed: u64, cfg: &Config, lean: bool) -> Sim {
     };
     ev!(sim, "travel", None, "Hero begins the journey at Base Camp");
     sim.run();
-    Run { seed, final_level: sim.hero.level, won: sim.won, deaths: sim.deaths, events: sim.events }
+    if !sim.won {
+        sim.final_level = sim.hero.level;
+    }
+    sim
+}
+
+pub fn simulate_with(seed: u64, cfg: &Config) -> Run {
+    let sim = run_sim(seed, cfg, false);
+    Run {
+        seed,
+        final_level: sim.final_level,
+        won: sim.won,
+        deaths: sim.deaths,
+        first_win_event: sim.first_win_event,
+        end_level: sim.hero.level,
+        post_kills: sim.post_kills,
+        post_deaths: sim.post_deaths,
+        max_stage: sim.stage,
+        capped: sim.capped,
+        events: sim.events,
+    }
+}
+
+pub fn simulate_summary(seed: u64, cfg: &Config) -> Summary {
+    let sim = run_sim(seed, cfg, true);
+    Summary {
+        won: sim.won,
+        deaths: sim.deaths,
+        final_level: sim.final_level,
+        first_win_event: sim.first_win_event,
+        events: sim.count as u32,
+        end_level: sim.hero.level,
+        post_kills: sim.post_kills,
+        post_deaths: sim.post_deaths,
+        max_stage: sim.stage,
+        capped: sim.capped,
+    }
 }
