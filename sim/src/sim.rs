@@ -564,7 +564,9 @@ impl Sim {
                         return Outcome::Won;
                     }
                     self.won = true;
-                    self.emit("win", "The Jungle King falls. The jungle is saved!".to_string(), Some(&m));
+                    self.final_level = self.hero.level;
+                    self.first_win_event = Some(self.count as u32);
+                    ev!(self, "win", Some(&m), "The Jungle King falls. The jungle is saved!");
                     return Outcome::Won;
                 }
                 self.gain_xp(xp);
