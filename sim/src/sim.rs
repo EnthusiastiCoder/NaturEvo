@@ -657,7 +657,7 @@ fn run_sim(seed: u64, cfg: &Config, lean: bool) -> Sim {
         post_deaths: 0,
         stage: 0,
     };
-    sim.emit("travel", "Hero begins the journey at Base Camp".to_string(), None);
+    ev!(sim, "travel", None, "Hero begins the journey at Base Camp");
     sim.run();
     Run { seed, final_level: sim.hero.level, won: sim.won, deaths: sim.deaths, events: sim.events }
 }
