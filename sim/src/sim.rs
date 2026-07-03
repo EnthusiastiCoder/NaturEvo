@@ -607,7 +607,8 @@ impl Sim {
                 if self.hero.zone == 8 {
                     // boss fights at full health
                 }
-                match self.fight(species, level) {
+                let stage = if species == BOSS { 0 } else { self.stage };
+                match self.fight(species, level, stage) {
                     Outcome::Died => break,
                     Outcome::Fled => {
                         self.travel(0);
