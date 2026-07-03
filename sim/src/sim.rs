@@ -637,7 +637,7 @@ pub fn simulate(seed: u64) -> Run {
     simulate_with(seed, &Config::default())
 }
 
-pub fn simulate_with(seed: u64, cfg: &Config) -> Run {
+fn run_sim(seed: u64, cfg: &Config, lean: bool) -> Sim {
     let max_hp = Hero::max_hp_for(cfg, 1);
     let mut sim = Sim {
         cfg: cfg.clone(),
