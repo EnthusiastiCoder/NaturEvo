@@ -125,9 +125,11 @@ input[type=checkbox]{accent-color:var(--accent-text)}
 .swatches{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
 .swatch{width:var(--s5);height:var(--s5);padding:0;border:2px solid var(--border);border-radius:50%;background:var(--sw);cursor:pointer}
 .swatch:hover{border-color:var(--fg)}
-.drawers{flex:none;display:flex;flex-wrap:wrap;gap:var(--s2);align-items:flex-start}
-.drawer[open]{flex:1 0 100%}
-.drawer-body{margin-top:var(--s2);height:clamp(96px,24dvh,240px);display:flex;flex-direction:column;min-height:0}
+.swatch.on{border-color:var(--fg);box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--ring)}
+.drawers{flex:none;display:flex;flex-wrap:nowrap;gap:var(--s2);align-items:flex-start}
+.drawer{min-width:0}
+.drawer[open]{flex:1 1 0}
+.drawer-body{margin-top:var(--s2);height:clamp(72px,16dvh,180px);display:flex;flex-direction:column;min-height:0}
 .drawer-body.short{height:auto}
 #log{position:relative;flex:1;overflow:auto;min-height:0;font-family:ui-monospace,Consolas,monospace;font-size:var(--fs-xs);line-height:1.5}
 #log div{padding:0 var(--s2);cursor:pointer;white-space:nowrap}
