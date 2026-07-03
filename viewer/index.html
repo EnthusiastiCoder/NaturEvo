@@ -380,6 +380,7 @@ document.addEventListener("keydown",function(e){
 });
 document.addEventListener("click",function(e){
  var t=e.target;if(!t||!t.closest)return;
+ if(t.closest(".info")&&document.activeElement&&document.activeElement.blur)document.activeElement.blur();
  pops.forEach(function(d){if(d.open&&!d.contains(t)&&!t.closest("#accent-btn"))d.open=false;});
 });
 
