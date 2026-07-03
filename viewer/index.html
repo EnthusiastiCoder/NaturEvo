@@ -101,7 +101,7 @@ input[type=checkbox]{accent-color:var(--accent-text)}
 /* tooltips */
 .tipwrap{position:relative;display:inline-flex;align-items:center}
 .tip{position:fixed;left:0;top:0;z-index:100;visibility:hidden;opacity:0;pointer-events:none;width:max-content;max-width:260px;padding:var(--s1) var(--s2);border-radius:var(--r-sm);background:var(--fg);color:var(--bg);font-size:var(--fs-xs);font-weight:400;line-height:1.4;text-align:left;box-shadow:var(--shadow-pop);transition:opacity .12s}
-.tipwrap:hover .tip,.tipwrap:focus-within .tip{visibility:visible;opacity:1}
+.tipwrap:hover .tip,.tipwrap:has(:focus-visible) .tip{visibility:visible;opacity:1}
 .tipwrap.quiet .tip,html.tips-off .tip{visibility:hidden!important;opacity:0!important}
 
 /* popovers and drawers */
