@@ -584,7 +584,7 @@ impl Sim {
             let target = self.target_zone();
             self.travel(target);
             loop {
-                if self.done || self.won {
+                if self.done {
                     break;
                 }
                 let z = &ZONES[self.hero.zone];
