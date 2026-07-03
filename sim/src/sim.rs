@@ -648,6 +648,14 @@ fn run_sim(seed: u64, cfg: &Config, lean: bool) -> Sim {
         boss_deaths: 0,
         won: false,
         done: false,
+        lean,
+        count: 0,
+        capped: false,
+        first_win_event: None,
+        final_level: 0,
+        post_kills: 0,
+        post_deaths: 0,
+        stage: 0,
     };
     sim.emit("travel", "Hero begins the journey at Base Camp".to_string(), None);
     sim.run();
