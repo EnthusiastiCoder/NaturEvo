@@ -576,7 +576,7 @@ impl Sim {
     }
 
     fn run(&mut self) {
-        while !self.done && !self.won {
+        while !self.done {
             // at camp
             self.travel(0);
             self.rest();
