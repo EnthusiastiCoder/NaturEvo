@@ -555,6 +555,9 @@ impl Sim {
                         text.push_str(", finds a potion");
                     }
                 }
+                if self.won && !boss && !self.done {
+                    self.post_kills += 1;
+                }
                 self.emit("victory_fight", text, Some(&m));
                 if boss {
                     self.won = true;
