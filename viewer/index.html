@@ -506,7 +506,7 @@ function drawHist(s){
  var gap=Math.max(1,Math.ceil((wmax*7+8)/bw));
  bins.forEach(function(b,k){if((lastK-k)%gap===0)
   out+='<text class="htext" x="'+(L+k*bw+bw/2)+'" y="'+(Ht-5)+'" text-anchor="middle">'+lab(b)+'</text>';});
- H.innerHTML='<svg class="hsvg" width="'+W+'" height="'+Ht+'" viewBox="0 0 '+W+' '+Ht+'" role="img" aria-label="Final level distribution">'+out+'</svg>';
+ H.innerHTML='<svg class="hsvg" viewBox="0 0 '+W+' '+Ht+'" role="img" aria-label="Final level distribution">'+out+'</svg>';
 }
 window.addEventListener("resize",function(){if(window.STATS&&!$("dashboard").classList.contains("hidden"))drawHist(window.STATS);});
 var knobList=[];
