@@ -63,17 +63,23 @@ pub fn run_body(run: &Run) -> String {
         if i > 0 {
             s.push(',');
         }
-        let h = &e.hero;
-        s.push_str(&format!(
-            "{{\"idx\":{},\"kind\":\"{}\",\"text\":\"{}\",\"hero\":{{\"level\":{},\"hp\":{},\"max_hp\":{},\"xp\":{},\"gold\":{},\"potions\":{},\"zone\":{},\"weapon\":{},\"armor\":{}}},\"mon\":",
-            e.idx, esc(e.kind), esc(&e.text), h.level, h.hp, h.max_hp, h.xp, h.gold, h.potions, h.zone, h.weapon, h.armor
-        ));
-        match &e.mon {
-            Some(m) => s.push_str(&format!(
-                "{{\"species\":{},\"level\":{},\"hp\":{},\"max_hp\":{}}}}}",
-                m.species, m.level, m.hp, m.max_hp
-            )),
-            None => s.push_str("null}"),
+        push_event(&mut s, e);
+    }
+    s.push_str("]}");
+    s
+}
+
+pub fn run_window_body(run: &Run, from: usize, count: usize) -> String {
+    let n = run.events.len();
+    let from = from.min(n);
+    let end = from.saturating_add(count).min(n);
+    let mut s = String::new();
+    s.push('{');
+    s.push_str(&head_fields(run));
+    s.push_str(&format!(",\"from\":{},\"events\":[", from));
+    for (i, e) in run.events[from..end].iter().enumerate() {
+        if i > 0 {
+            s.push(',');
         }
     }
     s.push_str("]}");
