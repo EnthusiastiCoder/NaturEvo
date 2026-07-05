@@ -1,5 +1,5 @@
 use crate::config::Config;
-use crate::sim::{simulate_with, Run};
+use crate::sim::{simulate_summary, Run, Summary};
 
 fn esc(s: &str) -> String {
     let mut o = String::with_capacity(s.len() + 2);
