@@ -474,7 +474,7 @@ function dash(){
   var lb=document.createElement("div");lb.className="kpi-label";lb.textContent=p[1];
   var tp=document.createElement("span");tp.innerHTML=tipHtml("kpi-"+p[0],p[1],INFO[p[0]]);lb.appendChild(tp);
   var vl=document.createElement("div");vl.className="kpi-value";vl.textContent=String(p[2]);
-  if(p[0]==="win-rate"){var bg=document.createElement("span");bg.className=wr>=50?"badge badge-good":"badge badge-bad";bg.textContent=wr>=50?"Above half":"Below half";vl.appendChild(bg);}
+  if(p[0]==="win-rate"){var bg=document.createElement("span");bg.className="badge";bg.textContent=s.wins+" of "+s.runs;vl.appendChild(bg);}
   d.appendChild(lb);d.appendChild(vl);D.appendChild(d);});
  $("hist-info").innerHTML=tipHtml("hist","Final level distribution",INFO.hist);$("tbl-info").innerHTML=tipHtml("table","Levels reached",INFO.table);
  var T2='<table class="table"><thead><tr><th>Level</th><th>Runs</th><th>% of runs</th><th>Cumulative %</th></tr></thead><tbody>',c2=0;
