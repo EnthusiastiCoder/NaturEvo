@@ -21,8 +21,20 @@ pub fn run_json(run: &Run) -> String {
     format!("window.RUN = {};\n", run_body(run))
 }
 
-pub fn run_body(run: &Run) -> String {
-    let mut s = String::new();
+fn head_fields(run: &Run) -> String {
+    let fw = match run.first_win_event {
+        Some(v) => v.to_string(),
+        None => "null".to_string(),
+    };
+    format!(
+        "\"seed\":{},\"won\":{},\"deaths\":{},\"final_level\":{},\"first_win_event\":{},\"end_level\":{},\"post_kills\":{},\"post_deaths\":{},\"max_stage\":{},\"capped\":{},\"total\":{}",
+        run.seed, run.won, run.deaths, run.final_level, fw, run.end_level, run.post_kills,
+        run.post_deaths, run.max_stage, run.capped, run.events.len()
+    )
+}
+
+fn push_event(s: &mut String, e: &crate::sim::Event) {
+    let h = &e.hero;
     s.push_str(&format!(
         "{{\"seed\":{},\"won\":{},\"deaths\":{},\"final_level\":{},\"events\":[",
         run.seed, run.won, run.deaths, run.final_level
