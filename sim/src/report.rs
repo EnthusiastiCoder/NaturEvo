@@ -39,6 +39,26 @@ fn push_event(s: &mut String, e: &crate::sim::Event) {
         "{{\"idx\":{},\"kind\":\"{}\",\"text\":\"{}\",\"hero\":{{\"level\":{},\"hp\":{},\"max_hp\":{},\"xp\":{},\"gold\":{},\"potions\":{},\"zone\":{},\"weapon\":{},\"armor\":{}}},\"mon\":",
         e.idx, esc(e.kind), esc(&e.text), h.level, h.hp, h.max_hp, h.xp, h.gold, h.potions, h.zone, h.weapon, h.armor
     ));
+    match &e.mon {
+        Some(m) => {
+            s.push_str(&format!(
+                "{{\"species\":{},\"level\":{},\"hp\":{},\"max_hp\":{}",
+                m.species, m.level, m.hp, m.max_hp
+            ));
+            if m.stage > 0 {
+                s.push_str(&format!(",\"stage\":{}", m.stage));
+            }
+            s.push_str("}}");
+        }
+        None => s.push_str("null}"),
+    }
+}
+
+pub fn run_body(run: &Run) -> String {
+    let mut s = String::new();
+    s.push('{');
+    s.push_str(&head_fields(run));
+    s.push_str(",\"events\":[");
     for (i, e) in run.events.iter().enumerate() {
         if i > 0 {
             s.push(',');
