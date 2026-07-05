@@ -493,7 +493,7 @@ function drawHist(s){
  for(i=0;i<N;i+=per){var sum=0;for(var j=i;j<Math.min(N,i+per);j++)sum+=hs[j];bins.push([i,Math.min(N,i+per)-1,sum]);}
  var lg=$("log-scale")&&$("log-scale").checked,f=function(v){return lg?Math.log10(1+v):v;};
  var mx=Math.max.apply(null,bins.map(function(b){return f(b[2]);}).concat([1e-9]));
- var W=Math.max(240,H.clientWidth||600),Ht=Math.max(120,H.clientHeight||220),L=40,B=20,T=8,bw=bins.length?(W-L-4)/bins.length:1,out="",ticks=[];
+ var W=H.clientWidth||600,Ht=H.clientHeight||220,L=40,B=20,T=8,bw=bins.length?(W-L-4)/bins.length:1,out="",ticks=[];
  var rawMax=Math.max.apply(null,bins.map(function(b){return b[2];}).concat([1])),top;
  if(lg){top=1;while(top<rawMax)top*=10;ticks=[0];for(var p=1;p<=top;p*=10)ticks.push(p);mx=f(top);}
  else{var nt=niceTicks(rawMax);ticks=nt;mx=nt[nt.length-1];}
