@@ -476,6 +476,8 @@ function dash(){
   var vl=document.createElement("div");vl.className="kpi-value";vl.textContent=String(p[2]);
   if(p[0]==="win-rate"){var bg=document.createElement("span");bg.className="badge";bg.textContent=s.wins+" of "+s.runs;vl.appendChild(bg);}
   d.appendChild(lb);d.appendChild(vl);D.appendChild(d);});
+ $("dcap").textContent="Win rate counts runs that won. Final level is the level where a run ended, won or not, so the median level can be high even when only some runs win.";
+ $("outcomes").innerHTML='<div class="obar" role="img" aria-label="Wins '+s.wins+', not won '+(s.runs-s.wins)+'"><div class="owin" style="width:'+wr+'%"></div><div class="olose" style="width:'+(100-wr)+'%"></div></div><div class="legend"><span><span class="dot dot-win"></span>Won '+s.wins+' ('+wr.toFixed(1)+'%)</span><span><span class="dot dot-lose"></span>Not won '+(s.runs-s.wins)+' ('+(100-wr).toFixed(1)+'%)</span><span>Avg deaths '+(+ad).toFixed(1)+' per run</span></div>';
  $("hist-info").innerHTML=tipHtml("hist","Final level distribution",INFO.hist);$("tbl-info").innerHTML=tipHtml("table","Levels reached",INFO.table);
  var T2='<table class="table"><thead><tr><th>Level</th><th>Runs</th><th>% of runs</th><th>Cumulative %</th></tr></thead><tbody>',c2=0;
  hh.forEach(function(v,l){if(v>0){c2+=v;T2+='<tr><td>'+l+'</td><td>'+v+'</td><td>'+(100*v/s.runs).toFixed(1)+'</td><td>'+(100*c2/s.runs).toFixed(1)+'</td></tr>';}});
