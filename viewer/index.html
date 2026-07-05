@@ -508,7 +508,9 @@ function drawHist(s){
   out+='<text class="htext" x="'+(L+k*bw+bw/2)+'" y="'+(Ht-5)+'" text-anchor="middle">'+lab(b)+'</text>';});
  H.innerHTML='<svg class="hsvg" viewBox="0 0 '+W+' '+Ht+'" role="img" aria-label="Final level distribution">'+out+'</svg>';
 }
-window.addEventListener("resize",function(){if(window.STATS&&!$("dashboard").classList.contains("hidden"))drawHist(window.STATS);});
+function refit(){if(window.STATS&&!$("dashboard").classList.contains("hidden"))drawHist(window.STATS);}
+window.addEventListener("resize",refit);
+if(window.ResizeObserver){try{new ResizeObserver(function(){refit();}).observe($("hist"));}catch(e){}}
 var knobList=[];
 (function(){var c=$("log-scale");if(c)c.addEventListener("change",dash);})();
 function setStatus(t){$("run-status").textContent=t||"";}
