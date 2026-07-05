@@ -36,8 +36,8 @@ fn head_fields(run: &Run) -> String {
 fn push_event(s: &mut String, e: &crate::sim::Event) {
     let h = &e.hero;
     s.push_str(&format!(
-        "{{\"seed\":{},\"won\":{},\"deaths\":{},\"final_level\":{},\"events\":[",
-        run.seed, run.won, run.deaths, run.final_level
+        "{{\"idx\":{},\"kind\":\"{}\",\"text\":\"{}\",\"hero\":{{\"level\":{},\"hp\":{},\"max_hp\":{},\"xp\":{},\"gold\":{},\"potions\":{},\"zone\":{},\"weapon\":{},\"armor\":{}}},\"mon\":",
+        e.idx, esc(e.kind), esc(&e.text), h.level, h.hp, h.max_hp, h.xp, h.gold, h.potions, h.zone, h.weapon, h.armor
     ));
     for (i, e) in run.events.iter().enumerate() {
         if i > 0 {
