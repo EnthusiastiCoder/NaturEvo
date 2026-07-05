@@ -105,3 +105,12 @@ accent: {get, set, reset}, contrast(a, b)}`.
 Axes use round ticks: the max is rounded up to 1/2/5 x 10^n and 3 to 5 evenly spaced ticks are drawn (`niceTicks`). Log
 scale uses 0, 1, 10, 100, ... Histogram x labels are every Nth bin, anchored so the last bin is always labelled
 (e.g. `39-40`) and each label is centred under its bar.
+
+## Dashboard and replay additions
+
+- `.caption` is a short muted explanation line. `.dash-side` stacks the right-hand dashboard cards.
+- Outcomes bar: `.obar` with `.owin` / `.olose` segments, `.legend` with `.dot` (`.dot-win`, `.dot-lose`) markers.
+- `.swatch.on` marks the selected accent. Scrollbars and range sliders are styled with tokens (thin, `--border`).
+- Tooltips show on hover or keyboard focus (`:focus-visible`) only, and info buttons blur after a click.
+- Drawers (`.drawer`) sit side by side; the open one grows and its body shows in the layout. The timeline card keeps a
+  minimum plot height (`#timeline-wrap`).
