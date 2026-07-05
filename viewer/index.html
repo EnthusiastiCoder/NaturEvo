@@ -485,8 +485,8 @@ function dash(){
  drawHist(s);
 }
 function niceTicks(max){
- var m=Math.max(1,max),e=Math.pow(10,Math.floor(Math.log10(m))),r=m/e,u=r<=1?1:r<=2?2:r<=5?5:10,top=u*e,st=u===1?top/2:u===2?top/2:u===5?top/5:top/5,o=[];
- if(u===1)st=top/2;for(var v=0;v<=top+st/2;v+=st)o.push(Math.round(v*1000)/1000);return o;
+ var m=Math.max(1,max),e=Math.pow(10,Math.floor(Math.log10(m))),r=m/e,u=r<=1?1:r<=2?2:r<=5?5:10,top=u*e,st=u===5?top/5:top/2,o=[];
+for(var v=0;v<=top+st/2;v+=st)o.push(Math.round(v*1000)/1000);return o;
 }
 function drawHist(s){
  var H=$("hist"),hs=s.level_hist||[],N=hs.length,per=Math.max(1,Math.ceil(N/20)),bins=[],i;
