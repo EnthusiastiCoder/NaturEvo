@@ -83,6 +83,15 @@ pub fn run_window_body(run: &Run, from: usize, count: usize) -> String {
         }
         push_event(&mut s, e);
     }
+    s.push_str("],\"level_series\":[");
+    let pts = n.min(2048);
+    for k in 0..pts {
+        if k > 0 {
+            s.push(',');
+        }
+        let i = k * n / pts;
+        s.push_str(&run.events[i].hero.level.to_string());
+    }
     s.push_str("]}");
     s
 }
