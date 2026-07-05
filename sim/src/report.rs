@@ -81,6 +81,7 @@ pub fn run_window_body(run: &Run, from: usize, count: usize) -> String {
         if i > 0 {
             s.push(',');
         }
+        push_event(&mut s, e);
     }
     s.push_str("]}");
     s
