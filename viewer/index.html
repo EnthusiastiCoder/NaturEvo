@@ -655,7 +655,9 @@ function initControls(cfg){
 $("knobs-reset").onclick=function(){knobList.forEach(function(k){$("knob-"+k.key).value=String(k.default);$("knob-"+k.key+"-num").value=String(k.default);});};
 $("random-seed").onclick=function(){$("seed").value=String(Math.floor(Math.random()*4294967296));};
 $("run-btn").onclick=function(){
- var q="/api/run?seed="+encodeURIComponent($("seed").value)+(knobList.length?"&"+knobQuery():"");
+ var sd=String($("seed").value).trim();
+ if(!/^[0-9]+$/.test(sd)){setStatus("Seed must be digits only (0-9)");return;}
+ var q="/api/run?seed="+encodeURIComponent(sd)+(knobList.length?"&"+knobQuery():"");
  api(q,"Running...").then(function(j){if(j){window.__jv.setRun(j);showTab("r");}});
 };
 $("batch-btn").onclick=function(){
