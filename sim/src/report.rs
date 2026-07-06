@@ -145,6 +145,10 @@ pub fn batch_with(runs: u32, threads: usize, cfg: &Config) -> BatchStats {
     let mut wins = 0u32;
     let mut deaths = 0u64;
     let mut lv = 0u64;
+    let mut ev = 0u64;
+    let mut fw = 0u64;
+    let mut pk = 0u64;
+    let mut pd = 0u64;
     let mut hist = vec![0u32; 41];
     for (w, d, l) in &results {
         if *w {
