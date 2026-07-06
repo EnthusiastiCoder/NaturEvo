@@ -460,7 +460,17 @@ function watchDpr(){try{var q=window.matchMedia("(resolution: "+(window.devicePi
  var f=function(){timeline();refit();watchDpr();};if(q.addEventListener)q.addEventListener("change",f,{once:true});else if(q.addListener)q.addListener(f);}catch(e){}}
 watchDpr();
 window.addEventListener("jv-themechange",function(){timeline();if(!$("dashboard").classList.contains("hidden"))dash();});
-function step(){var sp=+$("speed").value;cur=Math.min(ev.length-1,cur+sp);render();if(cur>=ev.length-1)stop();}
+var SMIN=0.25,SMAX=4096,speedVal=1,lastTick=0,acc=0;
+function sPos(v){return Math.round(Math.log(v/SMIN)/Math.log(SMAX/SMIN)*1000);}
+function sSnap(v){var k=Math.round(Math.log(v)/Math.LN2),p=Math.pow(2,k);if(Math.abs(v-p)<=0.02*p)return p;return Number(v.toPrecision(3));}
+function sClamp(v){return Math.max(SMIN,Math.min(SMAX,v));}
+function setSpeed(v,fromSlider){speedVal=v;if(fromSlider)$("speed-num").value=String(v);else $("speed").value=String(sPos(v));}
+$("speed").value=String(sPos(1));$("speed-num").value="1";
+$("speed").oninput=$("speed").onchange=function(){var v=sClamp(SMIN*Math.pow(SMAX/SMIN,(+this.value)/1000));v=sClamp(sSnap(v));setSpeed(v,true);};
+$("speed-num").oninput=function(){var v=parseFloat(this.value);if(isFinite(v)){speedVal=sClamp(v);$("speed").value=String(sPos(speedVal));}};
+$("speed-num").onchange=function(){var v=parseFloat(this.value);if(!isFinite(v)){this.value=String(speedVal);return;}v=sClamp(v);this.value=String(v);setSpeed(v,false);};
+function step(){var now=Date.now(),dt=Math.max(0,now-lastTick);lastTick=now;acc+=10*speedVal*dt/1000;var n=Math.floor(acc);acc-=n;
+ if(n>0){cur=Math.min(ev.length-1,cur+n);render();}if(cur>=ev.length-1)stop();}
 function playIcon(p){var b=$("play");b.innerHTML='<svg class="icon" aria-hidden="true"><use href="#i-'+(p?"pause":"play")+'"/></svg>';b.setAttribute("aria-label",p?"Pause":"Play");}
 function stop(){clearInterval(timer);timer=null;playIcon(false);}
 $("play").onclick=function(){if(timer)return stop();if(cur>=ev.length-1)cur=0;playIcon(true);timer=setInterval(step,100);};
