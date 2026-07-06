@@ -385,7 +385,7 @@ Array.prototype.forEach.call(document.querySelectorAll(".swatch"),function(s){
 });
 
 /* ---- popovers and drawers: opening one closes its siblings, Escape closes popovers and tooltips ---- */
-var POP=["batch-box","knob-box","accent-box"],DRW=["log-box","more-box"];
+var POP=["batch-box","knob-box","accent-box"];
 function group(ids){var els=ids.map($).filter(Boolean);els.forEach(function(d){
  d.addEventListener("toggle",function(){if(d.open)els.forEach(function(o){if(o!==d)o.open=false;});});});return els;}
 var pops=group(POP);group(DRW);
