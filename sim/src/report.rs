@@ -186,6 +186,7 @@ pub fn stats_json(s: &BatchStats) -> String {
 
 pub fn stats_body(s: &BatchStats) -> String {
     let hist: Vec<String> = s.level_hist.iter().map(|v| v.to_string()).collect();
+    let sh: Vec<String> = s.stage_hist.iter().map(|v| v.to_string()).collect();
     format!(
         "{{\"runs\":{},\"wins\":{},\"avg_deaths\":{},\"avg_final_level\":{},\"level_hist\":[{}]}}",
         s.runs, s.wins, s.avg_deaths, s.avg_final_level, hist.join(",")
