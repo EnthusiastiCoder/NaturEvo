@@ -388,7 +388,7 @@ Array.prototype.forEach.call(document.querySelectorAll(".swatch"),function(s){
 var POP=["batch-box","knob-box","accent-box"];
 function group(ids){var els=ids.map($).filter(Boolean);els.forEach(function(d){
  d.addEventListener("toggle",function(){if(d.open)els.forEach(function(o){if(o!==d)o.open=false;});});});return els;}
-var pops=group(POP);group(DRW);
+var pops=group(POP);
 document.addEventListener("keydown",function(e){
  if(e.key==="Escape"){root.classList.add("tips-off");pops.forEach(function(d){d.open=false;});}
 });
