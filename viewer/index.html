@@ -130,7 +130,8 @@ input[type=checkbox]{accent-color:var(--accent-text)}
 .swatch.on{border-color:var(--fg);box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--ring)}
 .drawers{flex:none;display:flex;flex-wrap:nowrap;gap:var(--s2);align-items:flex-start}
 #log{position:relative;flex:1;overflow:auto;min-height:0;font-family:ui-monospace,Consolas,monospace;font-size:var(--fs-xs);line-height:1.5}
-#log div{padding:0 var(--s2);cursor:pointer;white-space:nowrap}
+#log div{height:var(--s5);line-height:var(--s5);padding:0 var(--s2);cursor:pointer;white-space:nowrap}
+#log div.lspace{padding:0;cursor:default}
 #log div:hover{background:var(--card-2)}
 #log div.cur{background:var(--card-2);box-shadow:inset 2px 0 var(--accent-text)}
 
