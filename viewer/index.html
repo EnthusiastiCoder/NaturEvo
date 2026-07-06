@@ -555,7 +555,7 @@ function logCur(force){
 })();
 window.__jv={setRun:function(r){run=r;ev=(r&&r.events)||[];cur=0;logDirty=true;$("scrub").max=Math.max(0,ev.length-1);render();},
  goto:function(i){cur=i;render();},
- logIndices:function(){var o=[],ch=$("log").children;for(var i=0;i<ch.length;i++)o.push(+ch[i].dataset.i);return o;},
+ logIndices:function(){var o=[],ch=$("log").children;for(var i=0;i<ch.length;i++)if(ch[i].dataset&&ch[i].dataset.i!==undefined)o.push(+ch[i].dataset.i);return o;},
  theme:{get:function(){return theme;},set:function(t){setTheme(t,true);},
   accent:{get:function(){return accent;},set:function(c){setAccent(c,true);},reset:resetAccent},contrast:contrast}};
 
