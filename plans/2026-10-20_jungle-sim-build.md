@@ -25,3 +25,10 @@ sim/src/report.rs:
 - `pub fn batch(runs:u32, threads:usize) -> BatchStats` simulates seeds 0..runs, results independent of thread count.
 - `pub fn stats_json(s:&BatchStats) -> String` (`window.STATS = {...};`).
 sim/src/main.rs: `run --seed N [--out path]` default viewer/data/run.js; `batch --runs N [--out path]` default viewer/data/stats.js; prints win rate and elapsed. Paths are relative to repo root (create dirs if missing).
+
+## Workstreams (run in order; each depends on the previous; all model sonnet)
+### WS1 core-sim (sonnet)
+Files: sim/src/lib.rs, sim/src/sim.rs (commit separately: lib.rs, then sim.rs). Implement Hero AI + combat + journey loop per the Fixed API and plans/jungle-sim.md rules: hero starts level 1 at Base Camp; loop: shop gear at camp (buy best affordable weapon/armor, potions at POTION_COST up to 5), travel to highest zone whose min <= level (zone 8 King's Grove only when level >= 32), fight monsters of species from zone (level random in zone min..=max, scaled stats via monster_stat), turn order by spd; 8 behaviors each with a distinct effect (Aggressive: +atk; Pack: spawns 2-3 weak copies as one bundled stronger foe; Defensive: halves damage first 2 turns; Berserker: atk up when hp<50%; Venomous: poison dot; Trickster: 25% dodge; Healer: heals 10%/turn; Charger: big hit every 3rd turn). Hero skills unlock by level (Power Strike L3, Brace L6 used vs Charger, Stun L10 used vs Charger/Berserker, Heal L14). Use potion when hp<35%; retreat to camp to rest and shop when potions=0 and hp<50%; death = respawn at camp, lose 25% gold, deaths++. Win = defeat Jungle King. Every action emits an Event with snapshots.
+Tests that must pass: tests/sim_tests.rs (written already).
+Verify: `cargo test --test sim_tests` and `cargo build --release`.
+Acceptance: determinism, invariants, termination.
