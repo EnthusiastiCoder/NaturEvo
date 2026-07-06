@@ -154,6 +154,10 @@ pub fn batch_with(runs: u32, threads: usize, cfg: &Config) -> BatchStats {
     for r in &results {
         if r.won {
             wins += 1;
+            fw += r.first_win_event.unwrap_or(0) as u64;
+            pk += r.post_kills as u64;
+            pd += r.post_deaths as u64;
+            stage_hist[(r.max_stage as usize).min(4)] += 1;
         }
         deaths += *d as u64;
         lv += *l as u64;
