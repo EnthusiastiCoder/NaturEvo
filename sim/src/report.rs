@@ -137,8 +137,7 @@ pub fn batch_with(runs: u32, threads: usize, cfg: &Config) -> BatchStats {
         for (ci, part) in results.chunks_mut(chunk).enumerate() {
             sc.spawn(move || {
                 for (j, slot) in part.iter_mut().enumerate() {
-                    let r = simulate_with((ci * chunk + j) as u64, cfg);
-                    *slot = (r.won, r.deaths, r.final_level);
+                    *slot = simulate_summary((ci * chunk + j) as u64, cfg);
                 }
             });
         }
