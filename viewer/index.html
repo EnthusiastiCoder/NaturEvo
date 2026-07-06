@@ -431,6 +431,12 @@ function render(){
  if(logOpen())logCur(false);
  timeline();
 }
+function fitCanvas(cv){
+ var dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;
+ if(w>0&&h>0){var bw=Math.round(w*dpr),bh=Math.round(h*dpr);if(cv.width!==bw)cv.width=bw;if(cv.height!==bh)cv.height=bh;}
+ var g=cv.getContext("2d");if(g.setTransform)g.setTransform(dpr,0,0,dpr,0,0);
+ return{g:g,W:w>0?w:cv.width/dpr,H:h>0?h:cv.height/dpr,dpr:dpr};
+}
 function timeline(){
  var cv=$("timeline");
  if(cv.clientWidth>0&&cv.width!==cv.clientWidth)cv.width=cv.clientWidth;
