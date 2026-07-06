@@ -11,3 +11,10 @@ Build the jungle monster sim game with the cto-orchestrator, using only Sonnet a
 - **Impact:** User frustration, a wasted Opus run, and a restarted planner.
 - **How to avoid:** When the user restricts models, set `model` and `effort` explicitly on every Agent call. Never rely on an agent type's default.
 - **User feedback:** Accurate.
+
+### 2. Overlapping work on WS4 and WS2 verification
+- **What happened:** I started the WS4 implementer while the WS2 verifier was still running, so a WS2 fix could have collided with WS4's work. I also ran WS1 alone first without re-reading the plan to see whether WS3 could start in parallel.
+- **Root cause:** I relied on the compaction summary's ordering instead of the plan's dependency notes.
+- **Impact:** No actual conflict occurred, but WS3 started later than it could have.
+- **How to avoid:** Check the plan's dependency section before sequencing workstreams, and flag any overlap to the user.
+- **User feedback:** Accurate.
