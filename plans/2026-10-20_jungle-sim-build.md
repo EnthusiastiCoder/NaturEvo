@@ -32,3 +32,8 @@ Files: sim/src/lib.rs, sim/src/sim.rs (commit separately: lib.rs, then sim.rs). 
 Tests that must pass: tests/sim_tests.rs (written already).
 Verify: `cargo test --test sim_tests` and `cargo build --release`.
 Acceptance: determinism, invariants, termination.
+
+### WS2 report-cli (sonnet)
+Files: sim/src/report.rs, sim/src/main.rs (separate commits). Implement per Fixed API. Threads via std::thread::scope chunking seeds; aggregate deterministically.
+Tests: tests/report_tests.rs.
+Verify: cargo test; `cargo run --release -- run --seed 1` twice gives byte-identical viewer/data/run.js (compare with `cmp`); batch --runs 2000 runs in under ~10s.
