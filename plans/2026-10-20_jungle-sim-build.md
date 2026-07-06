@@ -37,3 +37,8 @@ Acceptance: determinism, invariants, termination.
 Files: sim/src/report.rs, sim/src/main.rs (separate commits). Implement per Fixed API. Threads via std::thread::scope chunking seeds; aggregate deterministically.
 Tests: tests/report_tests.rs.
 Verify: cargo test; `cargo run --release -- run --seed 1` twice gives byte-identical viewer/data/run.js (compare with `cmp`); batch --runs 2000 runs in under ~10s.
+
+### WS3 viewer (sonnet)
+Files: viewer/index.html (single file, inline CSS/JS, loads data/run.js and data/stats.js via script tags, works from file://, tolerates missing stats.js). Replay tab: play/pause, speed select (1x,4x,16x,64x), range slider scrub over events, battle panel (hero emoji 🧙 + HP bar, monster emoji from species list embedded in the page + HP bar, zone), scrolling log with current line highlighted (click a line to jump), level timeline (canvas line of level vs event idx). Dashboard tab: win rate, avg deaths, avg final level, level histogram bars (canvas/div). Add viewer/data/.gitkeep if data is gitignored-free; commit generated data files NOT required.
+Tests: tests/viewer_check.mjs (node script: parses index.html, checks required element ids: tab-replay, tab-dashboard, play, speed, scrub, log, battle, timeline, hist).
+Verify: `node tests/viewer_check.mjs` plus a node syntax check of the inline script.
