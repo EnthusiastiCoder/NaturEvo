@@ -407,8 +407,8 @@ function render(){
  if(!ev.length){$("info").textContent="No run data (data/run.js missing)";$("outcome").textContent="No run";
   ["sum-level","sum-hp","sum-zone","sum-progress","sum-gold","sum-potions"].forEach(function(i){$(i).textContent="-";});$("sum-hpbar").style.width="0";return;}
  var e=ev[cur],h=e.hero||{},m=e.mon;
- $("scrub").value=cur;
- $("info").textContent="seed "+run.seed+" · "+(ev.length-1)+" events";
+ $("scrub").value=String(cur);
+ $("info").textContent="event "+cur+" / "+(ev.length-1)+" · seed "+run.seed;
  $("hemo").textContent=SP[SP.length-1][1];
  $("hbar").style.width=pct(h.hp,h.max_hp)+"%";
  $("hhp").textContent="HP "+h.hp+"/"+h.max_hp+" · Lv "+h.level;$("last").textContent=e.text||"";$("last").title=e.text||"";
