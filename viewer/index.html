@@ -412,8 +412,7 @@ function render(){
  $("hemo").textContent=SP[SP.length-1][1];
  $("hbar").style.width=pct(h.hp,h.max_hp)+"%";
  $("hhp").textContent="HP "+h.hp+"/"+h.max_hp+" · Lv "+h.level;$("last").textContent=e.text||"";$("last").title=e.text||"";
- var wp=WP[h.weapon]||["?",0],ar=AR[h.armor]||["?",0],ct=counts();
- $("hmeta").textContent="Weapon "+wp[0]+" (+"+wp[1]+" attack)  \u00b7  Armor "+ar[0]+" (+"+ar[1]+" defense)  \u00b7  XP "+h.xp+"  \u00b7  Fights won "+ct.k[cur]+"  \u00b7  Deaths "+ct.d[cur]+"  \u00b7  Skills used "+ct.s[cur];
+ heroChips(h);
  var z=ZN[h.zone]||["?",""];$("zone").textContent=z[1]+" "+z[0];
  if(m){var s=SP[m.species]||["?","?"];$("memo").textContent=s[1];$("mbar").style.width=pct(m.hp,m.max_hp)+"%";
   $("mname").textContent=s[0];$("mhp").textContent="HP "+m.hp+"/"+m.max_hp+" · Lv "+m.level;}
