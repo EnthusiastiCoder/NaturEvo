@@ -172,6 +172,11 @@ pub fn batch_with(runs: u32, threads: usize, cfg: &Config) -> BatchStats {
         avg_deaths: deaths as f64 / n,
         avg_final_level: lv as f64 / n,
         level_hist: hist,
+        avg_events: ev as f64 / n,
+        avg_first_win_event: if wins > 0 { fw as f64 / w } else { 0.0 },
+        avg_post_kills: if wins > 0 { pk as f64 / w } else { 0.0 },
+        avg_post_deaths: if wins > 0 { pd as f64 / w } else { 0.0 },
+        stage_hist,
     }
 }
 
