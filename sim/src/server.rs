@@ -1,5 +1,5 @@
 use crate::config::{knobs, Config};
-use crate::report::{batch_with, run_body, stats_body};
+use crate::report::{batch_with, run_body, run_window_body, stats_body};
 use crate::sim::simulate_with;
 use std::io::{Read, Write};
 use std::net::{Ipv4Addr, TcpListener, TcpStream};
@@ -7,6 +7,9 @@ use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 const MAX_RUNS: u32 = 20000;
+const MAX_FULL_EVENTS: usize = 200_000;
+const MAX_BATCH_EVENTS: u64 = 200_000_000;
+const MAX_WINDOW: usize = 5000;
 const MAX_REQ: usize = 8 * 1024;
 
 pub struct Response {
@@ -72,7 +75,7 @@ fn config_body() -> String {
             )
         })
         .collect();
-    format!("{{\"knobs\":[{}],\"max_runs\":{}}}", items.join(","), MAX_RUNS)
+    format!("{{\"knobs\":[{}],\"max_runs\":{},\"max_events\":{}}}", items.join(","), MAX_RUNS, crate::config::MAX_EVENT_CAP)
 }
 
 fn static_file(root: &Path, name: &str, ct: &'static str) -> Response {
@@ -98,16 +101,38 @@ pub fn route(root: &Path, method: &str, target: &str, host: Option<&str>) -> Res
         "/api/config" => json_resp(200, config_body()),
         "/api/run" => {
             let mut seed: u64 = 1;
+            let mut from: Option<usize> = None;
+            let mut count: Option<usize> = None;
             for (k, v) in &pairs {
-                if *k == "seed" {
-                    seed = match v.parse() {
-                        Ok(s) => s,
-                        Err(_) => return err(400, "seed: not a valid u64"),
-                    };
+                match *k {
+                    "seed" => {
+                        seed = match v.parse() {
+                            Ok(s) => s,
+                            Err(_) => return err(400, "seed: not a valid u64"),
+                        };
+                    }
+                    "from" => match v.parse::<u32>() {
+                        Ok(n) => from = Some(n as usize),
+                        Err(_) => return err(400, "from: not a valid non-negative integer"),
+                    },
+                    "count" => match v.parse::<usize>() {
+                        Ok(n) if (1..=MAX_WINDOW).contains(&n) => count = Some(n),
+                        _ => return err(400, "count: must be an integer in 1..=5000"),
+                    },
+                    _ => {}
                 }
             }
-            match build_config(&pairs, &["seed"]) {
-                Ok(cfg) => json_resp(200, run_body(&simulate_with(seed, &cfg))),
+            match build_config(&pairs, &["seed", "from", "count"]) {
+                Ok(cfg) => {
+                    let run = simulate_with(seed, &cfg);
+                    if from.is_some() || count.is_some() {
+                        json_resp(200, run_window_body(&run, from.unwrap_or(0), count.unwrap_or(2000)))
+                    } else if run.events.len() > MAX_FULL_EVENTS {
+                        err(400, "run too large for a full response: use from and count")
+                    } else {
+                        json_resp(200, run_body(&run))
+                    }
+                }
                 Err(e) => err(400, &e),
             }
         }
@@ -123,6 +148,9 @@ pub fn route(root: &Path, method: &str, target: &str, host: Option<&str>) -> Res
             }
             match build_config(&pairs, &["runs"]) {
                 Ok(cfg) => {
+                    if runs as u64 * cfg.event_cap as u64 > MAX_BATCH_EVENTS {
+                        return err(400, "runs * event_cap exceeds 200000000");
+                    }
                     let t = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(4);
                     json_resp(200, stats_body(&batch_with(runs, t, &cfg)))
                 }
