@@ -281,6 +281,11 @@ input[type=checkbox]{accent-color:var(--accent-text)}
 </div>
 </main>
 </div>
+<dialog id="log-modal" aria-labelledby="log-title"><div class="modal-in">
+ <div class="modal-head"><h2 id="log-title" class="card-title">Event log</h2><button type="button" id="log-close" class="btn btn-outline"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>Close</button></div>
+ <div class="mtools"><input id="log-search" class="input" type="search" aria-label="Search events" placeholder="Search events"><span class="selectwrap"><select id="log-group" class="input select" aria-label="Group events"><option value="type" selected>Group by type</option><option value="zone">Group by zone</option><option value="none">No grouping</option></select><svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></span><span id="log-count" class="label" aria-live="polite"></span></div>
+ <div id="log"></div>
+</div></dialog>
 <script src="data/run.js" onerror="void 0"></script>
 <script src="data/stats.js" onerror="void 0"></script>
 <script>
