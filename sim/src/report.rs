@@ -116,8 +116,22 @@ pub fn batch(runs: u32, threads: usize) -> BatchStats {
 
 pub fn batch_with(runs: u32, threads: usize, cfg: &Config) -> BatchStats {
     let threads = threads.max(1);
-    // (won, deaths, final_level) per seed, indexed by seed
-    let mut results = vec![(false, 0u32, 0u32); runs as usize];
+    let mut results: Vec<Summary> = Vec::with_capacity(runs as usize);
+    results.resize(
+        runs as usize,
+        Summary {
+            won: false,
+            deaths: 0,
+            final_level: 0,
+            first_win_event: None,
+            events: 0,
+            end_level: 0,
+            post_kills: 0,
+            post_deaths: 0,
+            max_stage: 0,
+            capped: false,
+        },
+    );
     let chunk = ((runs as usize + threads - 1) / threads).max(1);
     std::thread::scope(|sc| {
         for (ci, part) in results.chunks_mut(chunk).enumerate() {
