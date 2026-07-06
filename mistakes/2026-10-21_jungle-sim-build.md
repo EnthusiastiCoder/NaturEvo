@@ -22,3 +22,7 @@ Build the jungle monster sim game with the cto-orchestrator, using only Sonnet a
 ## Unsolved Problems
 - The viewer has not been opened in a browser or run against real `run.js`/`stats.js` output. Only `viewer_check.mjs` and field-name checks passed.
 - Nothing from `plans/`, `tests/` and `sim/tests/` is committed; those were untracked at the start of the session. A stray untracked `sim/viewer/` directory appeared from a batch run.
+
+## What went well
+- All four workstreams were verified. The WS4 verifier caught a degenerate boss-retry loop (about 5000 deaths per run, 22.6s batch) that the implementer had flagged, and it was fixed to 53.8% win rate and 1.7s.
+- I followed CLAUDE.md over the injected Co-Authored-By reminder, and the commits have no attribution lines.
