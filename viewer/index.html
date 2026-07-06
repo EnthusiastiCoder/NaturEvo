@@ -428,13 +428,7 @@ function render(){
  if(last)oc.textContent=run.won?"WON":"LOST";
  else{oc.textContent="In progress";var so=document.createElement("span");so.className="sr";so.textContent=" at event "+cur;oc.appendChild(so);}
  oc.className=last?(run.won?"badge badge-good":"badge badge-bad"):"badge";
- var L=$("log");
- if(logFirst<0||cur<logLast||cur>logLast+150){logFirst=Math.max(0,cur-150);logLast=logFirst-1;L.innerHTML="";}
- for(var i=logLast+1;i<=cur;i++){var d=document.createElement("div");d.textContent=i+" ["+ev[i].kind+"] "+ev[i].text;d.dataset.i=String(i);
-  d.onclick=function(){cur=+this.dataset.i;render();};L.appendChild(d);}
- logLast=cur;
- var prev=L.querySelector(".cur");if(prev)prev.className="";
- var c=L.children[cur-logFirst];if(c){c.className="cur";L.scrollTop=c.offsetTop-L.clientHeight/2;}
+ if(logOpen())logCur(false);
  timeline();
 }
 function timeline(){
