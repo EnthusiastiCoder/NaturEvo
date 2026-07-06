@@ -301,7 +301,7 @@ function counts(){if(cnt&&cnt.ev===ev)return cnt;var k=[],d=[],sk=[],a=0,b=0,c=0
  cnt={ev:ev,k:k,d:d,s:sk};return cnt;}
 var $=function(i){return document.getElementById(i)};
 var root=document.documentElement;
-var run=window.RUN||null, ev=(run&&run.events)||[], cur=0, timer=null, logFirst=-1, logLast=-1;
+var run=window.RUN||null, ev=(run&&run.events)||[], cur=0, timer=null;
 
 /* ---- tooltip text map and helper (see viewer/STYLE.md) ---- */
 var INFO={"win-rate":"Share of simulated runs that ended with the hero winning.","avg-deaths":"Average number of hero deaths per run.","avg-level":"Average hero level at the end of a run.","runs":"Number of simulated runs in this batch.","median":"Median final level: half of the runs ended at or below this level.","hist":"Runs grouped by final level, in at most 20 bins. Hover a bar for exact counts. Log scale helps when one level dominates.","table":"Runs per final level with share of all runs and cumulative share. Only levels that were reached are listed."};
