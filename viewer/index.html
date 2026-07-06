@@ -438,10 +438,8 @@ function fitCanvas(cv){
  return{g:g,W:w>0?w:cv.width/dpr,H:h>0?h:cv.height/dpr,dpr:dpr};
 }
 function timeline(){
- var cv=$("timeline");
- if(cv.clientWidth>0&&cv.width!==cv.clientWidth)cv.width=cv.clientWidth;
- if(cv.clientHeight>0&&cv.height!==cv.clientHeight)cv.height=cv.clientHeight;
- var g=cv.getContext("2d"),W=cv.width,H=cv.height,n=ev.length;
+ var cv=$("timeline"),fc=fitCanvas(cv);
+ var g=fc.g,W=fc.W,H=fc.H,n=ev.length;
  g.clearRect(0,0,W,H);if(!n)return;
  var mx=1;for(var i=0;i<n;i++)mx=Math.max(mx,ev[i].hero.level);
  var yt=niceTicks(mx),ytop=yt[yt.length-1],xt=niceTicks(Math.max(1,n-1)),xtop=xt[xt.length-1];
