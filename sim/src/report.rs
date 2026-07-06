@@ -165,6 +165,7 @@ pub fn batch_with(runs: u32, threads: usize, cfg: &Config) -> BatchStats {
         hist[(r.final_level as usize).min(40)] += 1;
     }
     let n = runs.max(1) as f64;
+    let w = if wins > 0 { wins as f64 } else { 1.0 };
     BatchStats {
         runs,
         wins,
