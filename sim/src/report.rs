@@ -159,9 +159,10 @@ pub fn batch_with(runs: u32, threads: usize, cfg: &Config) -> BatchStats {
             pd += r.post_deaths as u64;
             stage_hist[(r.max_stage as usize).min(4)] += 1;
         }
-        deaths += *d as u64;
-        lv += *l as u64;
-        hist[(*l as usize).min(40)] += 1;
+        deaths += r.deaths as u64;
+        lv += r.final_level as u64;
+        ev += r.events as u64;
+        hist[(r.final_level as usize).min(40)] += 1;
     }
     let n = runs.max(1) as f64;
     BatchStats {
