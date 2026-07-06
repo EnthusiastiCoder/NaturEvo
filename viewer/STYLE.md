@@ -114,3 +114,13 @@ scale uses 0, 1, 10, 100, ... Histogram x labels are every Nth bin, anchored so 
 - Tooltips show on hover or keyboard focus (`:focus-visible`) only, and info buttons blur after a click.
 - Drawers (`.drawer`) sit side by side; the open one grows and its body shows in the layout. The timeline card keeps a
   minimum plot height (`#timeline-wrap`).
+
+## Event log modal, hero chips, speed
+
+- `#log-modal` is a `<dialog>` opened with `showModal()` from `#log-open`. `.modal-in` is its padded flex column,
+  `.modal-head` its title row, `.mtools` the search / group / count row. `#log` is the only scroller and is windowed
+  (fixed `--s5` rows; `.lrow` event rows, `.lhead` collapsible group headers with `aria-expanded`, `.lspace` spacers).
+- `#hero-details` holds `.chip` stat chips (`.chip-k` label, `.chip-v` value) inside the battle card.
+- Speed is a logarithmic range `#speed` (0.25 to 4096) plus a numeric `#speed-num`; base rate is 10 events per second.
+- `#seed` is a wide text input (digits only, 24ch).
+- Canvases are sized to round(CSS size x devicePixelRatio) with a matching transform (`fitCanvas`).
