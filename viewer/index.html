@@ -425,7 +425,8 @@ function render(){
  $("sum-progress").textContent=cur+" / "+(ev.length-1);
  $("sum-gold").textContent=String(h.gold);
  $("sum-potions").textContent=String(h.potions);
- oc.textContent=last?(run.won?"WON":"LOST"):"In progress at event "+cur;
+ if(last)oc.textContent=run.won?"WON":"LOST";
+ else{oc.textContent="In progress";var so=document.createElement("span");so.className="sr";so.textContent=" at event "+cur;oc.appendChild(so);}
  oc.className=last?(run.won?"badge badge-good":"badge badge-bad"):"badge";
  var L=$("log");
  if(logFirst<0||cur<logLast||cur>logLast+150){logFirst=Math.max(0,cur-150);logLast=logFirst-1;L.innerHTML="";}
