@@ -18,3 +18,7 @@ Build the jungle monster sim game with the cto-orchestrator, using only Sonnet a
 - **Impact:** No actual conflict occurred, but WS3 started later than it could have.
 - **How to avoid:** Check the plan's dependency section before sequencing workstreams, and flag any overlap to the user.
 - **User feedback:** Accurate.
+
+## Unsolved Problems
+- The viewer has not been opened in a browser or run against real `run.js`/`stats.js` output. Only `viewer_check.mjs` and field-name checks passed.
+- Nothing from `plans/`, `tests/` and `sim/tests/` is committed; those were untracked at the start of the session. A stray untracked `sim/viewer/` directory appeared from a batch run.
