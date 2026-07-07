@@ -52,3 +52,6 @@ Placed under sim/tests (Cargo integration tests) plus tests/viewer_check.mjs.
 WS1 (sim/tests/sim_tests.rs): same_seed_identical (two simulate(7) runs equal in event count, texts, final snapshots); different_seeds_differ; hp_never_negative_and_le_max across 20 seeds; idx_consecutive; terminates under 300_000 events; xp_to_next_strictly_increasing 1..=60; monster_stat_monotonic for all species bases levels 1..=40; final_level>=1 and events nonempty; every event kind is from the allowed list.
 WS2 (sim/tests/report_tests.rs): run_json starts with "window.RUN" and ends with ";" and is byte-identical for same seed; json escapes quotes in text; batch(50,1) == batch(50,4) fields; level_hist sums to runs; stats_json contains "wins"; win_rate_sane (500 runs in 0.30..=0.90) - this one expected to fail until WS4.
 WS3: tests/viewer_check.mjs.
+
+## Acceptance criteria
+All tests pass; batch 2000 runs completes in seconds with win rate 30-90%; identical bytes for same seed; viewer opens from file:// and scrubs any event showing hero/monster HP and level; commits are one-file, on feat/jungle-sim, no Co-Authored-By.
