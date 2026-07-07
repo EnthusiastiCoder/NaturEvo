@@ -55,3 +55,6 @@ WS3: tests/viewer_check.mjs.
 
 ## Acceptance criteria
 All tests pass; batch 2000 runs completes in seconds with win rate 30-90%; identical bytes for same seed; viewer opens from file:// and scrubs any event showing hero/monster HP and level; commits are one-file, on feat/jungle-sim, no Co-Authored-By.
+
+## Open questions
+None.
