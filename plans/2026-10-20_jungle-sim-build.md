@@ -46,3 +46,9 @@ Verify: `node tests/viewer_check.mjs` plus a node syntax check of the inline scr
 ### WS4 tuning-readme (sonnet)
 Files: sim/src/data.rs and/or sim/src/sim.rs numbers only (separate commits), README.md. Run batch --runs 2000; adjust monster_stat scaling/gold/XP until win rate within 30-90% (aim ~60%) and avg deaths sane; then write README (build, run, view, rules) and commit. Test: tests/report_tests.rs balance test (`win_rate_sane`, 500 runs, 0.30..=0.90).
 Verify: batch output shown, all tests pass.
+
+## Test cases
+Placed under sim/tests (Cargo integration tests) plus tests/viewer_check.mjs.
+WS1 (sim/tests/sim_tests.rs): same_seed_identical (two simulate(7) runs equal in event count, texts, final snapshots); different_seeds_differ; hp_never_negative_and_le_max across 20 seeds; idx_consecutive; terminates under 300_000 events; xp_to_next_strictly_increasing 1..=60; monster_stat_monotonic for all species bases levels 1..=40; final_level>=1 and events nonempty; every event kind is from the allowed list.
+WS2 (sim/tests/report_tests.rs): run_json starts with "window.RUN" and ends with ";" and is byte-identical for same seed; json escapes quotes in text; batch(50,1) == batch(50,4) fields; level_hist sums to runs; stats_json contains "wins"; win_rate_sane (500 runs in 0.30..=0.90) - this one expected to fail until WS4.
+WS3: tests/viewer_check.mjs.
