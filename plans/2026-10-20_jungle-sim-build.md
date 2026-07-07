@@ -42,3 +42,7 @@ Verify: cargo test; `cargo run --release -- run --seed 1` twice gives byte-ident
 Files: viewer/index.html (single file, inline CSS/JS, loads data/run.js and data/stats.js via script tags, works from file://, tolerates missing stats.js). Replay tab: play/pause, speed select (1x,4x,16x,64x), range slider scrub over events, battle panel (hero emoji 🧙 + HP bar, monster emoji from species list embedded in the page + HP bar, zone), scrolling log with current line highlighted (click a line to jump), level timeline (canvas line of level vs event idx). Dashboard tab: win rate, avg deaths, avg final level, level histogram bars (canvas/div). Add viewer/data/.gitkeep if data is gitignored-free; commit generated data files NOT required.
 Tests: tests/viewer_check.mjs (node script: parses index.html, checks required element ids: tab-replay, tab-dashboard, play, speed, scrub, log, battle, timeline, hist).
 Verify: `node tests/viewer_check.mjs` plus a node syntax check of the inline script.
+
+### WS4 tuning-readme (sonnet)
+Files: sim/src/data.rs and/or sim/src/sim.rs numbers only (separate commits), README.md. Run batch --runs 2000; adjust monster_stat scaling/gold/XP until win rate within 30-90% (aim ~60%) and avg deaths sane; then write README (build, run, view, rules) and commit. Test: tests/report_tests.rs balance test (`win_rate_sane`, 500 runs, 0.30..=0.90).
+Verify: batch output shown, all tests pass.
