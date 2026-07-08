@@ -50,3 +50,10 @@ Files / commits: 1) sim/src/server.rs 2) sim/src/lib.rs (add `pub mod server;`) 
 Tests: sim/tests/server_tests.rs (written).
 Acceptance: all server tests pass; manual: `cargo run --release -- serve --port 8099`, `curl 127.0.0.1:8099/api/run?seed=1` byte-equal body to run_body(simulate(1)); `curl` with Host: evil.com gets 403; runs=20001 gets 400.
 Verify: `cargo test --release`; the curl checks.
+
+### D viewer-log-fixes (sonnet)
+Task: fix the two log bugs; add `window.__jv` hook (setRun/goto/logIndices) now so tests run.
+Files / commits: 1) viewer/index.html (css `#log{position:relative}` + log render logic + hook; may be split in two commits only if separable, otherwise one).
+Tests: tests/viewer_log_check.mjs (written; node vm with stub DOM) and tests/viewer_check.mjs (existing).
+Acceptance: at cur=0 logIndices() == [0]; at cur=k it ends with k and never exceeds k; backward scrub rebuilds correctly; static check that CSS contains `#log{...position:relative`.
+Verify: `node tests/viewer_log_check.mjs && node tests/viewer_check.mjs`; manual optional via file://.
