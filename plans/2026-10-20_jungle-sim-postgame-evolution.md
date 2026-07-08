@@ -41,3 +41,6 @@ Verify: `cargo test --release`.
 
 ### B report-stats (sonnet)
 Task: run_body fields, run_window_body, lean batch_with, BatchStats fields, stats_body. Commit: sim/src/report.rs. Tests: postgame_tests.rs (report/stats parts), report_tests.rs, report_cfg_tests.rs. Acceptance: old fields unchanged, thread independent, batch(2000) < 15 s test and ~6 s manual: `cargo run --release -- batch --runs 2000`.
+
+### C server-api (sonnet)
+Task: server.rs validation/caps/window endpoint/config max_events; README.md section (new knobs, caps, window params); main.rs `run` unchanged (writes full run.js; add `--cap N` optional). Commits: server.rs, main.rs (if touched), README.md. Tests: sim/tests/server_tests.rs + postgame_server_tests.rs. Acceptance: caps as contract; curl check `curl "127.0.0.1:8099/api/run?seed=1&from=0&count=50"`.
