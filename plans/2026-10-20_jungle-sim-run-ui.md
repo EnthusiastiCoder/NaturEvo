@@ -29,3 +29,10 @@ viewer/index.html: on load, if `location.protocol` is http/https, fetch `/api/co
 
 ## Workstreams
 Dependencies: A -> B -> C -> E; D is independent (can run in parallel with A-C); E needs C and D. All model sonnet.
+
+### A core-config (sonnet)
+Task: add Config + parametrise sim. Capture baseline first (batch 2000 stats and run.js for seeds 1,7,42 into the scratchpad) and compare after.
+Files / commits (one file each, in order): 1) sim/src/config.rs 2) sim/src/lib.rs (add `pub mod config;`) 3) sim/src/sim.rs (simulate_with, cfg threading).
+Tests: sim/tests/config_tests.rs (written), sim/tests/sim_tests.rs (must stay green).
+Acceptance: defaults reproduce baseline exactly; changing a knob changes results; same seed+cfg deterministic; invalid values rejected.
+Verify: `cargo test --release`; compare baseline.
