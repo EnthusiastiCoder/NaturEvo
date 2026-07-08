@@ -80,3 +80,6 @@ Existing: sim/tests/sim_tests.rs, report_tests.rs, tests/viewer_check.mjs must s
 - file:// still shows replay and dashboard with no controls.
 - Server only on 127.0.0.1; caps enforced.
 - Commits one file each, no Co-Authored-By, not on main.
+
+## Open questions
+- sim/viewer/ (untracked) is a stray copy written when the CLI is run from sim/ (default `viewer/data` is cwd-relative). Out of scope; `serve` uses a manifest-relative root instead. Do not commit sim/viewer.
