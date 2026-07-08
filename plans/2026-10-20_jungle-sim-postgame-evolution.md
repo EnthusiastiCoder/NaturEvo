@@ -32,3 +32,9 @@ Viewer: when `run.total > run.events.length` the viewer is in windowed mode and 
 
 ## Workstreams
 Dependencies: A -> B -> C -> D.
+
+### A core-postgame (sonnet)
+Task: data.rs (EVOLUTIONS, STAGE_MULT, stage_name), config.rs (3 knobs), sim.rs (event_cap from cfg, post-game continuation, level cap, stages, evolve event, Run fields, Summary, lean simulate_summary). Commits (one file each): 1) sim/src/data.rs 2) sim/src/config.rs 3) sim/src/sim.rs. Update the existing tests listed above in separate commits (config_tests.rs, sim_tests.rs, report_tests.rs). 
+Tests: sim/tests/postgame_tests.rs (config, prefix, cap, post-game, evolution, determinism, summary parts), sim/tests/config_tests.rs, sim/tests/sim_tests.rs.
+Acceptance: all A tests pass; pre-win prefix identical; batch(200).wins==108.
+Verify: `cargo test --release`.
