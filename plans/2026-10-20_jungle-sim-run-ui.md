@@ -43,3 +43,10 @@ Files / commits: 1) sim/src/report.rs.
 Tests: sim/tests/report_tests.rs (existing, green) + sim/tests/report_cfg_tests.rs (written).
 Acceptance: run_json/stats_json bytes unchanged; batch_with default == batch; batch_with thread-independent for a non-default cfg.
 Verify: `cargo test --release`; `cargo run --release -- batch --runs 2000` shows 53.8%.
+
+### C server-cli (sonnet)
+Task: std-only server per contract plus `serve` command and README section.
+Files / commits: 1) sim/src/server.rs 2) sim/src/lib.rs (add `pub mod server;`) 3) sim/src/main.rs (serve command, usage text) 4) README.md (how to run `cargo run --release -- serve`, open http://127.0.0.1:8080/, knobs table, API, caps).
+Tests: sim/tests/server_tests.rs (written).
+Acceptance: all server tests pass; manual: `cargo run --release -- serve --port 8099`, `curl 127.0.0.1:8099/api/run?seed=1` byte-equal body to run_body(simulate(1)); `curl` with Host: evil.com gets 403; runs=20001 gets 400.
+Verify: `cargo test --release`; the curl checks.
