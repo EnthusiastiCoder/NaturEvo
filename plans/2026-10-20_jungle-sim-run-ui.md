@@ -36,3 +36,10 @@ Files / commits (one file each, in order): 1) sim/src/config.rs 2) sim/src/lib.r
 Tests: sim/tests/config_tests.rs (written), sim/tests/sim_tests.rs (must stay green).
 Acceptance: defaults reproduce baseline exactly; changing a knob changes results; same seed+cfg deterministic; invalid values rejected.
 Verify: `cargo test --release`; compare baseline.
+
+### B report-batch (sonnet)
+Task: run_body/stats_body/batch_with per contract.
+Files / commits: 1) sim/src/report.rs.
+Tests: sim/tests/report_tests.rs (existing, green) + sim/tests/report_cfg_tests.rs (written).
+Acceptance: run_json/stats_json bytes unchanged; batch_with default == batch; batch_with thread-independent for a non-default cfg.
+Verify: `cargo test --release`; `cargo run --release -- batch --runs 2000` shows 53.8%.
