@@ -28,3 +28,14 @@ Shell: v1 grid (100dvh, html/body overflow hidden, `grid-template-rows:auto minm
 3. Replay tab (inspector): top summary strip (always visible): `#summary` with `#outcome` badge (Won/Lost/In progress), `#sum-level`, `#sum-hp` (bar), `#sum-zone`, `#sum-progress`, deaths, gold, potions, each with Lucide icon + info button. Below: playback card (play/pause icon button, speed select, `#info`, `#scrub`), battle panel compact (small emoji sprites in a card), `#timeline` card filling remaining height (canvas sized to container on render and window resize, axis labels in token colours, no right gap). Drawer bar at bottom: `details#log-box` (Event log, `#log` inside, bounded overlay/panel max-height min(45vh,360px), inner scroll) and `details#more-box` (extra stats). All closed by default; opening one closes others; opening never grows the page.
 Sizes: no page scroll (both axes) at 1920x1080, 1366x768, 1280x720 and 800x600, both tabs, loaded run, drawers closed and each open. <800px wide: toolbar wraps, battle stacks; at 800x600 still no page scroll. Below ~640x480 not guaranteed but no horizontal page scroll.
 Cognitive load: default-visible inputs = Seed (served only), speed select, scrub, plus dashboard log-scale checkbox; everything else inside closed details.
+
+## Workstreams (all model sonnet; implement in order, one agent unless split)
+### B1 design-system (sonnet)
+Files/commits: 1) viewer/STYLE.md (tokens + component classes + icon rule + how to add an icon/tooltip) 2) viewer/index.html: tokens, base component CSS, Lucide sprite with licence, INFO map + tooltip helper, shell grid + toolbar/tabs.
+### B2 replay-inspector (sonnet)
+viewer/index.html commits: summary strip + render(); battle/playback cards; timeline fill/resize; drawers (log/more) closed, scroll fix on toggle.
+### B3 dashboard-centerpiece (sonnet)
+viewer/index.html commits: KPI cards; histogram chart (binning, log toggle, tooltips) + table; run-controls popovers (batch, knobs with info tooltips).
+### B4 visual-review gate (sonnet reviewer, no implementer claims)
+After B1-B3: a fresh reviewer agent is given ONLY screenshots (from the checklist, 4 viewports x 2 tabs x drawers closed/open, plus a tooltip-open shot) and the requirement text, and returns a scored review (hierarchy, density, consistency, readability of the skewed histogram, any game-like styling, clipped/overlapping elements) with PASS/FAIL and concrete fixes. Implementer fixes and re-shoots until PASS. This gate is final, after all measurable checks pass.
+Verify commands: `node tests/viewer_layout_check.mjs && node tests/viewer_style_check.mjs && node tests/viewer_check.mjs && node tests/viewer_log_check.mjs && node tests/viewer_controls_check.mjs`; browser checklist tests/viewer_layout_checklist.md via chrome-devtools (read prompts/chrome-devtools-mcp.md first; max 6 tabs; serve with `cargo run --release -- serve --port 8099` from sim/ with PATH incl. /c/Users/enthu/.cargo/bin; also file://).
