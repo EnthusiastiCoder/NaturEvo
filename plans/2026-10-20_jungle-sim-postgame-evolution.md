@@ -38,3 +38,6 @@ Task: data.rs (EVOLUTIONS, STAGE_MULT, stage_name), config.rs (3 knobs), sim.rs 
 Tests: sim/tests/postgame_tests.rs (config, prefix, cap, post-game, evolution, determinism, summary parts), sim/tests/config_tests.rs, sim/tests/sim_tests.rs.
 Acceptance: all A tests pass; pre-win prefix identical; batch(200).wins==108.
 Verify: `cargo test --release`.
+
+### B report-stats (sonnet)
+Task: run_body fields, run_window_body, lean batch_with, BatchStats fields, stats_body. Commit: sim/src/report.rs. Tests: postgame_tests.rs (report/stats parts), report_tests.rs, report_cfg_tests.rs. Acceptance: old fields unchanged, thread independent, batch(2000) < 15 s test and ~6 s manual: `cargo run --release -- batch --runs 2000`.
