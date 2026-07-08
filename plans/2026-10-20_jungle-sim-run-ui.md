@@ -1,0 +1,2 @@
+## Goal
+Let the user run simulations from the viewer UI: seed + Run single (with Random seed), batch runs with a chosen size, and editable tuning knobs. Done through a std-only local HTTP server (`serve` command) in the Rust CLI. Also fix two viewer log bugs. Builds on the finished jungle sim (branch feat/jungle-sim; existing plans plans/2026-10-20_jungle-sim-build.md, jungle-sim.md). No earlier partial plan for this feature exists; reuse existing tests in sim/tests and tests/viewer_check.mjs (all 9 sim tests currently pass).
