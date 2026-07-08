@@ -64,3 +64,11 @@ Files / commits: 1) viewer/index.html (HTML+CSS controls markup, hidden by defau
 Tests: tests/viewer_controls_check.mjs (written; stub DOM + stub fetch).
 Acceptance: under stubbed non-http protocol controls stay hidden and no fetch is made; under http with stubbed fetch: knobs rendered from config, Run issues `/api/run?seed=..` with knob params and replaces the run (scrub max updated, log shows event 0 only), Random seed sets a numeric seed, Batch issues `/api/batch?runs=..`, error JSON shows in #run-status, buttons disabled while pending.
 Verify: `node tests/viewer_controls_check.mjs && node tests/viewer_log_check.mjs && node tests/viewer_check.mjs`; live check with the server running.
+
+## Test cases
+A (sim/tests/config_tests.rs): default_config_values; default_matches_baseline (simulate(1)/(7)/(42) event counts+final level equal constants captured from current build; batch(200) wins equals baseline); knob_changes_outcome (boss_hp_mult 0.1 vs 5.0 differ in win rate over 100 runs; hero_hp_per_level changes max_hp in first events); same_seed_same_cfg_identical; set_rejects_unknown_key / out_of_range / nan / garbage; set_accepts_bounds; knobs_cover_all_fields with defaults equal Config::default().
+B (sim/tests/report_cfg_tests.rs): body_wrappers_equal_json (run_json == "window.RUN = "+run_body+";\n", same for stats); batch_with_default_equals_batch; batch_with_thread_independent_nondefault; run_body starts with `{` and parses as balanced JSON (no `window`).
+C (sim/tests/server_tests.rs): route unit tests (config lists all knob keys; run seed=1 body == run_body(simulate(1)); run with knob equals simulate_with; batch runs=50 body == stats_body(batch(50)); bad seed 400; unknown param 400; out of range knob 400; runs=0 and runs=20001 400; POST 405; bad Host 403; `/..%2f` and `/../Cargo.toml` and `/data/../x` 404; `/` serves index.html; `/data/run.js` content type javascript); socket test binding port 0 verifying loopback address and a real HTTP GET /api/config round trip; oversized request line (>8 KiB) rejected.
+D (tests/viewer_log_check.mjs): at event 0 log shows only [0]; goto(50) ends at 50 with max index 50; goto back to 10 max index 10; scroll CSS check; stepping forward appends.
+E (tests/viewer_controls_check.mjs): see acceptance of E.
+Existing: sim/tests/sim_tests.rs, report_tests.rs, tests/viewer_check.mjs must stay green.
