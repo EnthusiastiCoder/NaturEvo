@@ -59,3 +59,9 @@ Rust, sim/tests/postgame_tests.rs (A and B):
 - stats/report: stage_hist len 5 sums to wins; avg_events > 10000 at default; thread independence (1 vs 4 threads) for non-default cfg; stats_body has new keys; run_body has new top-level keys, `"stage"` absent in pre-win events; run_window_body slice length, from clamp, level_series <= 2048; timing batch(2000) < 15 s.
 Rust server (sim/tests/postgame_server_tests.rs): config has event_cap knob and max_events; event_cap=1048577 400; event_cap=2000 200 and body events length 2000; full run with cap 300000 and no window 400; from/count window 200 with `"from"`; count=5001 400, count=0 400; batch runs=2000&event_cap=200000 400; default batch runs=50 200.
 Node (tests/viewer_postgame_check.mjs): stage badge shows `Stage 3` for mon.stage 3 and hidden at 0; old-format run (no total/level_series/stage) still renders; windowed mode fetches `from=`/`count=` when goto leaves the window; `#post-stats` shows stage_hist and averages; 65536-event run goto sweep fast.
+
+## Acceptance criteria
+- `cargo test --release` and `node tests/*.mjs` green; commits one file each on feat/jungle-sim.
+- Win rate/wins/deaths/level_hist baselines unchanged; documented baseline changes only.
+- Default run reaches 65536 events; custom cap works up to 1,048,576, rejected above.
+- 2000-run default batch <= 6 s manual.
