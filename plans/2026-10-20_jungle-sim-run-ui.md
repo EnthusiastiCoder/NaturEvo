@@ -72,3 +72,11 @@ C (sim/tests/server_tests.rs): route unit tests (config lists all knob keys; run
 D (tests/viewer_log_check.mjs): at event 0 log shows only [0]; goto(50) ends at 50 with max index 50; goto back to 10 max index 10; scroll CSS check; stepping forward appends.
 E (tests/viewer_controls_check.mjs): see acceptance of E.
 Existing: sim/tests/sim_tests.rs, report_tests.rs, tests/viewer_check.mjs must stay green.
+
+## Acceptance criteria
+- `cargo test --release` all green; `node tests/*.mjs` green.
+- Defaults batch 2000 = 53.8% win rate, identical stats to baseline; run.js bytes unchanged for seeds 1,7,42.
+- `cargo run --release -- serve` then browser at 127.0.0.1:8080: set seed, Run, replay loads immediately; Random seed; batch of N updates dashboard; editing a knob changes results; invalid input shows an error, no crash.
+- file:// still shows replay and dashboard with no controls.
+- Server only on 127.0.0.1; caps enforced.
+- Commits one file each, no Co-Authored-By, not on main.
