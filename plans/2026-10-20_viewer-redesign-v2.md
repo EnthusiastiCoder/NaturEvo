@@ -53,3 +53,8 @@ Verify commands: `node tests/viewer_layout_check.mjs && node tests/viewer_style_
 - All icons are Lucide from one inline sprite with ISC notice; no CDN, no npm runtime dependency, no build step.
 - One token/component style system documented in viewer/STYLE.md and used everywhere; style test passes.
 - All node tests green, checklist all PASS, independent visual review gate PASS.
+
+## Open questions
+- Dark (default) vs light theme, or both with toggle: needs the user's call.
+- Accent colour: subtle jungle green (assumed) vs neutral blue.
+- Whether to accept log-scale auto-on for skewed data (assumed yes).
