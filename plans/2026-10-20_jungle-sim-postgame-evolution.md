@@ -65,3 +65,12 @@ Node (tests/viewer_postgame_check.mjs): stage badge shows `Stage 3` for mon.stag
 - Win rate/wins/deaths/level_hist baselines unchanged; documented baseline changes only.
 - Default run reaches 65536 events; custom cap works up to 1,048,576, rejected above.
 - 2000-run default batch <= 6 s manual.
+
+## Open questions (for the user)
+1. Evolution trigger: kill count (chosen: every `evolve_kills`=300 post-game kills) vs hero level vs timed world tier vs per-zone? Should evolution be per-encounter random (some monsters further along) rather than world-wide?
+2. Does the hero level without limit? (chosen: cap raised to 80, configurable to 200). Should post-game add gear/gold sinks (weapons end at Jungle Fang)?
+3. What ends a run besides the cap? (chosen: nothing; a hopeless death spiral just burns events.) Add a post-game death limit or stalemate stop?
+4. Win rate = first boss kill (chosen). Should the boss respawn/be re-fightable post-game ("keeps playing boss")?
+5. Should each stage also raise monster level or add new abilities per stage, and are placeholder names/emoji + badge acceptable?
+6. Event-cap ceiling 1,048,576 and the 200,000-event full-JSON limit: acceptable, or want a different ceiling?
+7. Balance risk: STAGE_MULT [1,1.3,1.7,2.2,3.0] vs level 80 hero is an untuned guess; expect a tuning pass (research/jungle-sim-tuning.md style). Regenerate checked-in viewer/data/run.js (2.5 MB now, ~16 MB at 65536 events)? Probably keep the committed sample small (cap it) -- user's call.
