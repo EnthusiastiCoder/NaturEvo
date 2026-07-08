@@ -57,3 +57,10 @@ Files / commits: 1) viewer/index.html (css `#log{position:relative}` + log rende
 Tests: tests/viewer_log_check.mjs (written; node vm with stub DOM) and tests/viewer_check.mjs (existing).
 Acceptance: at cur=0 logIndices() == [0]; at cur=k it ends with k and never exceeds k; backward scrub rebuilds correctly; static check that CSS contains `#log{...position:relative`.
 Verify: `node tests/viewer_log_check.mjs && node tests/viewer_check.mjs`; manual optional via file://.
+
+### E viewer-run-controls (sonnet)
+Task: run controls per contract in viewer/index.html; hidden under file://; update tests/viewer_check.mjs expectations if needed (it should only gain ids).
+Files / commits: 1) viewer/index.html (HTML+CSS controls markup, hidden by default) 2) viewer/index.html (JS: config fetch, run, random seed, batch, knobs). Same file twice is allowed because the two commits are separable steps.
+Tests: tests/viewer_controls_check.mjs (written; stub DOM + stub fetch).
+Acceptance: under stubbed non-http protocol controls stay hidden and no fetch is made; under http with stubbed fetch: knobs rendered from config, Run issues `/api/run?seed=..` with knob params and replaces the run (scrub max updated, log shows event 0 only), Random seed sets a numeric seed, Batch issues `/api/batch?runs=..`, error JSON shows in #run-status, buttons disabled while pending.
+Verify: `node tests/viewer_controls_check.mjs && node tests/viewer_log_check.mjs && node tests/viewer_check.mjs`; live check with the server running.
