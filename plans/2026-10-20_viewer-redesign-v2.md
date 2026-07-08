@@ -58,3 +58,15 @@ Verify commands: `node tests/viewer_layout_check.mjs && node tests/viewer_style_
 - Dark (default) vs light theme, or both with toggle: needs the user's call.
 - Accent colour: subtle jungle green (assumed) vs neutral blue.
 - Whether to accept log-scale auto-on for skewed data (assumed yes).
+
+## Addendum (user decisions): themes and accent
+User: Theme = BOTH light and dark with a toggle. Accent = customisable by the user, default jungle green. These resolve the earlier open questions (theme, accent colour); they override "dark theme by default" in Assumptions.
+Requirements:
+- Two token sets: `:root[data-theme="dark"]` and `:root[data-theme="light"]` define every colour token (--bg --card --card-2 --border --fg --muted --good --bad --warn --ring). All components and charts read colours only from tokens; no colour literal outside the token blocks.
+- Theme toggle: icon button in toolbar (`#theme-toggle`, Lucide sun/moon from the sprite, aria-label, tooltip). Initial theme: localStorage `jv-theme` if valid, else `prefers-color-scheme` (matchMedia), else dark. Choice persisted in localStorage; every storage access wrapped in try/catch (file:// may throw) and the toggle still works for the session.
+- Accent control: `#accent-btn` (palette icon, tooltip) opens a small popover `details#accent-box` with preset swatches (buttons with aria-label, incl. jungle green #2e7d4f default, plus 5 others), a custom `<input type="color" id="accent-custom">`, and `#accent-reset` (Reset to jungle green). Sets `--accent` live on :root, persisted as `jv-accent` (try/catch). `--accent-fg` (on-accent text colour) is computed automatically from WCAG relative luminance (black or white, whichever has higher contrast) and set together with --accent; accent text/borders on the current --bg must stay readable: if contrast of accent vs --bg < 3:1 the UI uses a derived `--accent-text` (lightened for dark, darkened for light) so contrast >= 3:1.
+- Charts (timeline canvas, histogram) read colours via getComputedStyle from tokens and are re-drawn on theme or accent change (no reload).
+- No-page-scroll, tooltip, control-height and icon-size requirements hold in both themes. Pure helper logic (contrast, accent-fg) exposed for tests as `window.__jv.theme = {get,set,accent:{get,set,reset},contrast(a,b)}`.
+Workstream change: B1 adds token sets, theme toggle, accent popover, persistence, STYLE.md section "Theming" (token sets, how to add a colour, accent derivation). B2/B3: charts and cards re-draw on `jv-themechange` event. B4 visual review: screenshots in dark and light, default accent plus at least one non-default accent (e.g. purple and a very light yellow to test contrast), both tabs.
+Acceptance additions: both themes defined; toggle and accent work live and persist; accent fg auto-derived with contrast >= 4.5:1 for on-accent text; storage failure under file:// does not break; checklist and visual review cover both themes and a non-default accent.
+Open questions now: none outstanding.
