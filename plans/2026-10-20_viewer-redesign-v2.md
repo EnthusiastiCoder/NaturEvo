@@ -1,0 +1,2 @@
+## Goal
+Redesign viewer/index.html into a polished, professional analytics dashboard (shadcn/ui-style: neutral dark theme, restrained palette, KPI cards, tidy charts, compact table, clean toolbar) that gives a bird's-eye view first, expands details on demand, and never scrolls the page. This SUPERSEDES plans/2026-10-20_viewer-redesign.md (v1 layout/regions, workstream split and tests there remain the base; this plan adds and overrides as stated). Context: plans/jungle-sim.md, plans/2026-10-20_jungle-sim-run-ui.md.
