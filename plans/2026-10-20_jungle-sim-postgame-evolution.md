@@ -44,3 +44,6 @@ Task: run_body fields, run_window_body, lean batch_with, BatchStats fields, stat
 
 ### C server-api (sonnet)
 Task: server.rs validation/caps/window endpoint/config max_events; README.md section (new knobs, caps, window params); main.rs `run` unchanged (writes full run.js; add `--cap N` optional). Commits: server.rs, main.rs (if touched), README.md. Tests: sim/tests/server_tests.rs + postgame_server_tests.rs. Acceptance: caps as contract; curl check `curl "127.0.0.1:8099/api/run?seed=1&from=0&count=50"`.
+
+### D viewer-postgame (sonnet)
+Task: viewer/index.html: windowed fetch, level_series timeline, stage badge `#stage`, `#post-stats` dashboard block, event_cap/postgame knobs auto-render (knobs come from /api/config; verify they appear), evolve events styled in log. Commits: 1) JS data handling 2) HTML/CSS stage badge and post-stats (same file twice allowed). Also regenerate viewer/data/run.js and stats.js with the new build in a final separate commit only if the user wants (open question). Tests: tests/viewer_postgame_check.mjs plus existing tests/*.mjs green. Acceptance: viewer tests pass; 65536-event stub run scrubs and logs fast (goto across run < 200 ms in node stub).
