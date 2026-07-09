@@ -19,3 +19,7 @@ Shell: `html,body{height:100%;margin:0;overflow:hidden}`; `body{display:grid;gri
 Default visible inputs (Replay, served): Seed, speed select, scrub slider only (batch + knobs hidden in closed details). Under file://: only speed select and scrub.
 Sizes: required no page scroll (both axes) at 1920x1080, 1366x768, 1280x720 and 800x600, in Replay and Dashboard, with a loaded run, with every drawer closed AND with each drawer open. Below 800 px wide the battle row may stack and top bar wraps; at 800x600 still no page scroll. Below ~640x480 not guaranteed (out of scope), but horizontal page scroll must still not appear.
 Style: dark green palette kept; 8px spacing scale; consistent control height 30px; primary button green, secondary buttons outlined; focus rings visible; tabular numbers for stats.
+
+## Workstreams
+### A tests-first (already written by the planner's test-writer, see Test cases) 
+Failing tests exist before any implementation; implementer must not weaken them.
