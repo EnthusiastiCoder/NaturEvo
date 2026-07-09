@@ -13,3 +13,8 @@ Full table in `plans/jungle-sim-decisions.md`. In short: Rust sim core + web vie
 - Hero: XP and levels, skills unlocked by level, potions, weapon/armor shop, death means respawn at camp with a penalty. The hero reacts to behaviors (e.g. Brace or Stun against Chargers).
 - CLI: `run --seed N` writes `viewer/data/run.js`; `batch --runs N` writes `viewer/data/stats.js` (threaded).
 - Static `viewer/index.html` (works from file://): replay tab (play/pause/speed/scrub, battle panel, log, level timeline) and dashboard tab (aggregate charts). Every event carries a hero state snapshot so any point can be scrubbed to.
+
+## State of the work
+- Branch `feat/jungle-sim`. Commit `fb96504` ignores `plans/reports/` and `plans/handoffs/`.
+- Written, uncommitted: `sim/Cargo.toml`, `sim/src/rng.rs`, `sim/src/data.rs`. The CTO may reuse or replace them. Not yet written: `sim.rs`, `report.rs`, `main.rs`, the viewer, tuning, the README. Balance (monster scaling versus hero growth) needs tuning via batch runs.
+- cto-orchestrator mod is installed at local scope in this workspace.
