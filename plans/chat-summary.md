@@ -5,3 +5,11 @@ A simulation-style game with little focus on graphics. An autonomous player batt
 
 ## Decisions
 Full table in `plans/jungle-sim-decisions.md`. In short: Rust sim core + web viewer, replay viewer AND stats dashboard, autonomous hero AI, emoji placeholders, built by the CTO orchestrator.
+
+## Design plan
+`plans/jungle-sim.md` holds the architecture, rules, commit plan, acceptance criteria and tests. Highlights:
+- Seeded deterministic RNG (same seed gives the same journey). Zero-dependency Rust crate in `sim/`.
+- 8 monster behaviors (Aggressive, Pack, Defensive, Berserker, Venomous, Trickster, Healer, Charger). 16 species, 9 zones, final boss "Jungle King".
+- Hero: XP and levels, skills unlocked by level, potions, weapon/armor shop, death means respawn at camp with a penalty. The hero reacts to behaviors (e.g. Brace or Stun against Chargers).
+- CLI: `run --seed N` writes `viewer/data/run.js`; `batch --runs N` writes `viewer/data/stats.js` (threaded).
+- Static `viewer/index.html` (works from file://): replay tab (play/pause/speed/scrub, battle panel, log, level timeline) and dashboard tab (aggregate charts). Every event carries a hero state snapshot so any point can be scrubbed to.
