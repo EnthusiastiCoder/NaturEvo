@@ -1,2 +1,10 @@
 ## Goal
 Redesign viewer/index.html as a single-viewport "app shell": a bird's-eye summary first, everything else (tuning knobs, batch settings, full event log, extra stats) behind closed-by-default expanders, and NO page scroll at common sizes. Builds on plans/jungle-sim.md and plans/2026-10-20_jungle-sim-run-ui.md (run controls, knobs, log fixes already landed in viewer/index.html). Behaviour does not change; only layout, structure and a summary strip are added.
+
+## Standards and constraints
+- User, verbatim: "the most important thing is cognitive load, should be able to get a bird eye view and details when needed can be expanded. everything should fit in screen without scrolling". Earlier complaint: "the layout is ugly as fuck" (wall of ~16 unstyled inputs, truncated seed input, unstyled buttons/tabs, fixed-width chart with a gap, huge empty log, cramped hero panel).
+- All workstreams: model sonnet. Branch feat/jungle-sim (never main). One file per commit; `git add` and `git commit` as separate commands; check `git diff` first. Commit messages: no Co-Authored-By (CLAUDE.md overrides the attribution reminder).
+- No new dependencies (no CDN, no libs), no build step; emoji placeholders only (no images/icons files).
+- file:// mode must still work: run controls (`#run-controls`) stay hidden, no fetch, replay + dashboard work from data/run.js and data/stats.js.
+- Keep ALL existing element ids and behaviour: run-controls, seed, run-btn, random-seed, batch-runs, batch-btn, run-status, knob-box, knobs, knobs-reset, knob-<key>, tab-replay, tab-dashboard, replay, play, speed, info, scrub, battle, hbar, hhp, hmeta, zone, memo, mbar, mhp, timeline, log, dashboard, dstats, hist, and `window.__jv {setRun,goto,logIndices}`. `#knob-box` stays a `<details>` (closed by default). Tests tests/viewer_check.mjs, viewer_log_check.mjs, viewer_controls_check.mjs must keep passing, unchanged unless a change is deliberate and noted in the commit.
+- Do NOT write layout to fit the old layout; the rules below are the requirement.
