@@ -1,0 +1,2 @@
+## Goal
+Redesign viewer/index.html as a single-viewport "app shell": a bird's-eye summary first, everything else (tuning knobs, batch settings, full event log, extra stats) behind closed-by-default expanders, and NO page scroll at common sizes. Builds on plans/jungle-sim.md and plans/2026-10-20_jungle-sim-run-ui.md (run controls, knobs, log fixes already landed in viewer/index.html). Behaviour does not change; only layout, structure and a summary strip are added.
