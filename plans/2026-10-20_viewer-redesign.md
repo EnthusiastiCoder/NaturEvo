@@ -47,3 +47,7 @@ Written from the requirements, before implementation:
 - Seed input shows a full 10-digit seed; no clipped labels/inputs; timeline fills its container width with no gap; no huge empty area.
 - file:// works with controls hidden; served mode run/batch/knobs behaviour unchanged.
 - All node tests pass; checklist items all PASS with screenshots saved under research/screenshots/viewer-redesign/ (not committed unless asked).
+
+## Open questions
+- Whether "one drawer open at a time" should be enforced (plan assumes yes).
+- Dashboard hist as horizontal bars vs vertical columns (plan: keep bars, bounded and scrollable; implementer may switch to columns if it fits better).
