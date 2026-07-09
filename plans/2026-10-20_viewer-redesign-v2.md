@@ -96,3 +96,12 @@ Replace `#speed` select with a logarithmic slider plus numeric input.
 - Custom input: any number in [0.25, 4096]; out of range clamps to the bound; non-numeric/empty reverts to the last valid value; the slider moves to match and vice versa.
 - Playback advances at the rate: base 10 events per second x speed (timer tick <= 100 ms, events advanced per tick = rate*dt, carrying the fractional remainder); at high speeds events are batched per frame (one render per tick, never one render per event), so 4096x on 65536 events does not freeze (render count per second <= 60) and ends at the last event.
 Tests (tests/viewer_polish_check.mjs): mapping log (position 0 -> 0.25, 1 -> 4096, midpoint ~32, monotonic), clamp, sync both ways, no select#speed, tooltip/info present, replay advances proportional (fake timers: at speed 4 vs 1 events advanced ratio ~4 +-10%), high speed batches (renders <= ticks, final index reached), tests/viewer_check.mjs and viewer_controls_check.mjs updated only if they reference the old select.
+
+## Addendum 4: crisp canvases (user screenshot images/9.png: blurry chart, stretched caption)
+Cause: canvas backing store not matched to CSS size x devicePixelRatio (CSS-scaled bitmap).
+Requirements (tests/viewer_canvas_check.mjs + checklist section 17, failing first):
+- One shared helper (e.g. `fitCanvas(cv)`) sizes every canvas: width = round(clientWidth*dpr), height = round(clientHeight*dpr), `ctx.setTransform(dpr,0,0,dpr,0,0)` so drawing code uses CSS px; backing aspect ratio equals the CSS box (within rounding, so text is not stretched); works for fractional dpr 1.25, 1.5, 2 and dpr 1.
+- No `<canvas>` has hard-coded width/height attributes in markup and no CSS width/height in fixed px; size comes from layout.
+- Re-fit and redraw on: window resize, devicePixelRatio change (matchMedia `(resolution: Ndppx)` listener re-armed), theme/accent change (jv-themechange), and when the panel becomes visible (tab switch, drawer/modal open; ResizeObserver or explicit call after show; a canvas measured while display:none, clientWidth 0, must be re-fit when shown).
+- Text drawn on canvases uses a font size in CSS px from tokens and no non-uniform scaling.
+Browser: with emulated deviceScaleFactor 1, 1.5, 2: for each visible canvas `cv.width === Math.round(cv.getBoundingClientRect().width*devicePixelRatio)` (+-1) and same for height; screenshot zoomed on the chart caption and compare crispness; repeat after resize, tab switch, theme switch.
