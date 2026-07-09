@@ -19,3 +19,11 @@ I am the CTO (cto-orchestrator). Delegate everything; never read code or run tes
 - `impl-b5-polish` (agentId a885c6a7de0433055, resumable via SendMessage): implementing against tests/viewer_polish_check.mjs (35 failing: hero details moved into top card and drawer removed, event log as searchable grouped windowed modal, 20-digit wide seed input w/o spinner, logarithmic speed slider + custom numeric input), tests/viewer_clip_check.mjs and viewer_log_check.mjs (deliberately updated by planner, 1 fail each), tests/viewer_canvas_check.mjs (37 failing: crisp DPR-aware canvases; user screenshot showed blurry level chart). Also earlier queued: histogram nice axis ticks (0/1000/2000) and independent-review defect list (log-scale axis, dashboard sparse/denser, replay chart axes, drawer buttons, scrollbars/slider tracks styling, tooltip stuck, accent popover swatch indicator, favicon 404).
 - `planner-redesign` (agentId a3cd9ca519117e920) wrote all viewer tests/addenda; resumable.
 - `planner-evolution` (agentId ab49424e58fb86bab) wrote the postgame plan/tests; resumable.
+
+## Next steps
+1. When impl-b5 reports: spawn verifier (agent type claude, browser) screenshot-only review at ~1282x642, 1282x722, max viewport (browser caps at 1540x890), both themes, accents, deviceScaleFactor 1, 1.5, 2; check modal log, speed slider, hero details, seed, crisp canvases, histogram ticks; run all tests/*.mjs.
+2. Then post-game WS D viewer (windowing, `#stage` badge, `#post-stats`, scrub max 65535, windowed fetch) against tests/viewer_postgame_check.mjs (8 failing). Must run AFTER impl-b5 (same file viewer/index.html). Then verifier.
+3. Rebuild release binary and restart the server (`sim/target/release/jungle-sim.exe serve` from repo root, http://127.0.0.1:8080/); a verifier's taskkill probably killed the old server, and the old exe is stale. Use a delegate agent.
+4. Post-game balance tuning if user wants (hero death-heavy); user answers needed on planner open questions only if they care (defaults used).
+5. Final gate: independent screenshot review; then ask the user before committing untracked plans/, tests/, sim/tests/, research/, mistakes/, viewer/data/run.js, stats.js; stray untracked sim/viewer/ must not be committed (created by batch runs from sim/ cwd).
+6. /introspect at the end.
