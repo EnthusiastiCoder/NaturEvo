@@ -27,3 +27,8 @@ I am the CTO (cto-orchestrator). Delegate everything; never read code or run tes
 4. Post-game balance tuning if user wants (hero death-heavy); user answers needed on planner open questions only if they care (defaults used).
 5. Final gate: independent screenshot review; then ask the user before committing untracked plans/, tests/, sim/tests/, research/, mistakes/, viewer/data/run.js, stats.js; stray untracked sim/viewer/ must not be committed (created by batch runs from sim/ cwd).
 6. /introspect at the end.
+
+## Environment notes
+- cargo at C:\Users\enthu\.cargo\bin (not on Git Bash PATH). A serve process may lock target/release/jungle-sim.exe: use CARGO_TARGET_DIR in a temp dir for tests.
+- Test commands: `node tests/<file>.mjs` (viewer_check, viewer_log_check, viewer_controls_check, viewer_theme_check, viewer_layout_check, viewer_style_check, viewer_clip_check, viewer_polish_check, viewer_canvas_check, viewer_postgame_check); Rust `cargo test --release` in sim/.
+- Screenshots land under C:\Users\enthu\AppData\Local\Temp\claude\c--Users-enthu-Projects-NaturEvo\e45ff9c2-fc62-4082-9cbc-c7aab1f45a5f\ (scratchpad subfolder).
