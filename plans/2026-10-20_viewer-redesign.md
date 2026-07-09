@@ -8,3 +8,6 @@ Redesign viewer/index.html as a single-viewport "app shell": a bird's-eye summar
 - file:// mode must still work: run controls (`#run-controls`) stay hidden, no fetch, replay + dashboard work from data/run.js and data/stats.js.
 - Keep ALL existing element ids and behaviour: run-controls, seed, run-btn, random-seed, batch-runs, batch-btn, run-status, knob-box, knobs, knobs-reset, knob-<key>, tab-replay, tab-dashboard, replay, play, speed, info, scrub, battle, hbar, hhp, hmeta, zone, memo, mbar, mhp, timeline, log, dashboard, dstats, hist, and `window.__jv {setRun,goto,logIndices}`. `#knob-box` stays a `<details>` (closed by default). Tests tests/viewer_check.mjs, viewer_log_check.mjs, viewer_controls_check.mjs must keep passing, unchanged unless a change is deliberate and noted in the commit.
 - Do NOT write layout to fit the old layout; the rules below are the requirement.
+
+## Design (screen regions, top to bottom, all inside one 100dvh grid)
+Shell: `html,body{height:100%;margin:0;overflow:hidden}`; `body{display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;height:100dvh}`; no max-width cap that leaves a gap, full width with ~12px padding. Every flex/grid child that may grow has `min-height:0`/`min-width:0`. Scrolling happens only inside bounded panels.
