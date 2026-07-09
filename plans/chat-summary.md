@@ -24,3 +24,6 @@ Full table in `plans/jungle-sim-decisions.md`. In short: Rust sim core + web vie
 - Follow `CLAUDE.md`: never commit to main, one file per commit, `git add` and `git commit` as separate commands, no Co-Authored-By lines, plans go in `plans/`, research notes in `research/`, ask clarifying questions with AskUserQuestion before starting any task.
 - No sprite downloads or sprite agents unless the user later gives permission.
 - Run `/introspect` at the end of the session.
+
+## Suggested kickoff
+`/cto-align build the jungle sim, see plans/chat-summary.md, plans/jungle-sim-decisions.md and plans/jungle-sim.md`, then `/cto-handoff`, then `go`.
