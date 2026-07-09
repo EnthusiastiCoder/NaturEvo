@@ -23,3 +23,14 @@ Style: dark green palette kept; 8px spacing scale; consistent control height 30p
 ## Workstreams
 ### A tests-first (already written by the planner's test-writer, see Test cases) 
 Failing tests exist before any implementation; implementer must not weaken them.
+
+### B viewer-redesign (sonnet)
+Files / commits, in order, one file per commit (all in viewer/index.html, steps are separable):
+1. feat: app-shell grid, 100dvh, no body scroll, top bar + tabs styling (CSS + markup).
+2. feat: summary strip markup + render() fills `#outcome #sum-level #sum-hp #sum-zone #sum-progress` and stats.
+3. feat: compact battle row + playback row; timeline canvas fills container, resizes on window `resize` (use `window.addEventListener("resize")`, no ResizeObserver dependency needed but allowed).
+4. feat: drawers (`#log-box`, `#more-box`, `#batch-box`, `#knob-box` as popover) closed by default, inner scroll, one-open-at-a-time; log scroll-to-current only when open (re-run scroll when `toggle` fires).
+5. feat: dashboard tab layout (cards row + bounded `#hist`).
+6. chore: README viewer screenshot/notes line only if README mentions the viewer layout (optional; separate commit, README.md).
+Tests that must pass: tests/viewer_layout_check.mjs (new), tests/viewer_check.mjs, tests/viewer_log_check.mjs, tests/viewer_controls_check.mjs (node), then the browser checklist tests/viewer_layout_checklist.md run via chrome-devtools (read prompts/chrome-devtools-mcp.md first; max 6 tabs; serve with `cargo run --release -- serve --port 8099` from sim/ with PATH including /c/Users/enthu/.cargo/bin, plus open file:// version).
+Acceptance: see Acceptance criteria. Verify: `node tests/viewer_layout_check.mjs && node tests/viewer_check.mjs && node tests/viewer_log_check.mjs && node tests/viewer_controls_check.mjs`; then every checklist item with evaluate_script and the screenshots.
