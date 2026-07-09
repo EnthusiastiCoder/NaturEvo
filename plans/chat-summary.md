@@ -18,3 +18,9 @@ Full table in `plans/jungle-sim-decisions.md`. In short: Rust sim core + web vie
 - Branch `feat/jungle-sim`. Commit `fb96504` ignores `plans/reports/` and `plans/handoffs/`.
 - Written, uncommitted: `sim/Cargo.toml`, `sim/src/rng.rs`, `sim/src/data.rs`. The CTO may reuse or replace them. Not yet written: `sim.rs`, `report.rs`, `main.rs`, the viewer, tuning, the README. Balance (monster scaling versus hero growth) needs tuning via batch runs.
 - cto-orchestrator mod is installed at local scope in this workspace.
+
+## Environment and rules
+- Windows 11, Windows Editor is Windsurf. Cargo 1.95 lives at `C:\Users\enthu\.cargo\bin` and is not on the bash PATH. Node v24.5.0. `claude.exe` is at `C:\Users\enthu\.local\bin`.
+- Follow `CLAUDE.md`: never commit to main, one file per commit, `git add` and `git commit` as separate commands, no Co-Authored-By lines, plans go in `plans/`, research notes in `research/`, ask clarifying questions with AskUserQuestion before starting any task.
+- No sprite downloads or sprite agents unless the user later gives permission.
+- Run `/introspect` at the end of the session.
