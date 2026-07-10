@@ -82,3 +82,21 @@ fn set_rejects_unknown_key() {
     let e = c.set("bogus", "1").unwrap_err();
     assert!(e.contains("bogus"), "{}", e);
 }
+
+#[test]
+fn set_rejects_out_of_range() {
+    let mut c = Config::default();
+    for (k, v) in [
+        ("monster_hp_mult", "0.01"),
+        ("monster_hp_mult", "5.1"),
+        ("boss_attempts", "0"),
+        ("boss_attempts", "51"),
+        ("potion_cost", "501"),
+        ("xp_mult", "10.5"),
+        ("boss_level", "4"),
+    ] {
+        let e = c.set(k, v).unwrap_err();
+        assert!(e.contains(k), "{}", e);
+    }
+    assert_eq!(c, Config::default());
+}
