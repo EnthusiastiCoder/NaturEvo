@@ -141,3 +141,25 @@ fn set_accepts_bounds() {
     assert_eq!(c.boss_level, 40);
     assert!(c.validate().is_ok());
 }
+
+#[test]
+fn knobs_cover_all_fields() {
+    let keys: Vec<&str> = knobs().iter().map(|k| k.key).collect();
+    let expect = [
+        "monster_hp_mult", "monster_atk_mult", "boss_hp_mult", "boss_atk_mult", "hero_hp_base",
+        "hero_hp_per_level", "hero_atk_per_level", "hero_def_per_level", "xp_mult", "gold_mult",
+        "potion_cost", "boss_level", "boss_attempts", "event_cap", "postgame_level_cap", "evolve_kills",
+    ];
+    assert_eq!(keys.len(), expect.len());
+    for k in expect {
+        assert!(keys.contains(&k), "missing {}", k);
+    }
+    // each default, applied via set, reproduces Config::default()
+    let mut c = Config::default();
+    for k in knobs() {
+        assert!(k.min <= k.default && k.default <= k.max, "{}", k.key);
+        assert!(!k.label.is_empty());
+        c.set(k.key, &format!("{}", k.default)).unwrap();
+    }
+    assert_eq!(c, Config::default());
+}
