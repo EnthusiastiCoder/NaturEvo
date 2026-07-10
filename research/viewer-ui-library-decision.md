@@ -1,0 +1,5 @@
+# Viewer UI library decision (2026-10-21)
+Verified with `npm view` on 2026-10-21: lucide 1.60.0 (ISC), lucide-static 1.60.0 (SVG files, no runtime), @floating-ui/dom 1.8.0, chart.js 4.5.1.
+Options: (a) vanilla HTML/CSS/JS + tokens + inline Lucide SVG sprite; (b) vanilla helpers (floating-ui, chart.js); (c) full shadcn/ui = React + Tailwind + Radix + Vite build.
+Findings: file:// blocks module scripts and cross-origin module loads, so (c) needs an IIFE bundle + built CSS committed; adds node_modules, a build step, and a React runtime (~140KB) for a single-page viewer with ~10 widgets. Tooltips can be done with CSS (:hover/:focus-visible + aria-describedby) in ~40 lines; charts are 2 canvases/SVG bars. Lucide icons are copied as inline <symbol> SVG (ISC notice kept). shadcn is a copy-paste pattern: we copy its look (tokens: zinc neutral, 0.5rem radius, 36px controls, card/border/muted-foreground) as plain CSS, no React.
+Decision: (a). Re-evaluate only if a feature needs a combobox/dialog focus-trap etc.
