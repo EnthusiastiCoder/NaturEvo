@@ -110,3 +110,12 @@ fn set_rejects_nan() {
     }
     assert_eq!(c, Config::default());
 }
+
+#[test]
+fn set_rejects_garbage() {
+    let mut c = Config::default();
+    assert!(c.set("boss_level", "abc").unwrap_err().contains("boss_level"));
+    assert!(c.set("boss_level", "").is_err());
+    assert!(c.set("hero_hp_base", "12.5").is_err());
+    assert!(c.set("potion_cost", "-3").is_err());
+}
