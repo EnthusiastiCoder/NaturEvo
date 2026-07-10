@@ -18,3 +18,8 @@ Decisions (from Q&A): Rust sim core + web viewer; replay viewer AND aggregate da
 
 ## Commits (small, one file each)
 1. plan  2. Cargo.toml + rng  3. data  4. sim  5. report  6. main  7. viewer  8. balance tuning  9. README
+
+## Acceptance
+- `cargo run --release -- batch --runs 2000` finishes in seconds and win rate is sane (30-90%).
+- Replay of one seed shows every action in order, with HP/level state at any event.
+- Same seed gives byte-identical output.
