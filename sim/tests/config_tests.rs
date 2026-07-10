@@ -75,3 +75,10 @@ fn same_seed_same_cfg_identical() {
     }
     assert_eq!(a.won, b.won);
 }
+
+#[test]
+fn set_rejects_unknown_key() {
+    let mut c = Config::default();
+    let e = c.set("bogus", "1").unwrap_err();
+    assert!(e.contains("bogus"), "{}", e);
+}
