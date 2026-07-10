@@ -15,3 +15,6 @@ Decisions (from Q&A): Rust sim core + web viewer; replay viewer AND aggregate da
 - Monsters are NPCs with fixed behaviors (Aggressive, Pack, Defensive, Berserker, Venomous, Trickster, Healer, Charger). Their stats scale with level.
 - Hero reacts to behaviors, e.g. Brace or Stun against Chargers.
 - Zones 1-7 by level range, then the boss "Jungle King". Death means respawn at camp with a penalty.
+
+## Commits (small, one file each)
+1. plan  2. Cargo.toml + rng  3. data  4. sim  5. report  6. main  7. viewer  8. balance tuning  9. README
