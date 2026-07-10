@@ -100,3 +100,13 @@ fn set_rejects_out_of_range() {
     }
     assert_eq!(c, Config::default());
 }
+
+#[test]
+fn set_rejects_nan() {
+    let mut c = Config::default();
+    for v in ["NaN", "nan", "inf", "-inf", "infinity"] {
+        let e = c.set("gold_mult", v).unwrap_err();
+        assert!(e.contains("gold_mult"), "{}", e);
+    }
+    assert_eq!(c, Config::default());
+}
