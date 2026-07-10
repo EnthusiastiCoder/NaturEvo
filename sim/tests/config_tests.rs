@@ -119,3 +119,25 @@ fn set_rejects_garbage() {
     assert!(c.set("hero_hp_base", "12.5").is_err());
     assert!(c.set("potion_cost", "-3").is_err());
 }
+
+#[test]
+fn set_accepts_bounds() {
+    let mut c = Config::default();
+    c.set("monster_hp_mult", "0.1").unwrap();
+    assert_eq!(c.monster_hp_mult, 0.1f32);
+    c.set("monster_hp_mult", "5.0").unwrap();
+    assert_eq!(c.monster_hp_mult, 5.0);
+    c.set("xp_mult", "10").unwrap();
+    assert_eq!(c.xp_mult, 10.0);
+    c.set("hero_hp_base", "10").unwrap();
+    assert_eq!(c.hero_hp_base, 10);
+    c.set("hero_hp_base", "500").unwrap();
+    assert_eq!(c.hero_hp_base, 500);
+    c.set("boss_attempts", "50").unwrap();
+    assert_eq!(c.boss_attempts, 50);
+    c.set("hero_def_per_level", "0").unwrap();
+    assert_eq!(c.hero_def_per_level, 0.0);
+    c.set("boss_level", "40").unwrap();
+    assert_eq!(c.boss_level, 40);
+    assert!(c.validate().is_ok());
+}
