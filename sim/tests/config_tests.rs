@@ -44,3 +44,19 @@ fn default_matches_baseline() {
     assert_eq!(l.final_level, 40);
     assert_eq!(batch(200, 4).wins, 108);
 }
+
+#[test]
+fn knob_changes_outcome() {
+    let wins = |m: f32| {
+        let mut c = Config::default();
+        c.boss_hp_mult = m;
+        (0..100u64).filter(|s| simulate_with(*s, &c).won).count()
+    };
+    assert_ne!(wins(0.1), wins(5.0));
+    let mut c = Config::default();
+    c.hero_hp_per_level = 30;
+    let a = simulate(1).events[0].hero.max_hp;
+    let b = simulate_with(1, &c).events[0].hero.max_hp;
+    assert_eq!(a, 64);
+    assert_eq!(b, 80);
+}
