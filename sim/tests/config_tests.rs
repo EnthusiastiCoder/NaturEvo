@@ -60,3 +60,18 @@ fn knob_changes_outcome() {
     assert_eq!(a, 64);
     assert_eq!(b, 80);
 }
+
+#[test]
+fn same_seed_same_cfg_identical() {
+    let mut c = Config::default();
+    c.monster_atk_mult = 1.7;
+    c.xp_mult = 2.0;
+    let a = simulate_with(9, &c);
+    let b = simulate_with(9, &c);
+    assert_eq!(a.events.len(), b.events.len());
+    for (x, y) in a.events.iter().zip(b.events.iter()) {
+        assert_eq!(x.text, y.text);
+        assert_eq!(x.hero.hp, y.hero.hp);
+    }
+    assert_eq!(a.won, b.won);
+}
