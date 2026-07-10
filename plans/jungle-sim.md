@@ -23,3 +23,6 @@ Decisions (from Q&A): Rust sim core + web viewer; replay viewer AND aggregate da
 - `cargo run --release -- batch --runs 2000` finishes in seconds and win rate is sane (30-90%).
 - Replay of one seed shows every action in order, with HP/level state at any event.
 - Same seed gives byte-identical output.
+
+## Tests
+- Determinism test, hero never has hp<0 or stat overflow, level curve monotonic.
