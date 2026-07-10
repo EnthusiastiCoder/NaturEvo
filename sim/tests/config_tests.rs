@@ -22,3 +22,25 @@ fn default_config_values() {
     assert_eq!(c.postgame_level_cap, 80);
     assert_eq!(c.evolve_kills, 300);
 }
+
+#[test]
+fn default_matches_baseline() {
+    // constants captured from the pre-config build
+    // old lengths are now first_win_event + 1; the run itself continues to the event cap
+    for (seed, len, lvl) in [(1u64, 10625usize, 40u32), (2, 10543, 40), (42, 10617, 40)] {
+        let r = simulate(seed);
+        assert_eq!(r.first_win_event.map(|f| f as usize + 1), Some(len), "seed {}", seed);
+        assert_eq!(r.events.len(), 65536, "seed {}", seed);
+        assert_eq!(r.final_level, lvl, "seed {}", seed);
+        let w = simulate_with(seed, &Config::default());
+        assert_eq!(w.first_win_event.map(|f| f as usize + 1), Some(len), "seed {}", seed);
+        assert_eq!(w.events.len(), 65536, "seed {}", seed);
+        assert_eq!(w.final_level, lvl, "seed {}", seed);
+    }
+    // seed 7 loses on the original build: 10809 events, level 40, no win, no post-game
+    let l = simulate(7);
+    assert!(!l.won && l.first_win_event.is_none());
+    assert_eq!(l.events.len(), 10809);
+    assert_eq!(l.final_level, 40);
+    assert_eq!(batch(200, 4).wins, 108);
+}
