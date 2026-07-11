@@ -97,3 +97,16 @@ fn prefix_first_win_events_and_level() {
         assert!(r.events[..=f as usize].iter().all(|e| stage_of(e) == 0), "seed {}", seed);
     }
 }
+
+#[test]
+fn prefix_small_cap_is_prefix_of_default() {
+    for seed in [1u64, 7, 42] {
+        let full = simulate(seed);
+        let short = simulate_with(seed, &cfg(&[("event_cap", "5000")]));
+        assert_eq!(short.events.len(), 5000);
+        for (a, b) in short.events.iter().zip(full.events.iter()) {
+            assert_eq!((a.idx, a.kind, &a.text), (b.idx, b.kind, &b.text), "seed {}", seed);
+            assert_eq!((a.hero.level, a.hero.hp, a.hero.gold, a.hero.zone), (b.hero.level, b.hero.hp, b.hero.gold, b.hero.zone));
+        }
+    }
+}
