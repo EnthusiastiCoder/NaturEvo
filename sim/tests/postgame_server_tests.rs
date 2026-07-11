@@ -29,3 +29,12 @@ fn event_cap_above_ceiling_400() {
     is_400("/api/run?seed=1&event_cap=1048577&from=0&count=10");
     is_400("/api/batch?runs=1&event_cap=1048577");
 }
+
+#[test]
+fn event_cap_2000_returns_2000_events() {
+    let r = get("/api/run?seed=1&event_cap=2000");
+    assert_eq!(r.status, 200);
+    let b = text(&r);
+    assert_eq!(b.matches("\"idx\":").count(), 2000);
+    assert!(b.contains("\"total\":2000"));
+}
