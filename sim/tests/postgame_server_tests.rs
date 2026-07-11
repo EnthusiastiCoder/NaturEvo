@@ -85,3 +85,11 @@ fn batch_budget_cap() {
     is_400("/api/batch?runs=2000&event_cap=200000");
     assert_eq!(get("/api/batch?runs=2000&event_cap=65536").status, 200);
 }
+
+#[test]
+fn default_batch_50_ok_with_new_fields() {
+    let r = get("/api/batch?runs=50");
+    assert_eq!(r.status, 200);
+    let b = text(&r);
+    assert!(b.contains("\"stage_hist\":[") && b.contains("\"avg_events\":"));
+}
