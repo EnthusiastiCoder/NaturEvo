@@ -57,3 +57,10 @@ fn window_request_ok() {
     assert_eq!(b.matches("\"idx\":").count(), 50);
     assert!(b.contains("\"level_series\":["));
 }
+
+#[test]
+fn window_over_large_cap_ok() {
+    let r = get("/api/run?seed=1&event_cap=300000&from=299990&count=100");
+    assert_eq!(r.status, 200);
+    assert!(text(&r).contains("\"total\":300000"));
+}
