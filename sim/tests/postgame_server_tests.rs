@@ -23,3 +23,9 @@ fn config_has_event_cap_and_max_events() {
     assert!(b.contains("\"postgame_level_cap\"") && b.contains("\"evolve_kills\""));
     assert!(b.contains("\"max_events\":1048576"), "{}", b);
 }
+
+#[test]
+fn event_cap_above_ceiling_400() {
+    is_400("/api/run?seed=1&event_cap=1048577&from=0&count=10");
+    is_400("/api/batch?runs=1&event_cap=1048577");
+}
