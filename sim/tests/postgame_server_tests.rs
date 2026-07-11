@@ -46,3 +46,14 @@ fn full_run_over_200k_without_window_400() {
     let b = text(&r);
     assert!(b.contains("\"error\"") && b.contains("from") && b.contains("count"), "{}", b);
 }
+
+#[test]
+fn window_request_ok() {
+    let r = get("/api/run?seed=1&from=0&count=50");
+    assert_eq!(r.status, 200);
+    let b = text(&r);
+    assert!(b.contains("\"from\":0"));
+    assert!(b.contains("\"total\":65536"));
+    assert_eq!(b.matches("\"idx\":").count(), 50);
+    assert!(b.contains("\"level_series\":["));
+}
