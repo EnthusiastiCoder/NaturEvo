@@ -38,3 +38,11 @@ fn event_cap_2000_returns_2000_events() {
     assert_eq!(b.matches("\"idx\":").count(), 2000);
     assert!(b.contains("\"total\":2000"));
 }
+
+#[test]
+fn full_run_over_200k_without_window_400() {
+    let r = get("/api/run?seed=1&event_cap=300000");
+    assert_eq!(r.status, 400);
+    let b = text(&r);
+    assert!(b.contains("\"error\"") && b.contains("from") && b.contains("count"), "{}", b);
+}
