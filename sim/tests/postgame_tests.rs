@@ -70,3 +70,17 @@ fn cfg_set_accepts_bounds() {
     assert_eq!((c.event_cap, c.postgame_level_cap, c.evolve_kills), (1_048_576, 200, 100000));
     assert!(c.validate().is_ok());
 }
+
+#[test]
+fn cfg_set_rejects_out_of_range_and_garbage() {
+    let mut c = Config::default();
+    for (k, v) in [
+        ("event_cap", "99"), ("event_cap", "1048577"), ("event_cap", "abc"), ("event_cap", "NaN"),
+        ("postgame_level_cap", "39"), ("postgame_level_cap", "201"), ("postgame_level_cap", "abc"), ("postgame_level_cap", "NaN"),
+        ("evolve_kills", "9"), ("evolve_kills", "100001"), ("evolve_kills", "abc"), ("evolve_kills", "NaN"),
+    ] {
+        let e = c.set(k, v).unwrap_err();
+        assert!(e.contains(k), "{}={}: {}", k, v, e);
+    }
+    assert_eq!(c, Config::default());
+}
