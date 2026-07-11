@@ -42,3 +42,17 @@ fn cfg_defaults() {
     assert_eq!((c.event_cap, c.postgame_level_cap, c.evolve_kills), (65536, 80, 300));
     assert_eq!(MAX_EVENT_CAP, 1_048_576);
 }
+
+#[test]
+fn cfg_sixteen_knobs_with_ranges() {
+    assert_eq!(knobs().len(), 16);
+    let find = |k: &str| knobs().iter().find(|x| x.key == k).unwrap_or_else(|| panic!("no knob {}", k));
+    for (k, lo, hi, d) in [
+        ("event_cap", 100.0, 1_048_576.0, 65536.0),
+        ("postgame_level_cap", 40.0, 200.0, 80.0),
+        ("evolve_kills", 10.0, 100000.0, 300.0),
+    ] {
+        let n = find(k);
+        assert_eq!((n.min, n.max, n.default), (lo, hi, d), "{}", k);
+    }
+}
