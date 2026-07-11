@@ -64,3 +64,11 @@ fn window_over_large_cap_ok() {
     assert_eq!(r.status, 200);
     assert!(text(&r).contains("\"total\":300000"));
 }
+
+#[test]
+fn window_count_bounds() {
+    is_400("/api/run?seed=1&from=0&count=5001");
+    is_400("/api/run?seed=1&from=0&count=0");
+    assert_eq!(get("/api/run?seed=1&from=0&count=5000").status, 200);
+    assert_eq!(get("/api/run?seed=1&from=0&count=1").status, 200);
+}
