@@ -6,3 +6,31 @@ use jungle_sim::report::{batch, batch_with, run_body, run_window_body, stats_bod
 use jungle_sim::sim::{simulate, simulate_summary, simulate_with, Run};
 use std::collections::HashMap;
 use std::time::Instant;
+
+fn cfg(k: &[(&str, &str)]) -> Config {
+    let mut c = Config::default();
+    for (a, b) in k {
+        c.set(a, b).unwrap();
+    }
+    c
+}
+fn stage_of(e: &jungle_sim::sim::Event) -> u8 {
+    e.mon.as_ref().map(|m| m.stage).unwrap_or(0)
+}
+fn fw(r: &Run) -> usize {
+    r.first_win_event.expect("expected a win") as usize
+}
+/// value of a numeric key like `"total":123`
+fn num_after(body: &str, key: &str) -> Option<u64> {
+    let p = format!("\"{}\":", key);
+    let i = body.find(&p)? + p.len();
+    let d: String = body[i..].chars().take_while(|c| c.is_ascii_digit()).collect();
+    d.parse().ok()
+}
+fn array_len(body: &str, key: &str) -> usize {
+    let p = format!("\"{}\":[", key);
+    let i = body.find(&p).unwrap_or_else(|| panic!("missing {}", key)) + p.len();
+    let end = body[i..].find(']').unwrap();
+    let inner = &body[i..i + end];
+    if inner.trim().is_empty() { 0 } else { inner.split(',').count() }
+}
