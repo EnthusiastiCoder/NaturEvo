@@ -79,3 +79,9 @@ fn window_bad_values_400() {
     is_400("/api/run?seed=1&from=-1&count=10");
     is_400("/api/run?seed=1&from=0&count=x");
 }
+
+#[test]
+fn batch_budget_cap() {
+    is_400("/api/batch?runs=2000&event_cap=200000");
+    assert_eq!(get("/api/batch?runs=2000&event_cap=65536").status, 200);
+}
