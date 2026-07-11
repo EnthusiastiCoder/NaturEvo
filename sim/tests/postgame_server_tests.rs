@@ -72,3 +72,10 @@ fn window_count_bounds() {
     assert_eq!(get("/api/run?seed=1&from=0&count=5000").status, 200);
     assert_eq!(get("/api/run?seed=1&from=0&count=1").status, 200);
 }
+
+#[test]
+fn window_bad_values_400() {
+    is_400("/api/run?seed=1&from=abc&count=10");
+    is_400("/api/run?seed=1&from=-1&count=10");
+    is_400("/api/run?seed=1&from=0&count=x");
+}
