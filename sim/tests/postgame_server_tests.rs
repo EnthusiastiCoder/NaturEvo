@@ -15,3 +15,11 @@ fn is_400(t: &str) {
     assert_eq!(r.status, 400, "{} -> {}", t, text(&r).chars().take(120).collect::<String>());
     assert!(text(&r).contains("\"error\""), "{}", t);
 }
+
+#[test]
+fn config_has_event_cap_and_max_events() {
+    let b = text(&get("/api/config"));
+    assert!(b.contains("\"event_cap\""), "{}", b);
+    assert!(b.contains("\"postgame_level_cap\"") && b.contains("\"evolve_kills\""));
+    assert!(b.contains("\"max_events\":1048576"), "{}", b);
+}
