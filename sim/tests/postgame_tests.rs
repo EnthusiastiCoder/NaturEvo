@@ -34,3 +34,11 @@ fn array_len(body: &str, key: &str) -> usize {
     let inner = &body[i..i + end];
     if inner.trim().is_empty() { 0 } else { inner.split(',').count() }
 }
+
+// ---------------- config ----------------
+#[test]
+fn cfg_defaults() {
+    let c = Config::default();
+    assert_eq!((c.event_cap, c.postgame_level_cap, c.evolve_kills), (65536, 80, 300));
+    assert_eq!(MAX_EVENT_CAP, 1_048_576);
+}
