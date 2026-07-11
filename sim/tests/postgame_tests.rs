@@ -56,3 +56,17 @@ fn cfg_sixteen_knobs_with_ranges() {
         assert_eq!((n.min, n.max, n.default), (lo, hi, d), "{}", k);
     }
 }
+
+#[test]
+fn cfg_set_accepts_bounds() {
+    let mut c = Config::default();
+    for (k, v) in [
+        ("event_cap", "100"), ("event_cap", "1048576"),
+        ("postgame_level_cap", "40"), ("postgame_level_cap", "200"),
+        ("evolve_kills", "10"), ("evolve_kills", "100000"),
+    ] {
+        c.set(k, v).unwrap_or_else(|e| panic!("{}={} rejected: {}", k, v, e));
+    }
+    assert_eq!((c.event_cap, c.postgame_level_cap, c.evolve_kills), (1_048_576, 200, 100000));
+    assert!(c.validate().is_ok());
+}
