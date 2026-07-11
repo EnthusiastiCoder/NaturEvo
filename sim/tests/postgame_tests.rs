@@ -84,3 +84,16 @@ fn cfg_set_rejects_out_of_range_and_garbage() {
     }
     assert_eq!(c, Config::default());
 }
+
+// ---------------- prefix / baselines ----------------
+#[test]
+fn prefix_first_win_events_and_level() {
+    for (seed, f) in [(1u64, 10624u32), (2, 10542), (42, 10616)] {
+        let r = simulate(seed);
+        assert!(r.won, "seed {}", seed);
+        assert_eq!(r.first_win_event, Some(f), "seed {}", seed);
+        assert_eq!(r.final_level, 40, "seed {}", seed);
+        assert_eq!(r.events[f as usize].kind, "win", "seed {}", seed);
+        assert!(r.events[..=f as usize].iter().all(|e| stage_of(e) == 0), "seed {}", seed);
+    }
+}
