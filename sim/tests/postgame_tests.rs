@@ -280,3 +280,11 @@ fn evo_slow_kills_never_evolve() {
     assert_eq!(r.max_stage, 0);
     assert!(r.events.iter().all(|e| e.kind != "evolve" && stage_of(e) == 0));
 }
+
+#[test]
+fn evo_boss_never_evolved_and_prewin_stage_zero() {
+    let r = simulate_with(1, &cfg(&[("evolve_kills", "10")]));
+    let f = fw(&r);
+    assert!(r.events[..=f].iter().all(|e| stage_of(e) == 0));
+    assert!(r.events.iter().filter_map(|e| e.mon.as_ref()).filter(|m| m.species == BOSS).all(|m| m.stage == 0));
+}
