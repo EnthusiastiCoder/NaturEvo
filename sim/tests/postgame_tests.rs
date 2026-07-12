@@ -169,3 +169,12 @@ fn cap_losing_run_ends_without_postgame() {
     assert_eq!(r.max_stage, 0);
     assert!(r.events.iter().all(|e| e.kind != "win" && e.kind != "evolve"));
 }
+
+// ---------------- post-game ----------------
+#[test]
+fn post_exactly_one_win_event_and_continues() {
+    let r = simulate(1);
+    let wins: Vec<usize> = r.events.iter().enumerate().filter(|(_, e)| e.kind == "win").map(|(i, _)| i).collect();
+    assert_eq!(wins, vec![10624]);
+    assert!(r.events.len() > 10625 + 1000);
+}
