@@ -304,3 +304,31 @@ fn evo_encounter_text_uses_stage_name() {
     }
     assert!(n > 50, "expected many evolved encounters, got {}", n);
 }
+
+#[test]
+fn evo_stage_monsters_are_stronger_at_same_level() {
+    let mut base: HashMap<(usize, u32), i32> = HashMap::new();
+    let mut evolved = Vec::new();
+    for seed in [1u64, 7, 42] {
+        for e in simulate_with(seed, &cfg(&[("evolve_kills", "10")])).events {
+            if let Some(m) = e.mon {
+                if m.species == BOSS {
+                    continue;
+                }
+                if m.stage == 0 {
+                    base.insert((m.species, m.level), m.max_hp);
+                } else {
+                    evolved.push(m);
+                }
+            }
+        }
+    }
+    let mut compared = 0;
+    for m in evolved {
+        if let Some(b) = base.get(&(m.species, m.level)) {
+            compared += 1;
+            assert!(m.max_hp > *b, "species {} lvl {} stage {}: {} <= {}", m.species, m.level, m.stage, m.max_hp, b);
+        }
+    }
+    assert!(compared > 0, "no stage>0 / stage-0 pair with equal species and level");
+}
