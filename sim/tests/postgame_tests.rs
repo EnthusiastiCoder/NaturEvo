@@ -127,3 +127,11 @@ fn baseline_win_counts_unchanged() {
     assert_eq!(batch(200, 4).wins, 108);
     assert_eq!(batch(2000, 4).wins, 1076);
 }
+
+// ---------------- cap ----------------
+#[test]
+fn cap_default_winning_run_is_capped_at_65536() {
+    let r = simulate(1);
+    assert_eq!(r.events.len(), 65536);
+    assert!(r.capped);
+}
