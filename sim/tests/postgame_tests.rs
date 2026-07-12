@@ -396,3 +396,17 @@ fn stats_default_averages() {
     assert!(s.avg_post_kills > 0.0);
     assert!(s.avg_post_deaths >= 0.0);
 }
+
+#[test]
+fn stats_thread_independent_nondefault() {
+    let c = cfg(&[("evolve_kills", "20"), ("event_cap", "20000"), ("boss_hp_mult", "1.5")]);
+    let a = batch_with(40, 1, &c);
+    let b = batch_with(40, 4, &c);
+    assert_eq!(a.wins, b.wins);
+    assert_eq!(a.avg_events, b.avg_events);
+    assert_eq!(a.avg_first_win_event, b.avg_first_win_event);
+    assert_eq!(a.avg_post_kills, b.avg_post_kills);
+    assert_eq!(a.avg_post_deaths, b.avg_post_deaths);
+    assert_eq!(a.stage_hist, b.stage_hist);
+    assert_eq!(a.level_hist, b.level_hist);
+}
