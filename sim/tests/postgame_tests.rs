@@ -198,3 +198,15 @@ fn post_levels_past_40_up_to_postgame_cap() {
     let r200 = simulate_with(1, &cfg(&[("postgame_level_cap", "200")]));
     assert!(r200.end_level >= r.end_level && r200.end_level <= 200);
 }
+
+#[test]
+fn post_hp_invariants() {
+    for seed in [1u64, 7] {
+        for e in &simulate(seed).events {
+            assert!(e.hero.hp >= 0 && e.hero.hp <= e.hero.max_hp, "seed {} idx {}", seed, e.idx);
+            if let Some(m) = &e.mon {
+                assert!(m.hp <= m.max_hp, "seed {} idx {}", seed, e.idx);
+            }
+        }
+    }
+}
