@@ -435,3 +435,12 @@ fn report_run_body_new_top_level_keys() {
     assert!(lb.contains("\"first_win_event\":null"));
     assert!(lb.contains("\"capped\":false"));
 }
+
+#[test]
+fn report_stage_key_only_when_positive() {
+    let pre = run_body(&simulate_with(1, &cfg(&[("event_cap", "5000")])));
+    assert!(!pre.contains("\"stage\""), "pre-win events must not carry stage");
+    let post = run_body(&simulate_with(1, &cfg(&[("evolve_kills", "10"), ("event_cap", "20000")])));
+    assert!(post.contains("\"stage\":1") && post.contains("\"stage\":4"));
+    assert!(!post.contains("\"stage\":0"));
+}
