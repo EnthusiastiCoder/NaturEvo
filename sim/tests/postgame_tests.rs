@@ -231,3 +231,27 @@ fn post_kills_counts_victories_after_win() {
     assert_eq!(r.post_kills, v);
     assert!(r.post_kills > 0);
 }
+
+// ---------------- evolution ----------------
+#[test]
+fn evo_tables() {
+    assert_eq!(MAX_STAGE, 4);
+    assert_eq!(STAGE_MULT[0], 1.0);
+    assert!(STAGE_MULT.windows(2).all(|w| w[0] < w[1]));
+    assert_eq!(EVOLUTIONS.len(), 16);
+    for (i, s) in SPECIES.iter().enumerate() {
+        assert_eq!(EVOLUTIONS[i][0], s.name);
+        assert_eq!(stage_name(i, 0), s.name);
+        for st in 0..5 {
+            assert!(!EVOLUTIONS[i][st].is_empty());
+            assert_eq!(stage_name(i, st), EVOLUTIONS[i][st]);
+        }
+        if i != BOSS {
+            let mut v = EVOLUTIONS[i].to_vec();
+            v.sort();
+            v.dedup();
+            assert_eq!(v.len(), 5, "line {} names not distinct", i);
+        }
+    }
+    assert!(EVOLUTIONS[BOSS].iter().all(|n| *n == "Jungle King"));
+}
