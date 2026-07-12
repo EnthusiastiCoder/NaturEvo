@@ -121,3 +121,9 @@ fn prefix_across_win_boundary() {
         assert_eq!((a.kind, &a.text), (b.kind, &b.text));
     }
 }
+
+#[test]
+fn baseline_win_counts_unchanged() {
+    assert_eq!(batch(200, 4).wins, 108);
+    assert_eq!(batch(2000, 4).wins, 1076);
+}
