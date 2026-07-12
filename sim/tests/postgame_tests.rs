@@ -210,3 +210,15 @@ fn post_hp_invariants() {
         }
     }
 }
+
+#[test]
+fn post_deaths_field_is_prewin_count() {
+    for seed in [1u64, 2, 42] {
+        let r = simulate(seed);
+        let f = fw(&r);
+        let pre = r.events[..=f].iter().filter(|e| e.kind == "death").count() as u32;
+        assert_eq!(r.deaths, pre, "seed {}", seed);
+        let post = r.events[f + 1..].iter().filter(|e| e.kind == "death").count() as u32;
+        assert_eq!(r.post_deaths, post, "seed {}", seed);
+    }
+}
