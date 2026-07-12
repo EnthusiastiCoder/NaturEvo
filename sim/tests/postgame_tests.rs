@@ -156,3 +156,16 @@ fn cap_len_never_exceeds_cap() {
         }
     }
 }
+
+#[test]
+fn cap_losing_run_ends_without_postgame() {
+    let seed = (0..200u64).find(|s| !simulate(*s).won).expect("a losing seed in 0..200");
+    let r = simulate(seed);
+    assert!(r.events.len() < 65536);
+    assert!(!r.capped);
+    assert_eq!(r.first_win_event, None);
+    assert_eq!(r.post_kills, 0);
+    assert_eq!(r.post_deaths, 0);
+    assert_eq!(r.max_stage, 0);
+    assert!(r.events.iter().all(|e| e.kind != "win" && e.kind != "evolve"));
+}
