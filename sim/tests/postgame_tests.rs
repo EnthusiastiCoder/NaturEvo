@@ -354,3 +354,24 @@ fn det_evolve_kills_changes_run() {
     let tb: Vec<&str> = b.events.iter().map(|e| e.text.as_str()).collect();
     assert_ne!(ta, tb);
 }
+
+#[test]
+fn summary_matches_lean_summary() {
+    let cfgs = [
+        Config::default(),
+        cfg(&[("event_cap", "3000")]),
+        cfg(&[("event_cap", "100")]),
+        cfg(&[("evolve_kills", "10"), ("boss_hp_mult", "2.5")]),
+        cfg(&[("postgame_level_cap", "40"), ("hero_hp_per_level", "20")]),
+    ];
+    for c in &cfgs {
+        for seed in 0..20u64 {
+            let full = simulate_with(seed, c);
+            let s = full.summary();
+            assert_eq!(simulate_summary(seed, c), s, "seed {}", seed);
+            assert_eq!(s.events as usize, full.events.len());
+            assert_eq!(s.won, full.won);
+            assert_eq!(s.first_win_event, full.first_win_event);
+        }
+    }
+}
