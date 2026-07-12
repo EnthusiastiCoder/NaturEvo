@@ -419,3 +419,19 @@ fn stats_body_has_new_keys() {
     }
     assert_eq!(array_len(&b, "stage_hist"), 5);
 }
+
+#[test]
+fn report_run_body_new_top_level_keys() {
+    let r = simulate(1);
+    let b = run_body(&r);
+    for k in ["first_win_event", "end_level", "post_kills", "post_deaths", "max_stage", "capped", "total"] {
+        assert!(b.contains(&format!("\"{}\":", k)), "missing {}", k);
+    }
+    assert_eq!(num_after(&b, "first_win_event"), Some(10624));
+    assert_eq!(num_after(&b, "total"), Some(65536));
+    assert!(b.contains("\"capped\":true"));
+    let lose = (0..200u64).find(|s| !simulate(*s).won).unwrap();
+    let lb = run_body(&simulate(lose));
+    assert!(lb.contains("\"first_win_event\":null"));
+    assert!(lb.contains("\"capped\":false"));
+}
