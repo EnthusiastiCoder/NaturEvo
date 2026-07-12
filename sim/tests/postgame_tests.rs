@@ -444,3 +444,21 @@ fn report_stage_key_only_when_positive() {
     assert!(post.contains("\"stage\":1") && post.contains("\"stage\":4"));
     assert!(!post.contains("\"stage\":0"));
 }
+
+#[test]
+fn report_window_slice_and_clamp() {
+    let r = simulate(1);
+    let w = run_window_body(&r, 1000, 50);
+    assert_eq!(num_after(&w, "from"), Some(1000));
+    assert_eq!(num_after(&w, "total"), Some(65536));
+    assert_eq!(w.matches("\"idx\":").count(), 50);
+    assert!(w.contains("\"idx\":1000,") && w.contains("\"idx\":1049,") && !w.contains("\"idx\":1050,"));
+    for k in ["first_win_event", "end_level", "post_kills", "capped", "level_series"] {
+        assert!(w.contains(&format!("\"{}\":", k)), "missing {}", k);
+    }
+    let tail = run_window_body(&r, 65530, 100);
+    assert_eq!(tail.matches("\"idx\":").count(), 6);
+    let past = run_window_body(&r, 999_999, 10);
+    assert_eq!(past.matches("\"idx\":").count(), 0);
+    assert!(past.starts_with('{') && past.trim_end().ends_with('}'));
+}
