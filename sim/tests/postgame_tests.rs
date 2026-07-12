@@ -375,3 +375,15 @@ fn summary_matches_lean_summary() {
         }
     }
 }
+
+// ---------------- stats / report ----------------
+#[test]
+fn stats_stage_hist_sums_to_wins() {
+    for c in [Config::default(), cfg(&[("evolve_kills", "10")])] {
+        let s = batch_with(60, 2, &c);
+        assert_eq!(s.stage_hist.len(), 5);
+        assert_eq!(s.stage_hist.iter().sum::<u32>(), s.wins);
+    }
+    let s = batch_with(30, 2, &cfg(&[("evolve_kills", "10")]));
+    assert!(s.stage_hist[4] > 0);
+}
