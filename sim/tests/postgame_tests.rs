@@ -462,3 +462,13 @@ fn report_window_slice_and_clamp() {
     assert_eq!(past.matches("\"idx\":").count(), 0);
     assert!(past.starts_with('{') && past.trim_end().ends_with('}'));
 }
+
+#[test]
+fn report_level_series_bounded_and_sampled() {
+    let r = simulate(1);
+    let n = array_len(&run_window_body(&r, 0, 10), "level_series");
+    assert!(n >= 1000 && n <= 2048, "level_series len {}", n);
+    let small = simulate_with(1, &cfg(&[("event_cap", "300")]));
+    let n2 = array_len(&run_window_body(&small, 0, 10), "level_series");
+    assert!(n2 >= 1 && n2 <= 300, "{}", n2);
+}
