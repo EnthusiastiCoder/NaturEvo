@@ -186,3 +186,15 @@ fn post_never_targets_boss_again() {
     assert!(r.events[f + 1..].iter().all(|e| e.kind != "boss"));
     assert!(r.events[f + 1..].iter().all(|e| e.hero.zone != 8), "zone 8 is the boss zone");
 }
+
+#[test]
+fn post_levels_past_40_up_to_postgame_cap() {
+    let r = simulate(1);
+    assert!(r.end_level > 40, "end_level {}", r.end_level);
+    assert!(r.end_level <= 80);
+    assert!(r.events.iter().all(|e| e.hero.level <= 80));
+    let r40 = simulate_with(1, &cfg(&[("postgame_level_cap", "40")]));
+    assert_eq!(r40.end_level, 40);
+    let r200 = simulate_with(1, &cfg(&[("postgame_level_cap", "200")]));
+    assert!(r200.end_level >= r.end_level && r200.end_level <= 200);
+}
