@@ -146,3 +146,13 @@ fn cap_2000_exact_and_consecutive() {
         assert_eq!(e.idx as usize, i);
     }
 }
+
+#[test]
+fn cap_len_never_exceeds_cap() {
+    for cap in [100u32, 777, 5000] {
+        for seed in 0..10u64 {
+            let r = simulate_with(seed, &cfg(&[("event_cap", &cap.to_string())]));
+            assert!(r.events.len() <= cap as usize, "cap {} seed {}", cap, seed);
+        }
+    }
+}
