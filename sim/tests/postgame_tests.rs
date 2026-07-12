@@ -288,3 +288,19 @@ fn evo_boss_never_evolved_and_prewin_stage_zero() {
     assert!(r.events[..=f].iter().all(|e| stage_of(e) == 0));
     assert!(r.events.iter().filter_map(|e| e.mon.as_ref()).filter(|m| m.species == BOSS).all(|m| m.stage == 0));
 }
+
+#[test]
+fn evo_encounter_text_uses_stage_name() {
+    let r = simulate_with(1, &cfg(&[("evolve_kills", "10")]));
+    let mut n = 0;
+    for e in r.events.iter().filter(|e| e.kind == "encounter") {
+        if let Some(m) = &e.mon {
+            if m.stage > 0 {
+                n += 1;
+                let nm = stage_name(m.species, m.stage as usize);
+                assert!(e.text.contains(nm), "text {:?} lacks {:?}", e.text, nm);
+            }
+        }
+    }
+    assert!(n > 50, "expected many evolved encounters, got {}", n);
+}
