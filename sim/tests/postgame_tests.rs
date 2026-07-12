@@ -255,3 +255,21 @@ fn evo_tables() {
     }
     assert!(EVOLUTIONS[BOSS].iter().all(|n| *n == "Jungle King"));
 }
+
+#[test]
+fn evo_fast_kills_reach_stage_4_with_four_events() {
+    let r = simulate_with(1, &cfg(&[("evolve_kills", "10")]));
+    assert_eq!(r.max_stage, 4);
+    let n = r.events.iter().filter(|e| e.kind == "evolve").count();
+    assert_eq!(n, 4);
+    assert!(r.events.iter().filter(|e| e.kind == "evolve").all(|e| e.mon.is_none()));
+    let f = fw(&r);
+    let mut last = 0u8;
+    for e in r.events[f + 1..].iter().filter(|e| e.kind == "encounter") {
+        let s = stage_of(e);
+        assert!(s >= last, "stage went backwards at {}", e.idx);
+        last = s;
+    }
+    assert_eq!(last, 4);
+    assert!(r.events.iter().all(|e| stage_of(e) <= 4));
+}
