@@ -171,3 +171,5 @@ if (rng('boss_attempts') && num('boss_attempts') && $('run-btn')) {
   const mh = (d['max-height'] || '');
   check(!/vh|px/.test(mh) || !/\b(auto|scroll)\b/.test(d.overflow || ''), '#knobs must not combine max-height with scrolling');
 }
+
+done();
