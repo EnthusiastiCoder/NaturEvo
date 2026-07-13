@@ -60,3 +60,10 @@ fn terminates_under_cap() {
         assert!(simulate(seed).events.len() <= 65536);
     }
 }
+
+#[test]
+fn xp_to_next_strictly_increasing() {
+    for l in 1..60 {
+        assert!(xp_to_next(l) < xp_to_next(l + 1), "level {}", l);
+    }
+}
