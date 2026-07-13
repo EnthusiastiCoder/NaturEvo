@@ -4,3 +4,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import vm from 'node:vm';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+export const htmlPath = join(root, 'viewer', 'index.html');
+export const html = readFileSync(htmlPath, 'utf8');
