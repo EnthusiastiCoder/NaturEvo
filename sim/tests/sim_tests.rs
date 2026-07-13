@@ -45,3 +45,11 @@ fn hp_never_negative_and_le_max() {
         }
     }
 }
+
+#[test]
+fn idx_consecutive() {
+    let r = simulate(3);
+    for (i, e) in r.events.iter().enumerate() {
+        assert_eq!(e.idx as usize, i);
+    }
+}
