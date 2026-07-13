@@ -22,3 +22,17 @@ export function makeRun(n, seed = 1) {
 }
 
 export const tick = async () => { for (let i = 0; i < 20; i++) await new Promise(r => setImmediate(r)); };
+
+// Additive options (theme tests): storage = object (initial localStorage contents) | 'throw-access'
+// (reading window.localStorage throws, like file:// SecurityError) | 'throw-ops' (getItem/setItem throw);
+// matchMedia = 'dark' | 'light' | 'absent' | 'throws' (prefers-color-scheme answer).
+// Returns extra: paints (canvas fillStyle/strokeStyle assignments), events (dispatched event types),
+// store (backing Map), root (documentElement stub with style.setProperty / getPropertyValue).
+export function load({ protocol = 'file:', run = makeRun(300), fetchImpl = null, storage = {}, matchMedia = 'dark', pre = null } = {}) {
+  const paints = [], events = [], store = new Map(Object.entries(typeof storage === 'object' ? storage : {}));
+  const listeners = {};
+  const addL = (t, f) => { (listeners[t] = listeners[t] || []).push(f); };
+  const dispatch = ev => { events.push(ev.type); (listeners[ev.type] || []).forEach(f => f.call(null, ev)); return true; };
+  const byId = new Map();
+  const fetchCalls = [];
+  const intervals = [];
