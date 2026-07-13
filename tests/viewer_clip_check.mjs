@@ -109,3 +109,24 @@ check(stepOf('monster_hp_mult') === 0.1, 'fractional range 4.9 (<=10) step 0.1, 
 check(stepOf('xp_rate') === 0.1, 'integer min/max but fractional default, range 10: step 0.1, got ' + stepOf('xp_rate'));
 check(stepOf('crit_chance') === 0.01, 'range <=1 fractional: step 0.01, got ' + stepOf('crit_chance'));
 check(num('boss_attempts') && Number(num('boss_attempts').step) === stepOf('boss_attempts'), 'number input step equals range step');
+
+if (rng('boss_attempts') && num('boss_attempts') && $('run-btn')) {
+  // slider -> number
+  setFire(rng('boss_attempts'), 12, 'input');
+  check(n(num('boss_attempts')) === 12, 'slider input must update number input, got ' + num('boss_attempts').value);
+  // number -> slider
+  setFire(num('boss_attempts'), 20, 'input');
+  check(n(rng('boss_attempts')) === 20, 'number input must update slider, got ' + rng('boss_attempts').value);
+  // clamping
+  edit(num('boss_attempts'), 999);
+  check(n(num('boss_attempts')) === 50 && n(rng('boss_attempts')) === 50, `clamp above max to 50, got num ${num('boss_attempts').value} range ${rng('boss_attempts').value}`);
+  edit(num('boss_attempts'), -5);
+  check(n(num('boss_attempts')) === 1 && n(rng('boss_attempts')) === 1, `clamp below min to 1, got num ${num('boss_attempts').value} range ${rng('boss_attempts').value}`);
+  // step rule: integer knob rounds to integer
+  edit(num('boss_attempts'), 7.6);
+  check(Number.isInteger(n(num('boss_attempts'))) && Number.isInteger(n(rng('boss_attempts'))) && n(num('boss_attempts')) === n(rng('boss_attempts')), `integer knob must snap to an integer, got ${num('boss_attempts').value}/${rng('boss_attempts').value}`);
+  // fractional knob stays within step/2 of typed value and in range
+  edit(num('monster_hp_mult'), 1.234);
+  check(Math.abs(n(num('monster_hp_mult')) - 1.234) <= 0.05 + 1e-9 && n(num('monster_hp_mult')) === n(rng('monster_hp_mult')), `fractional knob snaps to step 0.1, got ${num('monster_hp_mult').value}/${rng('monster_hp_mult').value}`);
+  edit(num('crit_chance'), 7);
+  check(n(num('crit_chance')) === 1 && n(rng('crit_chance')) === 1, 'fractional knob clamps to max 1, got ' + num('crit_chance').value);
