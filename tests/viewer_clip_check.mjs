@@ -7,3 +7,13 @@
 import { html, load, makeRun, tick, runner, jsonResp } from './_viewer_harness.mjs';
 
 const { check, done } = runner('viewer_clip_check');
+
+const css = ((html.match(/<style[^>]*>([\s\S]*?)<\/style>/) || [, ''])[1]).replace(/\/\*[\s\S]*?\*\//g, '');
+const scripts = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]).join('\n');
+const markup = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<style[\s\S]*?<\/style>/g, '');
+const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(m => ({
+  sels: m[1].split(',').map(s => s.trim().replace(/\s+/g, ' ')),
+  decl: Object.fromEntries(m[2].split(';').map(d => { const k = d.indexOf(':'); return k < 0 ? null : [d.slice(0, k).trim().toLowerCase(), d.slice(k + 1).trim()]; }).filter(Boolean)),
+}));
+const rulesFor = pred => rules.filter(r => r.sels.some(pred));
+const prop = (pred, name) => rulesFor(pred).map(r => r.decl[name]).filter(v => v !== undefined);
