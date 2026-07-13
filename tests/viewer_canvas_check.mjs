@@ -70,3 +70,45 @@ for (const [dpr, cw, ch] of [[1, 640, 140], [1.25, 333, 141], [1.5, 641, 139], [
   const fonts = h.rec.ctx.filter(c => c[0] === 'font').map(c => c[1][0]);
   check(fonts.length > 0 && fonts.every(f => /\b\d+(\.\d+)?px\b/.test(f)), `dpr ${dpr}: canvas font size must be in CSS px, got ${JSON.stringify([...new Set(fonts)])}`);
 }
+
+// ---------- refit + redraw triggers ----------
+{ // window resize
+  const h = boot(1.5, 600, 140); draw(h); const g0 = h.rec.gets;
+  h.size(480, 120); h.v.win.dispatchEvent({ type: 'resize' });
+  fitOK(h, 1.5, 480, 120, 'after window resize');
+  check(h.rec.gets > g0, 'window resize must redraw the canvas');
+}
+{ // dpr change
+  const h = boot(1, 600, 140); draw(h);
+  check(h.resMq().length > 0 && h.resMq().every(m => m._l.length > 0), 'a matchMedia("(resolution: Ndppx)") change listener must be registered, queries seen: ' + JSON.stringify(h.rec.mq.map(m => m.media)));
+  h.setDpr(2); const g0 = h.rec.gets; h.fireDpr();
+  fitOK(h, 2, 600, 140, 'after dpr 1 -> 2');
+  check(h.rec.gets > g0, 'dpr change must redraw the canvas');
+  check(h.resMq().some(m => /\b2(\.0+)?dppx/.test(m.media)), 'dpr listener must be re-armed for the new ratio (resolution: 2dppx), queries: ' + JSON.stringify(h.resMq().map(m => m.media)));
+  h.setDpr(1.5); h.fireDpr();
+  fitOK(h, 1.5, 600, 140, 'after dpr 2 -> 1.5 (listener re-armed)');
+}
+{ // theme change
+  const h = boot(2, 600, 140); draw(h); const g0 = h.rec.gets;
+  h.size(610, 130); h.v.win.dispatchEvent({ type: 'jv-themechange' });
+  check(h.rec.gets > g0, 'jv-themechange must redraw the canvas');
+  fitOK(h, 2, 610, 130, 'after jv-themechange');
+}
+{ // becomes visible: measured at 0 while hidden, then shown via tab switch
+  const h = boot(1.5, 0, 0); h.v.$('tab-dashboard').click(); h.flushRO();
+  h.size(560, 140); h.v.$('tab-replay').click(); h.flushRO();
+  fitOK(h, 1.5, 560, 140, 'canvas measured at 0 while hidden, then shown via tab switch');
+  check(h.cv.width > 0 && h.cv.height > 0, 'backing store must be > 0 after the canvas is shown');
+}
+{ // becomes visible: layout change via drawer open, observed by the browser's ResizeObserver
+  const h = boot(2, 0, 0); h.v.$('tab-replay').click();
+  h.size(500, 140);
+  const d = h.v.$('log-box'); if (d) { d.open = true; d.fire('toggle'); } h.flushRO();
+  fitOK(h, 2, 500, 140, 'canvas becoming visible after drawer open / layout change');
+}
+{ // ResizeObserver wired to the canvas so layout-only size changes refit
+  const h = boot(1.25, 600, 140); draw(h);
+  check(h.rec.ro.length > 0, 'a ResizeObserver (or equivalent visibility hook) must watch the canvas');
+  h.size(300, 100); h.flushRO();
+  fitOK(h, 1.25, 300, 100, 'after layout-only size change (ResizeObserver)');
+}
