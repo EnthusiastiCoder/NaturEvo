@@ -47,3 +47,25 @@ const prop = (pred, name) => rulesFor(pred).map(r => r.decl[name]).filter(v => v
   }
   check(vhBad.length === 0, 'vh sizing that can exceed the shell (use %/dvh/grid rows): ' + vhBad.join(' | '));
 }
+
+// ---------- (2) selects: one .select class, right aligned, same chevron padding ----------
+{
+  const tags = [...markup.matchAll(/<select\b([^>]*)>/g)].map(m => m[1]).concat([...scripts.matchAll(/<select\b([^>]*)>/g)].map(m => m[1]));
+  // (3b) no minimum count: speed is no longer a select; any selects that remain must use .select
+  const noClass = tags.filter(t => !/\bclass\s*=\s*["'][^"']*\bselect\b/.test(t));
+  check(noClass.length === 0, 'every <select> needs class "select": ' + noClass.join(' | '));
+  check(!/createElement\(\s*["']select["']\s*\)/.test(scripts) || /\.className\s*=\s*["'][^"']*\bselect\b|classList\.add\(\s*["']select["']/.test(scripts), 'script-created selects must get class select');
+  const sel = rulesFor(s => s === '.select' || s === 'select.select');
+  check(sel.length >= 1, 'a .select CSS rule is required');
+  const d = Object.assign({}, ...sel.map(r => r.decl));
+  check(/^right$/.test(d['text-align'] || ''), '.select text-align must be right, got ' + d['text-align']);
+  check(/^right$/.test(d['text-align-last'] || ''), '.select text-align-last must be right, got ' + d['text-align-last']);
+  check(/^none$/.test(d.appearance || d['-webkit-appearance'] || ''), '.select needs appearance:none for the custom chevron');
+  check(!!(d['padding-right'] || d['padding-inline-end'] || d.padding), '.select must define right/inline-end padding for the chevron');
+  const bgChevron = /url\(/.test(d['background-image'] || d.background || '');
+  const useCount = (markup.match(/<use\b[^>]*href\s*=\s*["']#i-chevron-down["']/g) || []).length;
+  check(bgChevron || useCount >= tags.length, 'chevron-down must come from .select background-image url(...) or a sibling <use href="#i-chevron-down"> per select');
+  const other = rules.filter(r => r.sels.some(s => /(^|[\s#.])(speed)\b|^select\b/.test(s) && s !== '.select' && s !== 'select.select') && /padding/.test(Object.keys(r.decl).join(' ')));
+  check(other.length === 0, 'no per-select padding overrides (all selects share .select padding): ' + other.map(r => r.sels[0]).join(', '));
+  check(!/<select\b[^>]*\bid\s*=\s*["']speed["']/.test(markup), '#speed must not be a select any more (addendum 3b)');
+}
