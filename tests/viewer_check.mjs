@@ -22,3 +22,9 @@ for (const id of ['tab-replay', 'tab-dashboard', 'play', 'speed', 'scrub', 'log'
 }
 check(/<script[^>]+src\s*=\s*["']data\/run\.js["']/.test(html), 'missing script tag for data/run.js');
 check(/<script[^>]+src\s*=\s*["']data\/stats\.js["']/.test(html), 'missing script tag for data/stats.js');
+
+const inline = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+check(inline.length > 0, 'no inline script');
+inline.forEach((code, i) => {
+  try { new Function(code); } catch (e) { check(false, `inline script ${i} syntax error: ${e.message}`); }
+});
