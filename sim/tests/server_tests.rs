@@ -15,3 +15,15 @@ fn get(t: &str) -> Response {
 fn text(r: &Response) -> String {
     String::from_utf8(r.body.clone()).unwrap()
 }
+
+#[test]
+fn config_lists_all_knob_keys() {
+    let r = get("/api/config");
+    assert_eq!(r.status, 200);
+    assert!(r.content_type.starts_with("application/json"));
+    let b = text(&r);
+    for k in knobs() {
+        assert!(b.contains(&format!("\"{}\"", k.key)), "{}", k.key);
+    }
+    assert!(b.contains("\"max_runs\":20000"), "{}", b);
+}
