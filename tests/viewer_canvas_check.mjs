@@ -58,3 +58,15 @@ const fitOK = (h, dpr, cw, ch, label) => {
   check(t && t.length === 6 && Math.abs(t[0] - dpr) < 1e-9 && t[1] === 0 && t[2] === 0 && Math.abs(t[3] - dpr) < 1e-9 && t[4] === 0 && t[5] === 0, `${label}: last setTransform must be (${dpr},0,0,${dpr},0,0), got ${JSON.stringify(t)}`);
 };
 const draw = h => { h.v.$('tab-dashboard').click(); h.v.$('tab-replay').click(); };
+
+// ---------- shared sizing at each dpr ----------
+for (const [dpr, cw, ch] of [[1, 640, 140], [1.25, 333, 141], [1.5, 641, 139], [2, 520, 140]]) {
+  const h = boot(dpr, cw, ch);
+  if (!h.cv) { check(false, 'canvas #timeline missing'); continue; }
+  draw(h);
+  fitOK(h, dpr, cw, ch, `dpr ${dpr} ${cw}x${ch}`);
+  const bad = h.rec.ctx.filter(c => (c[0] === 'scale' && c[1][0] !== c[1][1]) || (c[0] === 'setTransform' && (c[1][0] !== c[1][3] || c[1][1] !== 0 || c[1][2] !== 0)));
+  check(bad.length === 0, `dpr ${dpr}: no non-uniform scaling allowed, got ${JSON.stringify(bad.slice(0, 2))}`);
+  const fonts = h.rec.ctx.filter(c => c[0] === 'font').map(c => c[1][0]);
+  check(fonts.length > 0 && fonts.every(f => /\b\d+(\.\d+)?px\b/.test(f)), `dpr ${dpr}: canvas font size must be in CSS px, got ${JSON.stringify([...new Set(fonts)])}`);
+}
