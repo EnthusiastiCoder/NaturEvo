@@ -74,3 +74,8 @@ fn bad_inputs_400() {
         assert!(text(&r).contains("\"error\""), "{}", t);
     }
 }
+
+#[test]
+fn post_is_405() {
+    assert_eq!(route(&root(), "POST", "/api/run", Some("127.0.0.1")).status, 405);
+}
