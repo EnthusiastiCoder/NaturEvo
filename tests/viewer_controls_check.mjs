@@ -70,3 +70,10 @@ check(!$('run-btn').disabled && !$('batch-btn').disabled, 'buttons must be re-en
 check(String($('scrub').max) === '79', 'scrub max must be 79 after run, got ' + $('scrub').max);
 check(JSON.stringify(v.win.__jv.logIndices()) === '[0]', 'log shows event 0 only after new run, got ' + JSON.stringify(v.win.__jv.logIndices().slice(0, 5)));
 check(/seed 7/.test($('info').textContent), 'info shows seed 7, got ' + $('info').textContent);
+
+// Random seed
+$('seed').value = '';
+$('random-seed').click();
+await tick();
+const sv = $('seed').value;
+check(/^\d+$/.test(String(sv)), 'random seed must be numeric, got ' + JSON.stringify(sv));
