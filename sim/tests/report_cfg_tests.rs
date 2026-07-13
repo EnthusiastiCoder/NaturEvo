@@ -20,3 +20,16 @@ fn batch_with_default_equals_batch() {
     assert_eq!(a.avg_final_level, b.avg_final_level);
     assert_eq!(a.level_hist, b.level_hist);
 }
+
+#[test]
+fn batch_with_thread_independent_nondefault() {
+    let mut c = Config::default();
+    c.boss_hp_mult = 2.5;
+    c.hero_hp_per_level = 20;
+    let a = batch_with(50, 1, &c);
+    let b = batch_with(50, 4, &c);
+    assert_eq!(a.wins, b.wins);
+    assert_eq!(a.avg_deaths, b.avg_deaths);
+    assert_eq!(a.avg_final_level, b.avg_final_level);
+    assert_eq!(a.level_hist, b.level_hist);
+}
