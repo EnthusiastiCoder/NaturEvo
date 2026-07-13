@@ -85,3 +85,12 @@ fn final_level_and_events_nonempty() {
     assert!(r.final_level >= 1);
     assert!(!r.events.is_empty());
 }
+
+#[test]
+fn event_kinds_allowed() {
+    for seed in 0..5 {
+        for e in &simulate(seed).events {
+            assert!(KINDS.contains(&e.kind), "bad kind {}", e.kind);
+        }
+    }
+}
