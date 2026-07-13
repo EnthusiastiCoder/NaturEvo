@@ -118,3 +118,64 @@ export function load({ protocol = 'file:', run = makeRun(300), fetchImpl = null,
     body.appendChild(e);
   }
   if (byId.has('speed')) byId.get('speed').value = '1';
+
+  const doc = {
+    body, activeElement: body,
+    getElementById: i => byId.get(i) || null,
+    createElement: t => new El(t),
+    querySelector: s => body.querySelector(s),
+    querySelectorAll: s => body.querySelectorAll(s),
+    addEventListener: addL,
+    dispatchEvent: dispatch,
+  };
+  Object.defineProperty(docRef, 'activeElement', { get: () => doc.activeElement, set: v => { doc.activeElement = v; } });
+  const props = new Map();
+  const root = new El('html');
+  root.style = { cssText: '', setProperty: (k, v) => props.set(k, String(v)), getPropertyValue: k => props.get(k) || '', removeProperty: k => props.delete(k) };
+  root._props = props;
+  doc.documentElement = root;
+  const defaultFetch = async () => { throw new Error('fetch not stubbed'); };
+  const sandbox = {
+    document: doc,
+    location: { protocol, href: protocol + '//x/', hostname: '127.0.0.1', origin: protocol + '//127.0.0.1' },
+    fetch: (url, opts) => { fetchCalls.push(String(url)); return (fetchImpl || defaultFetch)(String(url), opts); },
+    setInterval: (f, ms) => { intervals.push(f); return intervals.length; },
+    clearInterval: () => {},
+    setTimeout: (f, ms) => setTimeout(f, ms),
+    clearTimeout,
+    console,
+    addEventListener: addL,
+    dispatchEvent: dispatch,
+    CustomEvent: class { constructor(type, init) { this.type = type; this.detail = init && init.detail; } },
+    Event: class { constructor(type) { this.type = type; } },
+    getComputedStyle: el => ({ getPropertyValue: n => resolveToken(el, n) }),
+  };
+  const cssAll = (html.match(/<style[^>]*>([\s\S]*?)<\/style>/) || [, ''])[1].replace(/\/\*[\s\S]*?\*\//g, '');
+  const tokenOf = (sel, n) => {
+    for (const m of cssAll.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+      if (m[1].split(',').map(x => x.trim()).includes(sel)) { const d = m[2].match(new RegExp('(?:^|[;\s])' + n + '\s*:\s*([^;]+)')); if (d) return d[1].trim(); }
+    }
+    return null;
+  };
+  const resolveToken = (el, n) => {
+    if (props.has(n)) return props.get(n);
+    const th = root.dataset.theme || root['data-theme'];
+    return (th && tokenOf(':root[data-theme="' + th + '"]', n)) || (th && tokenOf(":root[data-theme='" + th + "']", n)) || tokenOf(':root', n) || '';
+  };
+  if (storage === 'throw-access') Object.defineProperty(sandbox, 'localStorage', { get() { throw new Error('SecurityError'); } });
+  else sandbox.localStorage = {
+    getItem: k => { if (storage === 'throw-ops') throw new Error('denied'); return store.has(k) ? store.get(k) : null; },
+    setItem: (k, v) => { if (storage === 'throw-ops') throw new Error('denied'); store.set(k, String(v)); },
+    removeItem: k => { if (storage === 'throw-ops') throw new Error('denied'); store.delete(k); },
+  };
+  if (matchMedia === 'throws') sandbox.matchMedia = () => { throw new Error('nope'); };
+  else if (matchMedia !== 'absent') sandbox.matchMedia = q => ({ media: q, matches: /prefers-color-scheme:\s*(\w+)/.test(q) ? RegExp.$1 === matchMedia : false, addEventListener() {}, addListener() {} });
+  sandbox.window = sandbox;
+  sandbox.self = sandbox;
+  if (run) sandbox.RUN = run;
+  if (pre) pre(sandbox, { byId, El });
+  vm.createContext(sandbox);
+  const inline = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+  for (const code of inline) vm.runInContext(code, sandbox, { filename: 'index.html' });
+  return { win: sandbox, doc, $: i => byId.get(i), fetchCalls, intervals, El, byId, paints, events, store, root };
+}
