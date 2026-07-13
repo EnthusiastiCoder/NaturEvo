@@ -58,3 +58,10 @@ fn stats_json_has_wins() {
     let j = stats_json(&batch(10, 1));
     assert!(j.contains("wins"));
 }
+
+#[test]
+fn win_rate_sane() {
+    let s = batch(500, 4);
+    let r = s.wins as f64 / s.runs as f64;
+    assert!((0.30..=0.90).contains(&r), "win rate {}", r);
+}
