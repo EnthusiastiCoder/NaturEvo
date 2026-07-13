@@ -5,3 +5,5 @@
 // UPDATED for Addendum 3b: #speed is no longer a <select> (log range slider + number input). The "Speed select
 // exists" and "#speed must use class select" checks were replaced; any remaining selects must still use .select.
 import { html, load, makeRun, tick, runner, jsonResp } from './_viewer_harness.mjs';
+
+const { check, done } = runner('viewer_clip_check');
