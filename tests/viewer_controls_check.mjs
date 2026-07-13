@@ -20,3 +20,21 @@ const hidden = el => !!el && el.classList.contains('hidden');
   check(hidden(v.$('run-controls')), 'file://: #run-controls must stay hidden');
   check(v.fetchCalls.length === 0, 'file://: no fetch must be made, got ' + JSON.stringify(v.fetchCalls));
 }
+
+// ---- http with stubbed fetch
+let pendingRun = null;
+const newRun = makeRun(80, 7);
+let mode = 'ok';
+const fetchImpl = async (url) => {
+  if (url.startsWith('/api/config')) return jsonResp(CONFIG);
+  if (mode === 'error') return jsonResp({ error: 'runs must be 1..20000' }, 400);
+  if (url.startsWith('/api/run')) {
+    if (mode === 'hold') return new Promise(res => { pendingRun = () => res(jsonResp(newRun)); });
+    return jsonResp(newRun);
+  }
+  if (url.startsWith('/api/batch')) return jsonResp({ runs: 123, wins: 60, avg_deaths: 1.5, avg_final_level: 30.2, level_hist: [0, 3, 5, 9] });
+  return jsonResp({ error: 'nf' }, 404);
+};
+const v = load({ protocol: 'http:', run: makeRun(300), fetchImpl });
+await tick();
+const $ = v.$;
