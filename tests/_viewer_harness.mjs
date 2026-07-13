@@ -20,3 +20,5 @@ export function makeRun(n, seed = 1) {
   }
   return { seed, events, won: false, deaths: 0, final_level: 1 };
 }
+
+export const tick = async () => { for (let i = 0; i < 20; i++) await new Promise(r => setImmediate(r)); };
