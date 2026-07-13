@@ -481,3 +481,22 @@ fn perf_batch_2000_under_15s() {
     assert_eq!(s.runs, 2000);
     assert!(el < 15.0, "batch(2000) took {:.1}s", el);
 }
+
+#[test]
+fn losing_seed_7_has_no_postgame() {
+    // seed 7 loses to the boss on the original build: 10809 events, level 40, never wins
+    let r = simulate(7);
+    assert!(!r.won);
+    assert_eq!(r.first_win_event, None);
+    assert_eq!(r.events.len(), 10809);
+    assert_eq!(r.final_level, 40);
+    assert!(!r.capped);
+    assert_eq!(r.post_kills, 0);
+    assert_eq!(r.max_stage, 0);
+    assert!(r.events.len() <= 65536);
+    assert!(r.events.iter().all(|e| e.kind != "win" && e.kind != "evolve"));
+    let small = simulate_with(7, &cfg(&[("event_cap", "5000")]));
+    assert_eq!(small.events.len(), 5000);
+    assert!(small.capped);
+    assert_eq!(small.first_win_event, None);
+}
