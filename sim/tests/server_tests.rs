@@ -123,3 +123,11 @@ fn raw(port: u16, req: &[u8]) -> String {
     let _ = s.read_to_end(&mut out);
     String::from_utf8_lossy(&out).to_string()
 }
+
+#[test]
+fn socket_round_trip() {
+    let port = start();
+    let resp = raw(port, format!("GET /api/config HTTP/1.1\r\nHost: 127.0.0.1:{}\r\n\r\n", port).as_bytes());
+    assert!(resp.starts_with("HTTP/1.1 200"), "{}", resp);
+    assert!(resp.contains("monster_hp_mult"));
+}
