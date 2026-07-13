@@ -94,3 +94,18 @@ const rng = k => $('knob-' + k), num = k => $('knob-' + k + '-num');
 const setFire = (el, val, ...types) => { el.value = String(val); types.forEach(t => el.fire(t)); };
 const edit = (el, val) => setFire(el, val, 'input', 'change');
 const n = el => Number(el.value);
+
+for (const k of CONFIG.knobs) {
+  check(rng(k.key) && rng(k.key).type === 'range', `#knob-${k.key} must be <input type=range>, got ${rng(k.key) && rng(k.key).type}`);
+  check(num(k.key) && num(k.key).type === 'number', `#knob-${k.key}-num must be <input type=number>, got ${num(k.key) && num(k.key).type}`);
+  if (!rng(k.key) || !num(k.key)) continue;
+  check(String(rng(k.key).min) === String(k.min) && String(rng(k.key).max) === String(k.max), `range min/max for ${k.key}: ${rng(k.key).min}..${rng(k.key).max}`);
+  check(String(num(k.key).min) === String(k.min) && String(num(k.key).max) === String(k.max), `number min/max for ${k.key}`);
+  check(n(rng(k.key)) === k.default && n(num(k.key)) === k.default, `${k.key} both inputs show default ${k.default}, got ${rng(k.key).value}/${num(k.key).value}`);
+}
+const stepOf = k => rng(k) && Number(rng(k).step);
+check(stepOf('boss_attempts') === 1 && stepOf('potion_cost') === 1, 'integer knobs step 1, got ' + stepOf('boss_attempts') + '/' + stepOf('potion_cost'));
+check(stepOf('monster_hp_mult') === 0.1, 'fractional range 4.9 (<=10) step 0.1, got ' + stepOf('monster_hp_mult'));
+check(stepOf('xp_rate') === 0.1, 'integer min/max but fractional default, range 10: step 0.1, got ' + stepOf('xp_rate'));
+check(stepOf('crit_chance') === 0.01, 'range <=1 fractional: step 0.01, got ' + stepOf('crit_chance'));
+check(num('boss_attempts') && Number(num('boss_attempts').step) === stepOf('boss_attempts'), 'number input step equals range step');
