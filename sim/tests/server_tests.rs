@@ -114,3 +114,12 @@ fn start() -> u16 {
     std::thread::spawn(move || serve_listener(l, r));
     addr.port()
 }
+
+fn raw(port: u16, req: &[u8]) -> String {
+    let mut s = TcpStream::connect(("127.0.0.1", port)).unwrap();
+    s.set_read_timeout(Some(std::time::Duration::from_secs(10))).unwrap();
+    let _ = s.write_all(req);
+    let mut out = Vec::new();
+    let _ = s.read_to_end(&mut out);
+    String::from_utf8_lossy(&out).to_string()
+}
