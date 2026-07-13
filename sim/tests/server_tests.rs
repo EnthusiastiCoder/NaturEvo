@@ -56,3 +56,21 @@ fn batch_50_matches_stats_body() {
     assert_eq!(r.status, 200);
     assert_eq!(text(&r), stats_body(&batch(50, 2)));
 }
+
+#[test]
+fn bad_inputs_400() {
+    for t in [
+        "/api/run?seed=abc",
+        "/api/run?seed=-1",
+        "/api/run?bogus=1",
+        "/api/run?boss_attempts=0",
+        "/api/run?xp_mult=NaN",
+        "/api/batch?runs=0",
+        "/api/batch?runs=20001",
+        "/api/batch?runs=x",
+    ] {
+        let r = get(t);
+        assert_eq!(r.status, 400, "{}", t);
+        assert!(text(&r).contains("\"error\""), "{}", t);
+    }
+}
