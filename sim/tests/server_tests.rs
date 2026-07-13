@@ -94,3 +94,14 @@ fn traversal_is_404() {
         assert_eq!(get(t).status, 404, "{}", t);
     }
 }
+
+#[test]
+fn static_files() {
+    let r = get("/");
+    assert_eq!(r.status, 200);
+    assert!(r.content_type.starts_with("text/html"));
+    assert_eq!(r.body, std::fs::read(root().join("index.html")).unwrap());
+    let j = get("/data/run.js");
+    assert_eq!(j.status, 200);
+    assert!(j.content_type.contains("javascript"));
+}
