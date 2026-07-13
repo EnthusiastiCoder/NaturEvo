@@ -112,3 +112,6 @@ for (const [dpr, cw, ch] of [[1, 640, 140], [1.25, 333, 141], [1.5, 641, 139], [
   h.size(300, 100); h.flushRO();
   fitOK(h, 1.25, 300, 100, 'after layout-only size change (ResizeObserver)');
 }
+
+await tick();
+done();
