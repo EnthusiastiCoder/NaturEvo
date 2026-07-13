@@ -67,3 +67,14 @@ fn xp_to_next_strictly_increasing() {
         assert!(xp_to_next(l) < xp_to_next(l + 1), "level {}", l);
     }
 }
+
+#[test]
+fn monster_stat_monotonic() {
+    for s in SPECIES.iter() {
+        for base in [s.hp, s.atk, s.def, s.spd] {
+            for l in 1..40 {
+                assert!(monster_stat(base, l) <= monster_stat(base, l + 1));
+            }
+        }
+    }
+}
