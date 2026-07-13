@@ -87,3 +87,10 @@ fn bad_host_is_403() {
     assert_eq!(route(&root(), "GET", "/api/config", Some("localhost:9")).status, 200);
     assert_eq!(route(&root(), "GET", "/api/config", Some("127.0.0.1")).status, 200);
 }
+
+#[test]
+fn traversal_is_404() {
+    for t in ["/..%2f", "/../Cargo.toml", "/data/../x", "/data\\run.js", "/other.txt"] {
+        assert_eq!(get(t).status, 404, "{}", t);
+    }
+}
