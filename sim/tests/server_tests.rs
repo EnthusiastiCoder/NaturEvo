@@ -105,3 +105,12 @@ fn static_files() {
     assert_eq!(j.status, 200);
     assert!(j.content_type.contains("javascript"));
 }
+
+fn start() -> u16 {
+    let l = bind(0).unwrap();
+    let addr = l.local_addr().unwrap();
+    assert_eq!(addr.ip(), IpAddr::V4(Ipv4Addr::LOCALHOST));
+    let r = root();
+    std::thread::spawn(move || serve_listener(l, r));
+    addr.port()
+}
