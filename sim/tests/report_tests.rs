@@ -52,3 +52,9 @@ fn level_hist_sums_to_runs() {
     assert_eq!(s.runs, 50);
     assert_eq!(s.level_hist.iter().sum::<u32>(), 50);
 }
+
+#[test]
+fn stats_json_has_wins() {
+    let j = stats_json(&batch(10, 1));
+    assert!(j.contains("wins"));
+}
