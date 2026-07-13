@@ -189,3 +189,6 @@ export function runner(name) {
   };
   return { check, done };
 }
+
+// JSON response helper for stub fetch
+export const jsonResp = (obj, status = 200) => ({ ok: status >= 200 && status < 300, status, json: async () => obj, text: async () => JSON.stringify(obj) });
