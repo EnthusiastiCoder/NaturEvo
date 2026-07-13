@@ -49,3 +49,5 @@ for (const k of CONFIG.knobs) {
 for (const id of ['seed', 'run-btn', 'random-seed', 'batch-runs', 'batch-btn', 'knobs', 'knobs-reset', 'run-status']) {
   check($(id), 'missing #' + id);
 }
+
+if (!$('run-btn') || !$('seed') || !$('knob-boss_attempts')) done();
