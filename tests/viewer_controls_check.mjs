@@ -81,3 +81,14 @@ check(/^\d+$/.test(String(sv)), 'random seed must be numeric, got ' + JSON.strin
 // Reset knobs
 $('knobs-reset').click();
 check($('knob-boss_attempts').value == 8, 'reset restores default, got ' + $('knob-boss_attempts').value);
+
+// Batch
+mode = 'ok';
+$('batch-runs').value = '123';
+$('batch-btn').click();
+await tick();
+const bUrl = v.fetchCalls.find(u => u.startsWith('/api/batch'));
+check(bUrl && /[?&]runs=123(&|$)/.test(bUrl), 'batch URL must contain runs=123, got ' + bUrl);
+check(v.win.STATS && v.win.STATS.runs === 123, 'window.STATS replaced by batch result');
+check(!hidden($('dashboard')) && hidden($('replay')), 'dashboard shown after batch');
+check(/123/.test($('dstats').textContent), 'dashboard re-rendered with runs=123, got ' + $('dstats').textContent);
