@@ -49,3 +49,10 @@ fn run_with_knob_equals_simulate_with() {
     assert_eq!(r.status, 200);
     assert_eq!(text(&r), run_body(&simulate_with(5, &c)));
 }
+
+#[test]
+fn batch_50_matches_stats_body() {
+    let r = get("/api/batch?runs=50");
+    assert_eq!(r.status, 200);
+    assert_eq!(text(&r), stats_body(&batch(50, 2)));
+}
