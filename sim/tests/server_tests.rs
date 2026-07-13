@@ -35,3 +35,8 @@ fn run_seed_1_matches_run_body() {
     assert!(r.content_type.starts_with("application/json"));
     assert_eq!(text(&r), run_body(&simulate(1)));
 }
+
+#[test]
+fn run_default_seed_is_1() {
+    assert_eq!(text(&get("/api/run")), run_body(&simulate(1)));
+}
