@@ -105,3 +105,16 @@ export function load({ protocol = 'file:', run = makeRun(300), fetchImpl = null,
     close() { if (!this.open) return; this.open = false; this.fire('close'); }
     click() { if (!this.disabled) this.fire('click'); }
   }
+
+  // Create stub elements for every id found in the static HTML markup.
+  const body = new El('body');
+  for (const m of html.replace(/<script[\s\S]*?<\/script>/g, '').matchAll(/<(\w+)([^>]*)>/g)) {
+    const idm = m[2].match(/\bid\s*=\s*["']([^"']+)["']/);
+    if (!idm) continue;
+    const e = new El(m[1]); e.id = idm[1];
+    const cm = m[2].match(/\bclass\s*=\s*["']([^"']*)["']/); if (cm) e.className = cm[1];
+    for (const a of ['type', 'min', 'max', 'step', 'pattern', 'inputmode']) { const am = m[2].match(new RegExp('\\b' + a + '\\s*=\\s*["\']([^"\']*)["\']')); if (am && !e[a]) e[a] = am[1]; }
+    const vm_ = m[2].match(/\bvalue\s*=\s*["']([^"']*)["']/); if (vm_) e.value = vm_[1];
+    body.appendChild(e);
+  }
+  if (byId.has('speed')) byId.get('speed').value = '1';
