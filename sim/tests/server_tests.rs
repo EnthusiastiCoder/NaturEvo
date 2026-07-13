@@ -131,3 +131,14 @@ fn socket_round_trip() {
     assert!(resp.starts_with("HTTP/1.1 200"), "{}", resp);
     assert!(resp.contains("monster_hp_mult"));
 }
+
+#[test]
+fn oversized_request_line_rejected() {
+    let port = start();
+    let req = format!("GET /{} HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n", "a".repeat(9000));
+    let resp = raw(port, req.as_bytes());
+    assert!(!resp.starts_with("HTTP/1.1 200"), "{}", &resp[..resp.len().min(100)]);
+    // server still alive afterwards
+    let ok = raw(port, b"GET /api/config HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n");
+    assert!(ok.starts_with("HTTP/1.1 200"));
+}
