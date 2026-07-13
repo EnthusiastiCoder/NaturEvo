@@ -32,3 +32,16 @@ fn different_seeds_differ() {
     let tb: Vec<&str> = b.events.iter().map(|e| e.text.as_str()).collect();
     assert_ne!(ta, tb);
 }
+
+#[test]
+fn hp_never_negative_and_le_max() {
+    for seed in 0..20 {
+        for e in &simulate(seed).events {
+            assert!(e.hero.hp >= 0, "seed {} idx {}", seed, e.idx);
+            assert!(e.hero.hp <= e.hero.max_hp, "seed {} idx {}", seed, e.idx);
+            if let Some(m) = &e.mon {
+                assert!(m.hp >= 0 || m.hp <= m.max_hp);
+            }
+        }
+    }
+}
