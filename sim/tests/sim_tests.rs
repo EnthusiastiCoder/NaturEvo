@@ -23,3 +23,12 @@ fn same_seed_identical() {
     assert_eq!(a.deaths, b.deaths);
     assert_eq!(a.final_level, b.final_level);
 }
+
+#[test]
+fn different_seeds_differ() {
+    let a = simulate(1);
+    let b = simulate(2);
+    let ta: Vec<&str> = a.events.iter().map(|e| e.text.as_str()).collect();
+    let tb: Vec<&str> = b.events.iter().map(|e| e.text.as_str()).collect();
+    assert_ne!(ta, tb);
+}
