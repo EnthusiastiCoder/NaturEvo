@@ -16,3 +16,9 @@ let failed = 0;
 const check = (ok, msg) => {
   if (!ok) { failed++; console.error('FAIL: ' + msg); }
 };
+
+for (const id of ['tab-replay', 'tab-dashboard', 'play', 'speed', 'scrub', 'log', 'battle', 'timeline', 'hist']) {
+  check(new RegExp(`id\\s*=\\s*["']${id}["']`).test(html), `missing element id ${id}`);
+}
+check(/<script[^>]+src\s*=\s*["']data\/run\.js["']/.test(html), 'missing script tag for data/run.js');
+check(/<script[^>]+src\s*=\s*["']data\/stats\.js["']/.test(html), 'missing script tag for data/stats.js');
