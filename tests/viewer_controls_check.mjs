@@ -11,3 +11,12 @@ const CONFIG = {
   max_runs: 20000,
 };
 const hidden = el => !!el && el.classList.contains('hidden');
+
+// ---- file:// : hidden, no fetch
+{
+  const v = load({ protocol: 'file:', run: makeRun(30) });
+  await tick();
+  check(v.$('run-controls'), '#run-controls element missing');
+  check(hidden(v.$('run-controls')), 'file://: #run-controls must stay hidden');
+  check(v.fetchCalls.length === 0, 'file://: no fetch must be made, got ' + JSON.stringify(v.fetchCalls));
+}
