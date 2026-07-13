@@ -130,3 +130,16 @@ if (rng('boss_attempts') && num('boss_attempts') && $('run-btn')) {
   check(Math.abs(n(num('monster_hp_mult')) - 1.234) <= 0.05 + 1e-9 && n(num('monster_hp_mult')) === n(rng('monster_hp_mult')), `fractional knob snaps to step 0.1, got ${num('monster_hp_mult').value}/${rng('monster_hp_mult').value}`);
   edit(num('crit_chance'), 7);
   check(n(num('crit_chance')) === 1 && n(rng('crit_chance')) === 1, 'fractional knob clamps to max 1, got ' + num('crit_chance').value);
+
+  // Run query uses the values (number edit and slider edit)
+  edit(num('boss_attempts'), 3);
+  setFire(rng('potion_cost'), 77, 'input');
+  setFire(rng('monster_hp_mult'), 2.5, 'input');
+  $('seed').value = '5';
+  $('run-btn').click();
+  await tick();
+  const u = v.fetchCalls.find(x => x.startsWith('/api/run')) || '';
+  check(/[?&]boss_attempts=3(&|$)/.test(u), 'Run uses number-edited value boss_attempts=3, got ' + u);
+  check(/[?&]potion_cost=77(&|$)/.test(u), 'Run uses slider-edited value potion_cost=77, got ' + u);
+  check(/[?&]monster_hp_mult=2\.5(&|$)/.test(u), 'Run uses monster_hp_mult=2.5, got ' + u);
+  check(!/knob-|-num/.test(u), 'query keys are the plain knob keys, got ' + u);
