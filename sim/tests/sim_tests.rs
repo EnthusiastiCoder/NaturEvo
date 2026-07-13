@@ -78,3 +78,10 @@ fn monster_stat_monotonic() {
         }
     }
 }
+
+#[test]
+fn final_level_and_events_nonempty() {
+    let r = simulate(11);
+    assert!(r.final_level >= 1);
+    assert!(!r.events.is_empty());
+}
