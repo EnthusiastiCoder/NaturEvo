@@ -38,3 +38,14 @@ const fetchImpl = async (url) => {
 const v = load({ protocol: 'http:', run: makeRun(300), fetchImpl });
 await tick();
 const $ = v.$;
+
+check(v.fetchCalls[0] && v.fetchCalls[0].startsWith('/api/config'), 'must fetch /api/config on http load, got ' + JSON.stringify(v.fetchCalls));
+check(!hidden($('run-controls')), 'http: #run-controls must be shown after config loads');
+for (const k of CONFIG.knobs) {
+  const el = $('knob-' + k.key);
+  check(el, 'missing input #knob-' + k.key);
+  check(el && String(el.value) === String(k.default), `knob ${k.key} default value, got ${el && el.value}`);
+}
+for (const id of ['seed', 'run-btn', 'random-seed', 'batch-runs', 'batch-btn', 'knobs', 'knobs-reset', 'run-status']) {
+  check($(id), 'missing #' + id);
+}
