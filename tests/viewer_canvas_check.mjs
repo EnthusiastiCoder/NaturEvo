@@ -25,3 +25,36 @@ const markup = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<style[\s
     }
   }
 }
+
+// ---------- behaviour harness ----------
+function boot(dpr, cw, ch) {
+  const rec = { ro: [], mq: [], ctx: [], gets: 0 };
+  const pre = w => {
+    w.devicePixelRatio = dpr;
+    w.ResizeObserver = class { constructor(cb) { this.cb = cb; rec.ro.push(this); } observe() {} unobserve() {} disconnect() {} };
+    w.matchMedia = q => { const m = { media: q, matches: false, _l: [], addEventListener(t, f) { this._l.push(f); }, removeEventListener() {}, addListener(f) { this._l.push(f); }, removeListener() {} }; rec.mq.push(m); return m; };
+  };
+  const v = load({ run: makeRun(300), pre });
+  const cv = v.$('timeline');
+  const mk = () => new Proxy({}, {
+    get: (t, k) => k in t ? t[k] : (...a) => { rec.ctx.push([String(k), a]); },
+    set: (t, k, val) => { t[k] = val; if (k === 'font') rec.ctx.push(['font', [String(val)]]); return true; },
+  });
+  if (cv) cv.getContext = () => { rec.gets++; return mk(); };
+  const size = (w, h) => { for (const e of [cv, cv && cv.parent]) if (e) { e.clientWidth = w; e.clientHeight = h; } };
+  size(cw, ch);
+  const flushRO = () => rec.ro.forEach(o => o.cb([], o));
+  const setDpr = d => { v.win.devicePixelRatio = d; };
+  const resMq = () => rec.mq.filter(m => /resolution/.test(m.media));
+  const fireDpr = () => resMq().forEach(m => m._l.slice().forEach(f => f({ type: 'change', matches: false, media: m.media })));
+  const lastT = () => { const a = rec.ctx.filter(c => c[0] === 'setTransform').pop(); return a ? a[1] : null; };
+  return { v, cv, rec, size, flushRO, setDpr, fireDpr, resMq, lastT };
+}
+const fitOK = (h, dpr, cw, ch, label) => {
+  const { cv } = h, W = Math.round(cw * dpr), H = Math.round(ch * dpr), t = h.lastT();
+  check(cv.width === W, `${label}: cv.width ${cv.width} must be round(${cw}*${dpr}) = ${W}`);
+  check(cv.height === H, `${label}: cv.height ${cv.height} must be round(${ch}*${dpr}) = ${H}`);
+  check(Math.abs(cv.width / cv.height - cw / ch) <= 1 / H + 1 / cw + 1e-9, `${label}: backing aspect ratio must equal CSS box`);
+  check(t && t.length === 6 && Math.abs(t[0] - dpr) < 1e-9 && t[1] === 0 && t[2] === 0 && Math.abs(t[3] - dpr) < 1e-9 && t[4] === 0 && t[5] === 0, `${label}: last setTransform must be (${dpr},0,0,${dpr},0,0), got ${JSON.stringify(t)}`);
+};
+const draw = h => { h.v.$('tab-dashboard').click(); h.v.$('tab-replay').click(); };
