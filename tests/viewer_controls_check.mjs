@@ -51,3 +51,22 @@ for (const id of ['seed', 'run-btn', 'random-seed', 'batch-runs', 'batch-btn', '
 }
 
 if (!$('run-btn') || !$('seed') || !$('knob-boss_attempts')) done();
+
+// Run with seed and an edited knob; buttons disabled while pending
+mode = 'hold';
+$('seed').value = '7';
+$('knob-boss_attempts').value = '3';
+$('run-btn').click();
+await tick();
+const runUrl = v.fetchCalls.find(u => u.startsWith('/api/run'));
+check(runUrl && /[?&]seed=7(&|$)/.test(runUrl), 'run URL must contain seed=7, got ' + runUrl);
+check(runUrl && /[?&]boss_attempts=3(&|$)/.test(runUrl), 'run URL must contain boss_attempts=3, got ' + runUrl);
+check(runUrl && /[?&]monster_hp_mult=1(\.0+)?(&|$)/.test(runUrl), 'run URL sends all knobs (monster_hp_mult), got ' + runUrl);
+check($('run-btn').disabled && $('batch-btn').disabled, 'buttons must be disabled while request pending');
+check(typeof pendingRun === 'function', 'run request should be pending');
+if (pendingRun) pendingRun();
+await tick();
+check(!$('run-btn').disabled && !$('batch-btn').disabled, 'buttons must be re-enabled after response');
+check(String($('scrub').max) === '79', 'scrub max must be 79 after run, got ' + $('scrub').max);
+check(JSON.stringify(v.win.__jv.logIndices()) === '[0]', 'log shows event 0 only after new run, got ' + JSON.stringify(v.win.__jv.logIndices().slice(0, 5)));
+check(/seed 7/.test($('info').textContent), 'info shows seed 7, got ' + $('info').textContent);
