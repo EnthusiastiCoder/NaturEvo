@@ -53,3 +53,10 @@ fn idx_consecutive() {
         assert_eq!(e.idx as usize, i);
     }
 }
+
+#[test]
+fn terminates_under_cap() {
+    for seed in 0..5 {
+        assert!(simulate(seed).events.len() <= 65536);
+    }
+}
