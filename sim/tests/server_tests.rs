@@ -27,3 +27,11 @@ fn config_lists_all_knob_keys() {
     }
     assert!(b.contains("\"max_runs\":20000"), "{}", b);
 }
+
+#[test]
+fn run_seed_1_matches_run_body() {
+    let r = get("/api/run?seed=1");
+    assert_eq!(r.status, 200);
+    assert!(r.content_type.starts_with("application/json"));
+    assert_eq!(text(&r), run_body(&simulate(1)));
+}
