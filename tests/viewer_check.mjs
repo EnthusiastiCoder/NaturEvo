@@ -11,3 +11,8 @@ try {
   console.error('FAIL: cannot read ' + file);
   process.exit(1);
 }
+
+let failed = 0;
+const check = (ok, msg) => {
+  if (!ok) { failed++; console.error('FAIL: ' + msg); }
+};
