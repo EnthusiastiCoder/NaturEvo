@@ -148,3 +148,26 @@ if (rng('boss_attempts') && num('boss_attempts') && $('run-btn')) {
   $('knobs-reset').click();
   for (const k of CONFIG.knobs) check(n(rng(k.key)) === k.default && n(num(k.key)) === k.default, `reset must restore both inputs of ${k.key} to ${k.default}, got ${rng(k.key).value}/${num(k.key).value}`);
 }
+
+// info button + tooltip kept for every knob, and the panel does not scroll
+{
+  const h = $('knobs') ? $('knobs').innerHTML : '';
+  const infos = (h.match(/<button[^>]*class\s*=\s*["'][^"']*\binfo\b/g) || []).length;
+  const tips = (h.match(/role\s*=\s*["']tooltip["']/g) || []).length;
+  check(infos === CONFIG.knobs.length, `one info button per knob expected ${CONFIG.knobs.length}, got ${infos}`);
+  check(tips === CONFIG.knobs.length, `one tooltip per knob expected ${CONFIG.knobs.length}, got ${tips}`);
+  const ids = [...h.matchAll(/aria-describedby\s*=\s*["']([^"']+)["']/g)].map(m => m[1]);
+  check(ids.length === CONFIG.knobs.length && ids.every(i => new RegExp('id\\s*=\\s*["\']' + i + '["\']').test(h)), 'each info button aria-describedby must point to a tooltip id inside #knobs');
+}
+{
+  const k = rulesFor(s => s === '#knobs');
+  const d = Object.assign({}, ...k.map(r => r.decl));
+  check(k.length >= 1, '#knobs CSS rule required');
+  check(!/\b(auto|scroll)\b/.test((d.overflow || '') + ' ' + (d['overflow-y'] || '') + ' ' + (d['overflow-x'] || '')), '#knobs must not scroll (overflow auto/scroll), got ' + (d.overflow || d['overflow-y']));
+  check(/repeat\(\s*auto-fit\s*,\s*minmax\(/.test(d['grid-template-columns'] || ''), '#knobs must use repeat(auto-fit,minmax(...)) columns, got ' + d['grid-template-columns']);
+  check(/grid/.test(d.display || ''), '#knobs must be display:grid');
+  const pm = rulesFor(s => /^\.pop-body\b|^#knob-box\b/.test(s));
+  check(!pm.some(r => /\b(auto|scroll)\b/.test(r.decl.overflow || r.decl['overflow-y'] || '')), 'knob popover container must not scroll either');
+  const mh = (d['max-height'] || '');
+  check(!/vh|px/.test(mh) || !/\b(auto|scroll)\b/.test(d.overflow || ''), '#knobs must not combine max-height with scrolling');
+}
