@@ -179,3 +179,13 @@ export function load({ protocol = 'file:', run = makeRun(300), fetchImpl = null,
   for (const code of inline) vm.runInContext(code, sandbox, { filename: 'index.html' });
   return { win: sandbox, doc, $: i => byId.get(i), fetchCalls, intervals, El, byId, paints, events, store, root };
 }
+
+export function runner(name) {
+  let failed = 0;
+  const check = (ok, msg) => { if (!ok) { failed++; console.error('FAIL: ' + msg); } };
+  const done = () => {
+    if (failed) { console.error(`${name}: ${failed} check(s) failed`); process.exit(1); }
+    console.log(name + ' OK');
+  };
+  return { check, done };
+}
