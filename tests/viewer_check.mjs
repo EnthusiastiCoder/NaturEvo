@@ -28,3 +28,6 @@ check(inline.length > 0, 'no inline script');
 inline.forEach((code, i) => {
   try { new Function(code); } catch (e) { check(false, `inline script ${i} syntax error: ${e.message}`); }
 });
+
+if (failed) { console.error(`${failed} check(s) failed`); process.exit(1); }
+console.log('viewer_check OK');
