@@ -79,3 +79,11 @@ fn bad_inputs_400() {
 fn post_is_405() {
     assert_eq!(route(&root(), "POST", "/api/run", Some("127.0.0.1")).status, 405);
 }
+
+#[test]
+fn bad_host_is_403() {
+    assert_eq!(route(&root(), "GET", "/api/config", Some("evil.com")).status, 403);
+    assert_eq!(route(&root(), "GET", "/", Some("evil.com:8080")).status, 403);
+    assert_eq!(route(&root(), "GET", "/api/config", Some("localhost:9")).status, 200);
+    assert_eq!(route(&root(), "GET", "/api/config", Some("127.0.0.1")).status, 200);
+}
