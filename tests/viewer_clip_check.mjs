@@ -69,3 +69,28 @@ const prop = (pred, name) => rulesFor(pred).map(r => r.decl[name]).filter(v => v
   check(other.length === 0, 'no per-select padding overrides (all selects share .select padding): ' + other.map(r => r.sels[0]).join(', '));
   check(!/<select\b[^>]*\bid\s*=\s*["']speed["']/.test(markup), '#speed must not be a select any more (addendum 3b)');
 }
+
+// ---------- (3) knobs: range + synced number ----------
+const CONFIG = {
+  knobs: [
+    { key: 'boss_attempts', label: 'Boss attempts', min: 1, max: 50, default: 8 },
+    { key: 'potion_cost', label: 'Potion cost', min: 1, max: 500, default: 25 },
+    { key: 'monster_hp_mult', label: 'Monster HP x', min: 0.1, max: 5.0, default: 1.0 },
+    { key: 'crit_chance', label: 'Crit chance', min: 0, max: 1, default: 0.25 },
+    { key: 'xp_rate', label: 'XP rate', min: 0, max: 10, default: 2.5 },
+  ],
+  max_runs: 20000,
+};
+const newRun = makeRun(40, 3);
+const fetchImpl = async url => {
+  if (url.startsWith('/api/config')) return jsonResp(CONFIG);
+  if (url.startsWith('/api/run')) return jsonResp(newRun);
+  return jsonResp({ error: 'nf' }, 404);
+};
+const v = load({ protocol: 'http:', run: makeRun(30), fetchImpl });
+await tick();
+const $ = v.$;
+const rng = k => $('knob-' + k), num = k => $('knob-' + k + '-num');
+const setFire = (el, val, ...types) => { el.value = String(val); types.forEach(t => el.fire(t)); };
+const edit = (el, val) => setFire(el, val, 'input', 'change');
+const n = el => Number(el.value);
