@@ -45,3 +45,10 @@ fn batch_thread_independent() {
     assert_eq!(a.avg_final_level, b.avg_final_level);
     assert_eq!(a.level_hist, b.level_hist);
 }
+
+#[test]
+fn level_hist_sums_to_runs() {
+    let s = batch(50, 2);
+    assert_eq!(s.runs, 50);
+    assert_eq!(s.level_hist.iter().sum::<u32>(), 50);
+}
