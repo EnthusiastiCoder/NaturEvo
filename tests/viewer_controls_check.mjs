@@ -77,3 +77,7 @@ $('random-seed').click();
 await tick();
 const sv = $('seed').value;
 check(/^\d+$/.test(String(sv)), 'random seed must be numeric, got ' + JSON.stringify(sv));
+
+// Reset knobs
+$('knobs-reset').click();
+check($('knob-boss_attempts').value == 8, 'reset restores default, got ' + $('knob-boss_attempts').value);
