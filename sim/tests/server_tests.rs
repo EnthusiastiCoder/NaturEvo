@@ -40,3 +40,12 @@ fn run_seed_1_matches_run_body() {
 fn run_default_seed_is_1() {
     assert_eq!(text(&get("/api/run")), run_body(&simulate(1)));
 }
+
+#[test]
+fn run_with_knob_equals_simulate_with() {
+    let mut c = Config::default();
+    c.hero_hp_per_level = 30;
+    let r = get("/api/run?seed=5&hero_hp_per_level=30");
+    assert_eq!(r.status, 200);
+    assert_eq!(text(&r), run_body(&simulate_with(5, &c)));
+}
