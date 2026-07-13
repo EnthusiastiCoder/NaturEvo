@@ -33,3 +33,36 @@ fn batch_with_thread_independent_nondefault() {
     assert_eq!(a.avg_final_level, b.avg_final_level);
     assert_eq!(a.level_hist, b.level_hist);
 }
+
+#[test]
+fn run_body_is_plain_json_object() {
+    let b = run_body(&simulate(2));
+    assert!(b.starts_with('{'));
+    assert!(!b.contains("window"));
+    let t = b.trim_end();
+    assert!(t.ends_with('}'));
+    let (mut depth, mut in_str, mut esc) = (0i64, false, false);
+    for ch in t.chars() {
+        if in_str {
+            if esc {
+                esc = false;
+            } else if ch == '\\' {
+                esc = true;
+            } else if ch == '"' {
+                in_str = false;
+            }
+            continue;
+        }
+        match ch {
+            '"' => in_str = true,
+            '{' | '[' => depth += 1,
+            '}' | ']' => {
+                depth -= 1;
+                assert!(depth >= 0);
+            }
+            _ => {}
+        }
+    }
+    assert_eq!(depth, 0);
+    assert!(!in_str);
+}
