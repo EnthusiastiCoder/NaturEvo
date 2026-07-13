@@ -34,3 +34,14 @@ fn json_escapes_quotes() {
     let j = run_json(&run);
     assert!(j.contains("say \\\"hi\\\""), "{}", j);
 }
+
+#[test]
+fn batch_thread_independent() {
+    let a = batch(50, 1);
+    let b = batch(50, 4);
+    assert_eq!(a.runs, b.runs);
+    assert_eq!(a.wins, b.wins);
+    assert_eq!(a.avg_deaths, b.avg_deaths);
+    assert_eq!(a.avg_final_level, b.avg_final_level);
+    assert_eq!(a.level_hist, b.level_hist);
+}
