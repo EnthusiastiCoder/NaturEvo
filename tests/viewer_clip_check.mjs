@@ -143,3 +143,8 @@ if (rng('boss_attempts') && num('boss_attempts') && $('run-btn')) {
   check(/[?&]potion_cost=77(&|$)/.test(u), 'Run uses slider-edited value potion_cost=77, got ' + u);
   check(/[?&]monster_hp_mult=2\.5(&|$)/.test(u), 'Run uses monster_hp_mult=2.5, got ' + u);
   check(!/knob-|-num/.test(u), 'query keys are the plain knob keys, got ' + u);
+
+  // Reset restores both inputs
+  $('knobs-reset').click();
+  for (const k of CONFIG.knobs) check(n(rng(k.key)) === k.default && n(num(k.key)) === k.default, `reset must restore both inputs of ${k.key} to ${k.default}, got ${rng(k.key).value}/${num(k.key).value}`);
+}
