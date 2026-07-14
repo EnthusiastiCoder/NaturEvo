@@ -63,3 +63,19 @@ Expected: `pass: true` for all 40. Also verify the opened drawer is actually vis
 Expected: `pass: true` (panel not cut off by viewport edge).
 
 ## 2. Closed by default (reload page first, then run)
+
+```js
+() => {
+  const ids = ['knob-box', 'log-box', 'more-box', 'batch-box'];
+  const served = !document.getElementById('run-controls').classList.contains('hidden');
+  const d = {};
+  ids.forEach(i => { const e = document.getElementById(i); d[i] = e ? { tag: e.tagName, open: e.open } : null; });
+  const required = served ? ids : ['log-box', 'more-box'];
+  const pass = required.every(i => d[i] && d[i].tag === 'DETAILS' && d[i].open === false)
+    && document.getElementById('knob-box') && document.getElementById('knob-box').tagName === 'DETAILS';
+  // visible text/number inputs while all closed: only #seed (served) and none in file://
+  const vis = [...document.querySelectorAll('input')].filter(e => ['text', 'number', ''].includes(e.type) && e.getBoundingClientRect().width > 0 && getComputedStyle(e).display !== 'none' && e.offsetParent !== null).map(e => e.id);
+  const okInputs = served ? (vis.length === 1 && vis[0] === 'seed') : vis.length === 0;
+  return { pass: pass && okInputs, details: { served, drawers: d, visibleTextNumberInputs: vis } };
+}
+```
