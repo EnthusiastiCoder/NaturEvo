@@ -135,3 +135,23 @@ for (const id of ['knob-box', 'log-box', 'more-box', 'batch-box']) {
 for (const id of ['summary', 'outcome', 'sum-level', 'sum-hp', 'sum-zone', 'sum-progress']) {
   check(idsInMarkup.has(id), `summary id #${id} missing from markup`);
 }
+
+// ---------- (8) summary behaviour via harness ----------
+{
+  const mk = (n, won, lastLevel) => {
+    const r = makeRun(n, 4242); r.won = won;
+    r.events[n - 1].hero.level = lastLevel; r.events[n - 1].hero.hp = 7;
+    return r;
+  };
+  const txt = v => id => (v.$(id) ? v.$(id).textContent : '');
+  let v;
+  try { v = load({ protocol: 'file:', run: makeRun(300) }); } catch (e) { check(false, 'script load threw: ' + e.message); done(); }
+  const T = txt(v);
+  const lost = mk(100, false, 9), won = mk(100, true, 12);
+  v.win.__jv.setRun(lost);
+  v.win.__jv.goto(40);
+  check(/3/.test(T('sum-level')), 'sum-level at event 40 (level 1+floor(40/20)=3) must contain "3", got ' + JSON.stringify(T('sum-level')));
+  check(/40/.test(T('sum-progress')), 'sum-progress at event 40 must contain 40, got ' + JSON.stringify(T('sum-progress')));
+  check(/99/.test(T('sum-progress')) || /100/.test(T('sum-progress')), 'sum-progress must show the total (99 or 100), got ' + JSON.stringify(T('sum-progress')));
+  check(/in progress/i.test(T('outcome')) && /40/.test(T('outcome')), 'outcome mid-run must read "in progress at event 40", got ' + JSON.stringify(T('outcome')));
+  check(!/\b(WON|LOST)\b/.test(T('outcome')), 'outcome mid-run must not claim WON/LOST, got ' + JSON.stringify(T('outcome')));
