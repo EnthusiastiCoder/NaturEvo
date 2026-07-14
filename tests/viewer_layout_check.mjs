@@ -42,3 +42,16 @@ function props(sel, { descendants = true } = {}) {
 
 const markup = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<style[\s\S]*?<\/style>/g, '');
 const idsInMarkup = new Set([...markup.matchAll(/\bid\s*=\s*["']([^"']+)["']/g)].map(m => m[1]));
+
+// <details> ranges: { id, open, start, end } over `markup`.
+function detailsRanges() {
+  const out = [];
+  for (const m of markup.matchAll(/<details\b([^>]*)>/g)) {
+    const end = markup.indexOf('</details>', m.index);
+    const idm = m[1].match(/\bid\s*=\s*["']([^"']+)["']/);
+    out.push({ id: idm ? idm[1] : null, open: /(^|\s)open(\s|=|$)/.test(m[1]), start: m.index, end: end < 0 ? markup.length : end });
+  }
+  return out;
+}
+const dets = detailsRanges();
+const posOfId = id => { const m = markup.match(new RegExp('<\\w+[^>]*\\bid\\s*=\\s*["\']' + id + '["\']')); return m ? m.index : -1; };
