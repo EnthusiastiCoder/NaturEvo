@@ -63,3 +63,17 @@ const posOfId = id => { const m = markup.match(new RegExp('<\\w+[^>]*\\bid\\s*=\
   check(b.overflow === 'hidden' || (b['overflow-x'] === 'hidden' && b['overflow-y'] === 'hidden'), 'CSS body must have overflow:hidden, got ' + JSON.stringify(b.overflow));
   check(/^(100dvh|100vh)$/.test(b.height || ''), 'CSS body height must be 100dvh or 100vh (single-viewport shell), got ' + JSON.stringify(b.height));
 }
+
+// ---------- (2) long-content panels scroll inside a bounded box ----------
+{
+  // #knobs is intentionally NOT a scroller (Addendum 2: knob panel must not scroll); see viewer_clip_check.mjs
+  const spec = [['log', ['log-box']], ['hist', ['dashboard']]];
+  for (const [id, containers] of spec) {
+    const p = props('#' + id);
+    const cp = containers.map(c => props('#' + c));
+    const ov = x => /^(auto|scroll)$/.test(x.overflow || x['overflow-y'] || '');
+    check(ov(p) || cp.some(ov), `#${id} (or its drawer container) must have overflow:auto|scroll, got ${JSON.stringify(p.overflow)}`);
+    const bounded = x => x['max-height'] || x.height || x['min-height'] === '0' || x['min-height'] === '0px' || x.flex || x['grid-row'];
+    check(bounded(p) || cp.some(x => x['max-height']), `#${id} must be height-bounded (max-height/height/min-height:0/flex), got ${JSON.stringify(p)}`);
+  }
+}
