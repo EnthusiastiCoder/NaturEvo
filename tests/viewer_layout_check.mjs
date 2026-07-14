@@ -120,3 +120,13 @@ for (const id of ['knob-box', 'log-box', 'more-box', 'batch-box']) {
   const ch = /^([\d.]+)ch$/.exec(w), px = /^([\d.]+)px$/.exec(w);
   check((ch && +ch[1] >= 12) || (px && +px[1] >= 100), '#seed CSS width must be >= 12ch (10-digit seed), got ' + JSON.stringify(w));
 }
+
+// ---------- (6) no fixed-width timeline/body, no narrow cap ----------
+{
+  const tw = props('#timeline').width || '';
+  check(!/px$/.test(tw), '#timeline CSS width must not be a fixed pixel value, got ' + tw);
+  const b = props('body');
+  const mw = b['max-width'];
+  check(!mw || mw === 'none' || (/px$/.test(mw) && parseFloat(mw) >= 1600) || /%$|vw$/.test(mw), 'body max-width must not cap below 1600px, got ' + mw);
+  check(!/px$/.test(b.width || ''), 'body must not have fixed pixel width, got ' + b.width);
+}
