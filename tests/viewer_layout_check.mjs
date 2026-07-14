@@ -84,3 +84,13 @@ for (const id of ['knob-box', 'log-box', 'more-box', 'batch-box']) {
   check(!!d, `#${id} must exist as a <details>`);
   if (d) check(!d.open, `#${id} must not have the open attribute (closed by default)`);
 }
+
+// ---------- (4) containment ----------
+{
+  const within = (outer, inner) => {
+    const d = dets.find(x => x.id === outer); const p = posOfId(inner);
+    return !!d && p > d.start && p < d.end;
+  };
+  check(within('log-box', 'log'), '#log must be inside #log-box');
+  check(within('knob-box', 'knobs'), '#knobs must be inside #knob-box');
+}
