@@ -22,3 +22,5 @@ Resize with `resize_page` (width, height) before each run. Wait ~300ms after res
 ```
 
 Note: if the page closes other drawers on toggle (one-open-at-a-time), `open` still works because it closes all first.
+
+## 1. No page scroll (core)
