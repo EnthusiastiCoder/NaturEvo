@@ -100,3 +100,5 @@ $('batch-btn').click();
 await tick();
 check(/runs must be 1\.\.20000/.test($('run-status').textContent), 'error shown in #run-status, got ' + JSON.stringify($('run-status').textContent));
 check(!$('batch-btn').disabled && !$('run-btn').disabled, 'buttons re-enabled after error');
+
+done();
