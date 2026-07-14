@@ -166,3 +166,11 @@ for (const id of ['summary', 'outcome', 'sum-level', 'sum-hp', 'sum-zone', 'sum-
   check(/\bWON\b/.test(T('outcome')) && !/\bLOST\b/.test(T('outcome')), 'outcome at last event of won run must be WON, got ' + JSON.stringify(T('outcome')));
   check(/12/.test(T('sum-level')), 'sum-level at last event of won run must show 12, got ' + JSON.stringify(T('sum-level')));
 }
+
+// ---------- (9) file:// keeps run controls hidden, no fetch ----------
+{
+  const v = load({ protocol: 'file:', run: makeRun(50) });
+  const rc = v.$('run-controls');
+  check(rc && rc.classList.contains('hidden'), 'file://: #run-controls must keep class "hidden"');
+  check(v.fetchCalls.length === 0, 'file://: no fetch calls expected, got ' + JSON.stringify(v.fetchCalls));
+}
