@@ -6,3 +6,5 @@ File variant: open `file:///C:/Users/enthu/Projects/NaturEvo/viewer/index.html`.
 
 Every snippet is passed to `evaluate_script` as a function body expression and returns `{pass, details}`. Expected: `pass === true`.
 Resize with `resize_page` (width, height) before each run. Wait ~300ms after resizing or opening a drawer (resize handler).
+
+## 0. Helper (paste at the start of each snippet, or define once on `window.__chk` and reuse)
