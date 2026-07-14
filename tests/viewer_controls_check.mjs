@@ -92,3 +92,11 @@ check(bUrl && /[?&]runs=123(&|$)/.test(bUrl), 'batch URL must contain runs=123, 
 check(v.win.STATS && v.win.STATS.runs === 123, 'window.STATS replaced by batch result');
 check(!hidden($('dashboard')) && hidden($('replay')), 'dashboard shown after batch');
 check(/123/.test($('dstats').textContent), 'dashboard re-rendered with runs=123, got ' + $('dstats').textContent);
+
+// Error display
+mode = 'error';
+$('batch-runs').value = '99999';
+$('batch-btn').click();
+await tick();
+check(/runs must be 1\.\.20000/.test($('run-status').textContent), 'error shown in #run-status, got ' + JSON.stringify($('run-status').textContent));
+check(!$('batch-btn').disabled && !$('run-btn').disabled, 'buttons re-enabled after error');
