@@ -110,3 +110,5 @@ Expected: served -> visible text/number inputs exactly `["seed"]`; file:// -> `[
 ```
 
 Run with `knob-box` open to cover knob inputs and labels (served mode). Expected: `bad: []`, `narrowKnobs: []`.
+
+## 4. Inner scrolling (log, knobs, hist)
