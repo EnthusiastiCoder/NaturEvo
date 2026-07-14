@@ -55,3 +55,11 @@ function detailsRanges() {
 }
 const dets = detailsRanges();
 const posOfId = id => { const m = markup.match(new RegExp('<\\w+[^>]*\\bid\\s*=\\s*["\']' + id + '["\']')); return m ? m.index : -1; };
+
+// ---------- (1) shell: no page scroll ----------
+{
+  const h = props('html'), b = props('body');
+  check(h.overflow === 'hidden' || (h['overflow-x'] === 'hidden' && h['overflow-y'] === 'hidden'), 'CSS html must have overflow:hidden, got ' + JSON.stringify(h.overflow));
+  check(b.overflow === 'hidden' || (b['overflow-x'] === 'hidden' && b['overflow-y'] === 'hidden'), 'CSS body must have overflow:hidden, got ' + JSON.stringify(b.overflow));
+  check(/^(100dvh|100vh)$/.test(b.height || ''), 'CSS body height must be 100dvh or 100vh (single-viewport shell), got ' + JSON.stringify(b.height));
+}
