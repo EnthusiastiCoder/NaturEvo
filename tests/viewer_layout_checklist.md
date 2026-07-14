@@ -61,3 +61,5 @@ Expected: `pass: true` for all 40. Also verify the opened drawer is actually vis
 ```
 
 Expected: `pass: true` (panel not cut off by viewport edge).
+
+## 2. Closed by default (reload page first, then run)
