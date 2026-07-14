@@ -4,3 +4,38 @@
 import { html, load, makeRun, runner } from './_viewer_harness.mjs';
 
 const { check, done } = runner('viewer_layout_check');
+
+// ---------- static helpers ----------
+const styleText = (html.match(/<style[^>]*>([\s\S]*?)<\/style>/) || [, ''])[1].replace(/\/\*[\s\S]*?\*\//g, '');
+// Drop @media/@supports blocks so only base rules are considered (brace-depth scan).
+function stripAt(css) {
+  let out = '', i = 0;
+  while (i < css.length) {
+    if (css[i] === '@') {
+      const o = css.indexOf('{', i);
+      if (o < 0) break;
+      let d = 1, j = o + 1;
+      while (j < css.length && d) { if (css[j] === '{') d++; else if (css[j] === '}') d--; j++; }
+      i = j;
+    } else { out += css[i++]; }
+  }
+  return out;
+}
+const baseCss = stripAt(styleText);
+const rules = [...baseCss.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(m => ({
+  sels: m[1].split(',').map(s => s.trim().replace(/\s+/g, ' ')), body: m[2],
+}));
+// Merged declarations of every rule whose selector list contains a selector that
+// (a) equals `sel` or (b) ends with `sel` as its last compound (e.g. "details#log-box #log").
+function props(sel, { descendants = true } = {}) {
+  const p = {};
+  for (const r of rules) {
+    const hit = r.sels.some(s => s === sel || (descendants && (s.endsWith(' ' + sel) || s.endsWith('>' + sel))));
+    if (!hit) continue;
+    for (const d of r.body.split(';')) {
+      const k = d.indexOf(':'); if (k < 0) continue;
+      p[d.slice(0, k).trim().toLowerCase()] = d.slice(k + 1).trim().toLowerCase().replace(/\s*!important/, '');
+    }
+  }
+  return p;
+}
