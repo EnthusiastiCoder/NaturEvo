@@ -94,3 +94,29 @@ for (const id of ['knob-box', 'log-box', 'more-box', 'batch-box']) {
   check(within('log-box', 'log'), '#log must be inside #log-box');
   check(within('knob-box', 'knobs'), '#knobs must be inside #knob-box');
 }
+
+// ---------- (5) cognitive-load cap on visible inputs; seed width ----------
+{
+  const bad = [];
+  for (const m of markup.matchAll(/<input\b([^>]*)>/g)) {
+    const t = (m[1].match(/\btype\s*=\s*["']?(\w+)/) || [, 'text'])[1].toLowerCase();
+    if (t !== 'text' && t !== 'number') continue;
+    const id = (m[1].match(/\bid\s*=\s*["']([^"']+)["']/) || [, '(no id)'])[1];
+    if (id === 'seed') continue;
+    const inClosed = dets.some(d => !d.open && m.index > d.start && m.index < d.end);
+    if (!inClosed) bad.push(id);
+  }
+  check(bad.length === 0, 'text/number inputs outside a closed <details> (only #seed allowed): ' + bad.join(', '));
+  // v2: the dashboard "Log scale" checkbox is the only other default-visible input (range #scrub is not text/number).
+  const badCb = [];
+  for (const m of markup.matchAll(/<input\b([^>]*)>/g)) {
+    if (!/\btype\s*=\s*["']?checkbox/i.test(m[1])) continue;
+    const id = (m[1].match(/\bid\s*=\s*["']([^"']+)["']/) || [, '(no id)'])[1];
+    const inClosed = dets.some(d => !d.open && m.index > d.start && m.index < d.end);
+    if (!inClosed && !/log/i.test(id)) badCb.push(id);
+  }
+  check(badCb.length === 0, 'checkbox inputs outside a closed <details> must be the log-scale toggle (id contains "log"): ' + badCb.join(', '));
+  const w = props('#seed').width || '';
+  const ch = /^([\d.]+)ch$/.exec(w), px = /^([\d.]+)px$/.exec(w);
+  check((ch && +ch[1] >= 12) || (px && +px[1] >= 100), '#seed CSS width must be >= 12ch (10-digit seed), got ' + JSON.stringify(w));
+}
