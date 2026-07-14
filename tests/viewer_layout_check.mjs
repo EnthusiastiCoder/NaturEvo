@@ -188,3 +188,5 @@ for (const id of ['run-controls', 'seed', 'run-btn', 'random-seed', 'batch-runs'
   const kb = markup.match(/<details\b[^>]*\bid\s*=\s*["']knob-box["']/);
   check(!!kb, '#knob-box must remain a <details>');
 }
+
+done();
