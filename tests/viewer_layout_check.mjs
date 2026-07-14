@@ -130,3 +130,8 @@ for (const id of ['knob-box', 'log-box', 'more-box', 'batch-box']) {
   check(!mw || mw === 'none' || (/px$/.test(mw) && parseFloat(mw) >= 1600) || /%$|vw$/.test(mw), 'body max-width must not cap below 1600px, got ' + mw);
   check(!/px$/.test(b.width || ''), 'body must not have fixed pixel width, got ' + b.width);
 }
+
+// ---------- (7) summary strip ids ----------
+for (const id of ['summary', 'outcome', 'sum-level', 'sum-hp', 'sum-zone', 'sum-progress']) {
+  check(idsInMarkup.has(id), `summary id #${id} missing from markup`);
+}
