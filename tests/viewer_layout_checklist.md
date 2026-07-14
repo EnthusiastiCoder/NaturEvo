@@ -59,3 +59,5 @@ Expected: `pass: true` for all 40. Also verify the opened drawer is actually vis
   return { pass: el.open && inView, details: { open: el.open, panel: panel.map(p => ({ t: p.top, b: p.bottom, l: p.left, r: p.right })), vh: innerHeight, vw: innerWidth } };
 }
 ```
+
+Expected: `pass: true` (panel not cut off by viewport edge).
