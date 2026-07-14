@@ -39,3 +39,6 @@ function props(sel, { descendants = true } = {}) {
   }
   return p;
 }
+
+const markup = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<style[\s\S]*?<\/style>/g, '');
+const idsInMarkup = new Set([...markup.matchAll(/\bid\s*=\s*["']([^"']+)["']/g)].map(m => m[1]));
