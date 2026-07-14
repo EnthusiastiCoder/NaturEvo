@@ -24,3 +24,6 @@ Resize with `resize_page` (width, height) before each run. Wait ~300ms after res
 Note: if the page closes other drawers on toggle (one-open-at-a-time), `open` still works because it closes all first.
 
 ## 1. No page scroll (core)
+
+Matrix: viewports 1920x1080, 1366x768, 1280x720, 800x600 x tabs Replay, Dashboard x states {closed, knob-box, log-box, more-box, batch-box}. Batch-box and knob-box exist only while `#run-controls` is visible (served mode); in file:// skip them. Total 4 x 2 x 5 = 40 served runs.
+Change `TAB` and `STATE` (`'none'|'knob-box'|'log-box'|'more-box'|'batch-box'`) per run.
