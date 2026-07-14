@@ -155,3 +155,8 @@ for (const id of ['summary', 'outcome', 'sum-level', 'sum-hp', 'sum-zone', 'sum-
   check(/99/.test(T('sum-progress')) || /100/.test(T('sum-progress')), 'sum-progress must show the total (99 or 100), got ' + JSON.stringify(T('sum-progress')));
   check(/in progress/i.test(T('outcome')) && /40/.test(T('outcome')), 'outcome mid-run must read "in progress at event 40", got ' + JSON.stringify(T('outcome')));
   check(!/\b(WON|LOST)\b/.test(T('outcome')), 'outcome mid-run must not claim WON/LOST, got ' + JSON.stringify(T('outcome')));
+
+  v.win.__jv.goto(99);
+  check(/\bLOST\b/.test(T('outcome')) && !/\bWON\b/.test(T('outcome')), 'outcome at last event of lost run must be LOST, got ' + JSON.stringify(T('outcome')));
+  check(/9/.test(T('sum-level')), 'sum-level at last event must show level 9, got ' + JSON.stringify(T('sum-level')));
+  check(/7/.test(T('sum-hp')), 'sum-hp at last event must show hp 7, got ' + JSON.stringify(T('sum-hp')));
