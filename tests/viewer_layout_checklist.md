@@ -108,3 +108,5 @@ Expected: served -> visible text/number inputs exactly `["seed"]`; file:// -> `[
   return { pass: bad.length === 0 && seedOk && narrow.length === 0, details: { bad, seedOk, seedD, narrowKnobs: narrow } };
 }
 ```
+
+Run with `knob-box` open to cover knob inputs and labels (served mode). Expected: `bad: []`, `narrowKnobs: []`.
