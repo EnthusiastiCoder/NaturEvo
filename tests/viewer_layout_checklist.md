@@ -8,3 +8,15 @@ Every snippet is passed to `evaluate_script` as a function body expression and r
 Resize with `resize_page` (width, height) before each run. Wait ~300ms after resizing or opening a drawer (resize handler).
 
 ## 0. Helper (paste at the start of each snippet, or define once on `window.__chk` and reuse)
+
+```js
+() => {
+  window.__chk = {
+    tab: t => document.getElementById(t === 'r' ? 'tab-replay' : 'tab-dashboard').click(),
+    closeAll: () => document.querySelectorAll('details[open]').forEach(d => d.removeAttribute('open')),
+    open: id => { window.__chk.closeAll(); document.getElementById(id).setAttribute('open', ''); document.getElementById(id).dispatchEvent(new Event('toggle')); },
+    vis: e => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'; },
+  };
+  return 'ok';
+}
+```
