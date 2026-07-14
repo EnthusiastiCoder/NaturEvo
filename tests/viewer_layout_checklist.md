@@ -83,3 +83,28 @@ Expected: `pass: true` (panel not cut off by viewport edge).
 Expected: served -> visible text/number inputs exactly `["seed"]`; file:// -> `[]`. The only other default-visible inputs allowed are the `#speed` select, the `#scrub` range and (Dashboard tab only) the "Log scale" checkbox (type checkbox, not counted by the filter above).
 
 ## 3. No clipped inputs / labels (each viewport, each tab, drawers closed and each open)
+
+```js
+() => {
+  const bad = [];
+  document.querySelectorAll('input, select, button, label, summary, #outcome, #sum-level, #sum-zone, #sum-progress, .stat').forEach(e => {
+    const r = e.getBoundingClientRect(), s = getComputedStyle(e);
+    if (r.width === 0 || r.height === 0 || s.display === 'none' || s.visibility === 'hidden') return;
+    if (e.scrollWidth > e.clientWidth + 1 && e.tagName !== 'SELECT') bad.push({ id: e.id || e.tagName, sw: e.scrollWidth, cw: e.clientWidth });
+    if (r.right > innerWidth + 1 || r.left < -1) bad.push({ id: e.id || e.tagName, offscreen: [r.left, r.right] });
+    if (s.textOverflow === 'ellipsis' && e.scrollWidth > e.clientWidth) bad.push({ id: e.id || e.tagName, ellipsis: true });
+  });
+  // seed shows a full 10 digit value
+  const seed = document.getElementById('seed');
+  let seedOk = true, seedD = null;
+  if (seed && seed.offsetParent !== null) {
+    const old = seed.value; seed.value = '4294967295';
+    seedOk = seed.scrollWidth <= seed.clientWidth; seedD = { sw: seed.scrollWidth, cw: seed.clientWidth, widthCh: seed.getBoundingClientRect().width };
+    seed.value = old;
+  }
+  // knob inputs >= 8ch (approx 8 * 7px = 56px)
+  const knobs = [...document.querySelectorAll('#knobs input')].filter(e => e.getBoundingClientRect().width > 0);
+  const narrow = knobs.filter(e => e.getBoundingClientRect().width < 56).map(e => e.id);
+  return { pass: bad.length === 0 && seedOk && narrow.length === 0, details: { bad, seedOk, seedD, narrowKnobs: narrow } };
+}
+```
