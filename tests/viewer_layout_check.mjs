@@ -77,3 +77,10 @@ const posOfId = id => { const m = markup.match(new RegExp('<\\w+[^>]*\\bid\\s*=\
     check(bounded(p) || cp.some(x => x['max-height']), `#${id} must be height-bounded (max-height/height/min-height:0/flex), got ${JSON.stringify(p)}`);
   }
 }
+
+// ---------- (3) drawers are closed <details> ----------
+for (const id of ['knob-box', 'log-box', 'more-box', 'batch-box']) {
+  const d = dets.find(x => x.id === id);
+  check(!!d, `#${id} must exist as a <details>`);
+  if (d) check(!d.open, `#${id} must not have the open attribute (closed by default)`);
+}
