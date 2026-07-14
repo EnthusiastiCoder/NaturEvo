@@ -81,3 +81,5 @@ Expected: `pass: true` (panel not cut off by viewport edge).
 ```
 
 Expected: served -> visible text/number inputs exactly `["seed"]`; file:// -> `[]`. The only other default-visible inputs allowed are the `#speed` select, the `#scrub` range and (Dashboard tab only) the "Log scale" checkbox (type checkbox, not counted by the filter above).
+
+## 3. No clipped inputs / labels (each viewport, each tab, drawers closed and each open)
