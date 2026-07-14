@@ -49,3 +49,13 @@ Change `TAB` and `STATE` (`'none'|'knob-box'|'log-box'|'more-box'|'batch-box'`) 
 ```
 
 Expected: `pass: true` for all 40. Also verify the opened drawer is actually visible and inside the viewport:
+
+```js
+() => {
+  const STATE = 'log-box';   // or knob-box / more-box / batch-box
+  const el = document.getElementById(STATE), r = el.getBoundingClientRect();
+  const panel = [...el.children].filter(x => x.tagName !== 'SUMMARY').map(x => x.getBoundingClientRect());
+  const inView = panel.every(p => p.height > 0 && p.top >= -1 && p.bottom <= innerHeight + 1 && p.left >= -1 && p.right <= innerWidth + 1);
+  return { pass: el.open && inView, details: { open: el.open, panel: panel.map(p => ({ t: p.top, b: p.bottom, l: p.left, r: p.right })), vh: innerHeight, vw: innerWidth } };
+}
+```
