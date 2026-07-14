@@ -174,3 +174,17 @@ for (const id of ['summary', 'outcome', 'sum-level', 'sum-hp', 'sum-zone', 'sum-
   check(rc && rc.classList.contains('hidden'), 'file://: #run-controls must keep class "hidden"');
   check(v.fetchCalls.length === 0, 'file://: no fetch calls expected, got ' + JSON.stringify(v.fetchCalls));
 }
+
+// ---------- (10) legacy ids still present ----------
+for (const id of ['run-controls', 'seed', 'run-btn', 'random-seed', 'batch-runs', 'batch-btn', 'run-status', 'knob-box', 'knobs', 'knobs-reset',
+  'tab-replay', 'tab-dashboard', 'replay', 'play', 'speed', 'info', 'scrub', 'battle', 'hbar', 'hhp', 'hmeta', 'zone', 'memo', 'mbar', 'mhp',
+  'timeline', 'log', 'dashboard', 'dstats', 'hist']) {
+  check(idsInMarkup.has(id), `legacy id #${id} missing`);
+}
+{
+  const v = load({ protocol: 'file:', run: makeRun(5) });
+  const jv = v.win.__jv;
+  check(jv && ['setRun', 'goto', 'logIndices'].every(k => typeof jv[k] === 'function'), 'window.__jv {setRun,goto,logIndices} missing');
+  const kb = markup.match(/<details\b[^>]*\bid\s*=\s*["']knob-box["']/);
+  check(!!kb, '#knob-box must remain a <details>');
+}
