@@ -27,3 +27,23 @@ Note: if the page closes other drawers on toggle (one-open-at-a-time), `open` st
 
 Matrix: viewports 1920x1080, 1366x768, 1280x720, 800x600 x tabs Replay, Dashboard x states {closed, knob-box, log-box, more-box, batch-box}. Batch-box and knob-box exist only while `#run-controls` is visible (served mode); in file:// skip them. Total 4 x 2 x 5 = 40 served runs.
 Change `TAB` and `STATE` (`'none'|'knob-box'|'log-box'|'more-box'|'batch-box'`) per run.
+
+```js
+() => {
+  const TAB = 'r', STATE = 'none';
+  const c = window.__chk; c.tab(TAB); c.closeAll();
+  if (STATE !== 'none') c.open(STATE);
+  const de = document.documentElement, b = document.body;
+  const d = {
+    vw: innerWidth, vh: innerHeight,
+    docScrollH: de.scrollHeight, docScrollW: de.scrollWidth,
+    bodyScrollH: b.scrollHeight, bodyScrollW: b.scrollWidth,
+    winScrollY: (window.scrollTo(0, 99999), window.scrollY), winScrollX: (window.scrollTo(99999, 0), window.scrollX),
+    state: STATE, tab: TAB,
+  };
+  window.scrollTo(0, 0);
+  const pass = de.scrollHeight <= innerHeight && de.scrollWidth <= innerWidth
+    && b.scrollHeight <= innerHeight && b.scrollWidth <= innerWidth && d.winScrollY === 0 && d.winScrollX === 0;
+  return { pass, details: d };
+}
+```
