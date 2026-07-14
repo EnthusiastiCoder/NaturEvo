@@ -47,3 +47,5 @@ Change `TAB` and `STATE` (`'none'|'knob-box'|'log-box'|'more-box'|'batch-box'`) 
   return { pass, details: d };
 }
 ```
+
+Expected: `pass: true` for all 40. Also verify the opened drawer is actually visible and inside the viewport:
