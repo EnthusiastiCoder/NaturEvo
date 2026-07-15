@@ -276,3 +276,25 @@ Keyboard: move the mouse away, press `Tab` until an `.info` button is focused, r
 Expected: hidden after Escape (button may stay focused).
 
 Not clipped by overflow (run on both tabs and with `knob-box` open):
+
+```js
+() => {
+  const bad = [];
+  document.querySelectorAll('.info').forEach(b => {
+    const tip = document.getElementById(b.getAttribute('aria-describedby'));
+    if (!tip) { bad.push({ id: b.getAttribute('aria-label'), missingTip: true }); return; }
+    if (b.getBoundingClientRect().width === 0) return;
+    b.focus();
+    const r = tip.getBoundingClientRect();
+    for (let p = tip.parentElement; p && p !== document.documentElement; p = p.parentElement) {
+      const s = getComputedStyle(p);
+      if (/(hidden|auto|scroll|clip)/.test(s.overflowX + s.overflowY)) {
+        const pr = p.getBoundingClientRect();
+        if (r.width > 0 && (r.left < pr.left - 1 || r.right > pr.right + 1 || r.top < pr.top - 1 || r.bottom > pr.bottom + 1)) bad.push({ id: b.getAttribute('aria-label'), clippedBy: p.id || p.className });
+      }
+    }
+    b.blur();
+  });
+  return { pass: bad.length === 0, details: bad.slice(0, 10) };
+}
+```
