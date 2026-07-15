@@ -238,3 +238,9 @@ Open the file URL, then at each of the 4 viewports x 2 tabs, run sections 1 (sta
 Expected: `visInputs` is exactly `["scrub","speed"]` (plus the log-scale checkbox while on Dashboard); replay renders (summary populated) and dashboard shows 4 cards from data/stats.js; no network requests (check `list_network_requests`: no `/api/` calls).
 
 ## 8. Served-mode behaviour unchanged (spot check, 1280x720)
+
+1. Reload; `#run-controls` becomes visible; knob-box shows 'Tuning' toggle; type `4294967295` in `#seed`; click `#run-btn`; summary updates seed/outcome; no page scroll.
+2. Open `#batch-box`, set `#batch-runs` to 200, click `#batch-btn`; Dashboard tab becomes active, 4 cards; `#run-status` text shows then clears.
+3. Open `#knob-box`, change one knob, click `#knobs-reset` -> value returns to default.
+4. Click `#random-seed` -> `#seed` gets a number 0..4294967295.
+5. Console has no errors (`list_console_messages`).
