@@ -222,3 +222,5 @@ Resize test (backing store follows `resize`), run twice with `resize_page` betwe
 Expected: summary visible without scrolling, near the top (below the ~44px top bar).
 
 ## 7. file:// variant
+
+Open the file URL, then at each of the 4 viewports x 2 tabs, run sections 1 (states `none`, `log-box`, `more-box`), 2, 3, 5, 6, plus:
