@@ -274,3 +274,5 @@ Keyboard: move the mouse away, press `Tab` until an `.info` button is focused, r
 ```
 
 Expected: hidden after Escape (button may stay focused).
+
+Not clipped by overflow (run on both tabs and with `knob-box` open):
