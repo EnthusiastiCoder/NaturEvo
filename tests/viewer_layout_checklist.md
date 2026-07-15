@@ -218,3 +218,5 @@ Resize test (backing store follows `resize`), run twice with `resize_page` betwe
   return { pass, details: { t, summaryTop: sr.top } };
 }
 ```
+
+Expected: summary visible without scrolling, near the top (below the ~44px top bar).
