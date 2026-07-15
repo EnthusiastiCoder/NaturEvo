@@ -163,3 +163,15 @@ Knobs (served, knob-box open, at 800x600 and 1280x720):
 Expected: `pass: true`; if content taller than the panel, a scroller exists (inner scroll), `knobs-reset` visible without scrolling (pinned at top); `cols` is 2-3 at >=1280 wide.
 
 Dashboard hist (Dashboard tab, stats loaded: `window.STATS` set via file:// data or batch):
+
+```js
+() => {
+  window.__chk.tab('d');
+  const H = document.getElementById('hist'), D = document.getElementById('dstats');
+  const hr = H.getBoundingClientRect(), cards = D.children.length;
+  const s = getComputedStyle(H);
+  const pass = hr.bottom <= innerHeight + 1 && hr.height > 40 && ['auto', 'scroll'].includes(s.overflowY) && cards === 4
+    && document.documentElement.scrollHeight <= innerHeight && document.documentElement.scrollWidth <= innerWidth;
+  return { pass, details: { histBottom: hr.bottom, histH: hr.height, overflowY: s.overflowY, cards, scrollH: H.scrollHeight, clientH: H.clientHeight } };
+}
+```
