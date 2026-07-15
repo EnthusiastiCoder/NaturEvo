@@ -246,3 +246,5 @@ Expected: `visInputs` is exactly `["scrub","speed"]` (plus the log-scale checkbo
 5. Console has no errors (`list_console_messages`).
 
 ## 9. Tooltips and info buttons (v2; each viewport, both tabs; served and file://)
+
+Hover the info button (MCP `hover`), then:
