@@ -159,3 +159,5 @@ Knobs (served, knob-box open, at 800x600 and 1280x720):
   return { pass, details: { panelBottom: pb.bottom, vh: innerHeight, scrollerId: scroller && (scroller.id || scroller.tagName), resetTop: reset.top, cols, inputs: rects.length } };
 }
 ```
+
+Expected: `pass: true`; if content taller than the panel, a scroller exists (inner scroll), `knobs-reset` visible without scrolling (pinned at top); `cols` is 2-3 at >=1280 wide.
