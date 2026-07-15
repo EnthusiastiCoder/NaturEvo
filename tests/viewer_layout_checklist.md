@@ -193,3 +193,5 @@ Expected: 4 stat cards in one row, `#hist` bounded and scrolls inside (`scrollHe
   return { pass, details: d };
 }
 ```
+
+Expected: CSS width equals container inner width (no gap on the right), backing size equals CSS size (no blur), height >= 80, and the timeline takes the leftover height (no big empty area: `r.height >= 80`; at 1920x1080 expect it taller than 200).
