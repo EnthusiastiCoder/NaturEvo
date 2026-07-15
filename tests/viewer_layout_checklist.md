@@ -259,3 +259,5 @@ Hover the info button (MCP `hover`), then:
   return { pass: shown && tip.textContent.trim().length > 0 && inView, details: { shown, text: tip.textContent.trim().slice(0, 80), rect: [r.left, r.top, r.right, r.bottom], vw: innerWidth, vh: innerHeight } };
 }
 ```
+
+Expected: `pass: true` while hovering. Repeat for one info button in each container: a KPI (Dashboard), a toolbar control, a replay summary item, a knob (knob-box open, served), and the first and last `.info` in DOM order (viewport edges).
