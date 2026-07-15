@@ -140,3 +140,5 @@ Expected: `scrollHeight > clientHeight`, scrollTop changes, log bottom inside vi
   return { pass: b.top >= a.top - 1 && b.bottom <= a.bottom + 1, details: { log: [a.top, a.bottom], cur: [b.top, b.bottom] } };
 }
 ```
+
+Knobs (served, knob-box open, at 800x600 and 1280x720):
