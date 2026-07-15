@@ -261,3 +261,5 @@ Hover the info button (MCP `hover`), then:
 ```
 
 Expected: `pass: true` while hovering. Repeat for one info button in each container: a KPI (Dashboard), a toolbar control, a replay summary item, a knob (knob-box open, served), and the first and last `.info` in DOM order (viewport edges).
+
+Keyboard: move the mouse away, press `Tab` until an `.info` button is focused, run the same snippet (tooltip visible by focus alone). Then press `Escape` and run:
