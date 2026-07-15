@@ -179,3 +179,17 @@ Dashboard hist (Dashboard tab, stats loaded: `window.STATS` set via file:// data
 Expected: 4 stat cards in one row, `#hist` bounded and scrolls inside (`scrollHeight > clientHeight` at 800x600 when the histogram has many levels).
 
 ## 5. Timeline canvas fills its container (Replay, each viewport, plus after resizing)
+
+```js
+() => {
+  window.__chk.tab('r'); window.__chk.closeAll();
+  const cv = document.getElementById('timeline'), r = cv.getBoundingClientRect(), p = cv.parentElement.getBoundingClientRect();
+  const cs = getComputedStyle(cv.parentElement);
+  const inner = p.width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const d = { canvasCssW: r.width, canvasCssH: r.height, backingW: cv.width, backingH: cv.height, parentInnerW: inner, parentH: p.height, vw: innerWidth, left: r.left, right: r.right };
+  const pass = Math.abs(r.width - inner) <= 2 && Math.abs(cv.width - Math.round(cv.clientWidth)) <= 1
+    && Math.abs(cv.height - Math.round(cv.clientHeight)) <= 1 && r.height >= 80 && r.bottom <= innerHeight + 1
+    && innerWidth - r.right <= 40;   // no large gap on the right
+  return { pass, details: d };
+}
+```
