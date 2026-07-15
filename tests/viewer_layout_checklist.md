@@ -234,3 +234,5 @@ Open the file URL, then at each of the 4 viewports x 2 tabs, run sections 1 (sta
   return { pass, details: { protocol: location.protocol, hidden, visInputs, runLoaded: !!window.RUN, statsLoaded: !!window.STATS } };
 }
 ```
+
+Expected: `visInputs` is exactly `["scrub","speed"]` (plus the log-scale checkbox while on Dashboard); replay renders (summary populated) and dashboard shows 4 cards from data/stats.js; no network requests (check `list_network_requests`: no `/api/` calls).
