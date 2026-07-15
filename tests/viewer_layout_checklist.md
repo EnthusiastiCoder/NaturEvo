@@ -248,3 +248,14 @@ Expected: `visInputs` is exactly `["scrub","speed"]` (plus the log-scale checkbo
 ## 9. Tooltips and info buttons (v2; each viewport, both tabs; served and file://)
 
 Hover the info button (MCP `hover`), then:
+
+```js
+() => {
+  const b = document.querySelector('.info'); if (!b) return { pass: false, details: 'no .info button' };
+  const tip = document.getElementById(b.getAttribute('aria-describedby'));
+  const r = tip.getBoundingClientRect(), s = getComputedStyle(tip);
+  const shown = r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none' && +s.opacity > 0;
+  const inView = r.left >= -1 && r.top >= -1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1;
+  return { pass: shown && tip.textContent.trim().length > 0 && inView, details: { shown, text: tip.textContent.trim().slice(0, 80), rect: [r.left, r.top, r.right, r.bottom], vw: innerWidth, vh: innerHeight } };
+}
+```
