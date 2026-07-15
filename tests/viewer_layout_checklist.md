@@ -114,3 +114,18 @@ Run with `knob-box` open to cover knob inputs and labels (served mode). Expected
 ## 4. Inner scrolling (log, knobs, hist)
 
 Log, after a run is loaded and navigated to event 150 (log-box open):
+
+```js
+() => {
+  window.__jv.goto(150);
+  const c = window.__chk; c.tab('r'); c.open('log-box');
+  const L = document.getElementById('log');
+  const before = { sh: L.scrollHeight, ch: L.clientHeight, st: L.scrollTop };
+  L.scrollTop = 0; const t0 = L.scrollTop; L.scrollTop = 40; const t1 = L.scrollTop;
+  const r = L.getBoundingClientRect();
+  const de = document.documentElement;
+  const pass = before.sh > before.ch && before.ch > 0 && t1 !== t0 && r.bottom <= innerHeight + 1 && de.scrollHeight <= innerHeight
+    && getComputedStyle(L).overflowY !== 'visible';
+  return { pass, details: { before, t0, t1, bottom: r.bottom, vh: innerHeight, pageScrollH: de.scrollHeight } };
+}
+```
