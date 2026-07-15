@@ -175,3 +175,5 @@ Dashboard hist (Dashboard tab, stats loaded: `window.STATS` set via file:// data
   return { pass, details: { histBottom: hr.bottom, histH: hr.height, overflowY: s.overflowY, cards, scrollH: H.scrollHeight, clientH: H.clientHeight } };
 }
 ```
+
+Expected: 4 stat cards in one row, `#hist` bounded and scrolls inside (`scrollHeight > clientHeight` at 800x600 when the histogram has many levels).
