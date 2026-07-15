@@ -220,3 +220,5 @@ Resize test (backing store follows `resize`), run twice with `resize_page` betwe
 ```
 
 Expected: summary visible without scrolling, near the top (below the ~44px top bar).
+
+## 7. file:// variant
