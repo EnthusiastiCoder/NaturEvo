@@ -204,3 +204,5 @@ Resize test (backing store follows `resize`), run twice with `resize_page` betwe
   return { pass: Math.abs(cv.width - cv.clientWidth) <= 1 && Math.abs(cv.height - cv.clientHeight) <= 1, details: { w: cv.width, cw: cv.clientWidth, h: cv.height, ch: cv.clientHeight, vw: innerWidth } };
 }
 ```
+
+## 6. Summary strip and landing view (Replay, drawers closed, run loaded)
