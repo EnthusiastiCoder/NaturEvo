@@ -142,3 +142,20 @@ Expected: `scrollHeight > clientHeight`, scrollTop changes, log bottom inside vi
 ```
 
 Knobs (served, knob-box open, at 800x600 and 1280x720):
+
+```js
+() => {
+  const c = window.__chk; c.tab('r'); c.open('knob-box');
+  const K = document.getElementById('knobs'), box = document.getElementById('knob-box');
+  const panel = [...box.children].find(x => x.tagName !== 'SUMMARY');
+  const rects = [...box.querySelectorAll('input')].map(i => i.getBoundingClientRect());
+  const scroller = [K, panel, box].find(e => e && e.scrollHeight > e.clientHeight + 1 && ['auto', 'scroll'].includes(getComputedStyle(e).overflowY));
+  const pb = (panel || K).getBoundingClientRect();
+  const reset = document.getElementById('knobs-reset').getBoundingClientRect();
+  const pass = pb.bottom <= innerHeight + 1 && document.documentElement.scrollHeight <= innerHeight
+    && reset.top >= 0 && reset.bottom <= innerHeight + 1 && (scroller ? true : rects.every(r => r.bottom <= innerHeight + 1));
+  // grid of 2-3 columns at >=1280
+  const cols = getComputedStyle(K).gridTemplateColumns.split(' ').length;
+  return { pass, details: { panelBottom: pb.bottom, vh: innerHeight, scrollerId: scroller && (scroller.id || scroller.tagName), resetTop: reset.top, cols, inputs: rects.length } };
+}
+```
