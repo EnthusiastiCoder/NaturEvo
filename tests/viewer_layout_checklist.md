@@ -263,3 +263,12 @@ Hover the info button (MCP `hover`), then:
 Expected: `pass: true` while hovering. Repeat for one info button in each container: a KPI (Dashboard), a toolbar control, a replay summary item, a knob (knob-box open, served), and the first and last `.info` in DOM order (viewport edges).
 
 Keyboard: move the mouse away, press `Tab` until an `.info` button is focused, run the same snippet (tooltip visible by focus alone). Then press `Escape` and run:
+
+```js
+() => {
+  const a = document.activeElement, tip = a && a.getAttribute && document.getElementById(a.getAttribute('aria-describedby') || '-');
+  if (!tip) return { pass: false, details: 'active element is not an info button' };
+  const s = getComputedStyle(tip), r = tip.getBoundingClientRect();
+  return { pass: s.visibility === 'hidden' || s.display === 'none' || +s.opacity === 0 || r.width === 0, details: { vis: s.visibility, display: s.display, opacity: s.opacity } };
+}
+```
