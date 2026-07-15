@@ -129,3 +129,5 @@ Log, after a run is loaded and navigated to event 150 (log-box open):
   return { pass, details: { before, t0, t1, bottom: r.bottom, vh: innerHeight, pageScrollH: de.scrollHeight } };
 }
 ```
+
+Expected: `scrollHeight > clientHeight`, scrollTop changes, log bottom inside viewport, page does not grow. Also the current row is visible after opening (`.cur` centered):
