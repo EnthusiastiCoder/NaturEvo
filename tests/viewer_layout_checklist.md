@@ -195,3 +195,5 @@ Expected: 4 stat cards in one row, `#hist` bounded and scrolls inside (`scrollHe
 ```
 
 Expected: CSS width equals container inner width (no gap on the right), backing size equals CSS size (no blur), height >= 80, and the timeline takes the leftover height (no big empty area: `r.height >= 80`; at 1920x1080 expect it taller than 200).
+
+Resize test (backing store follows `resize`), run twice with `resize_page` between (e.g. 1280x720 then 800x600) and compare:
