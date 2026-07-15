@@ -272,3 +272,5 @@ Keyboard: move the mouse away, press `Tab` until an `.info` button is focused, r
   return { pass: s.visibility === 'hidden' || s.display === 'none' || +s.opacity === 0 || r.width === 0, details: { vis: s.visibility, display: s.display, opacity: s.opacity } };
 }
 ```
+
+Expected: hidden after Escape (button may stay focused).
