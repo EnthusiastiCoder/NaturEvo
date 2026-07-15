@@ -206,3 +206,15 @@ Resize test (backing store follows `resize`), run twice with `resize_page` betwe
 ```
 
 ## 6. Summary strip and landing view (Replay, drawers closed, run loaded)
+
+```js
+() => {
+  window.__chk.tab('r'); window.__chk.closeAll(); window.__jv.goto(60);
+  const ids = ['summary', 'outcome', 'sum-level', 'sum-hp', 'sum-zone', 'sum-progress'];
+  const t = {}; ids.forEach(i => { const e = document.getElementById(i); t[i] = e ? { vis: window.__chk.vis(e), text: e.textContent.trim().slice(0, 60) } : null; });
+  const sr = document.getElementById('summary').getBoundingClientRect();
+  const pass = ids.every(i => t[i] && t[i].vis && (i === 'summary' || t[i].text.length > 0))
+    && /in progress|WON|LOST/.test(t.outcome.text) && /60/.test(t['sum-progress'].text) && sr.top < 120;
+  return { pass, details: { t, summaryTop: sr.top } };
+}
+```
