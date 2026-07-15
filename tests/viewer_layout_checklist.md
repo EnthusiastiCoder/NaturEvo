@@ -177,3 +177,5 @@ Dashboard hist (Dashboard tab, stats loaded: `window.STATS` set via file:// data
 ```
 
 Expected: 4 stat cards in one row, `#hist` bounded and scrolls inside (`scrollHeight > clientHeight` at 800x600 when the histogram has many levels).
+
+## 5. Timeline canvas fills its container (Replay, each viewport, plus after resizing)
