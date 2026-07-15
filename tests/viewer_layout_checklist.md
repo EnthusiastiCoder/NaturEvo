@@ -244,3 +244,5 @@ Expected: `visInputs` is exactly `["scrub","speed"]` (plus the log-scale checkbo
 3. Open `#knob-box`, change one knob, click `#knobs-reset` -> value returns to default.
 4. Click `#random-seed` -> `#seed` gets a number 0..4294967295.
 5. Console has no errors (`list_console_messages`).
+
+## 9. Tooltips and info buttons (v2; each viewport, both tabs; served and file://)
