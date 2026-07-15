@@ -224,3 +224,13 @@ Expected: summary visible without scrolling, near the top (below the ~44px top b
 ## 7. file:// variant
 
 Open the file URL, then at each of the 4 viewports x 2 tabs, run sections 1 (states `none`, `log-box`, `more-box`), 2, 3, 5, 6, plus:
+
+```js
+() => {
+  const rc = document.getElementById('run-controls');
+  const hidden = getComputedStyle(rc).display === 'none';
+  const visInputs = [...document.querySelectorAll('input,select')].filter(e => e.offsetParent !== null).map(e => e.id);
+  const pass = hidden && location.protocol === 'file:' && visInputs.filter(i => !/log/i.test(i)).sort().join() === 'scrub,speed';  // v2: dashboard log-scale checkbox allowed
+  return { pass, details: { protocol: location.protocol, hidden, visInputs, runLoaded: !!window.RUN, statsLoaded: !!window.STATS } };
+}
+```
