@@ -131,3 +131,12 @@ Log, after a run is loaded and navigated to event 150 (log-box open):
 ```
 
 Expected: `scrollHeight > clientHeight`, scrollTop changes, log bottom inside viewport, page does not grow. Also the current row is visible after opening (`.cur` centered):
+
+```js
+() => {
+  const L = document.getElementById('log'), cur = L.querySelector('.cur');
+  if (!cur) return { pass: false, details: 'no .cur row' };
+  const a = L.getBoundingClientRect(), b = cur.getBoundingClientRect();
+  return { pass: b.top >= a.top - 1 && b.bottom <= a.bottom + 1, details: { log: [a.top, a.bottom], cur: [b.top, b.bottom] } };
+}
+```
