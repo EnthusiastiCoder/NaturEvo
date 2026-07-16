@@ -526,3 +526,17 @@ Viewports (resize with `resize_page`, wait ~300ms): 1920x1080, 1366x768, 1280x72
 Expected: `pass: true` for all runs. The layout reallocates height (the timeline/hist area shrinks) instead of pushing the drawer buttons below the fold. Screenshot 1280x640 with each drawer open and confirm the drawer panel is fully visible (not cut by the top or bottom edge).
 
 ### 15.2 Select alignment and one consistent style (each tab; 1280x720 and 800x600)
+
+```js
+() => {
+  const sels = [...document.querySelectorAll('select')];
+  const rows = sels.map(s => { const cs = getComputedStyle(s); return { id: s.id, cls: s.className, ta: cs.textAlign, tal: cs.textAlignLast, pr: cs.paddingRight, pl: cs.paddingLeft, h: cs.height, bg: cs.backgroundImage !== 'none' || !!s.parentElement.querySelector('use[href="#i-chevron-down"]') }; });
+  const sp = document.getElementById('speed'), r = sp.getBoundingClientRect(), cs = getComputedStyle(sp);
+  const m = document.createElement('span');
+  m.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:' + cs.font; m.textContent = sp.selectedOptions[0].text; document.body.appendChild(m);
+  const tw = m.getBoundingClientRect().width; m.remove();
+  const same = k => new Set(rows.map(x => x[k])).size === 1;
+  const pass = rows.length >= 1 && rows.every(x => /\bselect\b/.test(x.cls) && (x.ta === 'right' || x.ta === 'end') && (x.tal === 'right' || x.tal === 'end') && x.bg) && same('pr') && same('pl') && same('h') && parseFloat(rows[0].pr) >= 20 && tw < r.width;
+  return { pass, details: { rows, textW: Math.round(tw) } };
+}
+```
