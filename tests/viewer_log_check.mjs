@@ -33,3 +33,11 @@ jv.goto(50);
 check(curOf() && curOf().dataset.i === '50', 'cur highlight on event 50');
 check(idx().includes(51) && idx().includes(299), 'events after the current one are listed too');
 check(L.scrollTop > 0, 'cur row scrolled into view: scrollTop must move for event 50, got ' + L.scrollTop);
+
+jv.goto(250);
+check(curOf() && curOf().dataset.i === '250' && L._all().filter(c => c.classList.contains('cur')).length === 1, 'cur highlight moves to 250 (single .cur)');
+const s250 = L.scrollTop;
+jv.goto(0);
+check(curOf() && curOf().dataset.i === '0', 'cur highlight back at 0');
+check(L.scrollTop === 0 && s250 > 0, 'scrollTop returns to 0 for event 0 (and was >0 at 250), got ' + L.scrollTop + ' / ' + s250);
+check(idx().length === 300, 'goto(0) still lists all events, got ' + idx().length);
