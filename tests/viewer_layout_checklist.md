@@ -331,3 +331,5 @@ Expected: `bad: []`, `controlH` 32. All icons equal `--icon`:
   return { pass: els.length > 0 && bad.length === 0, details: { iconPx: ic, count: els.length, bad } };
 }
 ```
+
+Expected: `bad: []` (any exception must be documented in viewer/STYLE.md). Eyeball: consistent Lucide stroke style, no text glyph or emoji outside the small hero/monster/zone sprites.
