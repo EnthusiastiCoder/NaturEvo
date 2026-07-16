@@ -627,3 +627,16 @@ Expected: `pass: true` at every viewport incl. 1280x640 and 800x600 (only `#log`
 - Load a 65536-event run (large `/api/run` or `__jv.setRun`): the modal opens in under 0.5 s, `document.querySelectorAll('#log *').length <= 300` at top, middle, bottom scroll and after searching, scrolling stays smooth and the scrollbar reflects the full length.
 
 ### 16.3 Seed field fits 20 digits, no spinner, validated
+
+```js
+async () => {
+  const s = document.getElementById('seed'), cs = getComputedStyle(s);
+  s.value = '12345678901234567890'; s.dispatchEvent(new Event('input', { bubbles: true }));
+  const fits = s.scrollWidth <= s.clientWidth;
+  const noSpin = s.type === 'text' ? s.inputMode === 'numeric' && s.pattern === '[0-9]*' : (cs.appearance === 'textfield' || cs.webkitAppearance === 'textfield');
+  s.value = '12a'; document.getElementById('run-btn').click(); await new Promise(r => setTimeout(r, 200));
+  const msg = document.getElementById('run-status').textContent.trim();
+  s.value = '12345678901234567890';
+  return { pass: fits && noSpin && /seed|digit|number/i.test(msg), details: { fits, sw: s.scrollWidth, cw: s.clientWidth, noSpin, msg } };
+}
+```
