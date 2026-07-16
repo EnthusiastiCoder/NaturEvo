@@ -616,3 +616,5 @@ async () => {
   return { pass: sem && focusIn && fit && clip.length === 0 && scrollers.every(s => s === 'log'), details: { sem, focusIn, fit, scrollers, clip, focusable, rect: [r.left, r.top, r.right, r.bottom].map(Math.round) } };
 }
 ```
+
+Expected: `pass: true` at every viewport incl. 1280x640 and 800x600 (only `#log` scrolls). Then by keyboard (`press_key`) with the modal open:
