@@ -575,3 +575,25 @@ Expected: `pass: true` at every viewport: 13 knobs, 2+ columns (more at wide vie
 Browser checks (real layout and focus; node stubs cannot check these). Served mode, run loaded, Replay tab, each viewport 1920x1080, 1366x768, 1280x720, 1280x640, 800x600, both themes. Node-checkable parts: `node tests/viewer_polish_check.mjs`.
 
 ### 16.1 Hero details in the top card; no dead gaps; one-row bottom bar
+
+```js
+() => {
+  const card = document.getElementById('battle'), hd = document.getElementById('hero-details');
+  const cr = card.getBoundingClientRect();
+  const kids = [...card.children].filter(e => e.getBoundingClientRect().width > 0);
+  const spans = kids.map(e => { const r = e.getBoundingClientRect(); return [r.left, r.right]; }).sort((a, b) => a[0] - b[0]);
+  let maxGap = 0; for (let i = 1; i < spans.length; i++) maxGap = Math.max(maxGap, spans[i][0] - spans[i - 1][1]);
+  const lead = spans.length ? spans[0][0] - cr.left : cr.width, trail = spans.length ? cr.right - spans[spans.length - 1][1] : cr.width;
+  const text = hd ? hd.textContent.replace(/\s+/g, ' ') : '';
+  const missing = ['level', 'xp', 'gold', 'potion', 'attack', 'defen'].filter(l => !new RegExp(l, 'i').test(text));
+  const hr = hd && hd.getBoundingClientRect();
+  const inside = !!hd && card.contains(hd) && hr.left >= cr.left - 1 && hr.right <= cr.right + 1 && hr.width > 0;
+  const bar = document.querySelector('.drawers');
+  const tops = new Set([...bar.children].filter(e => e.getBoundingClientRect().width > 0).map(e => Math.round(e.getBoundingClientRect().top)));
+  const sc = document.getElementById('scrub'); window.__jv.goto(Math.floor(+sc.max / 2));
+  const updated = hd.textContent.replace(/\s+/g, ' ') !== text || +sc.max < 2;
+  const lim = cr.width * 0.25;
+  const pass = inside && missing.length === 0 && !document.getElementById('more-box') && maxGap <= lim && lead <= lim && trail <= lim && tops.size === 1 && updated;
+  return { pass, details: { inside, missing, maxGap: Math.round(maxGap), limit: Math.round(lim), lead: Math.round(lead), trail: Math.round(trail), barRows: tops.size, updated } };
+}
+```
