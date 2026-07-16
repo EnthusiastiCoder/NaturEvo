@@ -41,3 +41,11 @@ jv.goto(0);
 check(curOf() && curOf().dataset.i === '0', 'cur highlight back at 0');
 check(L.scrollTop === 0 && s250 > 0, 'scrollTop returns to 0 for event 0 (and was >0 at 250), got ' + L.scrollTop + ' / ' + s250);
 check(idx().length === 300, 'goto(0) still lists all events, got ' + idx().length);
+
+// stepping forward moves the highlight without rebuilding the list
+v.$('play').click();
+check(v.intervals.length > 0, 'play must start an interval');
+const first = L.children[0], before = idx().length;
+v.intervals[v.intervals.length - 1]();
+check(curOf() && curOf().dataset.i === '1', 'step forward moves .cur to 1');
+check(L.children[0] === first && idx().length === before, 'stepping forward must not rebuild the list');
