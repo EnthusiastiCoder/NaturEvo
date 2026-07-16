@@ -625,3 +625,5 @@ Expected: `pass: true` at every viewport incl. 1280x640 and 800x600 (only `#log`
 - Search: type `fight` (any case): `#log-count` reads "N of M events" and the list is filtered. `#log-group` by type (default) / zone / none: group headers show name and count, clicking toggles `aria-expanded` and hides or shows the rows.
 - Click a row: scrub and `#info` jump to that event.
 - Load a 65536-event run (large `/api/run` or `__jv.setRun`): the modal opens in under 0.5 s, `document.querySelectorAll('#log *').length <= 300` at top, middle, bottom scroll and after searching, scrolling stays smooth and the scrollbar reflects the full length.
+
+### 16.3 Seed field fits 20 digits, no spinner, validated
