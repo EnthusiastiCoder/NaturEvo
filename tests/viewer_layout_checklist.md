@@ -397,3 +397,8 @@ Snippets reuse `window.__chk` (section 0). Set a theme/accent with the UI (`#the
 ### 14.1 Repeat in BOTH themes
 
 Run each in dark, click `#theme-toggle` (`document.documentElement.dataset.theme` flips), run again in light. All must pass in both:
+
+- Section 1 (no page scroll): all 40 combinations in dark and in light = 80 served runs. The theme must not change layout size.
+- Section 9 (tooltips): hover and focus tooltip visible, inside viewport, not clipped, Escape hides; include the tooltips on `#theme-toggle` and `#accent-btn`.
+- Section 10 (control height and icon size): `#theme-toggle` and `#accent-btn` have `offsetHeight` == `--control-h` (32) and their `svg.icon` == `--icon`; repeat with `#accent-box` open (swatches, `#accent-custom`, `#accent-reset` included).
+- Section 3 (no clipped inputs) with `#accent-box` open; the popover is fully inside the viewport at 800x600 and causes no page scroll.
