@@ -389,3 +389,5 @@ Visually confirm in each: no page scrollbar, nothing clipped, no big empty area,
 ## 13. Independent visual review gate (v2, final step, after every check above passes)
 
 Spawn a FRESH reviewer agent (sonnet, no access to the implementer's reasoning or source files). Give it ONLY the screenshots from section 12 and the verbatim requirement text from the plan ("cognitive load ... bird eye view ... without scrolling", "the layout is ugly", "info buttons and tool tip texts", "proper lucide icons", "good ui, not the game ui but the dashboard"). It returns a scored review (1-5) of: visual hierarchy, density/cognitive load, consistency (spacing, control height, icon size, colours), readability of the skewed histogram, game-like styling, clipped/overlapping/empty areas, tooltip legibility, plus PASS/FAIL and concrete fixes. Any FAIL or any score below 4: the implementer fixes, re-shoots section 12, and a NEW fresh reviewer re-reviews. Done only on PASS. Keep the review text with the run notes; do not commit screenshots.
+
+## 14. Themes and accent (v2 addendum: light + dark, customisable accent)
