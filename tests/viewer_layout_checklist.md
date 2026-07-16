@@ -432,3 +432,5 @@ Expected: `pass: true`; `stored` equals `theme` (or `'storage-error'` on file://
 ```
 
 Expected: `pass: true` in dark and light, for the default accent and for each accent in 14.3.
+
+### 14.3 Accent change live (no reload), both themes
