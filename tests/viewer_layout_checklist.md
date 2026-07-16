@@ -544,3 +544,26 @@ Expected: `pass: true` for all runs. The layout reallocates height (the timeline
 Expected: `pass: true`. Visually (crop of the Speed select, both themes): the selected value is flush right next to the chevron, with the chevron at the same inset as every other select. Open the select: options are readable in both themes.
 
 ### 15.3 Knobs are sliders in a non-scrolling grid (served mode, each viewport incl. 1280x640 and 800x600)
+
+```js
+() => {
+  const c = window.__chk; c.open('knob-box');
+  const K = document.getElementById('knobs'), cs = getComputedStyle(K), kb = document.getElementById('knob-box');
+  const knobs = [...K.querySelectorAll('.knob')];
+  const rows = knobs.map(k => { const r = k.querySelector('input[type=range]'), n = k.querySelector('input[type=number]'); return { id: r && r.id, ok: !!r && !!n && n.id === r.id + '-num' && r.min === n.min && r.max === n.max && r.step === n.step && r.value === n.value && !!k.querySelector('.info') }; });
+  const cols = cs.gridTemplateColumns.split(' ').length;
+  const pr = kb.querySelector('.pop-body').getBoundingClientRect();
+  let p = K; const scrollers = [];
+  while (p && p !== document.body) { const s = getComputedStyle(p); if (/auto|scroll/.test(s.overflowY + s.overflowX) && (p.scrollHeight > p.clientHeight || p.scrollWidth > p.clientWidth)) scrollers.push(p.id || p.className); p = p.parentElement; }
+  const inside = pr.left >= -1 && pr.top >= -1 && pr.right <= innerWidth + 1 && pr.bottom <= innerHeight + 1;
+  const k0 = knobs[0].querySelector('input[type=range]'), n0 = knobs[0].querySelector('input[type=number]');
+  k0.value = k0.max; k0.dispatchEvent(new Event('input', { bubbles: true }));
+  const s1 = n0.value === k0.value;
+  n0.value = String(+k0.max + 1000); n0.dispatchEvent(new Event('input', { bubbles: true })); n0.dispatchEvent(new Event('change', { bubbles: true }));
+  const clamped = +n0.value === +k0.max && +k0.value === +k0.max;
+  document.getElementById('knobs-reset').click();
+  const reset = knobs.every(k => k.querySelector('input[type=range]').value === k.querySelector('input[type=number]').value);
+  const pass = knobs.length === 13 && rows.every(x => x.ok) && /grid/.test(cs.display) && cols >= 2 && !/auto|scroll/.test(cs.overflowY + cs.overflowX) && scrollers.length === 0 && inside && s1 && clamped && reset;
+  return { pass, details: { knobs: knobs.length, cols, overflow: cs.overflowY, scrollers, inside, pop: [pr.left, pr.top, pr.right, pr.bottom].map(Math.round), bad: rows.filter(x => !x.ok).map(x => x.id), s1, clamped, reset } };
+}
+```
