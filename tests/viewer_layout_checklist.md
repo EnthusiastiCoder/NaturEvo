@@ -679,3 +679,7 @@ Run in the browser with DevTools device emulation. Repeat everything at deviceSc
   return { id: c.id, dpr: d, css: [r.width, r.height], backing: [c.width, c.height], ok: okW && okH && aspect };
 })
 ```
+
+3. Re-run the script after each of: resizing the window (narrower and wider), switching to Dashboard and back to Replay, toggling the theme, changing the accent, opening and closing the event log drawer, and changing the dpr emulation without reload. A canvas that was hidden (width 0) must be correct as soon as it is shown.
+4. Zoomed screenshots (zoom into the chart caption, axis numbers and level line) at each dpr, before and after resize, tab switch and theme switch. Expected: text is sharp, not blurry, not stretched horizontally or vertically, same proportions at all dpr values.
+5. Source check: no `<canvas>` has width/height attributes in the HTML and none has a fixed-px CSS size.
