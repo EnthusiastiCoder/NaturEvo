@@ -524,3 +524,5 @@ Viewports (resize with `resize_page`, wait ~300ms): 1920x1080, 1366x768, 1280x72
 ```
 
 Expected: `pass: true` for all runs. The layout reallocates height (the timeline/hist area shrinks) instead of pushing the drawer buttons below the fold. Screenshot 1280x640 with each drawer open and confirm the drawer panel is fully visible (not cut by the top or bottom edge).
+
+### 15.2 Select alignment and one consistent style (each tab; 1280x720 and 800x600)
