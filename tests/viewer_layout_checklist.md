@@ -573,3 +573,5 @@ Expected: `pass: true` at every viewport: 13 knobs, 2+ columns (more at wide vie
 ## 16. Space use, event log modal, seed field (v2 addendum 3)
 
 Browser checks (real layout and focus; node stubs cannot check these). Served mode, run loaded, Replay tab, each viewport 1920x1080, 1366x768, 1280x720, 1280x640, 800x600, both themes. Node-checkable parts: `node tests/viewer_polish_check.mjs`.
+
+### 16.1 Hero details in the top card; no dead gaps; one-row bottom bar
