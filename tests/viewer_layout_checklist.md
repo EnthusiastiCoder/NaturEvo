@@ -309,3 +309,5 @@ Expected: `bad: []`. Every icon-only button has aria-label and a tooltip:
 ```
 
 ## 10. Consistent control height and icon size (v2; each tab, each popover open)
+
+All visible `.btn`, `.input`, `select` have equal `offsetHeight` == `--control-h` (+-1px):
