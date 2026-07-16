@@ -434,3 +434,5 @@ Expected: `pass: true`; `stored` equals `theme` (or `'storage-error'` on file://
 Expected: `pass: true` in dark and light, for the default accent and for each accent in 14.3.
 
 ### 14.3 Accent change live (no reload), both themes
+
+For each accent in `#2e7d4f` (default), `#7b3fa0` (purple), `#ffff00` (very light yellow), `#000080` (navy), in dark then light: set it (one via a preset swatch click, the rest via `#accent-custom`), run 14.2, then (edit `A` per accent):
