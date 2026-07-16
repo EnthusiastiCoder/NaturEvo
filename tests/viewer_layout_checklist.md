@@ -298,3 +298,5 @@ Not clipped by overflow (run on both tabs and with `knob-box` open):
   return { pass: bad.length === 0, details: bad.slice(0, 10) };
 }
 ```
+
+Expected: `bad: []`. Every icon-only button has aria-label and a tooltip:
