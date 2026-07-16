@@ -417,3 +417,5 @@ Theme state snippet (run after each toggle):
 ```
 
 Expected: `pass: true`; `stored` equals `theme` (or `'storage-error'` on file://); toggling twice returns to the starting theme.
+
+### 14.2 Contrast, both themes
