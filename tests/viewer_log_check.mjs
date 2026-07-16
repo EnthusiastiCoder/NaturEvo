@@ -16,3 +16,11 @@ const jv = v.win.__jv;
 check(jv && typeof jv.setRun === 'function' && typeof jv.goto === 'function' && typeof jv.logIndices === 'function',
   'window.__jv hook (setRun/goto/logIndices) missing');
 if (!jv || typeof jv.logIndices !== 'function') done();
+
+const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const idx = () => jv.logIndices();
+const L = v.$('log');
+check(!!v.$('log-open') && !!v.$('log-group'), '#log-open / #log-group missing (log is a modal now)');
+if (!v.$('log-open') || !v.$('log-group')) done();
+v.$('log-open').click();
+v.$('log-group').value = 'none'; v.$('log-group').fire('change'); v.$('log-group').fire('input');
