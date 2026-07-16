@@ -28,3 +28,8 @@ v.$('log-group').value = 'none'; v.$('log-group').fire('change'); v.$('log-group
 check(idx().every(n => typeof n === 'number'), 'logIndices must return numbers');
 check(eq(idx(), Array.from({ length: 300 }, (_, i) => i)), 'modal lists ALL events 0..299 (300 fit in the window), got ' + idx().length);
 const curOf = () => L._all().find(c => c.classList.contains('cur'));
+
+jv.goto(50);
+check(curOf() && curOf().dataset.i === '50', 'cur highlight on event 50');
+check(idx().includes(51) && idx().includes(299), 'events after the current one are listed too');
+check(L.scrollTop > 0, 'cur row scrolled into view: scrollTop must move for event 50, got ' + L.scrollTop);
