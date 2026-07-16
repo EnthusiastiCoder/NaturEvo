@@ -335,3 +335,21 @@ Expected: `bad: []`, `controlH` 32. All icons equal `--icon`:
 Expected: `bad: []` (any exception must be documented in viewer/STYLE.md). Eyeball: consistent Lucide stroke style, no text glyph or emoji outside the small hero/monster/zone sprites.
 
 ## 11. Dashboard log-scale toggle (v2; Dashboard tab, skewed stats such as data/stats.js)
+
+```js
+() => {
+  window.__chk.tab('d');
+  const cb = document.querySelector('#dashboard input[type=checkbox]');
+  if (!cb) return { pass: false, details: 'no checkbox' };
+  const hs = () => [...document.querySelectorAll('#hist .bar, #hist rect')].map(e => Math.round(e.getBoundingClientRect().height));
+  const minPos = a => Math.min(...a.filter(x => x > 0));
+  const first = { checked: cb.checked, h: hs() };
+  cb.click();
+  const second = { checked: cb.checked, h: hs() };
+  cb.click();
+  const log = first.checked ? first : second, lin = first.checked ? second : first;
+  const pass = first.checked !== second.checked && first.h.length >= 2 && first.h.length <= 20
+    && JSON.stringify(first.h) !== JSON.stringify(second.h) && minPos(log.h) > minPos(lin.h);
+  return { pass, details: { first, second } };
+}
+```
