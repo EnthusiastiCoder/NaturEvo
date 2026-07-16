@@ -56,3 +56,33 @@ const attr = (t, a) => t && ((t[2].match(new RegExp('\\b' + a + '\\s*=\\s*["\'](
     check(/gold\D{0,4}50\b/i.test(txt()) && /level\D{0,4}1\b/i.test(txt()), 'chips update backwards on goto(3): ' + txt());
   }
 }
+
+// ---------- (2) event log modal ----------
+{
+  const dlg = tagOf('log-modal');
+  check(!!dlg, '#log-modal element missing');
+  if (dlg) {
+    const isDialog = dlg[1].toLowerCase() === 'dialog';
+    check(isDialog || (attr(dlg, 'role') === 'dialog' && attr(dlg, 'aria-modal') === 'true'), '#log-modal must be <dialog> or role=dialog aria-modal=true');
+    const lb = attr(dlg, 'aria-labelledby');
+    check(!!lb && new RegExp('id\\s*=\\s*["\']' + lb + '["\']').test(markup), '#log-modal needs aria-labelledby pointing to an existing id, got ' + lb);
+    if (isDialog) {
+      const s = markup.search(/id\s*=\s*["']log-modal["']/), e = markup.indexOf('</dialog>', s), l = markup.search(/id\s*=\s*["']log["']/);
+      check(l > s && l < e, '#log must be inside #log-modal');
+    }
+    const md = declFor(s => s === '#log-modal');
+    check(/(vh|dvh|%)/.test(md['max-height'] || ''), '#log-modal must have a viewport-bounded max-height, got ' + md['max-height']);
+  }
+  check(/^button$/i.test((tagOf('log-open') || [])[1] || ''), '#log-open must be a <button>');
+  const se = tagOf('log-search');
+  check(!!se && attr(se, 'type') === 'search' && !!attr(se, 'aria-label'), '#log-search must be type=search with aria-label');
+  check(/^select$/i.test((tagOf('log-group') || [])[1] || '') || !!tagOf('log-group'), '#log-group control missing');
+  const ld = declFor(s => s === '#log');
+  check(/auto|scroll/.test((ld['overflow-y'] || ld.overflow || '')), '#log must be the scroller (overflow auto), got ' + JSON.stringify(ld));
+  check(/position\s*:\s*relative/.test(css.replace(/\s+/g, ' ').match(/#log\s*\{[^}]*\}/) ? css.match(/#log\s*\{[^}]*\}/)[0] : ''), '#log needs position:relative');
+  const gs = (markup.match(/<select\b[^>]*\bid\s*=\s*["']log-group["'][^>]*>([\s\S]*?)<\/select>/) || [, ''])[1];
+  check(/type/i.test(gs) && /zone/i.test(gs) && /none/i.test(gs), '#log-group needs options by type, zone, none');
+  const opts = [...gs.matchAll(/<option([^>]*)>([^<]*)/gi)];
+  const def = opts.find(o => /selected/.test(o[1])) || opts[0];
+  check(!!def && /type/i.test(def[1] + def[2]), 'by type must be the default grouping (selected or first option)');
+}
