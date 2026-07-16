@@ -487,3 +487,38 @@ Give the fresh reviewer the dark, light and non-default accent screenshots from 
 Viewports (resize with `resize_page`, wait ~300ms): 1920x1080, 1366x768, 1280x720, 800x600, 1920x900, 1280x640. Run 15.1 for each viewport x tab {Replay, Dashboard} x state {closed, log-box, more-box} (served mode also knob-box, batch-box). Define the helper from section 0 first. 6 x 2 x 3 = 36 runs (60 served).
 
 ### 15.1 Nothing clipped (edit `TAB` and `STATE`)
+
+```js
+() => {
+  const TAB = 'r', STATE = 'none'; // TAB 'r'|'d'; STATE 'none'|'log-box'|'more-box'|'knob-box'|'batch-box'
+  const c = window.__chk; c.tab(TAB);
+  if (STATE === 'none') c.closeAll(); else c.open(STATE);
+  const W = innerWidth, H = innerHeight, T = 1, out = [];
+  const view = document.getElementById(TAB === 'r' ? 'replay' : 'dashboard');
+  const all = [...document.body.querySelectorAll('*')].filter(e => !e.closest('svg') && !e.closest('.sr') && c.vis(e) && !e.closest('[hidden],.hidden'));
+  // 1. every visible element rect inside the viewport (hidden tooltips are skipped)
+  for (const e of all) {
+    const r = e.getBoundingClientRect();
+    if (e.getAttribute('role') === 'tooltip' && getComputedStyle(e).opacity === '0') continue;
+    if (r.left < -T || r.top < -T || r.right > W + T || r.bottom > H + T) out.push({ kind: 'outside-viewport', el: e.id || e.className || e.tagName, r: [r.left, r.top, r.right, r.bottom].map(Math.round) });
+  }
+  // 2. bottom-most interactive element and the last card fully visible
+  const inter = all.filter(e => e.matches('button,summary,input,select,a,[tabindex]'));
+  const lowest = inter.sort((a, b) => b.getBoundingClientRect().bottom - a.getBoundingClientRect().bottom)[0];
+  const lr = lowest && lowest.getBoundingClientRect();
+  if (!lr || lr.bottom > H + T) out.push({ kind: 'bottom-interactive-clipped', el: lowest && (lowest.id || lowest.textContent.trim().slice(0, 20)), bottom: lr && Math.round(lr.bottom) });
+  const lastCard = [...view.querySelectorAll('.card')].filter(c.vis).sort((a, b) => b.getBoundingClientRect().bottom - a.getBoundingClientRect().bottom)[0];
+  if (lastCard && lastCard.getBoundingClientRect().bottom > H + T) out.push({ kind: 'last-card-clipped', el: lastCard.id || lastCard.className });
+  // 3. page itself must not scroll or exceed the viewport
+  const d = document.documentElement;
+  if (d.scrollHeight > H + T || d.scrollWidth > W + T || document.body.getBoundingClientRect().bottom > H + T) out.push({ kind: 'page-exceeds-viewport', sh: d.scrollHeight, H });
+  // 4. no element hides overflowing content (overflow hidden/clip with scrollHeight > clientHeight), except ellipsis text
+  for (const e of all) {
+    const s = getComputedStyle(e);
+    const hid = v => v === 'hidden' || v === 'clip';
+    if ((hid(s.overflowY) && e.scrollHeight > e.clientHeight + T) || (hid(s.overflowX) && e.scrollWidth > e.clientWidth + T && s.textOverflow !== 'ellipsis'))
+      out.push({ kind: 'hidden-overflow-clips', el: e.id || e.className || e.tagName, sh: e.scrollHeight, ch: e.clientHeight, sw: e.scrollWidth, cw: e.clientWidth });
+  }
+  return { pass: out.length === 0, details: { vp: W + 'x' + H, TAB, STATE, out: out.slice(0, 12) } };
+}
+```
