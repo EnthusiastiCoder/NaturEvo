@@ -430,3 +430,5 @@ Expected: `pass: true`; `stored` equals `theme` (or `'storage-error'` on file://
   return { pass: d.fgOnBg >= 4.5 && d.fgOnCard >= 4.5 && d.mutedOnCard >= 3 && d.accentTextOnBg >= 3 && d.fgOnAccent >= 4.5, details: d };
 }
 ```
+
+Expected: `pass: true` in dark and light, for the default accent and for each accent in 14.3.
