@@ -475,3 +475,5 @@ Open the file URL: toggle theme and change accent. Both work for the session, no
 | light-800x600-replay-log.png | 800x600 | Replay | light, log-box open |
 | light-1280x720-tooltip-theme-toggle.png | 1280x720 | Replay | light, `#theme-toggle` tooltip via focus |
 | dark-1280x720-tooltip-theme-toggle.png | 1280x720 | Replay | dark, `#theme-toggle` tooltip via hover |
+
+Also repeat the section 12 subset (1920x1080 replay and dashboard, 1280x720 knobs, 800x600 dashboard) in light with the default accent.
