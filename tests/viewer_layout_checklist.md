@@ -483,3 +483,5 @@ Also repeat the section 12 subset (1920x1080 replay and dashboard, 1280x720 knob
 Give the fresh reviewer the dark, light and non-default accent screenshots from 14.5 in addition to section 12. Extra rubric: both themes equally polished, text and chart contrast in each theme, accent applied consistently (buttons, tabs, focus ring, chart marks), readability with yellow and navy accents, popover legibility. Same pass rule: any FAIL or score below 4 is fixed, re-shot in BOTH themes and re-reviewed by a NEW reviewer.
 
 ## 15. No clipping, select alignment, knob sliders (v2 addendum 2: user lost the bottom of the page)
+
+Viewports (resize with `resize_page`, wait ~300ms): 1920x1080, 1366x768, 1280x720, 800x600, 1920x900, 1280x640. Run 15.1 for each viewport x tab {Replay, Dashboard} x state {closed, log-box, more-box} (served mode also knob-box, batch-box). Define the helper from section 0 first. 6 x 2 x 3 = 36 runs (60 served).
