@@ -663,3 +663,5 @@ Expected: `pass: true`. Then visually: dragging the slider updates the number li
 ### 16.5 4096x does not freeze
 
 Load a 65536-event run, type 4096 in `#speed-num`, press Play. Expected: the replay reaches the last event in a few seconds (about 2 s) and stops there, the page stays responsive (Pause/Play, tabs and scrubbing react immediately while playing), and renders are batched per tick (at most about 10 per second), never one per event. Also check 0.25x: a single event advances about every 400 ms.
+
+## 17. Crisp canvases at every device pixel ratio (addendum 4)
