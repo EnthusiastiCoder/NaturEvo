@@ -415,3 +415,5 @@ Theme state snippet (run after each toggle):
   return { pass, details: { theme: t, stored, vals } };
 }
 ```
+
+Expected: `pass: true`; `stored` equals `theme` (or `'storage-error'` on file://); toggling twice returns to the starting theme.
