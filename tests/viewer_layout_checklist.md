@@ -385,3 +385,5 @@ Use `take_screenshot` with `filePath`:
 | 800x600-dashboard-kpi.png | 800x600 | Dashboard | all closed, KPI row wrapping check |
 
 Visually confirm in each: no page scrollbar, nothing clipped, no big empty area, timeline reaches the right edge, active tab clear, focus ring visible on Tab key press (check once).
+
+## 13. Independent visual review gate (v2, final step, after every check above passes)
