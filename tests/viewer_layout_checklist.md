@@ -457,3 +457,21 @@ Expected: `--accent-fg` is black for yellow, white for navy. Primary button, act
 Open the file URL: toggle theme and change accent. Both work for the session, no console errors (storage may throw), `list_network_requests` shows no `/api/` and no fetch. Repeat with site data blocked.
 
 ### 14.5 Screenshots (save under `research/screenshots/viewer-redesign/`, do not commit)
+
+| File | Viewport | Tab | State |
+|---|---|---|---|
+| dark-1920x1080-replay.png | 1920x1080 | Replay | dark, default accent |
+| dark-1920x1080-dashboard.png | 1920x1080 | Dashboard | dark, default accent |
+| light-1920x1080-replay.png | 1920x1080 | Replay | light, default accent |
+| light-1920x1080-dashboard.png | 1920x1080 | Dashboard | light, default accent |
+| dark-1280x720-replay-accent-box.png | 1280x720 | Replay | dark, `#accent-box` open |
+| light-1280x720-replay-accent-box.png | 1280x720 | Replay | light, `#accent-box` open |
+| dark-1280x720-replay-purple.png | 1280x720 | Replay | dark, accent `#7b3fa0` |
+| dark-1280x720-dashboard-purple.png | 1280x720 | Dashboard | dark, accent `#7b3fa0` |
+| light-1280x720-replay-yellow.png | 1280x720 | Replay | light, accent `#ffff00` (contrast stress) |
+| light-1280x720-dashboard-yellow.png | 1280x720 | Dashboard | light, accent `#ffff00` |
+| dark-1280x720-replay-navy.png | 1280x720 | Replay | dark, accent `#000080` (contrast stress) |
+| dark-800x600-dashboard.png | 800x600 | Dashboard | dark |
+| light-800x600-replay-log.png | 800x600 | Replay | light, log-box open |
+| light-1280x720-tooltip-theme-toggle.png | 1280x720 | Replay | light, `#theme-toggle` tooltip via focus |
+| dark-1280x720-tooltip-theme-toggle.png | 1280x720 | Replay | dark, `#theme-toggle` tooltip via hover |
