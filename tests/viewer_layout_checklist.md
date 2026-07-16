@@ -322,3 +322,12 @@ All visible `.btn`, `.input`, `select` have equal `offsetHeight` == `--control-h
 ```
 
 Expected: `bad: []`, `controlH` 32. All icons equal `--icon`:
+
+```js
+() => {
+  const ic = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--icon'));
+  const els = [...document.querySelectorAll('svg.icon')].filter(e => e.getBoundingClientRect().width > 0);
+  const bad = els.filter(e => { const r = e.getBoundingClientRect(); return Math.abs(r.width - ic) > 0.5 || Math.abs(r.height - ic) > 0.5; }).map(e => ({ use: e.querySelector('use') && e.querySelector('use').getAttribute('href'), w: e.getBoundingClientRect().width }));
+  return { pass: els.length > 0 && bad.length === 0, details: { iconPx: ic, count: els.length, bad } };
+}
+```
