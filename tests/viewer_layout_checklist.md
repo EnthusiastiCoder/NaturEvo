@@ -393,3 +393,5 @@ Spawn a FRESH reviewer agent (sonnet, no access to the implementer's reasoning o
 ## 14. Themes and accent (v2 addendum: light + dark, customisable accent)
 
 Snippets reuse `window.__chk` (section 0). Set a theme/accent with the UI (`#theme-toggle`, `#accent-btn` -> `#accent-box`) or `window.__jv.theme.set('light'|'dark')` / `window.__jv.theme.accent.set('#rrggbb')`.
+
+### 14.1 Repeat in BOTH themes
