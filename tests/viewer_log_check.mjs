@@ -5,3 +5,5 @@
 // scroller, __jv.logIndices() returns numbers (the rendered indices), the .cur highlight + scroll-into-view,
 // stepping forward does not rebuild the list. Grouping is set to "none" so rows are in event order.
 import { html, load, makeRun, runner } from './_viewer_harness.mjs';
+
+const { check, done } = runner('viewer_log_check');
