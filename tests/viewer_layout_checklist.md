@@ -395,3 +395,5 @@ Spawn a FRESH reviewer agent (sonnet, no access to the implementer's reasoning o
 Snippets reuse `window.__chk` (section 0). Set a theme/accent with the UI (`#theme-toggle`, `#accent-btn` -> `#accent-box`) or `window.__jv.theme.set('light'|'dark')` / `window.__jv.theme.accent.set('#rrggbb')`.
 
 ### 14.1 Repeat in BOTH themes
+
+Run each in dark, click `#theme-toggle` (`document.documentElement.dataset.theme` flips), run again in light. All must pass in both:
