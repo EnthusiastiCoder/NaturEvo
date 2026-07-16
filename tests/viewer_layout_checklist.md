@@ -455,3 +455,5 @@ Expected: `--accent-fg` is black for yellow, white for navy. Primary button, act
 ### 14.4 file:// and storage failure
 
 Open the file URL: toggle theme and change accent. Both work for the session, no console errors (storage may throw), `list_network_requests` shows no `/api/` and no fetch. Repeat with site data blocked.
+
+### 14.5 Screenshots (save under `research/screenshots/viewer-redesign/`, do not commit)
