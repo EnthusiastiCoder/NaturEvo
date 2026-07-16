@@ -479,3 +479,5 @@ Open the file URL: toggle theme and change accent. Both work for the session, no
 Also repeat the section 12 subset (1920x1080 replay and dashboard, 1280x720 knobs, 800x600 dashboard) in light with the default accent.
 
 ### 14.6 Review gate additions (extends section 13)
+
+Give the fresh reviewer the dark, light and non-default accent screenshots from 14.5 in addition to section 12. Extra rubric: both themes equally polished, text and chart contrast in each theme, accent applied consistently (buttons, tabs, focus ring, chart marks), readability with yellow and navy accents, popover legibility. Same pass rule: any FAIL or score below 4 is fixed, re-shot in BOTH themes and re-reviewed by a NEW reviewer.
