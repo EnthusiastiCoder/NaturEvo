@@ -640,3 +640,5 @@ async () => {
   return { pass: fits && noSpin && /seed|digit|number/i.test(msg), details: { fits, sw: s.scrollWidth, cw: s.clientWidth, noSpin, msg } };
 }
 ```
+
+Expected: `pass: true` at every viewport; the seed field must not push the toolbar onto a second row or clip the Run button. Visually: all 20 digits visible, no spinner arrows, both themes. Screenshot (do not commit): `research/screenshots/viewer-redesign/seed-20-digits-1280x640.png`.
