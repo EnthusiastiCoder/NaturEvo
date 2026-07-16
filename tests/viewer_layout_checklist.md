@@ -618,3 +618,10 @@ async () => {
 ```
 
 Expected: `pass: true` at every viewport incl. 1280x640 and 800x600 (only `#log` scrolls). Then by keyboard (`press_key`) with the modal open:
+
+- Modal focus trap: press Tab at least `focusable + 3` times; after every press `dlg.contains(document.activeElement)` stays true. Shift+Tab from `#log-search` wraps to the last control inside the dialog.
+- The page behind is inert: clicking a control behind the backdrop does nothing.
+- Escape closes the modal and `document.activeElement.id === 'log-open'` afterwards. Reopen, click the dimmed backdrop: closes, focus returns to `#log-open`. Click inside the dialog content: stays open.
+- Search: type `fight` (any case): `#log-count` reads "N of M events" and the list is filtered. `#log-group` by type (default) / zone / none: group headers show name and count, clicking toggles `aria-expanded` and hides or shows the rows.
+- Click a row: scrub and `#info` jump to that event.
+- Load a 65536-event run (large `/api/run` or `__jv.setRun`): the modal opens in under 0.5 s, `document.querySelectorAll('#log *').length <= 300` at top, middle, bottom scroll and after searching, scrolling stays smooth and the scrollbar reflects the full length.
