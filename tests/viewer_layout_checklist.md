@@ -667,3 +667,6 @@ Load a 65536-event run, type 4096 in `#speed-num`, press Play. Expected: the rep
 ## 17. Crisp canvases at every device pixel ratio (addendum 4)
 
 Run in the browser with DevTools device emulation. Repeat everything at deviceScaleFactor 1, 1.5 and 2 (also 1.25 if available), in both themes.
+
+1. Emulate deviceScaleFactor 1, then 1.5, then 2 (reload after each change, and also change it live to test the dpr listener).
+2. For every visible canvas run this script. Expected: every entry `ok: true` (width and height within +-1 of CSS size times dpr, aspect preserved).
