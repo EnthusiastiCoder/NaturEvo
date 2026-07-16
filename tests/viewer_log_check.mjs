@@ -24,3 +24,7 @@ check(!!v.$('log-open') && !!v.$('log-group'), '#log-open / #log-group missing (
 if (!v.$('log-open') || !v.$('log-group')) done();
 v.$('log-open').click();
 v.$('log-group').value = 'none'; v.$('log-group').fire('change'); v.$('log-group').fire('input');
+
+check(idx().every(n => typeof n === 'number'), 'logIndices must return numbers');
+check(eq(idx(), Array.from({ length: 300 }, (_, i) => i)), 'modal lists ALL events 0..299 (300 fit in the window), got ' + idx().length);
+const curOf = () => L._all().find(c => c.classList.contains('cur'));
