@@ -436,3 +436,16 @@ Expected: `pass: true` in dark and light, for the default accent and for each ac
 ### 14.3 Accent change live (no reload), both themes
 
 For each accent in `#2e7d4f` (default), `#7b3fa0` (purple), `#ffff00` (very light yellow), `#000080` (navy), in dark then light: set it (one via a preset swatch click, the rest via `#accent-custom`), run 14.2, then (edit `A` per accent):
+
+```js
+() => {
+  const A = '#ffff00', T = window.__jv.theme;
+  T.accent.set(A);
+  const cs = getComputedStyle(document.documentElement);
+  const hexNow = cs.getPropertyValue('--accent').trim().toLowerCase();
+  const fg = cs.getPropertyValue('--accent-fg').trim().toLowerCase();
+  let stored; try { stored = localStorage.getItem('jv-accent'); } catch (e) { stored = null; }
+  const pass = hexNow === A && T.accent.get().toLowerCase() === A && /^(#000000|#000|#fff|#ffffff|rgb\(0, 0, 0\)|rgb\(255, 255, 255\))$/.test(fg);
+  return { pass, details: { hexNow, fg, stored } };
+}
+```
