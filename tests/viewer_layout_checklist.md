@@ -571,3 +571,5 @@ Expected: `pass: true`. Visually (crop of the Speed select, both themes): the se
 Expected: `pass: true` at every viewport: 13 knobs, 2+ columns (more at wide viewports), no scrollbar anywhere in the panel, panel fully inside the viewport. Screenshots (do not commit): `research/screenshots/viewer-redesign/knobs-sliders-1920x1080.png`, `knobs-sliders-1280x640.png`, `knobs-sliders-800x600.png`; confirm slider thumbs use the accent, the number input shows the live value while dragging, and the info tooltip still opens beside each knob.
 
 ## 16. Space use, event log modal, seed field (v2 addendum 3)
+
+Browser checks (real layout and focus; node stubs cannot check these). Served mode, run loaded, Replay tab, each viewport 1920x1080, 1366x768, 1280x720, 1280x640, 800x600, both themes. Node-checkable parts: `node tests/viewer_polish_check.mjs`.
