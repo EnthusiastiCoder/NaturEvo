@@ -477,3 +477,5 @@ Open the file URL: toggle theme and change accent. Both work for the session, no
 | dark-1280x720-tooltip-theme-toggle.png | 1280x720 | Replay | dark, `#theme-toggle` tooltip via hover |
 
 Also repeat the section 12 subset (1920x1080 replay and dashboard, 1280x720 knobs, 800x600 dashboard) in light with the default accent.
+
+### 14.6 Review gate additions (extends section 13)
