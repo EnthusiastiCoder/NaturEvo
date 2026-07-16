@@ -333,3 +333,5 @@ Expected: `bad: []`, `controlH` 32. All icons equal `--icon`:
 ```
 
 Expected: `bad: []` (any exception must be documented in viewer/STYLE.md). Eyeball: consistent Lucide stroke style, no text glyph or emoji outside the small hero/monster/zone sprites.
+
+## 11. Dashboard log-scale toggle (v2; Dashboard tab, skewed stats such as data/stats.js)
