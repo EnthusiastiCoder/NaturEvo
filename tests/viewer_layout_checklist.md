@@ -670,3 +670,12 @@ Run in the browser with DevTools device emulation. Repeat everything at deviceSc
 
 1. Emulate deviceScaleFactor 1, then 1.5, then 2 (reload after each change, and also change it live to test the dpr listener).
 2. For every visible canvas run this script. Expected: every entry `ok: true` (width and height within +-1 of CSS size times dpr, aspect preserved).
+
+```js
+() => [...document.querySelectorAll('canvas')].filter(c => c.getBoundingClientRect().width > 0).map(c => {
+  const r = c.getBoundingClientRect(), d = window.devicePixelRatio;
+  const okW = Math.abs(c.width - Math.round(r.width * d)) <= 1, okH = Math.abs(c.height - Math.round(r.height * d)) <= 1;
+  const aspect = Math.abs(c.width / c.height - r.width / r.height) < 0.02 * (r.width / r.height);
+  return { id: c.id, dpr: d, css: [r.width, r.height], backing: [c.width, c.height], ok: okW && okH && aspect };
+})
+```
