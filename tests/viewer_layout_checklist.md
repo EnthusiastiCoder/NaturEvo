@@ -320,3 +320,5 @@ All visible `.btn`, `.input`, `select` have equal `offsetHeight` == `--control-h
   return { pass: els.length > 0 && bad.length === 0, details: { controlH: h, count: els.length, bad } };
 }
 ```
+
+Expected: `bad: []`, `controlH` 32. All icons equal `--icon`:
