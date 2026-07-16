@@ -404,3 +404,14 @@ Run each in dark, click `#theme-toggle` (`document.documentElement.dataset.theme
 - Section 3 (no clipped inputs) with `#accent-box` open; the popover is fully inside the viewport at 800x600 and causes no page scroll.
 
 Theme state snippet (run after each toggle):
+
+```js
+() => {
+  const r = document.documentElement, t = r.dataset.theme, cs = getComputedStyle(r);
+  const names = ['--bg','--card','--card-2','--border','--fg','--muted','--good','--bad','--warn','--ring','--accent','--accent-fg','--accent-text'];
+  const vals = Object.fromEntries(names.map(n => [n, cs.getPropertyValue(n).trim()]));
+  let stored; try { stored = localStorage.getItem('jv-theme'); } catch (e) { stored = 'storage-error'; }
+  const pass = (t === 'dark' || t === 'light') && names.every(n => vals[n]);
+  return { pass, details: { theme: t, stored, vals } };
+}
+```
