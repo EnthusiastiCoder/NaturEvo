@@ -642,3 +642,5 @@ async () => {
 ```
 
 Expected: `pass: true` at every viewport; the seed field must not push the toolbar onto a second row or clip the Run button. Visually: all 20 digits visible, no spinner arrows, both themes. Screenshot (do not commit): `research/screenshots/viewer-redesign/seed-20-digits-1280x640.png`.
+
+### 16.4 Speed: log slider and custom number (addendum 3b)
