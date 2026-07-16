@@ -9,3 +9,10 @@ import { html, load, makeRun, runner } from './_viewer_harness.mjs';
 const { check, done } = runner('viewer_log_check');
 
 check(/#log\s*\{[^}]*position\s*:\s*relative/.test(html), 'CSS #log{...position:relative} missing');
+
+let v;
+try { v = load({ protocol: 'file:', run: makeRun(300) }); } catch (e) { check(false, 'script load threw: ' + e.message); done(); }
+const jv = v.win.__jv;
+check(jv && typeof jv.setRun === 'function' && typeof jv.goto === 'function' && typeof jv.logIndices === 'function',
+  'window.__jv hook (setRun/goto/logIndices) missing');
+if (!jv || typeof jv.logIndices !== 'function') done();
