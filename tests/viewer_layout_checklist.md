@@ -419,3 +419,14 @@ Theme state snippet (run after each toggle):
 Expected: `pass: true`; `stored` equals `theme` (or `'storage-error'` on file://); toggling twice returns to the starting theme.
 
 ### 14.2 Contrast, both themes
+
+```js
+() => {
+  const rgb = s => (s.match(/[\d.]+/g) || []).slice(0, 3).map(Number);
+  const lum = c => { const [r, g, b] = c.map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+  const cr = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+  const tok = n => { const p = document.createElement('i'); p.style.color = 'var(' + n + ')'; document.body.appendChild(p); const c = rgb(getComputedStyle(p).color); p.remove(); return c; };
+  const d = { fgOnBg: cr(tok('--fg'), tok('--bg')), fgOnCard: cr(tok('--fg'), tok('--card')), mutedOnCard: cr(tok('--muted'), tok('--card')), accentTextOnBg: cr(tok('--accent-text'), tok('--bg')), fgOnAccent: cr(tok('--accent-fg'), tok('--accent')) };
+  return { pass: d.fgOnBg >= 4.5 && d.fgOnCard >= 4.5 && d.mutedOnCard >= 3 && d.accentTextOnBg >= 3 && d.fgOnAccent >= 4.5, details: d };
+}
+```
