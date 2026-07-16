@@ -540,3 +540,5 @@ Expected: `pass: true` for all runs. The layout reallocates height (the timeline
   return { pass, details: { rows, textW: Math.round(tw) } };
 }
 ```
+
+Expected: `pass: true`. Visually (crop of the Speed select, both themes): the selected value is flush right next to the chevron, with the chevron at the same inset as every other select. Open the select: options are readable in both themes.
