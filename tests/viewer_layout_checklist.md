@@ -597,3 +597,5 @@ Browser checks (real layout and focus; node stubs cannot check these). Served mo
   return { pass, details: { inside, missing, maxGap: Math.round(maxGap), limit: Math.round(lim), lead: Math.round(lead), trail: Math.round(trail), barRows: tops.size, updated } };
 }
 ```
+
+Expected: `pass: true` everywhere. Screenshot (do not commit): `research/screenshots/viewer-redesign/hero-card-1280x640.png`; chips are compact and labelled, nothing clipped, the card has no big empty bar space, the bottom bar shows the Event log button in a single row.
