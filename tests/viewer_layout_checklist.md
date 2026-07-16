@@ -449,3 +449,5 @@ For each accent in `#2e7d4f` (default), `#7b3fa0` (purple), `#ffff00` (very ligh
   return { pass, details: { hexNow, fg, stored } };
 }
 ```
+
+Expected: `--accent-fg` is black for yellow, white for navy. Primary button, active tab, focus ring, timeline marker and histogram bars change colour immediately (compare screenshots before/after, no reload). Yellow on light: accent-coloured text stays readable (darker `--accent-text`). Reload: accent and theme persist. Click `#accent-reset`: accent returns to `#2e7d4f`. Timeline and histogram repaint on theme or accent change (no stale colours from the previous theme).
