@@ -49,3 +49,5 @@ const first = L.children[0], before = idx().length;
 v.intervals[v.intervals.length - 1]();
 check(curOf() && curOf().dataset.i === '1', 'step forward moves .cur to 1');
 check(L.children[0] === first && idx().length === before, 'stepping forward must not rebuild the list');
+
+done();
