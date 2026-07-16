@@ -300,3 +300,10 @@ Not clipped by overflow (run on both tabs and with `knob-box` open):
 ```
 
 Expected: `bad: []`. Every icon-only button has aria-label and a tooltip:
+
+```js
+() => {
+  const bad = [...document.querySelectorAll('button')].filter(b => !b.textContent.trim() && (!b.getAttribute('aria-label') || !document.getElementById(b.getAttribute('aria-describedby') || '-'))).map(b => b.id || b.className);
+  return { pass: bad.length === 0, details: bad };
+}
+```
