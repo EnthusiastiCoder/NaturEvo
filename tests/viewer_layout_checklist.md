@@ -601,3 +601,18 @@ Browser checks (real layout and focus; node stubs cannot check these). Served mo
 Expected: `pass: true` everywhere. Screenshot (do not commit): `research/screenshots/viewer-redesign/hero-card-1280x640.png`; chips are compact and labelled, nothing clipped, the card has no big empty bar space, the bottom bar shows the Event log button in a single row.
 
 ### 16.2 Event log modal: semantics, bounds, no clipping
+
+```js
+async () => {
+  const w = ms => new Promise(r => setTimeout(r, ms)), q = id => document.getElementById(id);
+  const btn = q('log-open'), dlg = q('log-modal'); btn.focus(); btn.click(); await w(200);
+  const r = dlg.getBoundingClientRect(), lb = dlg.getAttribute('aria-labelledby');
+  const sem = (dlg.tagName !== 'DIALOG' || dlg.open) && (dlg.tagName === 'DIALOG' || (dlg.getAttribute('role') === 'dialog' && dlg.getAttribute('aria-modal') === 'true')) && !!lb && !!q(lb);
+  const focusIn = document.activeElement === q('log-search') && dlg.contains(document.activeElement);
+  const fit = r.left >= -1 && r.top >= -1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1;
+  const scrollers = [dlg, ...dlg.querySelectorAll('*')].filter(e => /auto|scroll/.test(getComputedStyle(e).overflowY) && e.scrollHeight > e.clientHeight).map(e => e.id || e.className);
+  const clip = [...dlg.querySelectorAll('button,input,select,[aria-expanded]')].filter(e => { const b = e.getBoundingClientRect(); return b.width > 0 && (b.right > r.right + 1 || b.left < r.left - 1); }).map(e => e.id || e.className);
+  const focusable = [...dlg.querySelectorAll('button,input,select,a[href],[tabindex]:not([tabindex="-1"])')].filter(e => !e.disabled && e.getBoundingClientRect().width > 0).length;
+  return { pass: sem && focusIn && fit && clip.length === 0 && scrollers.every(s => s === 'log'), details: { sem, focusIn, fit, scrollers, clip, focusable, rect: [r.left, r.top, r.right, r.bottom].map(Math.round) } };
+}
+```
