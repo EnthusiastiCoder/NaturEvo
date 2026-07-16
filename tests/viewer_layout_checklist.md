@@ -383,3 +383,5 @@ Use `take_screenshot` with `filePath`:
 | 1280x720-knobs-tooltip.png | 1280x720 | Replay | knob-box open with one knob info tooltip open |
 | 1366x768-dashboard.png | 1366x768 | Dashboard | all closed |
 | 800x600-dashboard-kpi.png | 800x600 | Dashboard | all closed, KPI row wrapping check |
+
+Visually confirm in each: no page scrollbar, nothing clipped, no big empty area, timeline reaches the right edge, active tab clear, focus ring visible on Tab key press (check once).
