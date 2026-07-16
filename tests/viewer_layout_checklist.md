@@ -353,3 +353,5 @@ Expected: `bad: []` (any exception must be documented in viewer/STYLE.md). Eyeba
   return { pass, details: { first, second } };
 }
 ```
+
+Expected: toggling changes bar heights; log mode makes the smallest non-zero bar taller than in linear mode; default OFF unless max/median > 20, then ON (data/stats.js is skewed: expect ON); at most 20 bars; hover/focus a bar shows its value tooltip; no page scroll after toggling.
