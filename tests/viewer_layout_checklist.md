@@ -644,3 +644,16 @@ async () => {
 Expected: `pass: true` at every viewport; the seed field must not push the toolbar onto a second row or clip the Run button. Visually: all 20 digits visible, no spinner arrows, both themes. Screenshot (do not commit): `research/screenshots/viewer-redesign/seed-20-digits-1280x640.png`.
 
 ### 16.4 Speed: log slider and custom number (addendum 3b)
+
+```js
+async () => {
+  const S = document.getElementById('speed'), N = document.getElementById('speed-num');
+  const set = (el, v) => { el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); };
+  const lo = +S.min, hi = +S.max, at = p => Math.round(lo + p * (hi - lo));
+  set(S, at(0)); const a = +N.value; set(S, at(1)); const b = +N.value; set(S, at(0.5)); const m = +N.value;
+  set(N, 32); const sync1 = Math.abs(+S.value - at(0.5)) <= 2; set(N, 100000); const clamp = +N.value === 4096; set(N, 'abc'); const revert = +N.value === 4096;
+  const noSelect = !document.querySelector('select#speed'), info = !!document.getElementById('speed-info');
+  const r = S.getBoundingClientRect(), r2 = N.getBoundingClientRect(), same = Math.abs(r.top - r2.top) < 40 && r.width > 0 && r2.width > 0;
+  return { pass: S.type === 'range' && a === 0.25 && b === 4096 && Math.abs(m - 32) < 1 && sync1 && clamp && revert && noSelect && info && same, details: { a, b, m, sync1, clamp, revert, noSelect, info, same } };
+}
+```
