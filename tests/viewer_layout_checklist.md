@@ -311,3 +311,12 @@ Expected: `bad: []`. Every icon-only button has aria-label and a tooltip:
 ## 10. Consistent control height and icon size (v2; each tab, each popover open)
 
 All visible `.btn`, `.input`, `select` have equal `offsetHeight` == `--control-h` (+-1px):
+
+```js
+() => {
+  const h = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--control-h'));
+  const els = [...document.querySelectorAll('.btn,.input,select')].filter(e => e.offsetParent !== null && e.getBoundingClientRect().width > 0);
+  const bad = els.filter(e => Math.abs(e.offsetHeight - h) > 1).map(e => ({ id: e.id || e.className, h: e.offsetHeight }));
+  return { pass: els.length > 0 && bad.length === 0, details: { controlH: h, count: els.length, bad } };
+}
+```
