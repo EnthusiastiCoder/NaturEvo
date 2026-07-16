@@ -307,3 +307,5 @@ Expected: `bad: []`. Every icon-only button has aria-label and a tooltip:
   return { pass: bad.length === 0, details: bad };
 }
 ```
+
+## 10. Consistent control height and icon size (v2; each tab, each popover open)
