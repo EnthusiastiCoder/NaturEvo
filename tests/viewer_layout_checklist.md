@@ -359,3 +359,27 @@ Expected: toggling changes bar heights; log mode makes the smallest non-zero bar
 ## 12. Screenshots (save under `research/screenshots/viewer-redesign/`, do not commit)
 
 Use `take_screenshot` with `filePath`:
+
+| File | Viewport | Tab | State |
+|---|---|---|---|
+| 1920x1080-replay-closed.png | 1920x1080 | Replay | all closed |
+| 1920x1080-dashboard.png | 1920x1080 | Dashboard | all closed |
+| 1366x768-replay-closed.png | 1366x768 | Replay | all closed |
+| 1366x768-replay-log.png | 1366x768 | Replay | log-box open |
+| 1366x768-replay-more.png | 1366x768 | Replay | more-box open |
+| 1280x720-replay-knobs.png | 1280x720 | Replay | knob-box open |
+| 1280x720-replay-batch.png | 1280x720 | Replay | batch-box open |
+| 1280x720-dashboard.png | 1280x720 | Dashboard | all closed |
+| 800x600-replay-closed.png | 800x600 | Replay | all closed |
+| 800x600-replay-knobs.png | 800x600 | Replay | knob-box open |
+| 800x600-replay-log.png | 800x600 | Replay | log-box open |
+| 800x600-dashboard.png | 800x600 | Dashboard | all closed |
+| file-1280x720-replay.png | 1280x720 | Replay | file:// (no run controls) |
+| file-1280x720-dashboard.png | 1280x720 | Dashboard | file:// |
+| 1920x1080-dashboard-kpi.png | 1920x1080 | Dashboard | KPI row close-up (element screenshot of `#dstats`) |
+| 1280x720-dashboard-log.png | 1280x720 | Dashboard | log scale toggled away from its default |
+| 1280x720-tooltip-hover.png | 1280x720 | Dashboard | KPI info tooltip open via hover |
+| 1280x720-tooltip-focus.png | 1280x720 | Replay | summary/toolbar info tooltip open via keyboard focus (focus ring visible) |
+| 1280x720-knobs-tooltip.png | 1280x720 | Replay | knob-box open with one knob info tooltip open |
+| 1366x768-dashboard.png | 1366x768 | Dashboard | all closed |
+| 800x600-dashboard-kpi.png | 800x600 | Dashboard | all closed, KPI row wrapping check |
