@@ -7,3 +7,5 @@
 import { html, load, makeRun, runner } from './_viewer_harness.mjs';
 
 const { check, done } = runner('viewer_log_check');
+
+check(/#log\s*\{[^}]*position\s*:\s*relative/.test(html), 'CSS #log{...position:relative} missing');
