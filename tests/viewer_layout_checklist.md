@@ -569,3 +569,5 @@ Expected: `pass: true`. Visually (crop of the Speed select, both themes): the se
 ```
 
 Expected: `pass: true` at every viewport: 13 knobs, 2+ columns (more at wide viewports), no scrollbar anywhere in the panel, panel fully inside the viewport. Screenshots (do not commit): `research/screenshots/viewer-redesign/knobs-sliders-1920x1080.png`, `knobs-sliders-1280x640.png`, `knobs-sliders-800x600.png`; confirm slider thumbs use the accent, the number input shows the live value while dragging, and the info tooltip still opens beside each knob.
+
+## 16. Space use, event log modal, seed field (v2 addendum 3)
