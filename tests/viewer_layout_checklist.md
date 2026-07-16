@@ -659,3 +659,5 @@ async () => {
 ```
 
 Expected: `pass: true`. Then visually: dragging the slider updates the number live and vice versa (slider and number stay in sync both ways), the thumb uses the accent, the info tooltip reads "events per second multiplier, 0.25 to 4096", slider and number sit in the playback row without wrapping at 1280x640 and 800x600.
+
+### 16.5 4096x does not freeze
