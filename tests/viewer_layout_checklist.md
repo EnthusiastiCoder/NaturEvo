@@ -402,3 +402,5 @@ Run each in dark, click `#theme-toggle` (`document.documentElement.dataset.theme
 - Section 9 (tooltips): hover and focus tooltip visible, inside viewport, not clipped, Escape hides; include the tooltips on `#theme-toggle` and `#accent-btn`.
 - Section 10 (control height and icon size): `#theme-toggle` and `#accent-btn` have `offsetHeight` == `--control-h` (32) and their `svg.icon` == `--icon`; repeat with `#accent-box` open (swatches, `#accent-custom`, `#accent-reset` included).
 - Section 3 (no clipped inputs) with `#accent-box` open; the popover is fully inside the viewport at 800x600 and causes no page scroll.
+
+Theme state snippet (run after each toggle):
