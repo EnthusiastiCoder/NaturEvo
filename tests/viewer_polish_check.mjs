@@ -291,3 +291,42 @@ modal: {
     check(Math.abs(+S.value - at(pos(8))) <= 2, 'slider unchanged after revert (at 8x)');
   }
 }
+
+// replay timing with a fake clock driven through the harness intervals
+const fakeClock = v => {
+  let t = 1e6; const D = function () { return { getTime: () => t }; }; D.now = () => t;
+  v.win.Date = D; v.win.performance = { now: () => t };
+  return { adv: ms => { t += ms; } };
+};
+const playFor = (speed, nEvents, seconds, stopAtEnd) => {
+  const v = load({ protocol: 'file:', run: makeRun(nEvents) });
+  const N = v.$('speed-num'), P = v.$('play'), scrub = v.$('scrub');
+  if (!N || !P) return null;
+  const clk = fakeClock(v);
+  let renders = 0, val = scrub.value; Object.defineProperty(scrub, 'value', { get: () => val, set: x => { renders++; val = x; } });
+  N.value = String(speed); N.fire('input'); N.fire('change');
+  renders = 0; P.click();
+  let ticks = 0, elapsed = 0;
+  while (elapsed < seconds * 1000 && !(stopAtEnd && +scrub.value >= nEvents - 1)) {
+    clk.adv(100); elapsed += 100; ticks++;
+    for (const f of v.intervals) { try { f(); } catch (e) { /* stale */ } }
+  }
+  return { cur: +scrub.value, renders, ticks, elapsed };
+};
+{
+  const a = playFor(1, 20000, 10), b = playFor(4, 20000, 10), c = playFor(0.25, 20000, 10);
+  if (!a || !b || !c) check(false, 'replay speed tests need #speed-num and #play');
+  else {
+    check(Math.abs(a.cur - 100) <= 5, 'speed 1 for 10 s advances ~100 events (10/s), got ' + a.cur);
+    check(a.cur > 0 && Math.abs(b.cur / a.cur - 4) <= 0.4, 'speed 4 advances 4x speed 1 (+-10%), got ' + b.cur + ' vs ' + a.cur);
+    check(Math.abs(c.cur - 25) <= 3, 'speed 0.25 for 10 s advances ~25 events (fractional remainder carried), got ' + c.cur);
+  }
+  const h = playFor(4096, 65536, 30, true);
+  if (!h) check(false, 'high-speed test needs #speed-num and #play');
+  else {
+    check(h.cur === 65535, '4096x on 65536 events must reach the last event, got ' + h.cur);
+    check(h.renders <= h.ticks + 1, 'high speed must batch: renders (' + h.renders + ') <= ticks (' + h.ticks + ')');
+    check(h.renders <= Math.ceil(h.elapsed / 1000 * 60) + 1, 'render rate <= 60/s, got ' + h.renders + ' renders in ' + h.elapsed + ' ms');
+    check(h.renders < 200, 'never one render per event at high speed, got ' + h.renders);
+  }
+}
