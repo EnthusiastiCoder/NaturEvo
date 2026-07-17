@@ -108,3 +108,19 @@ const mon = stage => ({ species: 0, level: 5, hp: 8, max_hp: 10, ...(stage ? { s
   try { v.$('batch-btn').click(); await tick(); } catch (e) { threw = e; }
   check(!threw, 'old-format stats must not throw');
 }
+
+// ---- 65536-event run: goto sweep is fast
+{
+  const events = [];
+  for (let i = 0; i < 65536; i++) events.push(ev(i, i % 7 === 0 ? { mon: mon(i > 40000 ? 2 : 0) } : {}));
+  const v = load({ protocol: 'file:', run: { seed: 1, events, won: true, deaths: 0, final_level: 40 } });
+  await tick();
+  const jv = v.win.__jv;
+  const t0 = performance.now();
+  for (let i = 0; i < 65536; i += 4096) jv.goto(i);
+  jv.goto(65535);
+  const ms = performance.now() - t0;
+  check(ms < 200, `goto sweep over 65536 events took ${ms.toFixed(0)} ms (limit 200)`);
+  const idx = jv.logIndices();
+  check(idx[idx.length - 1] === 65535 && idx.length <= 152, 'log window capped around the cursor, len ' + idx.length);
+}
