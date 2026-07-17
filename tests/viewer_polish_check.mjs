@@ -94,3 +94,14 @@ const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const nums = n => Array.from({ length: n }, (_, i) => i);
 const all = el => el._all();
 const headers = L => all(L).filter(e => e.getAttribute('aria-expanded') !== undefined);
+
+modal: {
+  const v = load({ protocol: 'file:', run: mk(300) });
+  const jv = v.win.__jv, $ = v.$, L = $('log'), dlg = $('log-modal'), open = $('log-open'), S = $('log-search'), G = $('log-group'), C = $('log-count');
+  if (!dlg || !open || !L || !S || !G || !C) { check(false, 'modal elements missing (log-modal/log-open/log/log-search/log-group/log-count)'); break modal; }
+  const isOpen = () => dlg.tagName === 'DIALOG' ? !!dlg.open : (!dlg.classList.contains('hidden') && !dlg.hidden && dlg.style.display !== 'none');
+  check(!isOpen(), 'modal closed initially');
+  open.focus(); open.click();
+  check(isOpen(), '#log-open click must open the modal');
+  check(dlg.tagName !== 'DIALOG' || dlg.modalCalls >= 1, '<dialog> must be opened with showModal() (modal, inert page, native trap)');
+  check(v.doc.activeElement === S, 'focus must move to #log-search on open');
