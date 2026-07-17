@@ -226,3 +226,22 @@ modal: {
   const m = w.match(/^([\d.]+)(ch|em|rem|px)$/);
   const ch = m ? (m[2] === 'ch' ? +m[1] : m[2] === 'px' ? +m[1] / 8 : +m[1] * 1.8) : 0;
   check(ch >= 22 || (m && m[2] === 'ch' && +m[1] >= 22), '#seed width/min-width must be >= 22ch, got "' + w + '"');
+
+  const CONFIG = { knobs: [], max_runs: 100 };
+  const fetchImpl = async url => (url.startsWith('/api/config') ? jsonResp(CONFIG) : url.startsWith('/api/run') ? jsonResp(makeRun(20, 9)) : jsonResp({ error: 'nf' }, 404));
+  const v = load({ protocol: 'http:', run: makeRun(10), fetchImpl });
+  await tick();
+  const $ = v.$;
+  const runs = () => v.fetchCalls.filter(u => u.startsWith('/api/run'));
+  $('seed').value = '12345678901234567890'; $('run-btn').click(); await tick();
+  check(runs().length === 1 && /[?&]seed=12345678901234567890(&|$)/.test(runs()[0] || ''), 'Run sends the full 20-digit seed, got ' + runs()[0]);
+  const before = runs().length;
+  for (const bad of ['12a', '-5', '1.5', 'abc', '1e5']) {
+    $('run-status').textContent = '';
+    $('seed').value = bad;
+    let threw = false; try { $('run-btn').click(); await tick(); } catch (e) { threw = true; }
+    check(!threw, `non-digit seed "${bad}" must not crash`);
+    check(runs().length === before, `non-digit seed "${bad}" must not call /api/run`);
+    check(/seed|digit|number/i.test($('run-status').textContent), `non-digit seed "${bad}" needs a message in #run-status, got "${$('run-status').textContent}"`);
+  }
+}
