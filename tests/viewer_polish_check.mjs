@@ -137,3 +137,11 @@ modal: {
     fightH.click();
     check(idx().length === 300 && String(fightH.getAttribute('aria-expanded')) === 'true', 'second click re-expands');
   }
+
+  // group by zone, none
+  G.value = 'zone'; G.fire('change'); G.fire('input');
+  H = headers(L);
+  check(H.length === 4 && H.every(h => /\b75\b/.test(h.textContent)) && /zone/i.test(H[0].textContent), 'group by zone: 4 headers with 75 each, got ' + H.map(h => h.textContent).join('|'));
+  G.value = 'none'; G.fire('change'); G.fire('input');
+  check(headers(L).length === 0, 'group none: no headers');
+  check(eq(idx(), nums(300)), 'group none: rows in event order 0..299');
