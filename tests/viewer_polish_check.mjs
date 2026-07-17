@@ -257,3 +257,37 @@ modal: {
   const did = info && attr(info, 'aria-describedby');
   const tip = did && markup.match(new RegExp('<(\\w+)\\b[^>]*\\bid\\s*=\\s*["\']' + did + '["\'][^>]*>([\\s\\S]*?)</\\1>'));
   check(!!tip && /role\s*=\s*["']tooltip["']/.test(tip[0]) && /events per second/i.test(tip[2]) && /0\.25/.test(tip[2]) && /4096/.test(tip[2]), 'speed tooltip must say "events per second multiplier" with range 0.25 to 4096, got ' + (tip && tip[2]));
+
+  const v = load({ protocol: 'file:', run: makeRun(300) });
+  const S = v.$('speed'), N = v.$('speed-num');
+  if (!S || !N) check(false, '#speed / #speed-num missing in DOM');
+  else {
+    const lo = +(attr(sp, 'min') || 0), hi = +(attr(sp, 'max') || 100);
+    check(Number.isInteger(lo) && Number.isInteger(hi) && hi - lo >= 100, 'slider needs integer steps with >=100 positions (e.g. 0..1000), got ' + lo + '..' + hi);
+    const at = p => Math.round(lo + p * (hi - lo));
+    const pos = x => Math.log(x / 0.25) / Math.log(16384);
+    const slide = p => { S.value = String(p); S.fire('input'); S.fire('change'); return +N.value; };
+    const type = t => { N.value = String(t); N.fire('input'); N.fire('change'); };
+    const near = (a, b, tol) => Math.abs(a - b) <= tol * Math.abs(b);
+    check(+N.value === 1 && Math.abs(+S.value - at(pos(1))) <= 2, 'default 1x: num 1, slider at log position ' + at(pos(1)) + ', got num=' + N.value + ' slider=' + S.value);
+    check(slide(at(0)) === 0.25, 'slider position 0 -> 0.25, got ' + N.value);
+    check(slide(at(1)) === 4096, 'slider position 1 -> 4096, got ' + N.value);
+    check(near(slide(at(0.5)), 32, 0.03), 'slider midpoint -> geometric mean ~32, got ' + N.value);
+    let prev = 0, mono = true; for (let i = 0; i <= 10; i++) { const x = slide(at(i / 10)); if (!(x > prev)) mono = false; prev = x; }
+    check(mono, 'slider mapping must be strictly increasing');
+    check(near(slide(at(0.25)), 0.25 * Math.pow(16384, 0.25), 0.03), 'slider quarter -> 0.25*16384^0.25 = 2.83, got ' + N.value);
+    check(slide(at(pos(1))) === 1, 'slider at the 1x position snaps to exactly 1, got ' + N.value);
+    check(slide(at(pos(16)) + 1) === 16, 'slider within 2% of a power of two snaps to it (16), got ' + N.value);
+    type(32); check(Math.abs(+S.value - at(0.5)) <= 2, 'typing 32 moves slider to midpoint ' + at(0.5) + ', got ' + S.value);
+    type(0.25); check(+S.value === at(0), 'typing 0.25 -> slider min, got ' + S.value);
+    type(4096); check(+S.value === at(1), 'typing 4096 -> slider max, got ' + S.value);
+    type(7.5); check(+N.value === 7.5 && +S.value > at(pos(4)) && +S.value < at(pos(16)), 'custom value 7.5 kept and slider placed between 4x and 16x, got ' + N.value + '/' + S.value);
+    type(100000); check(+N.value === 4096 && +S.value === at(1), 'above max clamps to 4096, got ' + N.value + '/' + S.value);
+    type(0.01); check(+N.value === 0.25 && +S.value === at(0), 'below min clamps to 0.25, got ' + N.value + '/' + S.value);
+    type(-5); check(+N.value === 0.25, 'negative clamps to 0.25, got ' + N.value);
+    type(0); check(+N.value === 0.25, 'zero clamps to 0.25, got ' + N.value);
+    type(8); type('abc'); check(+N.value === 8, 'non-numeric reverts to last valid (8), got "' + N.value + '"');
+    type(8); type(''); check(+N.value === 8, 'empty reverts to last valid (8), got "' + N.value + '"');
+    check(Math.abs(+S.value - at(pos(8))) <= 2, 'slider unchanged after revert (at 8x)');
+  }
+}
