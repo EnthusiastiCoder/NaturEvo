@@ -161,3 +161,15 @@ modal: {
   check(idx().length === 0 && /\b0\s*of\s*300\s*events/i.test(C.textContent), 'no match -> 0 rows, "0 of 300 events", got ' + C.textContent);
   search('');
   check(idx().length === 300 && /300\s*of\s*300/i.test(C.textContent), 'clearing search restores all');
+
+  // row click jumps replay and the position changes
+  G.value = 'none'; G.fire('change'); G.fire('input');
+  const row = all(L).find(e => e.dataset.i === '77');
+  check(!!row, 'row for event 77 rendered');
+  if (row) {
+    row.click();
+    check($('scrub').value === '77', 'row click: scrub moves to 77, got ' + $('scrub').value);
+    check(/\b77\b/.test($('info').textContent), 'row click: #info shows 77, got ' + $('info').textContent);
+    const c2 = all(L).filter(e => e.classList.contains('cur'));
+    check(isOpen() ? c2.length === 1 && c2[0].dataset.i === '77' : true, 'if the modal stays open the .cur row is 77');
+  }
