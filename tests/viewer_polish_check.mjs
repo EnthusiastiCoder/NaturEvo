@@ -173,3 +173,19 @@ modal: {
     const c2 = all(L).filter(e => e.classList.contains('cur'));
     check(isOpen() ? c2.length === 1 && c2[0].dataset.i === '77' : true, 'if the modal stays open the .cur row is 77');
   }
+
+  // close: Escape, backdrop, focus return
+  if (!isOpen()) { open.focus(); open.click(); }
+  dlg.fire('keydown', { key: 'Escape' });
+  if (isOpen()) dlg.fire('cancel');
+  check(!isOpen(), 'Escape (keydown or cancel) closes the modal');
+  check(v.doc.activeElement === open, 'focus returns to #log-open after close');
+  open.click();
+  check(isOpen(), 'reopen works');
+  dlg.fire('click', { target: dlg });
+  check(!isOpen(), 'backdrop click (target = dialog itself) closes');
+  check(v.doc.activeElement === open, 'focus returns to #log-open after backdrop close');
+  open.click();
+  L.fire('click', { target: L });
+  check(isOpen(), 'a click inside the modal content must not close it');
+}
