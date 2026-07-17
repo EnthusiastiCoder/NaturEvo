@@ -86,3 +86,11 @@ const attr = (t, a) => t && ((t[2].match(new RegExp('\\b' + a + '\\s*=\\s*["\'](
   const def = opts.find(o => /selected/.test(o[1])) || opts[0];
   check(!!def && /type/i.test(def[1] + def[2]), 'by type must be the default grouping (selected or first option)');
 }
+
+const KINDS = ['travel', 'fight', 'loot'];
+const mk = n => { const r = makeRun(n); r.events.forEach((e, i) => { e.kind = KINDS[i % 3]; e.hero.zone = i % 4; }); return r; };
+const sorted = a => [...a].sort((x, y) => x - y);
+const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const nums = n => Array.from({ length: n }, (_, i) => i);
+const all = el => el._all();
+const headers = L => all(L).filter(e => e.getAttribute('aria-expanded') !== undefined);
