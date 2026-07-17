@@ -42,3 +42,40 @@ const mon = stage => ({ species: 0, level: 5, hp: 8, max_hp: 10, ...(stage ? { s
     check(/299/.test(v.$('info').textContent), 'info shows event 299');
   }
 }
+
+// ---- windowed mode fetches from/count when goto leaves the window
+{
+  const TOTAL = 65536, W = 2000;
+  const window_ = (from, count) => {
+    const events = [];
+    for (let i = from; i < Math.min(TOTAL, from + count); i++) events.push(ev(i));
+    return { seed: 1, won: true, deaths: 0, final_level: 40, total: TOTAL, from, events, level_series: Array.from({ length: 500 }, (_, i) => 1 + Math.floor(i / 10)) };
+  };
+  const fetchImpl = async (url) => {
+    if (url.startsWith('/api/run')) {
+      const f = +(url.match(/[?&]from=(\d+)/) || [])[1], c = +(url.match(/[?&]count=(\d+)/) || [])[1];
+      return jsonResp(window_(f, c));
+    }
+    return jsonResp({ error: 'nf' }, 404);
+  };
+  const v = load({ protocol: 'http:', run: window_(0, W), fetchImpl });
+  await tick();
+  v.fetchCalls.length = 0;
+  const jv = v.win.__jv;
+  jv.goto(100);
+  await tick();
+  check(!v.fetchCalls.some(u => /from=/.test(u)), 'goto inside loaded window must not fetch, got ' + JSON.stringify(v.fetchCalls));
+  try { jv.goto(40000); } catch (e) { check(false, 'goto outside loaded window threw: ' + e.message); }
+  await tick();
+  const u = v.fetchCalls.find(x => x.startsWith('/api/run'));
+  check(u && /[?&]from=\d+/.test(u) && /[?&]count=\d+/.test(u), 'leaving window must fetch /api/run?...from=&count=, got ' + JSON.stringify(v.fetchCalls));
+  check(u && /[?&]seed=1(&|$)/.test(u), 'window fetch keeps seed=1, got ' + u);
+  if (u) {
+    const from = +u.match(/from=(\d+)/)[1], count = +u.match(/count=(\d+)/)[1];
+    check(from <= 40000 && 40000 < from + count && count <= 5000, `window [${from},${from + count}) must contain 40000 and count<=5000`);
+  }
+  let idx = [];
+  try { idx = jv.logIndices(); } catch (e) {}
+  check(idx.length > 0 && idx[idx.length - 1] === 40000, 'after fetch the log ends at global event 40000, got ' + JSON.stringify(idx.slice(-3)));
+  check(String(v.$('scrub').max) === String(TOTAL - 1), 'scrub max spans total (65535), got ' + v.$('scrub').max);
+}
