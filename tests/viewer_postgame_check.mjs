@@ -124,3 +124,5 @@ const mon = stage => ({ species: 0, level: 5, hp: 8, max_hp: 10, ...(stage ? { s
   const idx = jv.logIndices();
   check(idx[idx.length - 1] === 65535 && idx.length <= 152, 'log window capped around the cursor, len ' + idx.length);
 }
+
+done();
