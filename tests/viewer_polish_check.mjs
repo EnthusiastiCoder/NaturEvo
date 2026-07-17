@@ -111,3 +111,13 @@ modal: {
   // we only require that Tab/Shift+Tab events do not throw and focus stays on an element of the dialog or is prevented.
   { let threw = false; try { S.fire('keydown', { key: 'Tab', shiftKey: true }); S.fire('keydown', { key: 'Tab' }); } catch (e) { threw = true; } check(!threw, 'Tab keydown handling must not throw'); }
   check(dlg.tagName === 'DIALOG' ? dlg.modalCalls >= 1 : /Tab/.test(html.replace(/<style[\s\S]*?<\/style>/, '')), 'focus trap: showModal() or explicit Tab handling required');
+
+  // default view: all events listed, grouped by type, with counts
+  const idx = () => jv.logIndices();
+  check(typeof jv.logIndices === 'function', '__jv.logIndices missing');
+  check(eq(sorted(idx()), nums(300)), 'modal lists ALL 300 events (not just 0..cur), got ' + idx().length);
+  check(/300\s*of\s*300/i.test(C.textContent) && /events/i.test(C.textContent), '#log-count must read "300 of 300 events", got ' + C.textContent);
+  let H = headers(L);
+  check(H.length === 3, 'default group by type: 3 group headers (travel/fight/loot), got ' + H.length);
+  check(H.every(h => /\b100\b/.test(h.textContent)) && ['travel', 'fight', 'loot'].every(k => H.some(h => new RegExp(k, 'i').test(h.textContent))), 'headers show name and count: ' + H.map(h => h.textContent).join('|'));
+  check(H.every(h => String(h.getAttribute('aria-expanded')) === 'true'), 'groups expanded by default (aria-expanded=true)');
