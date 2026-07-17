@@ -330,3 +330,5 @@ const playFor = (speed, nEvents, seconds, stopAtEnd) => {
     check(h.renders < 200, 'never one render per event at high speed, got ' + h.renders);
   }
 }
+
+done();
