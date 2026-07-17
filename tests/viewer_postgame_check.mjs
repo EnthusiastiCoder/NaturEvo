@@ -79,3 +79,32 @@ const mon = stage => ({ species: 0, level: 5, hp: 8, max_hp: 10, ...(stage ? { s
   check(idx.length > 0 && idx[idx.length - 1] === 40000, 'after fetch the log ends at global event 40000, got ' + JSON.stringify(idx.slice(-3)));
   check(String(v.$('scrub').max) === String(TOTAL - 1), 'scrub max spans total (65535), got ' + v.$('scrub').max);
 }
+
+// ---- #post-stats on the dashboard
+{
+  const STATS = { runs: 123, wins: 60, avg_deaths: 1.5, avg_final_level: 30.2, level_hist: [0, 3, 5, 9],
+    avg_events: 41234.5, avg_first_win_event: 10624.25, avg_post_kills: 777.5, avg_post_deaths: 12.5, stage_hist: [4, 7, 11, 13, 25] };
+  const fetchImpl = async (url) => {
+    if (url.startsWith('/api/config')) return jsonResp({ knobs: [{ key: 'potion_cost', label: 'Potion cost', min: 1, max: 500, default: 25 }], max_runs: 20000, max_events: 1048576 });
+    if (url.startsWith('/api/batch')) return jsonResp(STATS);
+    return jsonResp({ error: 'nf' }, 404);
+  };
+  const v = load({ protocol: 'http:', run: makeRun(30), fetchImpl });
+  await tick();
+  v.$('batch-runs').value = '123';
+  v.$('batch-btn').click();
+  await tick();
+  const ps = v.$('post-stats');
+  check(ps, '#post-stats element missing');
+  if (ps) {
+    const t = ps.textContent;
+    for (const [n, label] of [['41234', 'avg events'], ['10624', 'avg first-win event'], ['777', 'avg post kills'], ['12.5', 'avg post deaths']])
+      check(t.includes(n), `#post-stats must show ${label} (${n}), got ${JSON.stringify(t)}`);
+    for (const n of ['4', '7', '11', '13', '25']) check(new RegExp('(^|\\D)' + n + '(\\D|$)').test(t), `#post-stats must show stage_hist count ${n}, got ${JSON.stringify(t)}`);
+  }
+  // old stats without new fields: dashboard still renders and does not throw
+  v.win.STATS = { runs: 10, wins: 5, avg_deaths: 1, avg_final_level: 20, level_hist: [1, 2] };
+  let threw = null;
+  try { v.$('batch-btn').click(); await tick(); } catch (e) { threw = e; }
+  check(!threw, 'old-format stats must not throw');
+}
