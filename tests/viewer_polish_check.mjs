@@ -213,3 +213,16 @@ modal: {
     check(jv.logIndices().length <= 300, 'goto at 65536 keeps window <= 300');
   } else check(false, 'modal elements missing for the windowing test');
 }
+
+// ---------- (3) seed input ----------
+{
+  const sd = tagOf('seed');
+  check(!!sd, '#seed missing');
+  const type = attr(sd, 'type');
+  const sc = declFor(s => s === '#seed' || s === 'input#seed');
+  const spinnerHidden = /textfield/.test(sc.appearance || sc['-moz-appearance'] || '') && /::-webkit-inner-spin-button/.test(css) && /display\s*:\s*none|-webkit-appearance\s*:\s*none|appearance\s*:\s*none/.test(css.match(/#seed::-webkit-inner-spin-button\s*\{[^}]*\}/) ? css.match(/#seed::-webkit-inner-spin-button\s*\{[^}]*\}/)[0] : '');
+  check(type === 'text' ? attr(sd, 'inputmode') === 'numeric' && attr(sd, 'pattern') === '[0-9]*' : (type === 'number' && spinnerHidden), 'seed must be type=text inputmode=numeric pattern=[0-9]* (or number with spinner hidden), got type=' + type);
+  const w = (sc.width || sc['min-width'] || sc['inline-size'] || '');
+  const m = w.match(/^([\d.]+)(ch|em|rem|px)$/);
+  const ch = m ? (m[2] === 'ch' ? +m[1] : m[2] === 'px' ? +m[1] / 8 : +m[1] * 1.8) : 0;
+  check(ch >= 22 || (m && m[2] === 'ch' && +m[1] >= 22), '#seed width/min-width must be >= 22ch, got "' + w + '"');
