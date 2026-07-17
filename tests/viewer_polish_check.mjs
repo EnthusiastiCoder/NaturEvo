@@ -145,3 +145,19 @@ modal: {
   G.value = 'none'; G.fire('change'); G.fire('input');
   check(headers(L).length === 0, 'group none: no headers');
   check(eq(idx(), nums(300)), 'group none: rows in event order 0..299');
+
+  // search
+  const search = q => { S.value = q; S.fire('input'); };
+  search('event 123');
+  check(eq(idx(), [123]) && /\b1\s*of\s*300\s*events/i.test(C.textContent), 'search "event 123": [123], "1 of 300 events", got ' + JSON.stringify(idx()) + ' / ' + C.textContent);
+  search('EVENT 12');
+  check(eq(sorted(idx()), [12, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129]) && /\b11\s*of\s*300\s*events/i.test(C.textContent), 'case-insensitive text search "EVENT 12" -> 11, got ' + idx().length + ' / ' + C.textContent);
+  search('FIGHT');
+  check(eq(sorted(idx()), nums(300).filter(i => i % 3 === 1)) && /\b100\s*of\s*300\s*events/i.test(C.textContent), 'search matches kind case-insensitively ("FIGHT" -> 100), got ' + idx().length + ' / ' + C.textContent);
+  G.value = 'type'; G.fire('change'); G.fire('input');
+  H = headers(L);
+  check(H.length === 1 && /fight/i.test(H[0].textContent) && /\b100\b/.test(H[0].textContent), 'grouped counts reflect the filter: one header "fight 100", got ' + H.map(h => h.textContent).join('|'));
+  search('zzz-no-such');
+  check(idx().length === 0 && /\b0\s*of\s*300\s*events/i.test(C.textContent), 'no match -> 0 rows, "0 of 300 events", got ' + C.textContent);
+  search('');
+  check(idx().length === 300 && /300\s*of\s*300/i.test(C.textContent), 'clearing search restores all');
