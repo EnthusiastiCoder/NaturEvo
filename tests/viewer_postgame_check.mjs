@@ -30,3 +30,15 @@ const mon = stage => ({ species: 0, level: 5, hp: 8, max_hp: 10, ...(stage ? { s
     check(hidden(st) || st.textContent.trim() === '', 'no monster: #stage hidden/empty');
   }
 }
+
+// ---- old-format run (no total / level_series / stage) still renders
+{
+  let threw = null, v;
+  try { v = load({ protocol: 'file:', run: makeRun(300) }); await tick(); v.win.__jv.goto(150); v.win.__jv.goto(299); } catch (e) { threw = e; }
+  check(!threw, 'old-format run threw: ' + (threw && threw.message));
+  if (v) {
+    check(String(v.$('scrub').max) === '299', 'old run scrub max 299, got ' + v.$('scrub').max);
+    check(v.fetchCalls.length === 0, 'old file:// run must not fetch');
+    check(/299/.test(v.$('info').textContent), 'info shows event 299');
+  }
+}
