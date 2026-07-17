@@ -127,3 +127,13 @@ modal: {
   let cur = all(L).filter(e => e.classList.contains('cur'));
   check(cur.length === 1 && cur[0].dataset.i === '120', 'exactly one row .cur = 120, got ' + cur.map(e => e.dataset.i));
   jv.goto(0);
+
+  // collapse a group
+  const fightH = headers(L).find(h => /fight/i.test(h.textContent));
+  if (fightH) {
+    fightH.click();
+    check(String(fightH.getAttribute('aria-expanded')) === 'false', 'header click collapses (aria-expanded=false)');
+    check(eq(sorted(idx()), nums(300).filter(i => i % 3 !== 1)), 'collapsed fight group removes its rows, got ' + idx().length);
+    fightH.click();
+    check(idx().length === 300 && String(fightH.getAttribute('aria-expanded')) === 'true', 'second click re-expands');
+  }
