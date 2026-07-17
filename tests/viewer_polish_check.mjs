@@ -245,3 +245,15 @@ modal: {
     check(/seed|digit|number/i.test($('run-status').textContent), `non-digit seed "${bad}" needs a message in #run-status, got "${$('run-status').textContent}"`);
   }
 }
+
+// ---------- Addendum 3b: speed = log slider + custom number ----------
+{
+  check(!/<select\b[^>]*\bid\s*=\s*["']speed["']/.test(markup), 'no select#speed may remain (speed is a range slider)');
+  const sp = tagOf('speed'), nm = tagOf('speed-num');
+  check(!!sp && /^input$/i.test(sp[1]) && attr(sp, 'type') === 'range', '#speed must be <input type=range>, got ' + (sp && sp[1] + ' type=' + attr(sp, 'type')));
+  check(!!nm && /^input$/i.test(nm[1]) && attr(nm, 'type') === 'number' && attr(nm, 'step') === 'any', '#speed-num must be <input type=number step=any>');
+  const info = tagOf('speed-info');
+  check(!!info && /^button$/i.test(info[1]) && !!attr(info, 'aria-label'), '#speed-info must be a <button> with aria-label');
+  const did = info && attr(info, 'aria-describedby');
+  const tip = did && markup.match(new RegExp('<(\\w+)\\b[^>]*\\bid\\s*=\\s*["\']' + did + '["\'][^>]*>([\\s\\S]*?)</\\1>'));
+  check(!!tip && /role\s*=\s*["']tooltip["']/.test(tip[0]) && /events per second/i.test(tip[2]) && /0\.25/.test(tip[2]) && /4096/.test(tip[2]), 'speed tooltip must say "events per second multiplier" with range 0.25 to 4096, got ' + (tip && tip[2]));
