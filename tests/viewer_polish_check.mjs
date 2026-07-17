@@ -189,3 +189,27 @@ modal: {
   L.fire('click', { target: L });
   check(isOpen(), 'a click inside the modal content must not close it');
 }
+
+// ---------- windowing at 65536 events ----------
+{
+  const N = 65536;
+  const v = load({ protocol: 'file:', run: mk(N) });
+  const jv = v.win.__jv, $ = v.$, L = $('log'), S = $('log-search'), G = $('log-group');
+  if (L && S && G && $('log-open')) {
+    const t0 = Date.now(); $('log-open').click(); const dt = Date.now() - t0;
+    const rows = () => all(L).length;
+    check(dt < 1500, 'opening at 65536 events must be fast (<1500ms), took ' + dt);
+    check(rows() <= 300, 'DOM nodes in #log <= 300 at open, got ' + rows());
+    check(/65,?536\s*of\s*65,?536/.test($('log-count').textContent), 'count "65536 of 65536 events", got ' + $('log-count').textContent);
+    for (const g of ['type', 'zone', 'none']) {
+      G.value = g; G.fire('change'); G.fire('input');
+      for (const st of [0, 5000, 400000, 1e9]) { L.scrollTop = st; L.fire('scroll'); check(rows() <= 300, `group ${g} scrollTop ${st}: DOM nodes <= 300, got ${rows()}`); }
+      check(jv.logIndices().length <= 300, `group ${g}: logIndices windowed <= 300, got ${jv.logIndices().length}`);
+    }
+    G.value = 'none'; G.fire('change'); G.fire('input');
+    const t1 = Date.now(); S.value = 'event 6'; S.fire('input'); const ds = Date.now() - t1;
+    check(ds < 1500 && rows() <= 300, `search at 65536 events fast and windowed, ${ds}ms, nodes ${rows()}`);
+    jv.goto(60000);
+    check(jv.logIndices().length <= 300, 'goto at 65536 keeps window <= 300');
+  } else check(false, 'modal elements missing for the windowing test');
+}
