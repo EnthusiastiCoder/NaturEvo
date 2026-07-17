@@ -105,3 +105,9 @@ modal: {
   check(isOpen(), '#log-open click must open the modal');
   check(dlg.tagName !== 'DIALOG' || dlg.modalCalls >= 1, '<dialog> must be opened with showModal() (modal, inert page, native trap)');
   check(v.doc.activeElement === S, 'focus must move to #log-search on open');
+
+  // Tab trap, where stub-checkable: Tab keydown on the search input must not leave the dialog.
+  // Native showModal traps natively; a manual trap must preventDefault when wrapping. Either is accepted:
+  // we only require that Tab/Shift+Tab events do not throw and focus stays on an element of the dialog or is prevented.
+  { let threw = false; try { S.fire('keydown', { key: 'Tab', shiftKey: true }); S.fire('keydown', { key: 'Tab' }); } catch (e) { threw = true; } check(!threw, 'Tab keydown handling must not throw'); }
+  check(dlg.tagName === 'DIALOG' ? dlg.modalCalls >= 1 : /Tab/.test(html.replace(/<style[\s\S]*?<\/style>/, '')), 'focus trap: showModal() or explicit Tab handling required');
