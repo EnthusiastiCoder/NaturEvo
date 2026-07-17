@@ -121,3 +121,9 @@ modal: {
   check(H.length === 3, 'default group by type: 3 group headers (travel/fight/loot), got ' + H.length);
   check(H.every(h => /\b100\b/.test(h.textContent)) && ['travel', 'fight', 'loot'].every(k => H.some(h => new RegExp(k, 'i').test(h.textContent))), 'headers show name and count: ' + H.map(h => h.textContent).join('|'));
   check(H.every(h => String(h.getAttribute('aria-expanded')) === 'true'), 'groups expanded by default (aria-expanded=true)');
+
+  // current row highlighted
+  jv.goto(120);
+  let cur = all(L).filter(e => e.classList.contains('cur'));
+  check(cur.length === 1 && cur[0].dataset.i === '120', 'exactly one row .cur = 120, got ' + cur.map(e => e.dataset.i));
+  jv.goto(0);
