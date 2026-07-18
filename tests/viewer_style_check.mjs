@@ -6,3 +6,6 @@ import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { html, load, makeRun, tick, runner, jsonResp } from './_viewer_harness.mjs';
+
+const { check, done } = runner('viewer_style_check');
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
