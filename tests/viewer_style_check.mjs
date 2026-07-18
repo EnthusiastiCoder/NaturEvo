@@ -9,3 +9,11 @@ import { html, load, makeRun, tick, runner, jsonResp } from './_viewer_harness.m
 
 const { check, done } = runner('viewer_style_check');
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+
+// ---------- static helpers ----------
+const scripts = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+const styleRaw = (html.match(/<style[^>]*>([\s\S]*?)<\/style>/) || [, ''])[1];
+const css = styleRaw.replace(/\/\*[\s\S]*?\*\//g, '');
+const markup = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<style[\s\S]*?<\/style>/g, '');
+const attr = (tag, name) => { const m = tag.match(new RegExp('\\b' + name + '\\s*=\\s*(?:"([^"]*)"|\'([^\']*)\')', 'i')); return m ? (m[1] ?? m[2]) : null; };
+const stripTags = s => s.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
