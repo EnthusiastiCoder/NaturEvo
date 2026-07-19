@@ -19,3 +19,7 @@ const hex = c => { c = String(c || '').trim().toLowerCase(); let m = c.match(/^#
 const lum = c => { const [r, g, b] = hex(c).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
 const cr = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
 const same = (a, b) => { const x = hex(a), y = hex(b); return !!x && !!y && x.join() === y.join(); };
+
+const safeLoad = (opts, label) => { try { return load({ run: makeRun(120), ...opts }); } catch (e) { check(false, label + ': page script threw at load: ' + e.message); return null; } };
+const theme = v => v.root.getAttribute('data-theme') || v.root.dataset.theme || null;
+const cssVar = (v, n) => String(v.win.getComputedStyle(v.root).getPropertyValue(n) || '').trim();
