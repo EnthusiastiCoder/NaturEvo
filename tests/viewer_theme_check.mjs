@@ -190,3 +190,33 @@ const dark = tokens('dark'), light = tokens('light');
     check(/var\(\s*--accent-fg\s*\)/.test(css), 'CSS must use var(--accent-fg) for text on accent backgrounds');
   }
 }
+
+// ---------- (8) charts redraw on theme / accent change ----------
+{
+  const v = safeLoad({ storage: {}, matchMedia: 'dark' }, 'charts');
+  if (v && v.win.__jv && v.win.__jv.theme) {
+    const T = v.win.__jv.theme;
+    check(v.paints.length > 0, 'timeline must paint with fillStyle/strokeStyle at load');
+    const cols = th => new Set(TOK.concat(['--accent', '--accent-text']).map(t => (tokens(th)[t] || '').toLowerCase()).filter(Boolean));
+    const painted = () => new Set(v.paints.map(p => p.toLowerCase()));
+    // timeline must use token colours (not hard-coded) : something painted equals a dark token
+    check([...painted()].some(p => [...cols('dark')].some(c => same(p, c))), 'initial paints must use dark token colours; painted: ' + [...painted()].slice(0, 6).join(','));
+    v.paints.length = 0; v.events.length = 0;
+    T.set('light');
+    check(v.events.includes('jv-themechange'), 'theme change must dispatch jv-themechange, events: ' + v.events.join(','));
+    await tick();
+    check(v.paints.length > 0, 'charts must redraw (canvas paint) after theme change');
+    const lightOnly = [...cols('light')].filter(c => ![...cols('dark')].some(d => same(c, d)));
+    check([...painted()].some(p => lightOnly.some(c => same(p, c))), 'redraw after theme change must use light token colours; painted: ' + [...painted()].slice(0, 6).join(','));
+    check(![...painted()].some(p => [...cols('dark')].filter(d => !lightOnly.some(c => same(c, d))).some(d => same(p, d) && !same(p, '#2e7d4f'))), 'redraw after theme change must not use stale dark token colours');
+    v.paints.length = 0; v.events.length = 0;
+    T.accent.set('#7b3fa0');
+    check(v.events.includes('jv-themechange'), 'accent change must dispatch jv-themechange, events: ' + v.events.join(','));
+    await tick();
+    check(v.paints.length > 0, 'charts must redraw after accent change');
+    check([...painted()].some(p => same(p, '#7b3fa0') || /rgba?\(\s*123\s*,\s*63\s*,\s*160/.test(p)) || [...painted()].some(p => same(p, cssVar(v, '--accent-text'))), 'redraw after accent change must paint with the new accent; painted: ' + [...painted()].slice(0, 6).join(','));
+  } else check(false, 'charts: __jv.theme missing');
+  // dashboard histogram is DOM/CSS based: must not hard-code colours in JS
+  const js = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]).join('\n').replace(/\b(SP|ZN)\s*=\s*\[\[[\s\S]*?\]\]\s*;/g, '');
+  check(/getComputedStyle/.test(js) && /jv-themechange/.test(js), 'inline JS must read tokens via getComputedStyle and handle jv-themechange');
+}
