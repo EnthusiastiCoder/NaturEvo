@@ -217,3 +217,5 @@ const symbols = new Set([...html.matchAll(/<symbol\b[^>]*\bid\s*=\s*["'](i-[\w-]
     check(hs.length > 0 && hs.every(v => /var\(\s*--control-h\s*\)/.test(v)), `${cls} height/min-height must be var(--control-h), got ${JSON.stringify(hs)}`);
   }
 }
+
+done();
