@@ -193,3 +193,10 @@ const symbols = new Set([...html.matchAll(/<symbol\b[^>]*\bid\s*=\s*["'](i-[\w-]
   const kpiTree = e => e.children.reduce((n, c) => n + (c.classList.contains('kpi') ? 1 : 0) + kpiTree(c), 0);
   const cardCount = kpiTree(D) + [...(D._html || '').matchAll(/class\s*=\s*["'][^"']*\bkpi\b/g)].length;
   check(cardCount >= 4, 'at least 4 KPI cards (.kpi) expected in #dstats, found ' + cardCount);
+
+  const isBar = e => e.tagName === 'RECT' || (e._cls || '').split(/\s+/).some(c => c === 'bar' || /-bar$/.test(c));
+  const countTree = e => e.children.reduce((n, c) => n + (isBar(c) ? 1 : 0) + countTree(c), 0);
+  const countStr = e => ((e._html || '').match(/<rect\b|class\s*=\s*["'][^"']*(?:^|[\s"'])(?:[\w]+-)?bar(?=[\s"'])/g) || []).length;
+  const bars = Math.max(countTree(H), countStr(H));
+  check(bars >= 2, '#hist must render bars (class "bar" or <rect>), found ' + bars);
+  check(bars <= 20, '#hist must bin 60 levels into <= 20 bars, found ' + bars);
