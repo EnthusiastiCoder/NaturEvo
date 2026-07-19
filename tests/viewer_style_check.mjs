@@ -208,3 +208,12 @@ const symbols = new Set([...html.matchAll(/<symbol\b[^>]*\bid\s*=\s*["'](i-[\w-]
   check(toggleHtml.some(t => /log/i.test(t)) || dyn, 'a "Log scale" checkbox (input type=checkbox, id/name containing "log") must exist in the dashboard');
   check(/log scale/i.test(markup + dText + textOf(H)), 'the toggle must be labelled "Log scale"');
 }
+
+// ---------- (9) control heights come from --control-h ----------
+{
+  check(/--control-h\s*:\s*[\d.]+px/.test(rootCss), ':root must define --control-h in px');
+  for (const cls of ['.btn', '.input']) {
+    const hs = nonRoot.filter(r => r.sels.includes(cls)).flatMap(r => decls(r.body)).filter(([k]) => k === 'height' || k === 'min-height').map(([, v]) => v);
+    check(hs.length > 0 && hs.every(v => /var\(\s*--control-h\s*\)/.test(v)), `${cls} height/min-height must be var(--control-h), got ${JSON.stringify(hs)}`);
+  }
+}
