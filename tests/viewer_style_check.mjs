@@ -26,3 +26,9 @@ const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(m => {
 const decls = body => body.split(';').map(d => { const k = d.indexOf(':'); return k < 0 ? null : [d.slice(0, k).trim().toLowerCase(), d.slice(k + 1).trim()]; }).filter(Boolean);
 const rootCss = rules.filter(r => r.root).map(r => r.body).join(';');
 const nonRoot = rules.filter(r => !r.root);
+
+// Tooltip elements present in static markup: id -> text.
+const tipsStatic = new Map();
+for (const m of markup.matchAll(/<(\w+)\b([^>]*\brole\s*=\s*["']tooltip["'][^>]*)>([\s\S]*?)<\/\1>/g)) {
+  const id = attr(m[2], 'id'); if (id) tipsStatic.set(id, stripTags(m[3]));
+}
