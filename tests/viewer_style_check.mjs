@@ -200,3 +200,11 @@ const symbols = new Set([...html.matchAll(/<symbol\b[^>]*\bid\s*=\s*["'](i-[\w-]
   const bars = Math.max(countTree(H), countStr(H));
   check(bars >= 2, '#hist must render bars (class "bar" or <rect>), found ' + bars);
   check(bars <= 20, '#hist must bin 60 levels into <= 20 bars, found ' + bars);
+
+  const body = v.$('dashboard');
+  const live = [H, D, body].filter(Boolean);
+  const toggleHtml = markup.match(/<input\b[^>]*\btype\s*=\s*["']checkbox["'][^>]*>/g) || [];
+  const dyn = live.some(e => /type\s*=\s*["']checkbox["']/.test(e._html || '') || e.type === 'checkbox' || e.children.some(function f(c) { return c.type === 'checkbox' || c.children.some(f); }));
+  check(toggleHtml.some(t => /log/i.test(t)) || dyn, 'a "Log scale" checkbox (input type=checkbox, id/name containing "log") must exist in the dashboard');
+  check(/log scale/i.test(markup + dText + textOf(H)), 'the toggle must be labelled "Log scale"');
+}
