@@ -23,3 +23,17 @@ const same = (a, b) => { const x = hex(a), y = hex(b); return !!x && !!y && x.jo
 const safeLoad = (opts, label) => { try { return load({ run: makeRun(120), ...opts }); } catch (e) { check(false, label + ': page script threw at load: ' + e.message); return null; } };
 const theme = v => v.root.getAttribute('data-theme') || v.root.dataset.theme || null;
 const cssVar = (v, n) => String(v.win.getComputedStyle(v.root).getPropertyValue(n) || '').trim();
+
+// ---------- (1) two token sets ----------
+const dark = tokens('dark'), light = tokens('light');
+{
+  for (const [n, set] of [['dark', dark], ['light', light]]) {
+    const miss = TOK.filter(t => !set[t] || !set[t].trim());
+    check(miss.length === 0, `:root[data-theme="${n}"] must define tokens: missing ${miss.join(' ')}`);
+    check(hex(set['--bg']) && hex(set['--fg']) && cr(set['--bg'], set['--fg']) >= 4.5, `${n}: --fg on --bg contrast must be >= 4.5`);
+    check(hex(set['--bg']) && hex(set['--muted']) && cr(set['--bg'], set['--muted']) >= 3, `${n}: --muted on --bg contrast must be >= 3`);
+  }
+  const same_ = ['--bg', '--card', '--card-2', '--border', '--fg', '--muted'].filter(t => dark[t] && light[t] && same(dark[t], light[t]));
+  check(Object.keys(dark).length > 0 && Object.keys(light).length > 0 && same_.length === 0, 'dark and light must have distinct values for: ' + same_.join(' '));
+  check(dark['--bg'] && light['--bg'] && lum(dark['--bg']) < lum(light['--bg']), 'dark --bg must be darker than light --bg');
+}
