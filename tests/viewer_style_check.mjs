@@ -32,3 +32,18 @@ const tipsStatic = new Map();
 for (const m of markup.matchAll(/<(\w+)\b([^>]*\brole\s*=\s*["']tooltip["'][^>]*)>([\s\S]*?)<\/\1>/g)) {
   const id = attr(m[2], 'id'); if (id) tipsStatic.set(id, stripTags(m[3]));
 }
+
+// ---------- (1) no emoji / symbol glyphs outside SP and ZN ----------
+{
+  const stripSprites = s => s.replace(/\b(SP|ZN)\s*=\s*\[\[[\s\S]*?\]\]\s*;/g, '');
+  const text = markup + '\n' + scripts.map(stripSprites).join('\n');
+  const glyph = /[\p{Extended_Pictographic}\u2190-\u21FF\u25A0-\u25FF\u2600-\u27BF\u2B00-\u2BFF\u2022\u00D7\u2026\uFE0F]/gu;
+  const found = [...new Set(text.match(glyph) || [])].map(c => 'U+' + c.codePointAt(0).toString(16).toUpperCase());
+  check(found.length === 0, 'emoji/symbol glyph chars outside SP/ZN sprite arrays: ' + found.join(' '));
+  const ents = [...new Set([...text.matchAll(/&(?:#(\d+)|#x([0-9a-f]+)|(rarr|larr|uarr|darr|harr|bull|times|hellip|check|cross|starf|star|phone));/gi)]
+    .filter(m => m[3] || ((c => (c >= 0x2190 && c <= 0x21ff) || (c >= 0x25a0 && c <= 0x25ff) || (c >= 0x2600 && c <= 0x27bf) || (c >= 0x2b00 && c <= 0x2bff) || c === 0x2022 || c >= 0x1f000)(m[1] ? +m[1] : parseInt(m[2], 16))))
+    .map(m => m[0]))];
+  check(ents.length === 0, 'symbol HTML entities used as UI chrome: ' + ents.join(' '));
+  const esc = [...new Set([...text.matchAll(/\\u(2[1-9a-b][0-9a-f]{2}|2022|d83[cd])/gi)].map(m => m[0]))];
+  check(esc.length === 0, 'symbol \\u escapes used as UI chrome: ' + esc.join(' '));
+}
