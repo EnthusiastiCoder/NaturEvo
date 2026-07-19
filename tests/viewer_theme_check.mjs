@@ -127,3 +127,29 @@ const dark = tokens('dark'), light = tokens('light');
   const colours = sw.map(a => (a.match(/#[0-9a-fA-F]{6}\b/) || [''])[0].toLowerCase()).filter(Boolean);
   check(new Set(colours).size >= 6, 'swatches must carry 6 distinct #rrggbb values (e.g. data-accent), found ' + colours.join(','));
   check(colours.includes('#2e7d4f'), 'a swatch must be jungle green #2e7d4f');
+
+  const v = safeLoad({ storage: {}, matchMedia: 'dark' }, 'accent');
+  if (v) {
+    const T = v.win.__jv && v.win.__jv.theme;
+    check(!!T && !!T.accent, '__jv.theme.accent must exist');
+    if (T && T.accent) {
+      check(String(T.accent.get()).toLowerCase() === '#2e7d4f', 'default accent must be #2e7d4f, got ' + T.accent.get());
+      check(same(cssVar(v, '--accent'), '#2e7d4f'), '--accent at load must be #2e7d4f, got ' + cssVar(v, '--accent'));
+      T.accent.set('#7b3fa0');
+      check(same(cssVar(v, '--accent'), '#7b3fa0'), 'accent.set applies --accent live, got ' + cssVar(v, '--accent'));
+      check(String(v.store.get('jv-accent') || '').toLowerCase() === '#7b3fa0', 'accent persisted as jv-accent, got ' + v.store.get('jv-accent'));
+      const c = v.$('accent-custom');
+      if (c) { c.value = '#336699'; c.fire('input'); c.fire('change'); check(same(cssVar(v, '--accent'), '#336699') && String(T.accent.get()).toLowerCase() === '#336699', 'custom colour input sets accent, got ' + cssVar(v, '--accent')); }
+      else check(false, '#accent-custom element must exist in DOM');
+      const r = v.$('accent-reset');
+      if (r) { r.click(); check(same(cssVar(v, '--accent'), '#2e7d4f') && String(T.accent.get()).toLowerCase() === '#2e7d4f', 'reset restores #2e7d4f, got ' + cssVar(v, '--accent')); const sv = v.store.get('jv-accent'); check(!sv || same(sv, '#2e7d4f'), 'reset clears or resets persisted jv-accent, got ' + sv); }
+      else check(false, '#accent-reset element must exist in DOM');
+      T.accent.set('not-a-colour');
+      check(same(cssVar(v, '--accent'), '#2e7d4f'), 'invalid accent value is ignored');
+    }
+  }
+  const p = safeLoad({ storage: { 'jv-accent': '#7b3fa0', 'jv-theme': 'light' }, matchMedia: 'dark' }, 'persisted');
+  if (p) { check(same(cssVar(p, '--accent'), '#7b3fa0'), 'persisted jv-accent applied on load, got ' + cssVar(p, '--accent')); check(theme(p) === 'light', 'persisted theme applied on load'); }
+  const q = safeLoad({ storage: { 'jv-accent': 'javascript:1' } }, 'bad persisted');
+  if (q) check(same(cssVar(q, '--accent'), '#2e7d4f'), 'invalid persisted accent ignored, got ' + cssVar(q, '--accent'));
+}
