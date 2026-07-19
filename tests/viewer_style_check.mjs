@@ -63,3 +63,20 @@ const symbols = new Set([...html.matchAll(/<symbol\b[^>]*\bid\s*=\s*["'](i-[\w-]
   check(!/\b(src|href)\s*=\s*["']\s*(https?:)?\/\//i.test(html), 'no external src/href (http(s):// or //) allowed');
   check(!/<link\b/i.test(html), 'no <link> allowed');
 }
+
+// ---------- (3) icon-only buttons: aria-label + tooltip ----------
+{
+  const bad = [];
+  let n = 0;
+  for (const m of markup.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button>/g)) {
+    n++;
+    if (stripTags(m[2]).length > 0) continue;
+    const id = attr(m[1], 'id') || '(no id)';
+    const label = attr(m[1], 'aria-label');
+    const d = attr(m[1], 'aria-describedby');
+    if (!label || !label.trim()) bad.push(id + ': no aria-label');
+    if (!d || !tipsStatic.has(d.trim())) bad.push(id + ': aria-describedby must point at an existing role=tooltip id, got ' + d);
+  }
+  check(n > 0, 'no <button> found in markup');
+  check(bad.length === 0, 'icon-only buttons need aria-label + tooltip: ' + bad.join('; '));
+}
