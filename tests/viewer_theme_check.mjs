@@ -13,3 +13,9 @@ const decls = body => body.split(';').map(d => { const k = d.indexOf(':'); retur
 const themeSel = t => s => new RegExp('^:root\\[data-theme=["\']?' + t + '["\']?\\]$').test(s);
 const tokens = t => Object.fromEntries(rules.filter(r => r.sels.some(themeSel(t))).flatMap(r => decls(r.body)));
 const TOK = ['--bg', '--card', '--card-2', '--border', '--fg', '--muted', '--good', '--bad', '--warn', '--ring'];
+
+// colour maths (independent of the page)
+const hex = c => { c = String(c || '').trim().toLowerCase(); let m = c.match(/^#([0-9a-f]{6})$/); if (m) return [0, 2, 4].map(i => parseInt(m[1].slice(i, i + 2), 16)); m = c.match(/^#([0-9a-f]{3})$/); if (m) return [...m[1]].map(x => parseInt(x + x, 16)); m = c.match(/^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)/); return m ? [+m[1], +m[2], +m[3]] : null; };
+const lum = c => { const [r, g, b] = hex(c).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+const cr = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+const same = (a, b) => { const x = hex(a), y = hex(b); return !!x && !!y && x.join() === y.join(); };
