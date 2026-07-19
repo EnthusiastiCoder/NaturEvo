@@ -157,3 +157,20 @@ const symbols = new Set([...html.matchAll(/<symbol\b[^>]*\bid\s*=\s*["'](i-[\w-]
   const jsColours = scripts.join('\n').replace(/\b(SP|ZN)\s*=\s*\[\[[\s\S]*?\]\]\s*;/g, '').match(/#[0-9a-fA-F]{3,8}\b(?=[^\w-])|\brgba?\s*\(/g) || [];
   check(jsColours.length === 0, 'colour literals in inline JS (use tokens/classes): ' + jsColours.slice(0, 5).join(' '));
 }
+
+// ---------- (7) viewer/STYLE.md documents every component class ----------
+{
+  const stylePath = join(root, 'viewer', 'STYLE.md');
+  check(existsSync(stylePath), 'viewer/STYLE.md must exist');
+  if (existsSync(stylePath)) {
+    const doc = readFileSync(stylePath, 'utf8');
+    const classes = new Set();
+    for (const m of markup.matchAll(/\bclass\s*=\s*["']([^"']*)["']/g)) m[1].split(/\s+/).filter(Boolean).forEach(c => classes.add(c));
+    const undocumented = [...classes].filter(c => !new RegExp('(^|[^\\w-])\\.?' + c.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') + '($|[^\\w-])').test(doc));
+    check(classes.size > 0, 'markup uses no classes (component classes expected)');
+    check(undocumented.length === 0, 'classes used in markup but not documented in viewer/STYLE.md: ' + undocumented.join(', '));
+    for (const c of ['btn', 'btn-primary', 'btn-outline', 'btn-ghost', 'btn-icon', 'input', 'label', 'card', 'card-title', 'kpi', 'tab', 'tabs', 'badge', 'tip', 'info', 'expander', 'table', 'scroll']) {
+      check(new RegExp('(^|[^\\w-])\\.' + c + '($|[^\\w-])').test(doc), `STYLE.md must document .${c}`);
+    }
+  }
+}
