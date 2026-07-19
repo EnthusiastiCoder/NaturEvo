@@ -61,3 +61,22 @@ const dark = tokens('dark'), light = tokens('light');
   }
   for (const s of ['i-sun', 'i-moon', 'i-palette']) check(new RegExp('<symbol\\b[^>]*\\bid\\s*=\\s*["\']' + s + '["\']').test(html), 'sprite must define symbol ' + s);
 }
+
+// ---------- (4) initial theme precedence: localStorage > prefers-color-scheme > dark ----------
+{
+  const cases = [
+    ['no storage, matchMedia dark', {}, 'dark', 'dark'],
+    ['no storage, matchMedia light', {}, 'light', 'light'],
+    ['no storage, no matchMedia', {}, 'absent', 'dark'],
+    ['no storage, matchMedia throws', {}, 'throws', 'dark'],
+    ['storage light beats matchMedia dark', { 'jv-theme': 'light' }, 'dark', 'light'],
+    ['storage dark beats matchMedia light', { 'jv-theme': 'dark' }, 'light', 'dark'],
+    ['invalid storage ignored -> matchMedia light', { 'jv-theme': 'purple' }, 'light', 'light'],
+    ['invalid storage ignored -> default dark', { 'jv-theme': '' }, 'absent', 'dark'],
+  ];
+  for (const [name, storage, mm, want] of cases) {
+    const v = safeLoad({ storage, matchMedia: mm }, name); if (!v) continue;
+    check(theme(v) === want, `initial theme (${name}) must be ${want}, got ${theme(v)}`);
+    check(v.win.__jv && v.win.__jv.theme && typeof v.win.__jv.theme.get === 'function' && v.win.__jv.theme.get() === want, `__jv.theme.get() (${name}) must be ${want}`);
+  }
+}
