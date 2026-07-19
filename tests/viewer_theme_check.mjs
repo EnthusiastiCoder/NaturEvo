@@ -220,3 +220,13 @@ const dark = tokens('dark'), light = tokens('light');
   const js = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]).join('\n').replace(/\b(SP|ZN)\s*=\s*\[\[[\s\S]*?\]\]\s*;/g, '');
   check(/getComputedStyle/.test(js) && /jv-themechange/.test(js), 'inline JS must read tokens via getComputedStyle and handle jv-themechange');
 }
+
+// ---------- (9) file:// makes no fetch, even when theming ----------
+{
+  const v = safeLoad({ protocol: 'file:', storage: 'throw-access', matchMedia: 'light' }, 'file');
+  if (v) {
+    try { v.$('theme-toggle') && v.$('theme-toggle').click(); (v.win.__jv && v.win.__jv.theme ? v.win.__jv.theme.accent.set('#7b3fa0') : check(false, 'file://: __jv.theme missing')); } catch (e) { check(false, 'file:// theming threw: ' + e.message); }
+    await tick();
+    check(v.fetchCalls.length === 0, 'file:// must not fetch anything, got ' + v.fetchCalls.join(','));
+  }
+}
