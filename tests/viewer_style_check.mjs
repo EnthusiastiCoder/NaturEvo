@@ -174,3 +174,22 @@ const symbols = new Set([...html.matchAll(/<symbol\b[^>]*\bid\s*=\s*["'](i-[\w-]
     }
   }
 }
+
+// ---------- (8) dashboard renders KPI cards, <= 20 bars, log-scale toggle ----------
+{
+  const hist = new Array(60).fill(0); hist[3] = 4; hist[10] = 12; hist[11] = 3; hist[59] = 1981; // heavily skewed, 60 levels
+  const stats = { runs: 2000, wins: 1000, avg_deaths: 2.5, avg_final_level: 38.5, level_hist: hist };
+  const v = load({ protocol: 'file:', run: makeRun(30) });
+  v.win.STATS = stats;
+  v.$('tab-dashboard').click();
+  await tick();
+  const D = v.$('dstats'), H = v.$('hist');
+  const textOf = e => e.textContent + ' ' + stripTags(e._html || '') + ' ' + e.children.map(c => textOf(c)).join(' ');
+  const dText = textOf(D);
+  check(/win rate/i.test(dText) && /50(\.0+)?\s*%/.test(dText), 'KPI "Win rate" card must show 50% for 1000/2000 wins, got ' + JSON.stringify(dText.trim().slice(0, 200)));
+  check(/avg\.? deaths/i.test(dText) && /2\.5/.test(dText), 'KPI "Avg deaths" must show 2.5');
+  check(/avg\.? final level/i.test(dText) && /38\.5/.test(dText), 'KPI "Avg final level" must show 38.5');
+  check(/runs/i.test(dText) && /2000|2,000/.test(dText), 'KPI "Runs" must show 2000');
+  const kpiTree = e => e.children.reduce((n, c) => n + (c.classList.contains('kpi') ? 1 : 0) + kpiTree(c), 0);
+  const cardCount = kpiTree(D) + [...(D._html || '').matchAll(/class\s*=\s*["'][^"']*\bkpi\b/g)].length;
+  check(cardCount >= 4, 'at least 4 KPI cards (.kpi) expected in #dstats, found ' + cardCount);
