@@ -80,3 +80,35 @@ const dark = tokens('dark'), light = tokens('light');
     check(v.win.__jv && v.win.__jv.theme && typeof v.win.__jv.theme.get === 'function' && v.win.__jv.theme.get() === want, `__jv.theme.get() (${name}) must be ${want}`);
   }
 }
+
+// ---------- (5) toggle, persistence, storage failure ----------
+{
+  const v = safeLoad({ storage: {}, matchMedia: 'dark' }, 'toggle');
+  if (v) {
+    const t = v.$('theme-toggle');
+    check(!!t, '#theme-toggle element must exist in DOM');
+    if (t) {
+      t.click(); check(theme(v) === 'light', 'click toggles dark -> light, got ' + theme(v));
+      check(v.store.get('jv-theme') === 'light', 'toggle persists localStorage jv-theme=light, got ' + v.store.get('jv-theme'));
+      t.click(); check(theme(v) === 'dark', 'second click toggles light -> dark, got ' + theme(v));
+      check(v.store.get('jv-theme') === 'dark', 'toggle persists jv-theme=dark');
+    }
+    if (v.win.__jv && v.win.__jv.theme) { v.win.__jv.theme.set('light'); check(theme(v) === 'light' && v.win.__jv.theme.get() === 'light', '__jv.theme.set("light") applies'); }
+    else check(false, 'window.__jv.theme must exist');
+  }
+  for (const mode of ['throw-access', 'throw-ops']) {
+    const w = safeLoad({ storage: mode, matchMedia: 'light' }, 'storage ' + mode); if (!w) continue;
+    check(theme(w) === 'light', `${mode}: initial theme falls back to matchMedia light, got ${theme(w)}`);
+    const t = w.$('theme-toggle');
+    check(!!t, `${mode}: #theme-toggle must exist`);
+    if (t) {
+      let err = null; try { t.click(); } catch (e) { err = e; }
+      check(!err, `${mode}: toggle click must not throw (${err && err.message})`);
+      check(theme(w) === 'dark', `${mode}: toggle still works for the session, got ${theme(w)}`);
+      try { t.click(); } catch (e) { err = e; }
+      check(theme(w) === 'light', `${mode}: second toggle works`);
+    }
+    let e2 = null; try { w.win.__jv.theme.accent.set('#7b3fa0'); } catch (e) { e2 = e; }
+    check(!e2 && cssVar(w, '--accent').toLowerCase() === '#7b3fa0', `${mode}: accent.set still applies without storage (${e2 && e2.message})`);
+  }
+}
