@@ -153,3 +153,40 @@ const dark = tokens('dark'), light = tokens('light');
   const q = safeLoad({ storage: { 'jv-accent': 'javascript:1' } }, 'bad persisted');
   if (q) check(same(cssVar(q, '--accent'), '#2e7d4f'), 'invalid persisted accent ignored, got ' + cssVar(q, '--accent'));
 }
+
+// ---------- (7) accent-fg by luminance, accent-text fallback ----------
+{
+  const v = safeLoad({ storage: {}, matchMedia: 'dark' }, 'contrast');
+  const T = v && v.win.__jv && v.win.__jv.theme;
+  if (T && T.contrast) {
+    check(Math.abs(T.contrast('#000000', '#ffffff') - 21) < 0.01, 'contrast(black, white) must be 21, got ' + T.contrast('#000000', '#ffffff'));
+    check(Math.abs(T.contrast('#777777', '#ffffff') - cr('#777777', '#ffffff')) < 0.02, 'contrast must follow WCAG relative luminance');
+  } else check(false, '__jv.theme.contrast(a,b) must exist');
+  if (v && T && T.accent) {
+    const presets = ['#2e7d4f', '#7b3fa0', '#2563eb', '#c2410c', '#be185d', '#0e7490', '#b45309', '#ffff00', '#000080', '#ffffff', '#000000', '#808080', '#ffd700', '#00ff00'];
+    for (const a of presets) {
+      T.accent.set(a);
+      const fg = cssVar(v, '--accent-fg');
+      check(!!hex(fg), `--accent-fg must be set for ${a}, got "${fg}"`);
+      if (!hex(fg)) continue;
+      const best = cr(a, '#000000') >= cr(a, '#ffffff') ? '#000000' : '#ffffff';
+      check(same(fg, best), `--accent-fg for ${a} must be ${best} (higher contrast), got ${fg}`);
+      if (['#2e7d4f', '#7b3fa0', '#2563eb', '#ffff00', '#000080', '#c2410c', '#be185d', '#0e7490'].includes(a)) check(cr(a, fg) >= 4.5, `on-accent contrast for ${a} must be >= 4.5, got ${cr(a, fg).toFixed(2)}`);
+    }
+    // accent-text fallback: accent vs --bg < 3 => derived --accent-text >= 3 against --bg, per theme
+    for (const [th, bad] of [['dark', '#000080'], ['dark', '#101010'], ['light', '#ffff00'], ['light', '#f5f5dc']]) {
+      T.set(th); T.accent.set(bad);
+      const bg = cssVar(v, '--bg'), at = cssVar(v, '--accent-text');
+      check(!!hex(bg), `${th}: --bg must resolve to a colour, got "${bg}"`);
+      if (!hex(bg)) continue;
+      check(cr(bad, bg) < 3, `test setup: ${bad} on ${th} --bg should be < 3:1`);
+      check(!!hex(at) && cr(at, bg) >= 3, `${th}: --accent-text for low-contrast ${bad} must reach >= 3:1 on --bg, got "${at}" (${hex(at) ? cr(at, bg).toFixed(2) : 'n/a'})`);
+      if (hex(at)) check(th === 'dark' ? lum(at) > lum(bad) : lum(at) < lum(bad), `${th}: --accent-text must be ${th === 'dark' ? 'lighter' : 'darker'} than ${bad}`);
+    }
+    T.set('dark'); T.accent.set('#2e7d4f');
+    const at = cssVar(v, '--accent-text'), bg = cssVar(v, '--bg');
+    check(!!hex(at) && hex(bg) && cr(at, bg) >= 3, 'accent-text is always defined and >= 3:1 on --bg (jungle green, dark)');
+    check(/--accent-text/.test(css) && /var\(\s*--accent-text\s*\)/.test(css), 'CSS must use var(--accent-text) for accent-coloured text/borders');
+    check(/var\(\s*--accent-fg\s*\)/.test(css), 'CSS must use var(--accent-fg) for text on accent backgrounds');
+  }
+}
