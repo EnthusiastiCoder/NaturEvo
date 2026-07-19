@@ -80,3 +80,50 @@ const symbols = new Set([...html.matchAll(/<symbol\b[^>]*\bid\s*=\s*["'](i-[\w-]
   check(n > 0, 'no <button> found in markup');
   check(bad.length === 0, 'icon-only buttons need aria-label + tooltip: ' + bad.join('; '));
 }
+
+// ---------- (4) info buttons and generated knob tooltips ----------
+{
+  const infos = [...markup.matchAll(/<button\b([^>]*\bclass\s*=\s*["'][^"']*\binfo\b[^"']*["'][^>]*)>/g)];
+  check(infos.length >= 6, 'expected >= 6 static .info buttons (KPIs, controls), found ' + infos.length);
+  for (const m of infos) {
+    const id = attr(m[1], 'id') || attr(m[1], 'aria-label') || '(info)';
+    check(/^About /.test(attr(m[1], 'aria-label') || ''), `.info ${id}: aria-label must start with "About "`);
+    const d = attr(m[1], 'aria-describedby');
+    check(!!d && tipsStatic.has(d), `.info ${id}: aria-describedby must reference an existing role=tooltip id, got ${d}`);
+    check(!!d && (tipsStatic.get(d) || '').length > 0, `.info ${id}: tooltip text must be non-empty`);
+    check(/\btype\s*=\s*["']button["']/.test(m[1]), `.info ${id}: must be type="button"`);
+  }
+}
+{
+  const KNOBS = [
+    { key: 'alpha_k', label: 'Alpha', min: 0.25, max: 7.5, default: 2.5 },
+    { key: 'beta_k', label: 'Beta', min: 2, max: 40, default: 12 },
+    { key: 'gamma_k', label: 'Gamma', min: 10, max: 900, default: 125 },
+  ];
+  const fetchImpl = async url => (url.startsWith('/api/config') ? jsonResp({ knobs: KNOBS, max_runs: 20000 }) : jsonResp({ error: 'nf' }, 404));
+  const v = load({ protocol: 'http:', run: makeRun(30), fetchImpl });
+  await tick();
+  const K = v.$('knobs');
+  const has = (e, c) => e.classList && e.classList.contains(c);
+  // Collect info buttons and tooltips from both the node tree and serialized innerHTML strings.
+  const tips = new Map(), infos = [];
+  const visit = e => {
+    if (has(e, 'info')) infos.push({ d: e['aria-describedby'] || null, l: e['aria-label'] || null });
+    if (e.role === 'tooltip' || has(e, 'tip')) tips.set(e._id, (tips.get(e._id) || '') + e.textContent);
+    if (typeof e._html === 'string' && e._html) {
+      for (const m of e._html.matchAll(/<button\b([^>]*\bclass\s*=\s*["'][^"']*\binfo\b[^"']*["'][^>]*)>/g)) infos.push({ d: attr(m[1], 'aria-describedby'), l: attr(m[1], 'aria-label') });
+      for (const m of e._html.matchAll(/<(\w+)\b([^>]*\brole\s*=\s*["']tooltip["'][^>]*)>([\s\S]*?)<\/\1>/g)) { const id = attr(m[2], 'id'); if (id) tips.set(id, stripTags(m[3])); }
+    }
+    e.children.forEach(visit);
+  };
+  const box = v.$('run-controls') || K;
+  visit(box); visit(K);
+  // de-duplicate buttons visited twice (K is inside run-controls only in real DOM)
+  const uniq = [...new Map(infos.map(i => [i.d + '|' + i.l, i])).values()];
+  check(uniq.length >= KNOBS.length, `each knob needs an info button; found ${uniq.length} for ${KNOBS.length} knobs`);
+  KNOBS.forEach((k, i) => {
+    const tipText = (uniq.filter(x => x.d && tips.has(x.d)).map(x => tips.get(x.d)).filter(t => t.includes(String(k.min)) && t.includes(String(k.max)) && t.includes(String(k.default))));
+    check(tipText.length >= 1, `knob ${k.key}: no tooltip text containing min ${k.min}, max ${k.max} and default ${k.default}`);
+  });
+  check(uniq.every(x => x.l && /^About /.test(x.l)), 'generated .info buttons need aria-label "About ..."');
+}
