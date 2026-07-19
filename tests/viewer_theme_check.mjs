@@ -37,3 +37,13 @@ const dark = tokens('dark'), light = tokens('light');
   check(Object.keys(dark).length > 0 && Object.keys(light).length > 0 && same_.length === 0, 'dark and light must have distinct values for: ' + same_.join(' '));
   check(dark['--bg'] && light['--bg'] && lum(dark['--bg']) < lum(light['--bg']), 'dark --bg must be darker than light --bg');
 }
+
+// ---------- (2) no colour literal outside token blocks ----------
+{
+  const colour = /#[0-9a-fA-F]{3,8}\b|\brgba?\s*\(|\bhsla?\s*\(/;
+  const isTokenBlock = r => r.sels.every(s => /^:root(\[data-theme=["']?\w+["']?\])?$/.test(s));
+  const bad = [];
+  for (const r of rules) if (!isTokenBlock(r)) for (const [k, v] of decls(r.body)) if (colour.test(v)) bad.push(r.sels[0] + ' { ' + k + ': ' + v + ' }');
+  check(bad.length === 0, 'colour literals outside :root / :root[data-theme] blocks: ' + bad.slice(0, 5).join(' | '));
+  check(!/\bstyle\s*=\s*["'][^"']*(#[0-9a-f]{3,8}|rgb)/i.test(markup), 'no inline colour styles in markup');
+}
