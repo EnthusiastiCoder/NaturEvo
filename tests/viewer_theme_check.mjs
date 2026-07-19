@@ -47,3 +47,17 @@ const dark = tokens('dark'), light = tokens('light');
   check(bad.length === 0, 'colour literals outside :root / :root[data-theme] blocks: ' + bad.slice(0, 5).join(' | '));
   check(!/\bstyle\s*=\s*["'][^"']*(#[0-9a-f]{3,8}|rgb)/i.test(markup), 'no inline colour styles in markup');
 }
+
+// ---------- (3) toggle button + sprite ----------
+{
+  const m = markup.match(/<button\b([^>]*\bid\s*=\s*["']theme-toggle["'][^>]*)>([\s\S]*?)<\/button>/);
+  check(!!m, '#theme-toggle button must exist');
+  if (m) {
+    check(!!(attr(m[1], 'aria-label') || '').trim(), '#theme-toggle needs aria-label');
+    const d = attr(m[1], 'aria-describedby');
+    check(!!d && new RegExp('role\\s*=\\s*["\']tooltip["\'][^>]*>|id\\s*=\\s*["\']' + d + '["\'][^>]*role\\s*=\\s*["\']tooltip["\']').test(markup) && new RegExp('id\\s*=\\s*["\']' + d + '["\']').test(markup), '#theme-toggle aria-describedby must reference an existing role=tooltip element, got ' + d);
+    check(/type\s*=\s*["']button["']/.test(m[1]), '#theme-toggle must be type="button"');
+    check(/<use\b[^>]*href\s*=\s*["']#i-(sun|moon)["']/.test(m[2]), '#theme-toggle must use #i-sun or #i-moon');
+  }
+  for (const s of ['i-sun', 'i-moon', 'i-palette']) check(new RegExp('<symbol\\b[^>]*\\bid\\s*=\\s*["\']' + s + '["\']').test(html), 'sprite must define symbol ' + s);
+}
