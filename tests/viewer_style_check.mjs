@@ -47,3 +47,19 @@ for (const m of markup.matchAll(/<(\w+)\b([^>]*\brole\s*=\s*["']tooltip["'][^>]*
   const esc = [...new Set([...text.matchAll(/\\u(2[1-9a-b][0-9a-f]{2}|2022|d83[cd])/gi)].map(m => m[0]))];
   check(esc.length === 0, 'symbol \\u escapes used as UI chrome: ' + esc.join(' '));
 }
+
+// ---------- (2) one inline Lucide sprite, no external assets ----------
+const symbols = new Set([...html.matchAll(/<symbol\b[^>]*\bid\s*=\s*["'](i-[\w-]+)["']/g)].map(m => m[1]));
+{
+  const svgs = [...markup.matchAll(/<svg\b[\s\S]*?<\/svg>/g)].map(m => m[0]).filter(s => /<symbol\b/.test(s));
+  check(svgs.length === 1, 'exactly one inline sprite <svg> containing <symbol> required, found ' + svgs.length);
+  check(symbols.size >= 10, 'sprite must define >= 10 <symbol id="i-..."> icons, found ' + symbols.size);
+  check(/ISC/.test(html) && /lucide/i.test(html), 'Lucide ISC licence notice (mentions "ISC" and "Lucide") must be present in the html');
+  const uses = [...html.matchAll(/<use\b[^>]*\bhref\s*=\s*["']#(i-[\w-]+)["']/g)].map(m => m[1]);
+  check(uses.length >= 5, 'icons must be used via <use href="#i-name">, found ' + uses.length + ' uses');
+  const missing = [...new Set(uses.filter(u => !symbols.has(u)))];
+  check(missing.length === 0, '<use> references missing symbols: ' + missing.join(', '));
+  check(!/<img\b/i.test(html), 'no <img> allowed');
+  check(!/\b(src|href)\s*=\s*["']\s*(https?:)?\/\//i.test(html), 'no external src/href (http(s):// or //) allowed');
+  check(!/<link\b/i.test(html), 'no <link> allowed');
+}
