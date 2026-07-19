@@ -127,3 +127,14 @@ const symbols = new Set([...html.matchAll(/<symbol\b[^>]*\bid\s*=\s*["'](i-[\w-]
   });
   check(uniq.every(x => x.l && /^About /.test(x.l)), 'generated .info buttons need aria-label "About ..."');
 }
+
+// ---------- (5) tooltip CSS reveals on hover AND focus ----------
+{
+  const tipRules = nonRoot.filter(r => r.sels.some(s => /\.tip\b/.test(s)));
+  const reveal = (re) => tipRules.some(r => r.sels.some(s => /\.tip\b/.test(s) && re.test(s)));
+  check(reveal(/:hover/), 'tooltip CSS must reveal .tip on :hover');
+  check(reveal(/:focus(-visible|-within)?/), 'tooltip CSS must reveal .tip on :focus / :focus-visible / :focus-within');
+  check(tipRules.some(r => r.sels.every(s => !/:hover|:focus/.test(s)) && decls(r.body).some(([k, v]) => (k === 'visibility' && /hidden/.test(v)) || (k === 'display' && /none/.test(v)) || (k === 'opacity' && /^0/.test(v)))),
+    '.tip must be hidden by default (visibility:hidden / display:none / opacity:0)');
+  check(/\bEscape\b/.test(scripts.join('\n')), 'inline JS must handle the Escape key to hide tooltips');
+}
