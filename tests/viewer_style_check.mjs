@@ -138,3 +138,22 @@ const symbols = new Set([...html.matchAll(/<symbol\b[^>]*\bid\s*=\s*["'](i-[\w-]
     '.tip must be hidden by default (visibility:hidden / display:none / opacity:0)');
   check(/\bEscape\b/.test(scripts.join('\n')), 'inline JS must handle the Escape key to hide tooltips');
 }
+
+// ---------- (6) tokens, no ad-hoc colours / px font sizes ----------
+{
+  const need = ['--bg', '--card', '--border', '--fg', '--muted', '--accent', '--control-h', '--icon', '--r-md', '--s1', '--s2', '--s3', '--s4', '--s5', '--s6', '--fs-sm', '--fs-kpi', '--shadow-pop'];
+  const missing = need.filter(t => !new RegExp('(^|[;\\s])' + t + '\\s*:').test(rootCss));
+  check(missing.length === 0, ':root is missing tokens: ' + missing.join(' '));
+  const colour = /#[0-9a-fA-F]{3,8}\b|\brgba?\s*\(|\bhsla?\s*\(/;
+  const badC = [], badF = [];
+  for (const r of nonRoot) for (const [k, v] of decls(r.body)) {
+    if (colour.test(v)) badC.push(r.sels[0] + ' { ' + k + ': ' + v + ' }');
+    if ((k === 'font-size' || k === 'font') && /\d\s*px\b/.test(v)) badF.push(r.sels[0] + ' { ' + k + ': ' + v + ' }');
+  }
+  check(badC.length === 0, 'hex/rgb/hsl colour literals outside :root: ' + badC.slice(0, 5).join(' | '));
+  check(badF.length === 0, 'px font-size outside :root: ' + badF.slice(0, 5).join(' | '));
+  const inline = [...markup.matchAll(/\bstyle\s*=\s*["']([^"']*)["']/g)].map(m => m[1]);
+  check(inline.length === 0, 'no inline style= attributes in markup, found: ' + inline.slice(0, 3).join(' | '));
+  const jsColours = scripts.join('\n').replace(/\b(SP|ZN)\s*=\s*\[\[[\s\S]*?\]\]\s*;/g, '').match(/#[0-9a-fA-F]{3,8}\b(?=[^\w-])|\brgba?\s*\(/g) || [];
+  check(jsColours.length === 0, 'colour literals in inline JS (use tokens/classes): ' + jsColours.slice(0, 5).join(' '));
+}
