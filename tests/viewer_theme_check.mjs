@@ -112,3 +112,18 @@ const dark = tokens('dark'), light = tokens('light');
     check(!e2 && cssVar(w, '--accent').toLowerCase() === '#7b3fa0', `${mode}: accent.set still applies without storage (${e2 && e2.message})`);
   }
 }
+
+// ---------- (6) accent presets, custom, reset, persistence ----------
+{
+  const box = (markup.match(/<details\b[^>]*\bid\s*=\s*["']accent-box["'][\s\S]*?<\/details>/) || [''])[0];
+  check(!!box, 'details#accent-box must exist');
+  check(/<button\b[^>]*\bid\s*=\s*["']accent-btn["'][^>]*aria-label|<button\b[^>]*aria-label[^>]*\bid\s*=\s*["']accent-btn["']/.test(markup), '#accent-btn needs aria-label');
+  check(/id\s*=\s*["']accent-btn["'][\s\S]{0,400}#i-palette/.test(markup), '#accent-btn must use #i-palette');
+  check(/<input\b[^>]*\bid\s*=\s*["']accent-custom["'][^>]*>/.test(markup) && /type\s*=\s*["']color["']/.test((markup.match(/<input\b[^>]*\bid\s*=\s*["']accent-custom["'][^>]*>/) || [''])[0]), '#accent-custom must be <input type="color">');
+  check(/\bid\s*=\s*["']accent-reset["']/.test(markup), '#accent-reset must exist');
+  const sw = [...box.matchAll(/<button\b([^>]*)>/g)].map(m => m[1]).filter(a => attr(a, 'id') !== 'accent-reset');
+  check(sw.length >= 6, 'accent-box needs >= 6 preset swatch buttons, found ' + sw.length);
+  check(sw.every(a => (attr(a, 'aria-label') || '').trim().length > 0), 'every swatch needs an aria-label');
+  const colours = sw.map(a => (a.match(/#[0-9a-fA-F]{6}\b/) || [''])[0].toLowerCase()).filter(Boolean);
+  check(new Set(colours).size >= 6, 'swatches must carry 6 distinct #rrggbb values (e.g. data-accent), found ' + colours.join(','));
+  check(colours.includes('#2e7d4f'), 'a swatch must be jungle green #2e7d4f');
