@@ -230,3 +230,5 @@ const dark = tokens('dark'), light = tokens('light');
     check(v.fetchCalls.length === 0, 'file:// must not fetch anything, got ' + v.fetchCalls.join(','));
   }
 }
+
+done();
