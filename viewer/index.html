@@ -551,7 +551,7 @@ function paintLog(){
   if(typeof it==="object"){d=document.createElement("button");d.type="button";d.className="lhead";d.setAttribute("aria-expanded",it.open?"true":"false");d.dataset.g=it.ck;
    var ic=document.createElement("span");ic.innerHTML=(it.open?'<svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg>':'<svg class="icon" aria-hidden="true"><use href="#i-chevron-right"/></svg>');d.appendChild(ic);var nm=document.createElement("span");nm.textContent=it.name+" "+it.count;d.appendChild(nm);
    d.onclick=(function(ck){return function(){collapsed[ck]=!collapsed[ck];this.setAttribute("aria-expanded",collapsed[ck]?"false":"true");var t=$("log").scrollTop;rebuildLog();$("log").scrollTop=t;paintLog();markCur();};})(it.ck);}
-  else{d=document.createElement("div");d.className="lrow";d.dataset.i=String(it);d.textContent=it+" ["+ev[it].kind+"] "+ev[it].text;
+  else{d=document.createElement("div");d.className="lrow";d.dataset.i=String(base+it);d.textContent=(base+it)+" ["+ev[it].kind+"] "+ev[it].text;if(ev[it].kind==="evolve")d.className="lrow lev";
    d.onclick=function(){cur=+this.dataset.i;render();};}
   L.appendChild(d);}
  if(win){sp=document.createElement("div");sp.className="lspace";sp.style.height=((N-end)*ROW)+"px";L.appendChild(sp);}
