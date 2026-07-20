@@ -130,6 +130,10 @@ impl Config {
                     "boss_attempts" => self.boss_attempts = n,
                     "event_cap" => self.event_cap = n,
                     "postgame_level_cap" => self.postgame_level_cap = n,
+                    "map_size" => self.map_size = n,
+                    "wander_radius" => self.wander_radius = n,
+                    "elites_per_zone" => self.elites_per_zone = n,
+                    "max_steps" => self.max_steps = n,
                     _ => self.evolve_kills = n,
                 }
             }
