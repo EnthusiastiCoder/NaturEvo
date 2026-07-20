@@ -601,7 +601,7 @@ impl Sim {
                 let species = if self.hero.zone == 8 {
                     BOSS
                 } else {
-                    z.species[self.rng.range(0, z.species.len() as i32 - 1) as usize]
+                    z.species[self.rng.range(0, z.species.len() as i32 - 1) as usize].0
                 };
                 let level = self.rng.range(z.min as i32, z.max as i32) as u32;
                 if self.hero.zone == 8 {
