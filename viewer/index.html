@@ -53,6 +53,10 @@ body{height:100dvh;margin:0;background:var(--bg);color:var(--fg);font-family:sys
 .range::-moz-range-track{height:var(--s1);border-radius:var(--s1);background:var(--border)}
 .range::-webkit-slider-thumb{-webkit-appearance:none;width:var(--s4);height:var(--s4);border-radius:50%;border:0;background:var(--accent-text);margin-top:calc((var(--s1) - var(--s4)) / 2)}
 .range::-moz-range-thumb{width:var(--s4);height:var(--s4);border-radius:50%;border:0;background:var(--accent-text)}
+#accent-custom{width:var(--s6);height:var(--control-h);padding:var(--s1);background:var(--card-2);border:1px solid var(--border);border-radius:var(--r-md);cursor:pointer}
+#accent-custom::-webkit-color-swatch-wrapper{padding:0}
+#accent-custom::-webkit-color-swatch{border:0;border-radius:var(--r-sm)}
+#accent-custom::-moz-color-swatch{border:0;border-radius:var(--r-sm)}
 input[type=checkbox]{accent-color:var(--accent-text)}
 .info{width:var(--s5);height:var(--s5);border-color:transparent;background:transparent;color:var(--muted)}
 .info:hover:not(:disabled){color:var(--fg)}
