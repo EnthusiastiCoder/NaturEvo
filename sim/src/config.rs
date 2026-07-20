@@ -175,6 +175,12 @@ impl Config {
             ("event_cap", self.event_cap as f64),
             ("postgame_level_cap", self.postgame_level_cap as f64),
             ("evolve_kills", self.evolve_kills as f64),
+            ("map_size", self.map_size as f64),
+            ("encounter_rate", self.encounter_rate as f64),
+            ("wander_radius", self.wander_radius as f64),
+            ("elites_per_zone", self.elites_per_zone as f64),
+            ("elite_mult", self.elite_mult as f64),
+            ("max_steps", self.max_steps as f64),
         ];
         for (key, v) in vals {
             check(knob(key).unwrap(), v)?;
