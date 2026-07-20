@@ -566,7 +566,7 @@ function flatPos(i){
 }
 function logCur(force){
  if(logDirty){rebuildLog();force=true;}
- var L=$("log"),p=flatPos(cur);
+ var L=$("log"),p=flatPos(cur-base);
  if(p>=0){var y=p*ROW,vh=L.clientHeight||260;
   if(force||y<L.scrollTop||y>L.scrollTop+vh-ROW)L.scrollTop=Math.max(0,y-vh/2+ROW/2);}
  paintLog();markCur();
