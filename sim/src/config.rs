@@ -17,6 +17,12 @@ pub struct Config {
     pub event_cap: u32,
     pub postgame_level_cap: u32,
     pub evolve_kills: u32,
+    pub map_size: u32,
+    pub encounter_rate: f32,
+    pub wander_radius: u32,
+    pub elites_per_zone: u32,
+    pub elite_mult: f32,
+    pub max_steps: u32,
 }
 
 pub const MAX_EVENT_CAP: u32 = 1_048_576;
