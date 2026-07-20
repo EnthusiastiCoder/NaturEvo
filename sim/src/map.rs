@@ -257,3 +257,29 @@ impl Map {
         }
         None
     }
+
+    /// The closest passable tile of `zone` by walking distance (BFS). `from` itself if already inside.
+    pub fn nearest_tile_of_zone(&self, from: (usize, usize), zone: usize) -> Option<(usize, usize)> {
+        if !self.passable(from.0, from.1) {
+            return None;
+        }
+        let n = self.n;
+        let mut seen = vec![false; n * n];
+        let mut q = VecDeque::new();
+        seen[from.1 * n + from.0] = true;
+        q.push_back(from);
+        while let Some(p) = q.pop_front() {
+            if self.zone_of(p.0, p.1) == zone {
+                return Some(p);
+            }
+            for nb in self.nbrs(p) {
+                let j = nb.1 * n + nb.0;
+                if self.tiles[j] != Tile::Wall && !seen[j] {
+                    seen[j] = true;
+                    q.push_back(nb);
+                }
+            }
+        }
+        None
+    }
+}
