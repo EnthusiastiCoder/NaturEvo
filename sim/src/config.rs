@@ -64,7 +64,7 @@ pub struct Knob {
     pub default: f64,
 }
 
-static KNOBS: [Knob; 16] = [
+static KNOBS: [Knob; 22] = [
     Knob { key: "monster_hp_mult", label: "Monster HP multiplier", min: 0.1, max: 5.0, default: 1.0 },
     Knob { key: "monster_atk_mult", label: "Monster attack multiplier", min: 0.1, max: 5.0, default: 1.0 },
     Knob { key: "boss_hp_mult", label: "Boss HP multiplier", min: 0.1, max: 5.0, default: 1.0 },
