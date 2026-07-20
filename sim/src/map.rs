@@ -44,3 +44,20 @@ fn noise_field(rng: &mut Rng, n: usize, cell: usize) -> Vec<f32> {
     }
     out
 }
+
+/// Marks the `share` highest-noise tiles among `eligible` (ties broken by index).
+/// With `groups`, the quota is applied per group, with at least `min_take` (capped at 70%) each.
+fn top_share(noise: &[f32], eligible: &[bool], share: f64, groups: Option<&[u8]>, min_take: usize) -> Vec<bool> {
+    let mut out = vec![false; noise.len()];
+    for gid in 0..9u8 {
+        let mut idx: Vec<usize> =
+            (0..noise.len()).filter(|&i| eligible[i] && groups.map_or(gid == 0, |g| g[i] == gid)).collect();
+        idx.sort_by(|&a, &b| noise[b].partial_cmp(&noise[a]).unwrap().then(a.cmp(&b)));
+        let want = (idx.len() as f64 * share).round() as usize;
+        let take = want.max(min_take.min(idx.len() * 7 / 10));
+        for &i in idx.iter().take(take) {
+            out[i] = true;
+        }
+    }
+    out
+}
