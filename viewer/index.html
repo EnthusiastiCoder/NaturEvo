@@ -434,7 +434,9 @@ function render(){
   ["sum-level","sum-hp","sum-zone","sum-progress","sum-gold","sum-potions"].forEach(function(i){$(i).textContent="-";});$("sum-hpbar").style.width="0";return;}
  cur=Math.max(0,Math.min(total()-1,cur));
  $("scrub").value=String(cur);
- $("info").textContent="event "+cur+" / "+(ev.length-1)+" · seed "+run.seed;
+ if(!inWin(cur)){if(fetchWin(cur)){$("info").textContent="Loading events around "+cur+"...";return;}}
+ var e=ev[cur-base],h=e.hero||{},m=e.mon;
+ $("info").textContent="event "+cur+" / "+(total()-1)+" · seed "+seedStr();
  $("hemo").textContent=SP[SP.length-1][1];
  $("hbar").style.width=pct(h.hp,h.max_hp)+"%";
  $("hhp").textContent="HP "+h.hp+"/"+h.max_hp+" · Lv "+h.level;$("last").textContent=e.text||"";$("last").title=e.text||"";
