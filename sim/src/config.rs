@@ -81,6 +81,12 @@ static KNOBS: [Knob; 22] = [
     Knob { key: "event_cap", label: "Event cap (max events per run)", min: 100.0, max: 1048576.0, default: 65536.0 },
     Knob { key: "postgame_level_cap", label: "Post-game hero level cap", min: 40.0, max: 200.0, default: 80.0 },
     Knob { key: "evolve_kills", label: "Post-game kills per evolution", min: 10.0, max: 100000.0, default: 300.0 },
+    Knob { key: "map_size", label: "Map size (tiles per side)", min: 32.0, max: 128.0, default: 64.0 },
+    Knob { key: "encounter_rate", label: "Encounter chance per grass step", min: 0.01, max: 0.5, default: 0.12 },
+    Knob { key: "wander_radius", label: "Hero wander radius (tiles)", min: 2.0, max: 20.0, default: 6.0 },
+    Knob { key: "elites_per_zone", label: "Roaming elites per zone", min: 0.0, max: 3.0, default: 1.0 },
+    Knob { key: "elite_mult", label: "Elite stat multiplier", min: 1.0, max: 3.0, default: 1.4 },
+    Knob { key: "max_steps", label: "Step limit (safety cap)", min: 1000.0, max: 50000000.0, default: 5000000.0 },
 ];
 
 pub fn knobs() -> &'static [Knob] {
