@@ -120,7 +120,8 @@ impl Config {
                     self.hero_hp_per_level = n;
                 }
             }
-            "potion_cost" | "boss_level" | "boss_attempts" | "event_cap" | "postgame_level_cap" | "evolve_kills" => {
+            "potion_cost" | "boss_level" | "boss_attempts" | "event_cap" | "postgame_level_cap" | "evolve_kills"
+            | "map_size" | "wander_radius" | "elites_per_zone" | "max_steps" => {
                 let n: u32 = v.parse().map_err(|_| bad())?;
                 check(k, n as f64)?;
                 match key {
