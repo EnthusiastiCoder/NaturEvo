@@ -158,7 +158,7 @@ impl Config {
     }
 
     pub fn validate(&self) -> Result<(), String> {
-        let vals: [(&str, f64); 16] = [
+        let vals: [(&str, f64); 22] = [
             ("monster_hp_mult", self.monster_hp_mult as f64),
             ("monster_atk_mult", self.monster_atk_mult as f64),
             ("boss_hp_mult", self.boss_hp_mult as f64),
