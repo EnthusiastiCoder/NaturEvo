@@ -124,3 +124,9 @@ scale uses 0, 1, 10, 100, ... Histogram x labels are every Nth bin, anchored so 
 - Speed is a logarithmic range `#speed` (0.25 to 4096) plus a numeric `#speed-num`; base rate is 10 events per second.
 - `#seed` is a wide text input (digits only, 24ch).
 - Canvases are sized to round(CSS size x devicePixelRatio) with a matching transform (`fitCanvas`).
+
+## Post-game
+
+- `#stage` is a `.badge` in the monster header showing "Stage N" (hidden at stage 0). `.post-stats` is the dashboard row of
+  post-game averages (`.pstat` items). `.lev` marks evolve events in the log. Runs longer than the loaded window are
+  fetched in windows (`from`, `count`); the seed is kept as a string so 20-digit seeds are never rounded.
