@@ -450,7 +450,7 @@ function render(){
  $("sum-hp").textContent=h.hp+"/"+h.max_hp;
  $("sum-hpbar").style.width=pct(h.hp,h.max_hp)+"%";
  $("sum-zone").textContent=z[1]+" "+z[0];
- $("sum-progress").textContent=cur+" / "+(ev.length-1);
+ $("sum-progress").textContent=cur+" / "+(total()-1);
  $("sum-gold").textContent=String(h.gold);
  $("sum-potions").textContent=String(h.potions);
  if(last)oc.textContent=run.won?"WON":"LOST";
