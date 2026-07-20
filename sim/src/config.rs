@@ -98,7 +98,8 @@ fn knob(key: &str) -> Option<&'static Knob> {
 }
 
 fn check(k: &Knob, v: f64) -> Result<(), String> {
-    if !v.is_finite() || v < k.min || v > k.max {
+    // bounds are rounded to f32 so an f32 field set to its own bound (e.g. 0.01) passes
+    if !v.is_finite() || v < k.min as f32 as f64 || v > k.max as f32 as f64 {
         return Err(format!("{}: value must be between {} and {}", k.key, k.min, k.max));
     }
     Ok(())
