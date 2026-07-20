@@ -316,7 +316,18 @@ function counts(){if(cnt&&cnt.ev===ev)return cnt;var k=[],d=[],sk=[],a=0,b=0,c=0
  cnt={ev:ev,k:k,d:d,s:sk};return cnt;}
 var $=function(i){return document.getElementById(i)};
 var root=document.documentElement;
-var run=window.RUN||null, ev=(run&&run.events)||[], cur=0, timer=null;
+var run=window.RUN||null, ev=(run&&run.events)||[], cur=0, timer=null, base=(run&&run.from)||0, loading=false;
+function total(){return (run&&run.total)||ev.length;}
+function seedStr(){return run?String(run.seedStr||run.seed):"";}
+function inWin(g){return g>=base&&g<base+ev.length;}
+function fetchWin(g){
+ if(loading||!/^https?:$/.test(location.protocol)||!run||!run.total){cur=Math.max(base,Math.min(base+ev.length-1,cur));return false;}
+ loading=true;var C=2000,F=Math.max(0,Math.min(total()-C,g-C/2));
+ fetch("/api/run?seed="+encodeURIComponent(seedStr())+"&from="+F+"&count="+C+(knobList.length?"&"+knobQuery():"")).then(function(r){return r.json();}).then(function(j){
+  loading=false;if(j&&j.events&&j.events.length){var sd=run.seedStr;run=j;run.seedStr=sd;ev=j.events;base=j.from||0;logDirty=true;}else cur=Math.max(base,Math.min(base+ev.length-1,cur));render();
+ },function(){loading=false;cur=Math.max(base,Math.min(base+ev.length-1,cur));render();});
+ return true;
+}
 
 /* ---- tooltip text map and helper (see viewer/STYLE.md) ---- */
 var INFO={"win-rate":"Share of simulated runs that ended with the hero winning.","avg-deaths":"Average number of hero deaths per run.","avg-level":"Average hero level at the end of a run.","runs":"Number of simulated runs in this batch.","median":"Median final level: half of the runs ended at or below this level.","hist":"Runs grouped by final level, in at most 20 bins. Hover a bar for exact counts. Log scale helps when one level dominates.","table":"Runs per final level with share of all runs and cumulative share. Only levels that were reached are listed."};
