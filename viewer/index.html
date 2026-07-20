@@ -500,7 +500,7 @@ $("speed").oninput=$("speed").onchange=function(){var v=sClamp(SMIN*Math.pow(SMA
 $("speed-num").oninput=function(){var v=parseFloat(this.value);if(isFinite(v)){speedVal=sClamp(v);$("speed").value=String(sPos(speedVal));}};
 $("speed-num").onchange=function(){var v=parseFloat(this.value);if(!isFinite(v)){this.value=String(speedVal);return;}v=sClamp(v);this.value=String(v);setSpeed(v,false);};
 function step(){var now=Date.now(),dt=Math.max(0,now-lastTick);lastTick=now;acc+=10*speedVal*dt/1000;var n=Math.floor(acc);acc-=n;
- if(n>0){cur=Math.min(ev.length-1,cur+n);render();}if(cur>=ev.length-1)stop();}
+ if(n>0){cur=Math.min(total()-1,cur+n);render();}if(cur>=total()-1)stop();}
 function playIcon(p){var b=$("play");b.innerHTML='<svg class="icon" aria-hidden="true"><use href="#i-'+(p?"pause":"play")+'"/></svg>';b.setAttribute("aria-label",p?"Pause":"Play");}
 function stop(){clearInterval(timer);timer=null;playIcon(false);}
 $("play").onclick=function(){if(timer)return stop();if(cur>=ev.length-1)cur=0;playIcon(true);lastTick=Date.now();acc=1;timer=setInterval(step,50);};
