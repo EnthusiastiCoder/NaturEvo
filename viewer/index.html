@@ -443,9 +443,9 @@ function render(){
  heroChips(h);
  var z=ZN[h.zone]||["?",""];$("zone").textContent=z[1]+" "+z[0];
  if(m){var s=SP[m.species]||["?","?"];$("memo").textContent=s[1];$("mbar").style.width=pct(m.hp,m.max_hp)+"%";
-  $("mname").textContent=s[0];$("mhp").textContent="HP "+m.hp+"/"+m.max_hp+" · Lv "+m.level;}
- else{$("memo").textContent="";$("mbar").style.width="0";$("mname").textContent="No enemy";$("mhp").textContent="";}
- var last=cur>=ev.length-1,oc=$("outcome");
+  $("mname").textContent=s[0];var stg=$("stage");if(m.stage>0){stg.textContent="Stage "+m.stage;stg.classList.remove("hidden");}else{stg.textContent="";stg.classList.add("hidden");}$("mhp").textContent="HP "+m.hp+"/"+m.max_hp+" · Lv "+m.level;}
+ else{$("memo").textContent="";$("mbar").style.width="0";$("mname").textContent="No enemy";$("stage").textContent="";$("stage").classList.add("hidden");$("mhp").textContent="";}
+ var last=cur>=total()-1,oc=$("outcome");
  $("sum-level").textContent=String(h.level);
  $("sum-hp").textContent=h.hp+"/"+h.max_hp;
  $("sum-hpbar").style.width=pct(h.hp,h.max_hp)+"%";
