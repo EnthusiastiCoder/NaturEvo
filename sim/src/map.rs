@@ -188,3 +188,22 @@ impl Map {
         }
         v.into_iter().filter(|p| p.0 != usize::MAX)
     }
+
+    pub fn size(&self) -> usize {
+        self.n
+    }
+    pub fn tile(&self, x: usize, y: usize) -> Tile {
+        self.tiles[y * self.n + x]
+    }
+    pub fn zone_of(&self, x: usize, y: usize) -> usize {
+        self.zones[y * self.n + x] as usize
+    }
+    pub fn passable(&self, x: usize, y: usize) -> bool {
+        x < self.n && y < self.n && self.tiles[y * self.n + x] != Tile::Wall
+    }
+    pub fn camp(&self) -> (usize, usize) {
+        self.anchors[0]
+    }
+    pub fn anchors(&self) -> &[(usize, usize)] {
+        &self.anchors
+    }
