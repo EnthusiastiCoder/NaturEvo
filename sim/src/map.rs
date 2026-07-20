@@ -283,3 +283,44 @@ impl Map {
         None
     }
 }
+
+/// JSON body of `GET /api/map`.
+pub fn map_body(m: &Map) -> String {
+    let n = m.size();
+    let mut s = format!("{{\"w\":{},\"h\":{},\"tiles\":[", n, n);
+    for y in 0..n {
+        if y > 0 {
+            s.push(',');
+        }
+        s.push('"');
+        for x in 0..n {
+            s.push(match m.tile(x, y) {
+                Tile::Floor => '.',
+                Tile::Grass => ',',
+                Tile::Wall => '#',
+                Tile::Camp => 'C',
+            });
+        }
+        s.push('"');
+    }
+    s.push_str("],\"zones\":[");
+    for y in 0..n {
+        if y > 0 {
+            s.push(',');
+        }
+        s.push('"');
+        for x in 0..n {
+            s.push((b'0' + m.zone_of(x, y) as u8) as char);
+        }
+        s.push('"');
+    }
+    s.push_str("],\"anchors\":[");
+    for (i, a) in m.anchors().iter().enumerate() {
+        if i > 0 {
+            s.push(',');
+        }
+        s.push_str(&format!("[{},{}]", a.0, a.1));
+    }
+    s.push_str("]}");
+    s
+}
