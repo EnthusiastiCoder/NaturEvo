@@ -170,3 +170,21 @@ impl Map {
         }
         seen
     }
+
+    fn nbrs(&self, (x, y): (usize, usize)) -> impl Iterator<Item = (usize, usize)> {
+        let n = self.n;
+        let mut v = [(usize::MAX, usize::MAX); 4];
+        if y > 0 {
+            v[0] = (x, y - 1);
+        }
+        if x > 0 {
+            v[1] = (x - 1, y);
+        }
+        if x + 1 < n {
+            v[2] = (x + 1, y);
+        }
+        if y + 1 < n {
+            v[3] = (x, y + 1);
+        }
+        v.into_iter().filter(|p| p.0 != usize::MAX)
+    }
