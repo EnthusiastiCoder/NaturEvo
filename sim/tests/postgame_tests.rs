@@ -45,7 +45,7 @@ fn cfg_defaults() {
 
 #[test]
 fn cfg_sixteen_knobs_with_ranges() {
-    assert_eq!(knobs().len(), 16);
+    assert_eq!(knobs().len(), 22);
     let find = |k: &str| knobs().iter().find(|x| x.key == k).unwrap_or_else(|| panic!("no knob {}", k));
     for (k, lo, hi, d) in [
         ("event_cap", 100.0, 1_048_576.0, 65536.0),
