@@ -432,7 +432,7 @@ function pct(a,b){return b>0?Math.max(0,Math.min(100,100*a/b)):0}
 function render(){
  if(!ev.length){$("info").textContent="No run data (data/run.js missing)";$("outcome").textContent="No run";
   ["sum-level","sum-hp","sum-zone","sum-progress","sum-gold","sum-potions"].forEach(function(i){$(i).textContent="-";});$("sum-hpbar").style.width="0";return;}
- var e=ev[cur],h=e.hero||{},m=e.mon;
+ cur=Math.max(0,Math.min(total()-1,cur));
  $("scrub").value=String(cur);
  $("info").textContent="event "+cur+" / "+(ev.length-1)+" · seed "+run.seed;
  $("hemo").textContent=SP[SP.length-1][1];
