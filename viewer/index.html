@@ -609,6 +609,13 @@ function dash(){
   var vl=document.createElement("div");vl.className="kpi-value";vl.textContent=String(p[2]);
   if(p[0]==="win-rate"){var bg=document.createElement("span");bg.className="badge";bg.textContent=s.wins+" of "+s.runs;vl.appendChild(bg);}
   d.appendChild(lb);d.appendChild(vl);D.appendChild(d);});
+ var ps=$("post-stats");ps.textContent="";
+ if(s.stage_hist||s.avg_events!==undefined){ps.classList.remove("hidden");
+  var add=function(k,v){var w=document.createElement("span");w.className="pstat";var a=document.createElement("span");a.className="label";a.textContent=k+" ";var b=document.createElement("b");b.textContent=String(v)+" ";w.appendChild(a);w.appendChild(b);ps.appendChild(w);};
+  var f1=function(x){return x===undefined?"-":(+x).toFixed(1);};
+  add("Avg events",f1(s.avg_events));add("Avg first-win event",f1(s.avg_first_win_event));add("Avg post-game kills",f1(s.avg_post_kills));add("Avg post-game deaths",f1(s.avg_post_deaths));
+  (s.stage_hist||[]).forEach(function(c,k){add("Stage "+k+" runs",c);});
+ }else ps.classList.add("hidden");
  $("dcap").textContent="Win rate counts runs that won. Final level is the level where a run ended, won or not, so the median level can be high even when only some runs win.";
  $("outcomes").innerHTML='<div class="obar" role="img" aria-label="Wins '+s.wins+', not won '+(s.runs-s.wins)+'"><div class="owin" style="width:'+wr+'%"></div><div class="olose" style="width:'+(100-wr)+'%"></div></div><div class="legend"><span><span class="dot dot-win"></span>Won '+s.wins+' ('+wr.toFixed(1)+'%)</span><span><span class="dot dot-lose"></span>Not won '+(s.runs-s.wins)+' ('+(100-wr).toFixed(1)+'%)</span><span>Avg deaths '+(+ad).toFixed(1)+' per run</span></div>';
  $("hist-info").innerHTML=tipHtml("hist","Final level distribution",INFO.hist);$("tbl-info").innerHTML=tipHtml("table","Levels reached",INFO.table);
