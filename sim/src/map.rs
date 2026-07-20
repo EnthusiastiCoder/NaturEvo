@@ -61,3 +61,32 @@ fn top_share(noise: &[f32], eligible: &[bool], share: f64, groups: Option<&[u8]>
     }
     out
 }
+
+impl Map {
+    pub fn generate(seed: u64, size: usize) -> Map {
+        let n = size.max(8);
+        let mut rng = Rng::new(seed ^ MAP_SALT);
+        // anchors: camp in the corner, 8 zones on a jittered 3x3 grid, ordered by distance from camp
+        let camp = (2usize, 2usize);
+        let cell = n as f32 / 3.0;
+        let jit = (n as f32 / 10.0) as i32;
+        let mut cells: Vec<(usize, usize)> = Vec::new();
+        for cy in 0..3usize {
+            for cx in 0..3usize {
+                if (cx, cy) == (0, 0) {
+                    continue;
+                }
+                let jx = rng.range(-jit, jit);
+                let jy = rng.range(-jit, jit);
+                let x = ((cx as f32 + 0.5) * cell) as i32 + jx;
+                let y = ((cy as f32 + 0.5) * cell) as i32 + jy;
+                cells.push((x.clamp(3, n as i32 - 4) as usize, y.clamp(3, n as i32 - 4) as usize));
+            }
+        }
+        let d2 = |a: (usize, usize), b: (usize, usize)| {
+            let (dx, dy) = (a.0 as i64 - b.0 as i64, a.1 as i64 - b.1 as i64);
+            dx * dx + dy * dy
+        };
+        cells.sort_by_key(|&a| (d2(a, camp), a.1, a.0));
+        let mut anchors = vec![camp];
+        anchors.extend(cells);
