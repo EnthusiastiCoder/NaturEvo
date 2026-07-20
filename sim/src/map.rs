@@ -120,3 +120,35 @@ impl Map {
             .map(|i| if walls[i] { Tile::Wall } else if grass[i] { Tile::Grass } else { Tile::Floor })
             .collect();
         tiles[camp.1 * n + camp.0] = Tile::Camp;
+
+        let mut m = Map { n, tiles, zones, anchors };
+        // reachability: carve an L corridor to any cut-off anchor, then wall off unreachable floor
+        for _ in 0..16 {
+            let seen = m.flood();
+            let Some(z) = (1..9).find(|&z| {
+                let a = m.anchors[z];
+                !seen[a.1 * n + a.0]
+            }) else {
+                break;
+            };
+            let (a, b) = (m.anchors[z], m.anchors[z - 1]);
+            let (mut x, mut y) = a;
+            while (x, y) != b {
+                if x != b.0 {
+                    x = if x < b.0 { x + 1 } else { x - 1 };
+                } else {
+                    y = if y < b.1 { y + 1 } else { y - 1 };
+                }
+                if m.tiles[y * n + x] == Tile::Wall {
+                    m.tiles[y * n + x] = Tile::Floor;
+                }
+            }
+        }
+        let seen = m.flood();
+        for i in 0..n * n {
+            if !seen[i] {
+                m.tiles[i] = Tile::Wall;
+            }
+        }
+        m
+    }
