@@ -10,3 +10,10 @@ pub enum Tile {
     Wall,
     Camp,
 }
+
+pub struct Map {
+    n: usize,
+    tiles: Vec<Tile>,
+    zones: Vec<u8>,
+    anchors: Vec<(usize, usize)>,
+}
