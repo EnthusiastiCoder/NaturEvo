@@ -105,3 +105,18 @@ impl Map {
                 zones[y * n + x] = best.1 as u8;
             }
         }
+
+        // walls (never near an anchor) then grass (never in camp or grove)
+        let near_anchor = |x: usize, y: usize| anchors.iter().any(|&a| a.0.abs_diff(x) <= 2 && a.1.abs_diff(y) <= 2);
+        let wall_noise = noise_field(&mut rng, n, 4);
+        let grass_noise = noise_field(&mut rng, n, 5);
+        let elig_wall: Vec<bool> = (0..n * n).map(|i| !near_anchor(i % n, i / n)).collect();
+        let walls = top_share(&wall_noise, &elig_wall, WALL_SHARE, None, 0);
+        let elig_grass: Vec<bool> = (0..n * n)
+            .map(|i| !walls[i] && zones[i] != 0 && zones[i] != 8 && !near_anchor(i % n, i / n))
+            .collect();
+        let grass = top_share(&grass_noise, &elig_grass, GRASS_SHARE, Some(&zones), 45);
+        let mut tiles: Vec<Tile> = (0..n * n)
+            .map(|i| if walls[i] { Tile::Wall } else if grass[i] { Tile::Grass } else { Tile::Floor })
+            .collect();
+        tiles[camp.1 * n + camp.0] = Tile::Camp;
