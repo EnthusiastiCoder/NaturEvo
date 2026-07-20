@@ -148,6 +148,8 @@ impl Config {
                     "hero_atk_per_level" => self.hero_atk_per_level = n,
                     "hero_def_per_level" => self.hero_def_per_level = n,
                     "xp_mult" => self.xp_mult = n,
+                    "encounter_rate" => self.encounter_rate = n,
+                    "elite_mult" => self.elite_mult = n,
                     _ => self.gold_mult = n,
                 }
             }
