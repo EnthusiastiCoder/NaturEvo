@@ -46,6 +46,12 @@ impl Default for Config {
             event_cap: 65536,
             postgame_level_cap: 80,
             evolve_kills: 300,
+            map_size: 64,
+            encounter_rate: 0.12,
+            wander_radius: 6,
+            elites_per_zone: 1,
+            elite_mult: 1.4,
+            max_steps: 5_000_000,
         }
     }
 }
