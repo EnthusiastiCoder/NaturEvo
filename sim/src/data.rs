@@ -42,7 +42,8 @@ pub struct Zone {
     pub emoji: &'static str,
     pub min: u32,
     pub max: u32,
-    pub species: &'static [usize],
+    /// (species index, pick weight)
+    pub species: &'static [(usize, u32)],
 }
 
 use Behavior::*;
@@ -75,15 +76,58 @@ pub static SPECIES: [Species; 16] = [
 ];
 
 pub static ZONES: [Zone; 9] = [
-    Zone { name: "Base Camp", emoji: "⛺", min: 0, max: 0, species: &[] },
-    Zone { name: "Jungle Edge", emoji: "🌿", min: 1, max: 4, species: &[0, 1, 2] },
-    Zone { name: "Dense Jungle", emoji: "🌳", min: 4, max: 9, species: &[3, 4, 5, 2] },
-    Zone { name: "River Bank", emoji: "🏞️", min: 8, max: 13, species: &[6, 7, 1, 5] },
-    Zone { name: "Misty Swamp", emoji: "🌫️", min: 12, max: 18, species: &[8, 7, 4, 6] },
-    Zone { name: "Ancient Ruins", emoji: "🏛️", min: 16, max: 23, species: &[9, 10, 11] },
-    Zone { name: "Bat Caves", emoji: "🕳️", min: 21, max: 28, species: &[12, 13, 11, 9] },
-    Zone { name: "Serpent Temple", emoji: "🛕", min: 26, max: 32, species: &[14, 13, 10, 11] },
-    Zone { name: "King's Grove", emoji: "👑", min: 32, max: 34, species: &[BOSS] },
+    Zone { name: "Base Camp", emoji: "⛺", min: 0, max: 0, species: &[(0, 1)] },
+    Zone { name: "Jungle Edge", emoji: "🌿", min: 1, max: 4, species: &[(0, 4), (1, 3), (2, 1)] },
+    Zone { name: "Dense Jungle", emoji: "🌳", min: 4, max: 9, species: &[(3, 4), (4, 3), (5, 2), (2, 1)] },
+    Zone { name: "River Bank", emoji: "🏞️", min: 8, max: 13, species: &[(6, 4), (7, 3), (1, 2), (5, 1)] },
+    Zone { name: "Misty Swamp", emoji: "🌫️", min: 12, max: 18, species: &[(8, 4), (7, 3), (4, 2), (6, 1)] },
+    Zone { name: "Ancient Ruins", emoji: "🏛️", min: 16, max: 23, species: &[(9, 4), (10, 3), (11, 1)] },
+    Zone { name: "Bat Caves", emoji: "🕳️", min: 21, max: 28, species: &[(12, 4), (13, 3), (11, 2), (9, 1)] },
+    Zone { name: "Serpent Temple", emoji: "🛕", min: 26, max: 32, species: &[(14, 4), (13, 3), (10, 2), (11, 1)] },
+    Zone { name: "King's Grove", emoji: "👑", min: 32, max: 34, species: &[(BOSS, 1)] },
+];
+
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum MoveEffect {
+    None,
+    Poison,
+    Drain,
+    Guard,
+    Weaken,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct Move {
+    pub name: &'static str,
+    pub power: f32,
+    pub weight: u32,
+    pub effect: MoveEffect,
+}
+
+const fn mv(name: &'static str, power: f32, weight: u32, effect: MoveEffect) -> Move {
+    Move { name, power, weight, effect }
+}
+
+use MoveEffect as E;
+
+/// Weighted monster move lists, indexed like SPECIES.
+pub static MOVES: [&[Move]; 16] = [
+    &[mv("Gnaw", 1.0, 4, E::None), mv("Swarm Bite", 1.3, 2, E::None)],
+    &[mv("Bite", 1.0, 3, E::None), mv("Venom Fang", 0.8, 3, E::Poison), mv("Constrict", 1.2, 1, E::Weaken)],
+    &[mv("Scratch", 1.0, 4, E::None), mv("Snatch", 0.7, 2, E::Drain)],
+    &[mv("Gore", 1.1, 4, E::None), mv("Trample", 1.6, 1, E::None)],
+    &[mv("Bite", 1.0, 3, E::None), mv("Web Spit", 0.6, 2, E::Weaken), mv("Toxic Sting", 0.9, 2, E::Poison)],
+    &[mv("Claw", 1.0, 4, E::None), mv("Pounce", 1.5, 2, E::None)],
+    &[mv("Snap", 1.2, 3, E::None), mv("Death Roll", 1.7, 1, E::None), mv("Hide Plate", 0.3, 1, E::Guard)],
+    &[mv("Tongue Lash", 0.9, 3, E::None), mv("Toxin Spray", 0.8, 2, E::Poison)],
+    &[mv("Club Smash", 1.3, 3, E::None), mv("Regrowth", 0.5, 2, E::Drain)],
+    &[mv("Rock Fist", 1.2, 3, E::None), mv("Stone Skin", 0.3, 2, E::Guard)],
+    &[mv("Chill Touch", 1.0, 3, E::Drain), mv("Wail", 0.7, 2, E::Weaken)],
+    &[mv("Slam", 1.2, 3, E::None), mv("Chest Pound", 0.6, 2, E::Weaken), mv("Rage Smash", 1.8, 1, E::None)],
+    &[mv("Screech Bite", 0.9, 3, E::None), mv("Blood Sip", 0.7, 2, E::Drain)],
+    &[mv("Talon Rake", 1.1, 3, E::None), mv("Lightning Dive", 1.6, 2, E::None)],
+    &[mv("Fang Strike", 1.1, 3, E::Poison), mv("Coil Crush", 1.4, 2, E::None), mv("Hiss", 0.5, 1, E::Weaken)],
+    &[mv("Royal Smash", 1.2, 4, E::None), mv("Roar", 0.6, 2, E::Weaken), mv("Crown Fury", 1.8, 1, E::None)],
 ];
 
 pub const WEAPONS: [(&str, u32, i32); 7] = [
