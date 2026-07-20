@@ -512,7 +512,7 @@ var chipEls=null;
 function fmt(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,",");}
 function heroChips(h){
  var box=$("hero-details"),wp=WP[h.weapon]||["?",0],ar=AR[h.armor]||["?",0],ct=counts();
- var vals=[["Level",h.level],["XP",fmt(h.xp)],["Gold",fmt(h.gold)],["Potions",h.potions],["Attack","+"+wp[1]+" "+wp[0]],["Defense","+"+ar[1]+" "+ar[0]],["Fights won",fmt(ct.k[cur])],["Deaths",ct.d[cur]],["Skills used",fmt(ct.s[cur])]];
+ var vals=[["Level",h.level],["XP",fmt(h.xp)],["Gold",fmt(h.gold)],["Potions",h.potions],["Attack","+"+wp[1]+" "+wp[0]],["Defense","+"+ar[1]+" "+ar[0]],["Fights won",fmt(ct.k[cur-base])],["Deaths",ct.d[cur-base]],["Skills used",fmt(ct.s[cur-base])]];
  if(!chipEls){chipEls=[];box.textContent="";vals.forEach(function(p){var c=document.createElement("span");c.className="chip";var k=document.createElement("span");k.className="chip-k";k.textContent=p[0]+" ";var v=document.createElement("span");v.className="chip-v";c.appendChild(k);c.appendChild(v);box.appendChild(c);chipEls.push(v);});}
  vals.forEach(function(p,i){chipEls[i].textContent=String(p[1])+" ";});
 }
