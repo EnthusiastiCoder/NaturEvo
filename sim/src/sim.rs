@@ -90,6 +90,7 @@ pub struct Summary {
 impl Run {
     pub fn summary(&self) -> Summary {
         Summary {
+            steps: self.steps,
             won: self.won,
             deaths: self.deaths,
             final_level: self.final_level,
