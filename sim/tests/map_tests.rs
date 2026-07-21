@@ -17,3 +17,5 @@
 use jungle_sim::data::{Move, MOVES, SPECIES, ZONES};
 use jungle_sim::map::{map_body, Map, Tile};
 use std::collections::VecDeque;
+
+type P = (usize, usize);
