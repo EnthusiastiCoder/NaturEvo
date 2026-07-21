@@ -159,3 +159,46 @@ fn map_body_schema() {
         assert!(b.contains(k), "missing {}", k);
     }
 }
+
+#[test]
+fn astar_open_path_is_manhattan_and_valid() {
+    let m = Map::generate(7, 64);
+    let n = m.size();
+    let mut open_pairs = 0;
+    let mut tested = 0;
+    for ay in (0..n).step_by(5) {
+        for ax in (0..n).step_by(7) {
+            for (bx, by) in [(ax + 6, ay + 4), (ax + 9, ay), (ax, ay + 11)] {
+                if bx >= n || by >= n || !m.passable(ax, ay) || !m.passable(bx, by) {
+                    continue;
+                }
+                let (a, b) = ((ax, ay), (bx, by));
+                let p = m.path(a, b).unwrap_or_else(|| panic!("no path {:?}->{:?}", a, b));
+                tested += 1;
+                // valid: unit steps, passable, no repeats, ends at goal, never the start
+                let mut prev = a;
+                let mut seen = std::collections::HashSet::new();
+                seen.insert(a);
+                for &t in &p {
+                    assert_eq!(manhattan(prev, t), 1, "non-unit step {:?}->{:?}", prev, t);
+                    assert!(m.passable(t.0, t.1), "path crosses wall at {:?}", t);
+                    assert!(seen.insert(t), "path repeats tile {:?}", t);
+                    prev = t;
+                }
+                assert_eq!(*p.last().unwrap(), b);
+                assert!(p.len() >= manhattan(a, b));
+                assert_eq!(m.path(a, b), Some(p.clone()), "A* not deterministic");
+                // open rectangle: every tile in the bounding box is passable => optimal is Manhattan
+                let (x0, x1) = (ax.min(bx), ax.max(bx));
+                let (y0, y1) = (ay.min(by), ay.max(by));
+                let clear = (y0..=y1).all(|y| (x0..=x1).all(|x| m.passable(x, y)));
+                if clear {
+                    open_pairs += 1;
+                    assert_eq!(p.len(), manhattan(a, b), "open path {:?}->{:?} not Manhattan", a, b);
+                }
+            }
+        }
+    }
+    assert!(tested > 50, "too few pairs tested: {}", tested);
+    assert!(open_pairs >= 5, "too few open-rectangle pairs: {}", open_pairs);
+}
