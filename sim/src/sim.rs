@@ -550,7 +550,7 @@ impl Sim {
             } else {
                 format!("{} {}", sn, s.emoji)
             };
-            let t = format!("Hero meets a level {} {} ({})", m.level, name, s.behavior.name());
+            let t = format!("Hero meets a level {} {}{} ({})", m.level, if m.elite { "elite " } else { "" }, name, s.behavior.name());
             self.emit(kind, t, Some(&m));
         }
 
