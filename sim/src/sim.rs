@@ -409,6 +409,12 @@ impl Sim {
         self.leg_tiles = 0;
     }
 
+    fn announce_zone(&mut self, z: usize) {
+        self.last_travel = z;
+        let zn = &ZONES[z];
+        ev!(self, "travel", None, "Hero travels to {} {}", zn.emoji, zn.name);
+    }
+
     fn rest(&mut self) {
         if self.hero.hp < self.hero.max_hp {
             self.hero.hp = self.hero.max_hp;
