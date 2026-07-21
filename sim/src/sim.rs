@@ -534,7 +534,13 @@ impl Sim {
         let mut m = self.spawn(species, level, stage, elite_idx.is_some(), loc);
         let s = &SPECIES[species];
         let boss = species == BOSS;
-        let kind = if boss { "boss" } else { "encounter" };
+        let kind = if boss {
+            "boss"
+        } else if m.elite {
+            "elite"
+        } else {
+            "encounter"
+        };
         if self.lean {
             self.emit_lean();
         } else {
