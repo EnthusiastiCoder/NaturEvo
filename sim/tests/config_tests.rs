@@ -193,4 +193,30 @@ fn map_knobs_present_with_ranges_and_defaults() {
     assert!((c.elite_mult as f64 - 1.4).abs() < 1e-6);
     assert_eq!(c.max_steps as f64, 5_000_000.0);
 }
+
+#[test]
+fn map_knobs_set_rejects_out_of_range_and_garbage() {
+    let cases = [
+        ("map_size", "31", "129"),
+        ("encounter_rate", "0.005", "0.51"),
+        ("wander_radius", "1", "21"),
+        ("elites_per_zone", "-1", "4"),
+        ("elite_mult", "0.9", "3.1"),
+        ("max_steps", "999", "50000001"),
+    ];
+    for (key, below, above) in cases {
+        let mut c = Config::default();
+        for v in [below, above, "abc", "", "NaN", "inf"] {
+            let e = c.set(key, v).unwrap_err();
+            assert!(e.contains(key), "{} {:?}: {}", key, v, e);
+        }
+        assert_eq!(c, Config::default(), "{} must not change on error", key);
+    }
+    for (key, min, max, _) in NEW_KNOBS {
+        let mut c = Config::default();
+        c.set(key, &format!("{}", min)).unwrap();
+        c.set(key, &format!("{}", max)).unwrap();
+        assert!(c.validate().is_ok(), "{}", key);
+    }
+}
 }
