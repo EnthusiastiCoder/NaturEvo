@@ -405,9 +405,8 @@ impl Sim {
                 self.next_path.clear();
             }
         }
-        self.hero.zone = to;
-        let z = &ZONES[to];
-        ev!(self, "travel", None, "Hero travels to {} {}", z.emoji, z.name);
+        self.leg.clear();
+        self.leg_tiles = 0;
     }
 
     fn rest(&mut self) {
