@@ -628,6 +628,10 @@ impl Sim {
                             if power {
                                 a *= 1.8;
                             }
+                            if weak > 0 {
+                                weak -= 1;
+                                a *= 0.9;
+                            }
                             let mut d = damage(&mut self.rng, a, m.def);
                             if m.behavior == Behavior::Defensive && round <= 2 {
                                 d = (d / 2).max(1);
