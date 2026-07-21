@@ -191,6 +191,7 @@ const MAX_WAYPOINTS: usize = 64;
 struct Sim {
     cfg: Config,
     rng: Rng,
+    map: Map,
     hero: Hero,
     events: Vec<Event>,
     deaths: u32,
