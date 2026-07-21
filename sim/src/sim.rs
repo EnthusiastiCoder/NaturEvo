@@ -206,6 +206,20 @@ struct Sim {
     post_kills: u32,
     post_deaths: u32,
     stage: u8,
+    steps: u32,
+    elites: Vec<Elite>,
+    next_respawn: u32,
+    boss: (usize, usize),
+    goal: usize,
+    last_travel: usize,
+    leg: Vec<(usize, usize)>,
+    leg_dir: (i32, i32),
+    leg_tiles: u32,
+    next_path: Vec<(u16, u16)>,
+    /// grass tiles per zone, row-major
+    zone_grass: Vec<Vec<(usize, usize)>>,
+    /// cached camp -> zone entry tile and route, per zone
+    outbound: Vec<Option<((usize, usize), Vec<(usize, usize)>)>>,
 }
 
 enum Outcome {
