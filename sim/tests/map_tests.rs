@@ -213,3 +213,13 @@ fn astar_edge_cases() {
     assert_eq!(m.path(c, (64, 64)), None, "out of bounds target");
     assert_eq!(m.path(c, (10_000, 3)), None);
 }
+
+#[test]
+fn astar_reaches_every_zone_anchor_from_camp() {
+    let m = Map::generate(11, 64);
+    for z in 1..9 {
+        let a = m.anchors()[z];
+        let p = m.path(m.camp(), a).unwrap_or_else(|| panic!("zone {} unreachable", z));
+        assert!(!p.is_empty());
+    }
+}
