@@ -202,3 +202,14 @@ fn astar_open_path_is_manhattan_and_valid() {
     assert!(tested > 50, "too few pairs tested: {}", tested);
     assert!(open_pairs >= 5, "too few open-rectangle pairs: {}", open_pairs);
 }
+
+#[test]
+fn astar_edge_cases() {
+    let m = Map::generate(3, 64);
+    let c = m.camp();
+    assert_eq!(m.path(c, c), Some(vec![]));
+    let wall = all(&m).find(|&(x, y)| m.tile(x, y) == Tile::Wall).expect("map has walls");
+    assert_eq!(m.path(c, wall), None, "wall target");
+    assert_eq!(m.path(c, (64, 64)), None, "out of bounds target");
+    assert_eq!(m.path(c, (10_000, 3)), None);
+}
