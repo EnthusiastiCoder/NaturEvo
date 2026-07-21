@@ -242,3 +242,23 @@ fn nearest_tile_of_zone_is_in_zone_and_nearest() {
     let a = m.anchors()[3];
     assert_eq!(m.nearest_tile_of_zone(a, 3), Some(a));
 }
+
+#[test]
+fn zone_species_weights_follow_the_rule() {
+    for (i, z) in ZONES.iter().enumerate() {
+        assert!(z.species.iter().map(|s| s.1).sum::<u32>() > 0, "zone {} weights", i);
+        for s in z.species {
+            assert!(s.0 < SPECIES.len() && s.1 > 0, "zone {} entry {:?}", i, s);
+        }
+    }
+    // zone 1..7 have 3 or 4 species; weights 4/3/2/1 (4 species) or 4/3/1 (3 species)
+    for i in 1..=7 {
+        let w: Vec<u32> = ZONES[i].species.iter().map(|s| s.1).collect();
+        match w.len() {
+            4 => assert_eq!(w, vec![4, 3, 2, 1], "zone {}", i),
+            3 => assert_eq!(w, vec![4, 3, 1], "zone {}", i),
+            n => panic!("zone {} has {} species", i, n),
+        }
+    }
+    assert_eq!(ZONES[8].species.len(), 1, "boss zone has only the boss");
+}
