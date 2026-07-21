@@ -263,4 +263,16 @@ fn map_knobs_validate_rejects_out_of_range_fields() {
     c.max_steps = 50_000_001;
     assert!(c.validate().is_err());
 }
+
+#[test]
+fn knob_keys_match_new_set() {
+    let keys: Vec<&str> = knobs().iter().map(|k| k.key).collect();
+    for (k, _, _, _) in NEW_KNOBS {
+        assert!(keys.contains(&k), "missing {}", k);
+    }
+    let mut c = Config::default();
+    for k in knobs() {
+        c.set(k.key, &format!("{}", k.default)).unwrap_or_else(|e| panic!("{}: {}", k.key, e));
+    }
+    assert!(c.validate().is_ok());
 }
