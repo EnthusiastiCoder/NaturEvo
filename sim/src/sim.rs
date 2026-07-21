@@ -228,6 +228,22 @@ enum Outcome {
     Fled,
 }
 
+/// How a walk (or one step of it) ended.
+#[derive(Clone, Copy, PartialEq, Debug)]
+enum Walk {
+    Arrived,
+    Died,
+    Fled,
+    /// go back to camp (low supplies, or the boss fell)
+    Retreat,
+    /// the target zone changed
+    Retarget,
+    Aborted,
+}
+
+const CHECK_SUPPLIES: u8 = 1;
+const CHECK_TARGET: u8 = 2;
+
 fn damage(rng: &mut Rng, atk: f32, def: f32) -> i32 {
     let base = (atk - def * 0.5).max(atk * 0.1).max(1.0);
     let v = base * (0.85 + 0.3 * rng.f());
