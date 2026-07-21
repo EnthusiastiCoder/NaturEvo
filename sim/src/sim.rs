@@ -167,6 +167,9 @@ struct Mon {
     behavior: Behavior,
     packed: u32,
     stage: u8,
+    x: usize,
+    y: usize,
+    elite: bool,
 }
 
 struct Sim {
