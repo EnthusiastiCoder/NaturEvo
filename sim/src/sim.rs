@@ -530,8 +530,8 @@ impl Sim {
         Mon { species, level, hp, max_hp: hp, atk, def, spd, behavior: s.behavior, packed, stage, x: loc.0, y: loc.1, elite }
     }
 
-    fn fight(&mut self, species: usize, level: u32, stage: u8) -> Outcome {
-        let mut m = self.spawn(species, level, stage);
+    fn fight(&mut self, species: usize, level: u32, stage: u8, loc: (usize, usize), elite_idx: Option<usize>) -> Outcome {
+        let mut m = self.spawn(species, level, stage, elite_idx.is_some(), loc);
         let s = &SPECIES[species];
         let boss = species == BOSS;
         let kind = if boss { "boss" } else { "encounter" };
