@@ -172,6 +172,22 @@ struct Mon {
     elite: bool,
 }
 
+/// A roaming elite NPC. `dead_until == 0` means alive.
+struct Elite {
+    zone: usize,
+    species: usize,
+    level: u32,
+    home: (usize, usize),
+    pos: (usize, usize),
+    dead_until: u32,
+    cooldown: u32,
+}
+
+const ELITE_RESPAWN_STEPS: u32 = 400;
+const ELITE_CHASE_RADIUS: usize = 3;
+const ELITE_LEVEL_MARGIN: u32 = 3;
+const MAX_WAYPOINTS: usize = 64;
+
 struct Sim {
     cfg: Config,
     rng: Rng,
