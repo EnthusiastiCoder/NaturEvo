@@ -74,6 +74,7 @@ pub struct Run {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Summary {
+    pub steps: u32,
     pub won: bool,
     pub deaths: u32,
     pub final_level: u32,
