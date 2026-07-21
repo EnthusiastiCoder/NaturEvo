@@ -514,6 +514,10 @@ impl Sim {
             hp *= self.cfg.boss_hp_mult;
             atk *= self.cfg.boss_atk_mult;
         }
+        if elite {
+            hp *= self.cfg.elite_mult;
+            atk *= self.cfg.elite_mult;
+        }
         let spd = monster_stat(s.spd, level);
         let mut packed = 1;
         if s.behavior == Behavior::Pack {
