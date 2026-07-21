@@ -223,3 +223,22 @@ fn astar_reaches_every_zone_anchor_from_camp() {
         assert!(!p.is_empty());
     }
 }
+
+#[test]
+fn nearest_tile_of_zone_is_in_zone_and_nearest() {
+    let m = Map::generate(4, 64);
+    let from = m.camp();
+    for z in 1..9 {
+        let t = m.nearest_tile_of_zone(from, z).unwrap_or_else(|| panic!("zone {}", z));
+        assert_eq!(m.zone_of(t.0, t.1), z);
+        assert!(m.passable(t.0, t.1));
+        let best = m.path(from, t).unwrap().len();
+        for q in all(&m).filter(|&(x, y)| m.zone_of(x, y) == z && m.passable(x, y)) {
+            let l = m.path(from, q).unwrap().len();
+            assert!(best <= l, "zone {}: {:?} (len {}) nearer than {:?} (len {})", z, q, l, t, best);
+        }
+    }
+    // already in the zone: returns a tile at distance 0 (itself)
+    let a = m.anchors()[3];
+    assert_eq!(m.nearest_tile_of_zone(a, 3), Some(a));
+}
