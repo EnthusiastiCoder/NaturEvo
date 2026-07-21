@@ -364,6 +364,8 @@ impl Sim {
             hp: m.hp.clamp(0, m.max_hp),
             max_hp: m.max_hp,
             stage: m.stage,
+            x: m.x,
+            y: m.y,
         });
         let idx = self.count as u32;
         self.events.push(Event { idx, kind, text, hero, mon });
