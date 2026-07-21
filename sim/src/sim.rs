@@ -370,7 +370,7 @@ impl Sim {
         let npcs = self.npc_snaps();
         let path = std::mem::take(&mut self.next_path);
         let idx = self.count as u32;
-        self.events.push(Event { idx, kind, text, hero, mon });
+        self.events.push(Event { idx, kind, text, hero, mon, npcs, path });
         self.count += 1;
         if self.count >= self.cfg.event_cap as usize {
             self.done = true;
