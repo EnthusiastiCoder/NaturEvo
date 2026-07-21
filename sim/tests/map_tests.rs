@@ -262,3 +262,21 @@ fn zone_species_weights_follow_the_rule() {
     }
     assert_eq!(ZONES[8].species.len(), 1, "boss zone has only the boss");
 }
+
+#[test]
+fn every_species_has_2_or_3_valid_moves() {
+    assert_eq!(MOVES.len(), 16);
+    for (i, ms) in MOVES.iter().enumerate() {
+        let ms: &[Move] = ms;
+        assert!((2..=3).contains(&ms.len()), "species {} has {} moves", i, ms.len());
+        for m in ms {
+            assert!(!m.name.is_empty());
+            assert!(m.weight > 0, "species {} move {}", i, m.name);
+            assert!(m.power > 0.0, "species {} move {}", i, m.name);
+        }
+        let mut names: Vec<&str> = ms.iter().map(|m| m.name).collect();
+        names.sort();
+        names.dedup();
+        assert_eq!(names.len(), ms.len(), "species {} duplicate move names", i);
+    }
+}
