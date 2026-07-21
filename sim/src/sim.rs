@@ -520,7 +520,7 @@ impl Sim {
         }
         let spd = monster_stat(s.spd, level);
         let mut packed = 1;
-        if s.behavior == Behavior::Pack {
+        if s.behavior == Behavior::Pack && !elite {
             packed = self.rng.range(2, 3) as u32;
             // weak copies bundled into one stronger foe
             hp *= 0.6 * packed as f32;
