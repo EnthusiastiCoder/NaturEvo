@@ -50,6 +50,9 @@ pub struct Event {
     pub text: String,
     pub hero: HeroSnap,
     pub mon: Option<MonSnap>,
+    pub npcs: Vec<NpcSnap>,
+    /// turn-point waypoints of a "walk" event (empty for every other kind)
+    pub path: Vec<(u16, u16)>,
 }
 
 #[derive(Clone, Debug)]
