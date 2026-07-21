@@ -250,6 +250,53 @@ fn damage(rng: &mut Rng, atk: f32, def: f32) -> i32 {
     (v as i32).max(1)
 }
 
+fn dist(a: (usize, usize), b: (usize, usize)) -> usize {
+    a.0.abs_diff(b.0) + a.1.abs_diff(b.1)
+}
+
+fn pick_weighted(rng: &mut Rng, table: &[(usize, u32)]) -> usize {
+    let total: u32 = table.iter().map(|t| t.1).sum();
+    let mut r = rng.range(0, total as i32 - 1) as u32;
+    for &(sp, w) in table {
+        if r < w {
+            return sp;
+        }
+        r -= w;
+    }
+    table[table.len() - 1].0
+}
+
+fn pick_move(rng: &mut Rng, species: usize) -> &'static Move {
+    let ms = MOVES[species];
+    let total: u32 = ms.iter().map(|m| m.weight).sum();
+    let mut r = rng.range(0, total as i32 - 1) as u32;
+    for m in ms {
+        if r < m.weight {
+            return m;
+        }
+        r -= m.weight;
+    }
+    &ms[ms.len() - 1]
+}
+
+/// Weighted mean move power of a species; damage is normalised by it so move variety
+/// changes the shape of a fight, not the species' overall damage output.
+fn mean_power(species: usize) -> f32 {
+    let ms = MOVES[species];
+    let total: u32 = ms.iter().map(|m| m.weight).sum();
+    ms.iter().map(|m| m.power * m.weight as f32).sum::<f32>() / total as f32
+}
+
+fn step_dir(rng: &mut Rng, p: (usize, usize)) -> (i32, i32) {
+    let (dx, dy) = match rng.range(0, 3) {
+        0 => (1, 0),
+        1 => (-1, 0),
+        2 => (0, 1),
+        _ => (0, -1),
+    };
+    (p.0 as i32 + dx, p.1 as i32 + dy)
+}
+
 impl Sim {
     fn emit_lean(&mut self) {
         if self.done {
