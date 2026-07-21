@@ -232,4 +232,35 @@ fn map_size_and_integer_knobs_reject_fractions() {
     c.set("encounter_rate", "0.25").unwrap();
     assert!((c.encounter_rate as f64 - 0.25).abs() < 1e-6);
 }
+
+#[test]
+fn map_knobs_validate_rejects_out_of_range_fields() {
+    let mut c = Config::default();
+    c.map_size = 31;
+    assert!(c.validate().unwrap_err().contains("map_size"));
+    let mut c = Config::default();
+    c.map_size = 129;
+    assert!(c.validate().is_err());
+    let mut c = Config::default();
+    c.encounter_rate = 0.0;
+    assert!(c.validate().unwrap_err().contains("encounter_rate"));
+    let mut c = Config::default();
+    c.encounter_rate = 0.51;
+    assert!(c.validate().is_err());
+    let mut c = Config::default();
+    c.wander_radius = 1;
+    assert!(c.validate().unwrap_err().contains("wander_radius"));
+    let mut c = Config::default();
+    c.elites_per_zone = 4;
+    assert!(c.validate().unwrap_err().contains("elites_per_zone"));
+    let mut c = Config::default();
+    c.elite_mult = 0.9;
+    assert!(c.validate().unwrap_err().contains("elite_mult"));
+    let mut c = Config::default();
+    c.max_steps = 999;
+    assert!(c.validate().unwrap_err().contains("max_steps"));
+    let mut c = Config::default();
+    c.max_steps = 50_000_001;
+    assert!(c.validate().is_err());
+}
 }
