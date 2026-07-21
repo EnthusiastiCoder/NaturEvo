@@ -317,6 +317,25 @@ impl Sim {
         }
     }
 
+    fn pos(&self) -> (usize, usize) {
+        (self.hero.x, self.hero.y)
+    }
+
+    fn npc_snaps(&self) -> Vec<NpcSnap> {
+        let z = self.hero.zone;
+        let mut v = Vec::new();
+        if z == 8 {
+            v.push(NpcSnap { id: "boss".to_string(), kind: "boss", species: BOSS, level: ZONES[8].max, x: self.boss.0, y: self.boss.1 });
+        } else if z >= 1 {
+            for (i, e) in self.elites.iter().enumerate() {
+                if e.zone == z && e.dead_until == 0 {
+                    v.push(NpcSnap { id: format!("e{}", i), kind: "elite", species: e.species, level: e.level, x: e.pos.0, y: e.pos.1 });
+                }
+            }
+        }
+        v
+    }
+
     fn emit(&mut self, kind: &'static str, text: String, mon: Option<&Mon>) {
         if self.lean {
             self.emit_lean();
