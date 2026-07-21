@@ -120,3 +120,13 @@ fn check_map(m: &Map, label: &str) {
         assert_eq!(vis.len(), tiles.len(), "{} zone {} is not 4-connected", label, z);
     }
 }
+
+#[test]
+fn same_seed_same_map_different_seed_differs() {
+    for size in [32usize, 64] {
+        let a = map_body(&Map::generate(5, size));
+        let b = map_body(&Map::generate(5, size));
+        assert_eq!(a, b);
+        assert_ne!(a, map_body(&Map::generate(6, size)));
+    }
+}
