@@ -164,4 +164,14 @@ fn knobs_cover_all_fields() {
     }
     assert_eq!(c, Config::default());
 }
+
+// ---- map/walk knobs (plan 2026-10-21_hero-map-walking, workstream 1) ----
+const NEW_KNOBS: [(&str, f64, f64, f64); 6] = [
+    ("map_size", 32.0, 128.0, 64.0),
+    ("encounter_rate", 0.01, 0.5, 0.12),
+    ("wander_radius", 2.0, 20.0, 6.0),
+    ("elites_per_zone", 0.0, 3.0, 1.0),
+    ("elite_mult", 1.0, 3.0, 1.4),
+    ("max_steps", 1000.0, 50_000_000.0, 5_000_000.0),
+];
 }
