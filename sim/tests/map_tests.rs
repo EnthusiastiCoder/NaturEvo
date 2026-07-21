@@ -141,3 +141,11 @@ fn map_invariants_hold_at_sizes_32_64_128() {
         }
     }
 }
+
+#[test]
+fn out_of_bounds_is_not_passable() {
+    let m = Map::generate(1, 32);
+    assert!(!m.passable(32, 0));
+    assert!(!m.passable(0, 32));
+    assert!(!m.passable(1000, 1000));
+}
