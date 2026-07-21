@@ -28,6 +28,8 @@ pub struct MonSnap {
     pub hp: i32,
     pub max_hp: i32,
     pub stage: u8,
+    pub x: usize,
+    pub y: usize,
 }
 
 #[derive(Clone, Debug)]
