@@ -355,6 +355,8 @@ impl Sim {
             zone: h.zone,
             weapon: h.weapon,
             armor: h.armor,
+            x: h.x,
+            y: h.y,
         };
         let mon = mon.map(|m| MonSnap {
             species: m.species,
