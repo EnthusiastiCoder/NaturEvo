@@ -32,6 +32,7 @@ pub struct MonSnap {
     pub y: usize,
 }
 
+/// A visible roaming NPC (elite or boss) in the hero's zone.
 #[derive(Clone, Debug)]
 pub struct Event {
     pub idx: u32,
