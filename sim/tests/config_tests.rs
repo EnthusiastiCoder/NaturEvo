@@ -174,4 +174,23 @@ const NEW_KNOBS: [(&str, f64, f64, f64); 6] = [
     ("elite_mult", 1.0, 3.0, 1.4),
     ("max_steps", 1000.0, 50_000_000.0, 5_000_000.0),
 ];
+
+#[test]
+fn map_knobs_present_with_ranges_and_defaults() {
+    for (key, min, max, def) in NEW_KNOBS {
+        let k = knobs().iter().find(|k| k.key == key).unwrap_or_else(|| panic!("no knob {}", key));
+        assert_eq!(k.min, min, "{} min", key);
+        assert_eq!(k.max, max, "{} max", key);
+        assert!((k.default - def).abs() < 1e-6, "{} default {}", key, k.default);
+        assert!(!k.label.is_empty());
+    }
+    assert_eq!(knobs().len(), 22);
+    let c = Config::default();
+    assert_eq!(c.map_size as f64, 64.0);
+    assert!((c.encounter_rate as f64 - 0.12).abs() < 1e-6);
+    assert_eq!(c.wander_radius as f64, 6.0);
+    assert_eq!(c.elites_per_zone as f64, 1.0);
+    assert!((c.elite_mult as f64 - 1.4).abs() < 1e-6);
+    assert_eq!(c.max_steps as f64, 5_000_000.0);
+}
 }
