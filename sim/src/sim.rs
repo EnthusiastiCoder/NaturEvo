@@ -527,7 +527,7 @@ impl Sim {
             atk *= 1.0 + 0.25 * (packed - 1) as f32;
         }
         let hp = (hp as i32).max(1);
-        Mon { species, level, hp, max_hp: hp, atk, def, spd, behavior: s.behavior, packed, stage }
+        Mon { species, level, hp, max_hp: hp, atk, def, spd, behavior: s.behavior, packed, stage, x: loc.0, y: loc.1, elite }
     }
 
     fn fight(&mut self, species: usize, level: u32, stage: u8) -> Outcome {
