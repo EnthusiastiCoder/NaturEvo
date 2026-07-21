@@ -1,5 +1,6 @@
 use crate::config::Config;
 use crate::data::*;
+use crate::map::{Map, Tile};
 use crate::rng::Rng;
 
 const MAX_LEVEL: u32 = 40;
