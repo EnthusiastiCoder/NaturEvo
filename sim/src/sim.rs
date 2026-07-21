@@ -34,6 +34,16 @@ pub struct MonSnap {
 
 /// A visible roaming NPC (elite or boss) in the hero's zone.
 #[derive(Clone, Debug)]
+pub struct NpcSnap {
+    pub id: String,
+    pub kind: &'static str,
+    pub species: usize,
+    pub level: u32,
+    pub x: usize,
+    pub y: usize,
+}
+
+#[derive(Clone, Debug)]
 pub struct Event {
     pub idx: u32,
     pub kind: &'static str,
