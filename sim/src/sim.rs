@@ -58,6 +58,8 @@ pub struct Event {
 #[derive(Clone, Debug)]
 pub struct Run {
     pub seed: u64,
+    pub steps: u32,
+    pub map_size: u32,
     pub events: Vec<Event>,
     pub won: bool,
     pub deaths: u32,
