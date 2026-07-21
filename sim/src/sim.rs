@@ -137,6 +137,8 @@ struct Hero {
     zone: usize,
     weapon: usize,
     armor: usize,
+    x: usize,
+    y: usize,
 }
 
 impl Hero {
