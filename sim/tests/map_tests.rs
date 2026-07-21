@@ -149,3 +149,13 @@ fn out_of_bounds_is_not_passable() {
     assert!(!m.passable(0, 32));
     assert!(!m.passable(1000, 1000));
 }
+
+#[test]
+fn map_body_schema() {
+    let m = Map::generate(1, 32);
+    let b = map_body(&m);
+    assert!(b.starts_with("{\"w\":32,\"h\":32,") || (b.contains("\"w\":32") && b.contains("\"h\":32")), "{}", &b[..b.len().min(80)]);
+    for k in ["\"tiles\":[", "\"zones\":[", "\"anchors\":[["] {
+        assert!(b.contains(k), "missing {}", k);
+    }
+}
