@@ -392,9 +392,18 @@ impl Sim {
         best
     }
 
-    fn travel(&mut self, to: usize) {
-        if self.hero.zone == to {
-            return;
+    /// Emit the accumulated walk leg as one "walk" event.
+    fn flush_walk(&mut self) {
+        if self.leg.len() >= 2 {
+            let tiles = self.leg_tiles;
+            if self.lean {
+                self.emit_lean();
+            } else {
+                self.next_path = self.leg.iter().map(|p| (p.0 as u16, p.1 as u16)).collect();
+                let t = format!("Hero walks {} tiles to ({}, {})", tiles, self.hero.x, self.hero.y);
+                self.emit("walk", t, None);
+                self.next_path.clear();
+            }
         }
         self.hero.zone = to;
         let z = &ZONES[to];
