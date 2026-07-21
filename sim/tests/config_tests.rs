@@ -219,4 +219,17 @@ fn map_knobs_set_rejects_out_of_range_and_garbage() {
         assert!(c.validate().is_ok(), "{}", key);
     }
 }
+
+#[test]
+fn map_size_and_integer_knobs_reject_fractions() {
+    let mut c = Config::default();
+    for key in ["map_size", "wander_radius", "elites_per_zone", "max_steps"] {
+        assert!(c.set(key, "10.5").is_err(), "{} must be an integer", key);
+    }
+    assert_eq!(c, Config::default());
+    c.set("map_size", "48").unwrap();
+    assert_eq!(c.map_size as f64, 48.0);
+    c.set("encounter_rate", "0.25").unwrap();
+    assert!((c.encounter_rate as f64 - 0.25).abs() < 1e-6);
+}
 }
