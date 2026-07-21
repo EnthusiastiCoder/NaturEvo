@@ -559,6 +559,8 @@ impl Sim {
         let mut poison = 0u32;
         let mut braced = false;
         let mut stunned = false;
+        let mut guard = false;
+        let mut weak = 0u32;
         let (mut cd_power, mut cd_stun, mut cd_brace, mut cd_heal) = (0u32, 0u32, 0u32, 0u32);
 
         loop {
