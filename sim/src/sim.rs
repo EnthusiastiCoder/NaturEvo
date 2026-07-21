@@ -367,6 +367,8 @@ impl Sim {
             x: m.x,
             y: m.y,
         });
+        let npcs = self.npc_snaps();
+        let path = std::mem::take(&mut self.next_path);
         let idx = self.count as u32;
         self.events.push(Event { idx, kind, text, hero, mon });
         self.count += 1;
