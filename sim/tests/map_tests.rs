@@ -130,3 +130,14 @@ fn same_seed_same_map_different_seed_differs() {
         assert_ne!(a, map_body(&Map::generate(6, size)));
     }
 }
+
+#[test]
+fn map_invariants_hold_at_sizes_32_64_128() {
+    for size in [32usize, 64, 128] {
+        for seed in [1u64, 2, 3, 99] {
+            let m = Map::generate(seed, size);
+            assert_eq!(m.size(), size);
+            check_map(&m, &format!("size {} seed {}", size, seed));
+        }
+    }
+}
