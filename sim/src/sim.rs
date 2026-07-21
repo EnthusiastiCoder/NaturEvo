@@ -17,6 +17,8 @@ pub struct HeroSnap {
     pub zone: usize,
     pub weapon: usize,
     pub armor: usize,
+    pub x: usize,
+    pub y: usize,
 }
 
 #[derive(Clone, Debug)]
