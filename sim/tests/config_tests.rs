@@ -164,3 +164,4 @@ fn knobs_cover_all_fields() {
     }
     assert_eq!(c, Config::default());
 }
+}
