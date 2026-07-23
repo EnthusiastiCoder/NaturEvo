@@ -745,6 +745,7 @@ impl Sim {
                 self.hero.x = camp.0;
                 self.hero.y = camp.1;
                 self.hero.zone = 0;
+                self.last_travel = 0;
                 self.hero.hp = self.hero.max_hp;
                 self.hero.potions = self.hero.potions.min(5);
                 ev!(self, "respawn", None, "Hero wakes at Base Camp, having lost {} gold", lost);
