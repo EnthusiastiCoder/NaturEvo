@@ -657,7 +657,8 @@ impl Sim {
                             m.hp = (m.hp + heal).min(m.max_hp);
                             ev!(self, "attack", Some(&m), "The {} regenerates {}", s.name, heal);
                         } else {
-                            let mut atk = m.atk;
+                            let mv = pick_move(&mut self.rng, species);
+                            let mut atk = m.atk * mv.power / mean_power(species);
                             let mut note = String::new();
                             match m.behavior {
                                 Behavior::Aggressive => atk *= 1.25,
