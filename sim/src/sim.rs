@@ -707,7 +707,7 @@ impl Sim {
                                     }
                                 }
                             }
-                            ev!(self, "hit_taken", Some(&m), "The {} hits the hero{} for {}", s.name, note, d);
+                            ev!(self, "hit_taken", Some(&m), "The {} uses {} on the hero{} for {}", s.name, mv.name, note, d);
                         }
                     }
                 }
