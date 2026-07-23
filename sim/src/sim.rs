@@ -636,6 +636,10 @@ impl Sim {
                             if m.behavior == Behavior::Defensive && round <= 2 {
                                 d = (d / 2).max(1);
                             }
+                            if guard {
+                                guard = false;
+                                d = (d / 2).max(1);
+                            }
                             m.hp = (m.hp - d).max(0);
                             let kind = if power { "skill" } else { "attack" };
                             ev!(self, kind, Some(&m), "Hero uses {} on the {} for {}", label, s.name, d);
