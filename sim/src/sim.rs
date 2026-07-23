@@ -682,9 +682,30 @@ impl Sim {
                                 braced = false;
                             }
                             self.hero.hp = (self.hero.hp - d).max(0);
-                            if m.behavior == Behavior::Venomous && self.rng.chance(0.6) {
-                                poison = 3;
-                                note.push_str(" and poisons the hero");
+                            match mv.effect {
+                                MoveEffect::Poison => {
+                                    poison = 3;
+                                    note.push_str(" and poisons the hero");
+                                }
+                                MoveEffect::Drain => {
+                                    let h = (d / 3).max(1);
+                                    m.hp = (m.hp + h).min(m.max_hp);
+                                    note.push_str(&format!(" and drains {}", h));
+                                }
+                                MoveEffect::Guard => {
+                                    guard = true;
+                                    note.push_str(" and guards itself");
+                                }
+                                MoveEffect::Weaken => {
+                                    weak = 1;
+                                    note.push_str(" and weakens the hero");
+                                }
+                                MoveEffect::None => {
+                                    if m.behavior == Behavior::Venomous && self.rng.chance(0.3) {
+                                        poison = 3;
+                                        note.push_str(" and poisons the hero");
+                                    }
+                                }
                             }
                             ev!(self, "hit_taken", Some(&m), "The {} hits the hero{} for {}", s.name, note, d);
                         }
