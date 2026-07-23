@@ -752,8 +752,9 @@ impl Sim {
                 return Outcome::Died;
             }
             if m.hp <= 0 {
-                let xp = ((s.xp * (0.5 + 0.25 * m.level as f32) * self.cfg.xp_mult) as u32 * m.packed.max(1)).max(1);
-                let gold = ((s.gold * m.level as f32 * 2.0 * self.cfg.gold_mult) as u32 * m.packed.max(1)).max(1);
+                let mult = if m.elite { 2 } else { 1 };
+                let xp = ((s.xp * (0.5 + 0.25 * m.level as f32) * self.cfg.xp_mult) as u32 * m.packed.max(1) * mult).max(1);
+                let gold = ((s.gold * m.level as f32 * 2.0 * self.cfg.gold_mult) as u32 * m.packed.max(1) * mult).max(1);
                 self.hero.gold += gold;
                 let mut text = String::new();
                 if !self.lean {
