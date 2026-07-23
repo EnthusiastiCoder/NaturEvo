@@ -769,6 +769,11 @@ impl Sim {
                 if self.won && !boss && !self.done {
                     self.post_kills += 1;
                 }
+                if let Some(i) = elite_idx {
+                    let until = (self.steps + ELITE_RESPAWN_STEPS).max(1);
+                    self.elites[i].dead_until = until;
+                    self.next_respawn = self.next_respawn.min(until);
+                }
                 self.emit("victory_fight", text, Some(&m));
                 if boss {
                     if self.done {
