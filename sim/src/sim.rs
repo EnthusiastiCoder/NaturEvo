@@ -741,6 +741,9 @@ impl Sim {
                 ev!(self, "death", Some(&m), "Hero is slain by the {}", s.name);
                 let lost = self.hero.gold / 4;
                 self.hero.gold -= lost;
+                let camp = self.map.camp();
+                self.hero.x = camp.0;
+                self.hero.y = camp.1;
                 self.hero.zone = 0;
                 self.hero.hp = self.hero.max_hp;
                 self.hero.potions = self.hero.potions.min(5);
