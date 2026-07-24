@@ -809,7 +809,7 @@ impl Sim {
             Outcome::Won => {
                 self.check_evolve();
                 if self.done {
-                    break;
+                    return Some(Walk::Aborted);
                 }
                 if self.won {
                     let ns = ((self.post_kills / self.cfg.evolve_kills) as usize).min(MAX_STAGE) as u8;
