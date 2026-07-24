@@ -814,9 +814,37 @@ impl Sim {
                 if boss {
                     return Some(Walk::Retreat);
                 }
-                let z = &ZONES[self.hero.zone];
-                let species = if self.hero.zone == 8 {
-                    BOSS
+                let h = &self.hero;
+                if check & CHECK_SUPPLIES != 0 && h.potions == 0 && h.hp * 2 < h.max_hp {
+                    return Some(Walk::Retreat);
+                }
+                if check & CHECK_TARGET != 0 && self.target_zone() != self.goal {
+                    return Some(Walk::Retarget);
+                }
+                None
+            }
+        }
+    }
+
+    fn boss_fight(&mut self, check: u8) -> Option<Walk> {
+        self.flush_walk();
+        let z = &ZONES[8];
+        let level = self.rng.range(z.min as i32, z.max as i32) as u32;
+        let loc = self.boss;
+        let o = self.fight(BOSS, level, 0, loc, None);
+        self.after_fight(o, true, check)
+    }
+
+    fn respawn_elites(&mut self) {
+        if self.steps < self.next_respawn {
+            return;
+        }
+        let mut next = u32::MAX;
+        for e in self.elites.iter_mut() {
+            if e.dead_until != 0 {
+                if self.steps >= e.dead_until {
+                    e.dead_until = 0;
+                    e.pos = e.home;
                 } else {
                     z.species[self.rng.range(0, z.species.len() as i32 - 1) as usize].0
                 };
