@@ -791,15 +791,23 @@ impl Sim {
         }
     }
 
-    fn run(&mut self) {
-        while !self.done {
-            // at camp
-            self.travel(0);
-            self.rest();
-            self.shop();
-            let target = self.target_zone();
-            self.travel(target);
-            loop {
+    fn check_evolve(&mut self) {
+        if self.won && !self.done {
+            let ns = ((self.post_kills / self.cfg.evolve_kills) as usize).min(MAX_STAGE) as u8;
+            if ns > self.stage {
+                self.stage = ns;
+                ev!(self, "evolve", None, "The jungle stirs: monsters evolve to stage {}", ns);
+            }
+        }
+    }
+
+    /// Settle a finished fight into a walk result. `None` means the walk goes on.
+    fn after_fight(&mut self, o: Outcome, boss: bool, check: u8) -> Option<Walk> {
+        match o {
+            Outcome::Died => Some(Walk::Died),
+            Outcome::Fled => Some(Walk::Fled),
+            Outcome::Won => {
+                self.check_evolve();
                 if self.done {
                     break;
                 }
