@@ -811,15 +811,8 @@ impl Sim {
                 if self.done {
                     return Some(Walk::Aborted);
                 }
-                if self.won {
-                    let ns = ((self.post_kills / self.cfg.evolve_kills) as usize).min(MAX_STAGE) as u8;
-                    if ns > self.stage {
-                        self.stage = ns;
-                        ev!(self, "evolve", None, "The jungle stirs: monsters evolve to stage {}", ns);
-                        if self.done {
-                            break;
-                        }
-                    }
+                if boss {
+                    return Some(Walk::Retreat);
                 }
                 let z = &ZONES[self.hero.zone];
                 let species = if self.hero.zone == 8 {
