@@ -846,11 +846,7 @@ impl Sim {
                     e.dead_until = 0;
                     e.pos = e.home;
                 } else {
-                    z.species[self.rng.range(0, z.species.len() as i32 - 1) as usize].0
-                };
-                let level = self.rng.range(z.min as i32, z.max as i32) as u32;
-                if self.hero.zone == 8 {
-                    // boss fights at full health
+                    next = next.min(e.dead_until);
                 }
                 let stage = if species == BOSS { 0 } else { self.stage };
                 match self.fight(species, level, stage) {
