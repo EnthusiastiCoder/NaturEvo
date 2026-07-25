@@ -848,12 +848,23 @@ impl Sim {
                 } else {
                     next = next.min(e.dead_until);
                 }
-                let stage = if species == BOSS { 0 } else { self.stage };
-                match self.fight(species, level, stage) {
-                    Outcome::Died => break,
-                    Outcome::Fled => {
-                        self.travel(0);
-                        break;
+            }
+        }
+        self.next_respawn = next;
+    }
+
+    /// Elites and the boss only move while the hero is in their zone.
+    fn step_npcs(&mut self) {
+        let hz = self.hero.zone;
+        let hp = self.pos();
+        if hz == 8 {
+            if self.rng.chance(0.5) {
+                let (nx, ny) = step_dir(&mut self.rng, self.boss);
+                if nx >= 0 && ny >= 0 {
+                    let np = (nx as usize, ny as usize);
+                    let centre = self.map.anchors()[8];
+                    if self.map.passable(np.0, np.1) && self.map.zone_of(np.0, np.1) == 8 && dist(np, centre) <= 2 && np != hp {
+                        self.boss = np;
                     }
                     Outcome::Won => {}
                 }
