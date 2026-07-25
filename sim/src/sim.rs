@@ -890,10 +890,81 @@ impl Sim {
                 } else {
                     vert
                 }
-                let h = &self.hero;
-                if h.potions == 0 && h.hp * 2 < h.max_hp {
-                    self.travel(0);
-                    break;
+            } else {
+                step_dir(&mut self.rng, pos)
+            };
+            if nx < 0 || ny < 0 {
+                continue;
+            }
+            let np = (nx as usize, ny as usize);
+            if np != hp && self.map.passable(np.0, np.1) && self.map.zone_of(np.0, np.1) == hz {
+                self.elites[i].pos = np;
+            }
+        }
+    }
+
+    /// One tile of walking: movement, zone entry, NPC movement, contact fights, grass encounters.
+    fn take_step(&mut self, p: (usize, usize), dest_zone: usize, check: u8) -> Option<Walk> {
+        let prev = self.pos();
+        self.hero.x = p.0;
+        self.hero.y = p.1;
+        let z = self.map.zone_of(p.0, p.1);
+        self.hero.zone = z;
+        self.steps += 1;
+        let dir = (p.0 as i32 - prev.0 as i32, p.1 as i32 - prev.1 as i32);
+        if self.leg.is_empty() {
+            self.leg.push(prev);
+            self.leg_dir = (0, 0);
+            self.leg_tiles = 0;
+        }
+        if dir == self.leg_dir {
+            let n = self.leg.len();
+            self.leg[n - 1] = p;
+        } else {
+            self.leg.push(p);
+            self.leg_dir = dir;
+        }
+        self.leg_tiles += 1;
+        if self.steps >= self.cfg.max_steps {
+            self.flush_walk();
+            self.done = true;
+            self.capped = true;
+            return Some(Walk::Aborted);
+        }
+        if self.leg.len() >= MAX_WAYPOINTS {
+            self.flush_walk();
+        }
+        if (z == dest_zone || z == 0) && z != self.last_travel {
+            self.flush_walk();
+            self.announce_zone(z);
+            if self.done {
+                return Some(Walk::Aborted);
+            }
+        }
+
+        self.respawn_elites();
+        self.step_npcs();
+
+        // contact fights
+        if !self.won && z == 8 && self.target_zone() == 8 && dist(self.boss, p) <= 1 {
+            return self.boss_fight(check);
+        }
+        if (1..=7).contains(&z) {
+            for i in 0..self.elites.len() {
+                let e = &self.elites[i];
+                // the hero picks its fights: it steers clear of elites far above its level or when hurt
+                let brave = self.hero.level + ELITE_LEVEL_MARGIN >= e.level && self.hero.hp * 2 >= self.hero.max_hp;
+                let (hit, sp, lv, loc) = (
+                    brave && e.zone == z && e.dead_until == 0 && e.cooldown <= self.steps && dist(e.pos, p) <= 1,
+                    e.species,
+                    e.level,
+                    e.pos,
+                );
+                if hit {
+                    self.flush_walk();
+                    let stage = self.stage;
+                    let o = self.fight(sp, lv, stage, loc, Some(i));
+                    return self.after_fight(o, false, check);
                 }
                 if self.target_zone() != self.hero.zone {
                     self.travel(0);
