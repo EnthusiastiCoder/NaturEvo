@@ -1077,6 +1077,10 @@ impl Sim {
                 if wp == self.pos() {
                     break;
                 }
+                self.walk_to(wp, target, CHECK_SUPPLIES | CHECK_TARGET)
+            };
+            if r != Walk::Arrived {
+                break;
             }
         }
     }
