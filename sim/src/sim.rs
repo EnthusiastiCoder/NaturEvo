@@ -966,8 +966,115 @@ impl Sim {
                     let o = self.fight(sp, lv, stage, loc, Some(i));
                     return self.after_fight(o, false, check);
                 }
-                if self.target_zone() != self.hero.zone {
-                    self.travel(0);
+            }
+            if self.map.tile(p.0, p.1) == Tile::Grass && self.rng.chance(self.cfg.encounter_rate) {
+                self.flush_walk();
+                let zone = &ZONES[z];
+                let sp = pick_weighted(&mut self.rng, zone.species);
+                let lv = self.rng.range(zone.min as i32, zone.max as i32) as u32;
+                let stage = self.stage;
+                let o = self.fight(sp, lv, stage, p, None);
+                return self.after_fight(o, false, check);
+            }
+        }
+        if self.done {
+            return Some(Walk::Aborted);
+        }
+        None
+    }
+
+    /// Shortest route `from` -> `to` (excluding `from`). Open L-shaped routes are already optimal,
+    /// so they are taken directly; anything blocked falls back to A*.
+    fn route(&self, from: (usize, usize), to: (usize, usize)) -> Option<Vec<(usize, usize)>> {
+        for horizontal_first in [true, false] {
+            let mut out = Vec::with_capacity(dist(from, to));
+            let (mut x, mut y) = from;
+            let mut ok = self.map.passable(to.0, to.1);
+            while ok && (x, y) != to {
+                let move_x = if horizontal_first { x != to.0 } else { y == to.1 };
+                if move_x {
+                    x = if x < to.0 { x + 1 } else { x - 1 };
+                } else {
+                    y = if y < to.1 { y + 1 } else { y - 1 };
+                }
+                ok = self.map.passable(x, y);
+                out.push((x, y));
+            }
+            if ok && self.map.passable(from.0, from.1) {
+                return Some(out);
+            }
+        }
+        self.map.path(from, to)
+    }
+
+    fn walk_to(&mut self, dest: (usize, usize), dest_zone: usize, check: u8) -> Walk {
+        let Some(path) = self.route(self.pos(), dest) else {
+            self.done = true;
+            return Walk::Aborted;
+        };
+        self.walk_route(path, dest_zone, check)
+    }
+
+    fn walk_route(&mut self, path: Vec<(usize, usize)>, dest_zone: usize, check: u8) -> Walk {
+        for p in path {
+            if let Some(w) = self.take_step(p, dest_zone, check) {
+                return w;
+            }
+        }
+        self.flush_walk();
+        Walk::Arrived
+    }
+
+    fn go_home(&mut self) {
+        let camp = self.map.camp();
+        while !self.done && self.pos() != camp {
+            if self.walk_to(camp, 0, 0) == Walk::Died {
+                return;
+            }
+        }
+    }
+
+    fn pick_wander(&mut self, target: usize) -> (usize, usize) {
+        let me = self.pos();
+        let r = self.cfg.wander_radius as usize;
+        let mut cands: Vec<(usize, usize)> = self.zone_grass[target].iter().copied().filter(|&p| p != me && dist(p, me) <= r).collect();
+        if cands.is_empty() {
+            cands = self.zone_grass[target].iter().copied().filter(|&p| p != me).collect();
+        }
+        if cands.is_empty() {
+            return me;
+        }
+        cands[self.rng.range(0, cands.len() as i32 - 1) as usize]
+    }
+
+    fn chase_boss_step(&mut self) -> Walk {
+        let me = self.pos();
+        if dist(me, self.boss) <= 1 {
+            return self.boss_fight(CHECK_SUPPLIES | CHECK_TARGET).unwrap_or(Walk::Arrived);
+        }
+        match self.map.path(me, self.boss) {
+            Some(p) if !p.is_empty() => self.take_step(p[0], 8, CHECK_SUPPLIES | CHECK_TARGET).unwrap_or(Walk::Arrived),
+            _ => Walk::Retreat,
+        }
+    }
+
+    fn grind(&mut self, target: usize) {
+        loop {
+            if self.done {
+                break;
+            }
+            let h = &self.hero;
+            if h.potions == 0 && h.hp * 2 < h.max_hp {
+                break;
+            }
+            if self.target_zone() != target {
+                break;
+            }
+            let r = if target == 8 {
+                self.chase_boss_step()
+            } else {
+                let wp = self.pick_wander(target);
+                if wp == self.pos() {
                     break;
                 }
             }
