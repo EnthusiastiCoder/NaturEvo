@@ -866,7 +866,6 @@ impl Sim {
                     if self.map.passable(np.0, np.1) && self.map.zone_of(np.0, np.1) == 8 && dist(np, centre) <= 2 && np != hp {
                         self.boss = np;
                     }
-                    Outcome::Won => {}
                 }
                 if self.done {
                     break;
