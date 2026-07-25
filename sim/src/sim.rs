@@ -867,8 +867,28 @@ impl Sim {
                         self.boss = np;
                     }
                 }
-                if self.done {
-                    break;
+            }
+            return;
+        }
+        if hz == 0 {
+            return;
+        }
+        for i in 0..self.elites.len() {
+            if self.elites[i].zone != hz || self.elites[i].dead_until != 0 {
+                continue;
+            }
+            if !self.rng.chance(0.5) {
+                continue;
+            }
+            let pos = self.elites[i].pos;
+            let (nx, ny) = if dist(pos, hp) <= ELITE_CHASE_RADIUS && pos != hp {
+                let (dx, dy) = (hp.0 as i32 - pos.0 as i32, hp.1 as i32 - pos.1 as i32);
+                let horiz = (pos.0 as i32 + dx.signum(), pos.1 as i32);
+                let vert = (pos.0 as i32, pos.1 as i32 + dy.signum());
+                if dx.abs() >= dy.abs() && dx != 0 {
+                    horiz
+                } else {
+                    vert
                 }
                 let h = &self.hero;
                 if h.potions == 0 && h.hp * 2 < h.max_hp {
