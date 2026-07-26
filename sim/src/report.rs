@@ -142,6 +142,7 @@ pub fn batch_with(runs: u32, threads: usize, cfg: &Config) -> BatchStats {
     results.resize(
         runs as usize,
         Summary {
+            steps: 0,
             won: false,
             deaths: 0,
             final_level: 0,
