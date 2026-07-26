@@ -1161,6 +1161,27 @@ fn run_sim(seed: u64, cfg: &Config, lean: bool) -> Sim {
         zone_grass: vec![Vec::new(); 9],
         outbound: vec![None; 9],
     };
+    let n = sim.map.size();
+    for y in 0..n {
+        for x in 0..n {
+            if sim.map.tile(x, y) == Tile::Grass {
+                let z = sim.map.zone_of(x, y);
+                sim.zone_grass[z].push((x, y));
+            }
+        }
+    }
+    // roaming elites: species from the zone table, a home tile inside the zone
+    for z in 1..=7usize {
+        let tiles: Vec<(usize, usize)> = (0..n * n)
+            .map(|i| (i % n, i / n))
+            .filter(|&(x, y)| sim.map.zone_of(x, y) == z && sim.map.passable(x, y))
+            .collect();
+        for _ in 0..sim.cfg.elites_per_zone {
+            let species = pick_weighted(&mut sim.rng, ZONES[z].species);
+            let home = tiles[sim.rng.range(0, tiles.len() as i32 - 1) as usize];
+            sim.elites.push(Elite { zone: z, species, level: ZONES[z].max + 2, home, pos: home, dead_until: 0, cooldown: 0 });
+        }
+    }
     ev!(sim, "travel", None, "Hero begins the journey at Base Camp");
     sim.run();
     if !sim.won {
