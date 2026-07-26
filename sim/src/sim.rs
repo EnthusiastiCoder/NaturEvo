@@ -1212,6 +1212,7 @@ pub fn simulate_with(seed: u64, cfg: &Config) -> Run {
 pub fn simulate_summary(seed: u64, cfg: &Config) -> Summary {
     let sim = run_sim(seed, cfg, true);
     Summary {
+        steps: sim.steps,
         won: sim.won,
         deaths: sim.deaths,
         final_level: sim.final_level,
