@@ -100,6 +100,28 @@ pub fn route(root: &Path, method: &str, target: &str, host: Option<&str>) -> Res
         "/data/run.js" => static_file(root, "data/run.js", "application/javascript; charset=utf-8"),
         "/data/stats.js" => static_file(root, "data/stats.js", "application/javascript; charset=utf-8"),
         "/api/config" => json_resp(200, config_body()),
+        "/api/map" => {
+            let mut seed: u64 = 1;
+            let mut size: u32 = 64;
+            for (k, v) in &pairs {
+                match *k {
+                    "seed" => {
+                        seed = match v.parse() {
+                            Ok(s) => s,
+                            Err(_) => return err(400, "seed: not a valid u64"),
+                        };
+                    }
+                    "map_size" => {
+                        size = match v.parse() {
+                            Ok(n) if (32..=128).contains(&n) => n,
+                            _ => return err(400, "map_size: must be an integer in 32..=128"),
+                        };
+                    }
+                    _ => {}
+                }
+            }
+            json_resp(200, map_body(&Map::generate(seed, size as usize)))
+        }
         "/api/run" => {
             let mut seed: u64 = 1;
             let mut from: Option<usize> = None;
