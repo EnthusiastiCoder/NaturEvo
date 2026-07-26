@@ -1133,7 +1133,8 @@ fn run_sim(seed: u64, cfg: &Config, lean: bool) -> Sim {
     let mut sim = Sim {
         cfg: cfg.clone(),
         rng: Rng::new(seed),
-        hero: Hero { level: 1, hp: max_hp, max_hp, xp: 0, gold: 0, potions: 0, zone: 0, weapon: 0, armor: 0 },
+        hero: Hero { level: 1, hp: max_hp, max_hp, xp: 0, gold: 0, potions: 0, zone: 0, weapon: 0, armor: 0, x: camp.0, y: camp.1 },
+        map,
         events: Vec::new(),
         deaths: 0,
         boss_deaths: 0,
