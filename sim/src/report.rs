@@ -27,7 +27,7 @@ fn head_fields(run: &Run) -> String {
         None => "null".to_string(),
     };
     format!(
-        "\"seed\":{},\"won\":{},\"deaths\":{},\"final_level\":{},\"first_win_event\":{},\"end_level\":{},\"post_kills\":{},\"post_deaths\":{},\"max_stage\":{},\"capped\":{},\"total\":{}",
+        "\"seed\":{},\"won\":{},\"deaths\":{},\"final_level\":{},\"first_win_event\":{},\"end_level\":{},\"post_kills\":{},\"post_deaths\":{},\"max_stage\":{},\"capped\":{},\"total\":{},\"w\":{},\"h\":{},\"steps\":{}",
         run.seed, run.won, run.deaths, run.final_level, fw, run.end_level, run.post_kills,
         run.post_deaths, run.max_stage, run.capped, run.events.len()
     )
