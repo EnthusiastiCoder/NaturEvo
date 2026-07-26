@@ -1127,6 +1127,9 @@ pub fn simulate(seed: u64) -> Run {
 
 fn run_sim(seed: u64, cfg: &Config, lean: bool) -> Sim {
     let max_hp = Hero::max_hp_for(cfg, 1);
+    let map = Map::generate(seed, cfg.map_size as usize);
+    let camp = map.camp();
+    let boss = map.anchors()[8];
     let mut sim = Sim {
         cfg: cfg.clone(),
         rng: Rng::new(seed),
