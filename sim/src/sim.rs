@@ -1194,6 +1194,8 @@ pub fn simulate_with(seed: u64, cfg: &Config) -> Run {
     let sim = run_sim(seed, cfg, false);
     Run {
         seed,
+        steps: sim.steps,
+        map_size: cfg.map_size,
         final_level: sim.final_level,
         won: sim.won,
         deaths: sim.deaths,
