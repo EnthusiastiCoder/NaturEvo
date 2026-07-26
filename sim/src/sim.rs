@@ -1148,6 +1148,18 @@ fn run_sim(seed: u64, cfg: &Config, lean: bool) -> Sim {
         post_kills: 0,
         post_deaths: 0,
         stage: 0,
+        steps: 0,
+        elites: Vec::new(),
+        next_respawn: u32::MAX,
+        boss,
+        goal: 1,
+        last_travel: 0,
+        leg: Vec::new(),
+        leg_dir: (0, 0),
+        leg_tiles: 0,
+        next_path: Vec::new(),
+        zone_grass: vec![Vec::new(); 9],
+        outbound: vec![None; 9],
     };
     ev!(sim, "travel", None, "Hero begins the journey at Base Camp");
     sim.run();
