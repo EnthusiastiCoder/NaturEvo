@@ -42,8 +42,8 @@ fn push_event(s: &mut String, e: &crate::sim::Event) {
     match &e.mon {
         Some(m) => {
             s.push_str(&format!(
-                "{{\"species\":{},\"level\":{},\"hp\":{},\"max_hp\":{}",
-                m.species, m.level, m.hp, m.max_hp
+                "{{\"species\":{},\"level\":{},\"hp\":{},\"max_hp\":{},\"x\":{},\"y\":{}",
+                m.species, m.level, m.hp, m.max_hp, m.x, m.y
             ));
             if m.stage > 0 {
                 s.push_str(&format!(",\"stage\":{}", m.stage));
