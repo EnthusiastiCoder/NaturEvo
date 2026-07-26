@@ -24,8 +24,8 @@ fn main() {
             let out = arg(&args, "--out").unwrap_or_else(|| "viewer/data/run.js".into());
             let r = simulate(seed);
             write(&out, &run_json(&r));
-            println!("seed {} won={} deaths={} level={} events={} -> {} ({:?})",
-                seed, r.won, r.deaths, r.final_level, r.events.len(), out, t.elapsed());
+            println!("seed {} won={} deaths={} level={} events={} steps={} -> {} ({:?})",
+                seed, r.won, r.deaths, r.final_level, r.events.len(), r.steps, out, t.elapsed());
         }
         Some("batch") => {
             let runs: u32 = arg(&args, "--runs").and_then(|v| v.parse().ok()).unwrap_or(2000);
