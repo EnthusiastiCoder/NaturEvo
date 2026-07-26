@@ -48,7 +48,7 @@ fn push_event(s: &mut String, e: &crate::sim::Event) {
             if m.stage > 0 {
                 s.push_str(&format!(",\"stage\":{}", m.stage));
             }
-            s.push_str("}}");
+            s.push('}');
         }
         None => s.push_str("null}"),
     }
