@@ -1,4 +1,5 @@
 use crate::config::{knobs, Config};
+use crate::map::{map_body, Map};
 use crate::report::{batch_with, run_body, run_window_body, stats_body};
 use crate::sim::simulate_with;
 use std::io::{Read, Write};
