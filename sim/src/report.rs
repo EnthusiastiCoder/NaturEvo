@@ -50,7 +50,7 @@ fn push_event(s: &mut String, e: &crate::sim::Event) {
             }
             s.push('}');
         }
-        None => s.push_str("null}"),
+        None => s.push_str("null"),
     }
 }
 
