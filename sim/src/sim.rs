@@ -1085,6 +1085,40 @@ impl Sim {
         }
         self.flush_walk();
     }
+
+    fn run(&mut self) {
+        let camp = self.map.camp();
+        while !self.done {
+            if self.pos() != camp {
+                self.go_home();
+                continue;
+            }
+            self.rest();
+            self.shop();
+            if self.done {
+                break;
+            }
+            // outbound: re-aim in place when the target zone changes on the way
+            let (target, outcome) = loop {
+                let target = self.target_zone();
+                self.goal = target;
+                if self.outbound[target].is_none() {
+                    let dest = self.map.nearest_tile_of_zone(camp, target).unwrap_or(camp);
+                    let route = self.route(camp, dest).unwrap_or_default();
+                    self.outbound[target] = Some((dest, route));
+                }
+                let (dest, cached) = self.outbound[target].clone().unwrap();
+                let w = if self.pos() == camp { self.walk_route(cached, target, CHECK_SUPPLIES | CHECK_TARGET) } else { self.walk_to(dest, target, CHECK_SUPPLIES | CHECK_TARGET) };
+                if w == Walk::Retarget || (w == Walk::Arrived && self.target_zone() != target) {
+                    continue;
+                }
+                break (target, w);
+            };
+            if outcome == Walk::Arrived {
+                self.grind(target);
+            }
+        }
+    }
 }
 
 pub fn simulate(seed: u64) -> Run {
