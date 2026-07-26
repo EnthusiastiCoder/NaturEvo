@@ -1083,6 +1083,7 @@ impl Sim {
                 break;
             }
         }
+        self.flush_walk();
     }
 }
 
