@@ -52,6 +52,28 @@ fn push_event(s: &mut String, e: &crate::sim::Event) {
         }
         None => s.push_str("null"),
     }
+    s.push_str(",\"npcs\":[");
+    for (i, n) in e.npcs.iter().enumerate() {
+        if i > 0 {
+            s.push(',');
+        }
+        s.push_str(&format!(
+            "{{\"id\":\"{}\",\"sp\":{},\"lv\":{},\"x\":{},\"y\":{}}}",
+            esc(&n.id), n.species, n.level, n.x, n.y
+        ));
+    }
+    s.push(']');
+    if e.kind == "walk" {
+        s.push_str(",\"path\":[");
+        for (i, p) in e.path.iter().enumerate() {
+            if i > 0 {
+                s.push(',');
+            }
+            s.push_str(&format!("[{},{}]", p.0, p.1));
+        }
+        s.push(']');
+    }
+    s.push('}');
 }
 
 pub fn run_body(run: &Run) -> String {
