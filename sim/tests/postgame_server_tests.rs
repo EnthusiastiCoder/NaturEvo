@@ -41,7 +41,7 @@ fn event_cap_2000_returns_2000_events() {
 
 #[test]
 fn full_run_over_200k_without_window_400() {
-    let r = get("/api/run?seed=1&event_cap=300000");
+    let r = get("/api/run?seed=3&event_cap=300000");
     assert_eq!(r.status, 400);
     let b = text(&r);
     assert!(b.contains("\"error\"") && b.contains("from") && b.contains("count"), "{}", b);
@@ -49,7 +49,7 @@ fn full_run_over_200k_without_window_400() {
 
 #[test]
 fn window_request_ok() {
-    let r = get("/api/run?seed=1&from=0&count=50");
+    let r = get("/api/run?seed=3&from=0&count=50");
     assert_eq!(r.status, 200);
     let b = text(&r);
     assert!(b.contains("\"from\":0"));
@@ -60,7 +60,7 @@ fn window_request_ok() {
 
 #[test]
 fn window_over_large_cap_ok() {
-    let r = get("/api/run?seed=1&event_cap=300000&from=299990&count=100");
+    let r = get("/api/run?seed=3&event_cap=300000&from=299990&count=100");
     assert_eq!(r.status, 200);
     assert!(text(&r).contains("\"total\":300000"));
 }
