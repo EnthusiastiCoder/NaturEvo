@@ -291,7 +291,7 @@ fn evo_boss_never_evolved_and_prewin_stage_zero() {
 
 #[test]
 fn evo_encounter_text_uses_stage_name() {
-    let r = simulate_with(1, &cfg(&[("evolve_kills", "10")]));
+    let r = simulate_with(3, &cfg(&[("evolve_kills", "10")]));
     let mut n = 0;
     for e in r.events.iter().filter(|e| e.kind == "encounter") {
         if let Some(m) = &e.mon {
