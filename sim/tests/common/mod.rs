@@ -9,3 +9,4 @@ pub enum J {
     Num(f64),
     Str(String),
     Arr(Vec<J>),
+    Obj(BTreeMap<String, J>),
