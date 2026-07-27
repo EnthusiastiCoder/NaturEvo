@@ -6,3 +6,4 @@ use std::collections::BTreeMap;
 pub enum J {
     Null,
     Bool(bool),
+    Num(f64),
