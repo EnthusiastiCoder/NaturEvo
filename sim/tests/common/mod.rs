@@ -17,3 +17,4 @@ impl J {
         match self {
             J::Obj(m) => m.get(k),
             _ => None,
+        }
