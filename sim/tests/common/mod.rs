@@ -11,3 +11,5 @@ pub enum J {
     Arr(Vec<J>),
     Obj(BTreeMap<String, J>),
 }
+
+impl J {
