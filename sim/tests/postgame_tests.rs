@@ -189,7 +189,7 @@ fn post_never_targets_boss_again() {
 
 #[test]
 fn post_levels_past_40_up_to_postgame_cap() {
-    let r = simulate(1);
+    let r = simulate(3);
     assert!(r.end_level > 40, "end_level {}", r.end_level);
     assert!(r.end_level <= 80);
     assert!(r.events.iter().all(|e| e.hero.level <= 80));
