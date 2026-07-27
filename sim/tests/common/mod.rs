@@ -21,3 +21,4 @@ impl J {
     }
     pub fn arr(&self) -> &[J] {
         match self {
+            J::Arr(a) => a,
