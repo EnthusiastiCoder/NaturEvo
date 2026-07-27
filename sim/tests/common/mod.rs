@@ -20,3 +20,4 @@ impl J {
         }
     }
     pub fn arr(&self) -> &[J] {
+        match self {
