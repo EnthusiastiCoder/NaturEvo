@@ -24,3 +24,4 @@ impl J {
             J::Arr(a) => a,
             _ => panic!("not an array: {:?}", self),
         }
+    }
