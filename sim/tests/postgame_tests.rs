@@ -141,7 +141,7 @@ fn cap_2000_exact_and_consecutive() {
     let r = simulate_with(3, &cfg(&[("event_cap", "2000")]));
     assert_eq!(r.events.len(), 2000);
     assert!(r.capped);
-    assert!(!r.won, "win happens at 10624, after the cap");
+    assert!(!r.won, "win happens at 14719, after the cap");
     for (i, e) in r.events.iter().enumerate() {
         assert_eq!(e.idx as usize, i);
     }
