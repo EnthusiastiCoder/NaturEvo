@@ -422,7 +422,7 @@ fn stats_body_has_new_keys() {
 
 #[test]
 fn report_run_body_new_top_level_keys() {
-    let r = simulate(1);
+    let r = simulate(3);
     let b = run_body(&r);
     for k in ["first_win_event", "end_level", "post_kills", "post_deaths", "max_stage", "capped", "total"] {
         assert!(b.contains(&format!("\"{}\":", k)), "missing {}", k);
