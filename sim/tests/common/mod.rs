@@ -7,3 +7,4 @@ pub enum J {
     Null,
     Bool(bool),
     Num(f64),
+    Str(String),
