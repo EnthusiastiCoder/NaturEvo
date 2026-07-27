@@ -25,3 +25,4 @@ impl J {
             _ => panic!("not an array: {:?}", self),
         }
     }
+    pub fn num(&self) -> f64 {
