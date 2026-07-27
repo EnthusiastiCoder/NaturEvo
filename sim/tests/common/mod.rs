@@ -16,3 +16,4 @@ impl J {
     pub fn get(&self, k: &str) -> Option<&J> {
         match self {
             J::Obj(m) => m.get(k),
+            _ => None,
