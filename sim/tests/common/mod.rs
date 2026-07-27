@@ -13,3 +13,4 @@ pub enum J {
 }
 
 impl J {
+    pub fn get(&self, k: &str) -> Option<&J> {
