@@ -19,3 +19,4 @@ impl J {
             _ => None,
         }
     }
+    pub fn arr(&self) -> &[J] {
