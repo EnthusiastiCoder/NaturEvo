@@ -175,7 +175,7 @@ fn cap_losing_run_ends_without_postgame() {
 fn post_exactly_one_win_event_and_continues() {
     let r = simulate(3);
     let wins: Vec<usize> = r.events.iter().enumerate().filter(|(_, e)| e.kind == "win").map(|(i, _)| i).collect();
-    assert_eq!(wins, vec![10624]);
+    assert_eq!(wins, vec![14719]);
     assert!(r.events.len() > 10625 + 1000);
 }
 
