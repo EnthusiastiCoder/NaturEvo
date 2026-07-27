@@ -225,7 +225,7 @@ fn post_deaths_field_is_prewin_count() {
 
 #[test]
 fn post_kills_counts_victories_after_win() {
-    let r = simulate(1);
+    let r = simulate(3);
     let f = fw(&r);
     let v = r.events[f + 1..].iter().filter(|e| e.kind == "victory_fight").count() as u32;
     assert_eq!(r.post_kills, v);
