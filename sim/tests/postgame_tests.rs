@@ -131,7 +131,7 @@ fn baseline_win_counts_unchanged() {
 // ---------------- cap ----------------
 #[test]
 fn cap_default_winning_run_is_capped_at_65536() {
-    let r = simulate(1);
+    let r = simulate(3);
     assert_eq!(r.events.len(), 65536);
     assert!(r.capped);
 }
