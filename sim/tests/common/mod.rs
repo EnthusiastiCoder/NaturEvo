@@ -18,3 +18,4 @@ impl J {
             J::Obj(m) => m.get(k),
             _ => None,
         }
+    }
