@@ -276,7 +276,7 @@ fn evo_fast_kills_reach_stage_4_with_four_events() {
 
 #[test]
 fn evo_slow_kills_never_evolve() {
-    let r = simulate_with(1, &cfg(&[("evolve_kills", "100000")]));
+    let r = simulate_with(3, &cfg(&[("evolve_kills", "100000")]));
     assert_eq!(r.max_stage, 0);
     assert!(r.events.iter().all(|e| e.kind != "evolve" && stage_of(e) == 0));
 }
