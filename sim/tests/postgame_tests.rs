@@ -348,8 +348,8 @@ fn det_same_seed_same_cfg() {
 
 #[test]
 fn det_evolve_kills_changes_run() {
-    let a = simulate_with(1, &cfg(&[("evolve_kills", "10")]));
-    let b = simulate_with(1, &cfg(&[("evolve_kills", "100")]));
+    let a = simulate_with(3, &cfg(&[("evolve_kills", "10")]));
+    let b = simulate_with(3, &cfg(&[("evolve_kills", "100")]));
     let ta: Vec<&str> = a.events.iter().map(|e| e.text.as_str()).collect();
     let tb: Vec<&str> = b.events.iter().map(|e| e.text.as_str()).collect();
     assert_ne!(ta, tb);
