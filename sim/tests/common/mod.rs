@@ -8,3 +8,4 @@ pub enum J {
     Bool(bool),
     Num(f64),
     Str(String),
+    Arr(Vec<J>),
