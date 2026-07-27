@@ -14,12 +14,16 @@ fn run_json_shape_and_deterministic() {
 fn json_escapes_quotes() {
     let run = Run {
         seed: 0,
+        steps: 0,
+        map_size: 64,
         events: vec![Event {
             idx: 0,
             kind: "travel",
             text: "say \"hi\"".to_string(),
-            hero: HeroSnap { level: 1, hp: 10, max_hp: 10, xp: 0, gold: 0, potions: 0, zone: 0, weapon: 0, armor: 0 },
+            hero: HeroSnap { level: 1, hp: 10, max_hp: 10, xp: 0, gold: 0, potions: 0, zone: 0, weapon: 0, armor: 0, x: 0, y: 0 },
             mon: None,
+            npcs: vec![],
+            path: vec![],
         }],
         won: false,
         deaths: 0,
