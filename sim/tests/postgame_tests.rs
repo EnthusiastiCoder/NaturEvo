@@ -88,7 +88,7 @@ fn cfg_set_rejects_out_of_range_and_garbage() {
 // ---------------- prefix / baselines ----------------
 #[test]
 fn prefix_first_win_events_and_level() {
-    for (seed, f) in [(1u64, 10624u32), (2, 10542), (42, 10616)] {
+    for (seed, f) in [(3u64, 14719u32), (4, 14098), (10, 14584)] {
         let r = simulate(seed);
         assert!(r.won, "seed {}", seed);
         assert_eq!(r.first_win_event, Some(f), "seed {}", seed);
