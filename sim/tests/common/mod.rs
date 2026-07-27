@@ -5,3 +5,4 @@ use std::collections::BTreeMap;
 #[derive(Debug, Clone, PartialEq)]
 pub enum J {
     Null,
+    Bool(bool),
