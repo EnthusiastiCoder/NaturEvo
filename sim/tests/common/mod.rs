@@ -51,3 +51,5 @@ impl J {
         (a[0].num() as usize, a[1].num() as usize)
     }
 }
+
+pub fn parse(s: &str) -> Result<J, String> {
