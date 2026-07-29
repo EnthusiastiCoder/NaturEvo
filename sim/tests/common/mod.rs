@@ -50,3 +50,4 @@ impl J {
         assert_eq!(a.len(), 2, "pair expected: {:?}", self);
         (a[0].num() as usize, a[1].num() as usize)
     }
+}
