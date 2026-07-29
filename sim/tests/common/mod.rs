@@ -32,3 +32,4 @@ impl J {
         }
     }
     pub fn str(&self) -> &str {
+        match self {
