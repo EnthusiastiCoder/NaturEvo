@@ -70,3 +70,4 @@ fn ws(b: &[char], i: &mut usize) {
 }
 
 fn val(b: &[char], i: &mut usize) -> Result<J, String> {
+    ws(b, i);
