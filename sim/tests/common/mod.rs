@@ -76,3 +76,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
         '{' => {
             *i += 1;
             let mut m = BTreeMap::new();
+            ws(b, i);
