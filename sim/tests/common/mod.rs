@@ -87,3 +87,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                     J::Str(s) => s,
                     _ => return Err("key not string".into()),
                 };
+                ws(b, i);
