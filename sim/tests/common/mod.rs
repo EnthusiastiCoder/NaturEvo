@@ -35,3 +35,4 @@ impl J {
         match self {
             J::Str(s) => s,
             _ => panic!("not a string: {:?}", self),
+        }
