@@ -44,3 +44,4 @@ impl J {
     pub fn u(&self, k: &str) -> usize {
         self.get(k).unwrap_or_else(|| panic!("missing key {}", k)).num() as usize
     }
+    /// [x,y] pair
