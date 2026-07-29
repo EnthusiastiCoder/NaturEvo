@@ -29,3 +29,4 @@ impl J {
         match self {
             J::Num(n) => *n,
             _ => panic!("not a number: {:?}", self),
+        }
