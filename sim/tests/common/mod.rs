@@ -74,3 +74,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
     let c = *b.get(*i).ok_or("eof")?;
     match c {
         '{' => {
+            *i += 1;
