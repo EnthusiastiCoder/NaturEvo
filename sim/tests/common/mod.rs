@@ -57,3 +57,4 @@ pub fn parse(s: &str) -> Result<J, String> {
     let mut i = 0;
     let v = val(&b, &mut i)?;
     ws(&b, &mut i);
+    if i != b.len() {
