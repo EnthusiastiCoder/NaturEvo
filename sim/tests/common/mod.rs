@@ -59,3 +59,4 @@ pub fn parse(s: &str) -> Result<J, String> {
     ws(&b, &mut i);
     if i != b.len() {
         return Err(format!("trailing data at {}", i));
+    }
