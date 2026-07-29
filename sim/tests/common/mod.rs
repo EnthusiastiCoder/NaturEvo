@@ -67,3 +67,4 @@ fn ws(b: &[char], i: &mut usize) {
     while *i < b.len() && b[*i].is_whitespace() {
         *i += 1;
     }
+}
