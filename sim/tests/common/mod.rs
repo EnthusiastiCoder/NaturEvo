@@ -78,3 +78,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
             let mut m = BTreeMap::new();
             ws(b, i);
             if b.get(*i) == Some(&'}') {
+                *i += 1;
