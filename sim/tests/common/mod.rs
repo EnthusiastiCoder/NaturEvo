@@ -40,3 +40,4 @@ impl J {
     pub fn is_null(&self) -> bool {
         matches!(self, J::Null)
     }
+    /// numeric field as usize; panics with the key name when missing
