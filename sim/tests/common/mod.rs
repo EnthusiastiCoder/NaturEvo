@@ -98,3 +98,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                     Some(',') => *i += 1,
                     Some('}') => {
                         *i += 1;
+                        return Ok(J::Obj(m));
