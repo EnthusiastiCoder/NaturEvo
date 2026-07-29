@@ -36,3 +36,4 @@ impl J {
             J::Str(s) => s,
             _ => panic!("not a string: {:?}", self),
         }
+    }
