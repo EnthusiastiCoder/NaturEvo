@@ -61,3 +61,4 @@ pub fn parse(s: &str) -> Result<J, String> {
         return Err(format!("trailing data at {}", i));
     }
     Ok(v)
+}
