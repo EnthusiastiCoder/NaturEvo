@@ -54,3 +54,4 @@ impl J {
 
 pub fn parse(s: &str) -> Result<J, String> {
     let b: Vec<char> = s.chars().collect();
+    let mut i = 0;
