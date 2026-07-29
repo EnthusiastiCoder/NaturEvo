@@ -41,3 +41,4 @@ impl J {
         matches!(self, J::Null)
     }
     /// numeric field as usize; panics with the key name when missing
+    pub fn u(&self, k: &str) -> usize {
