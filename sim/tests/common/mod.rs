@@ -71,3 +71,4 @@ fn ws(b: &[char], i: &mut usize) {
 
 fn val(b: &[char], i: &mut usize) -> Result<J, String> {
     ws(b, i);
+    let c = *b.get(*i).ok_or("eof")?;
