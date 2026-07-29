@@ -84,3 +84,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
             loop {
                 ws(b, i);
                 let k = match val(b, i)? {
+                    J::Str(s) => s,
