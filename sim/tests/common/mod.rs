@@ -31,3 +31,4 @@ impl J {
             _ => panic!("not a number: {:?}", self),
         }
     }
+    pub fn str(&self) -> &str {
