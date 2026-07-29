@@ -47,3 +47,4 @@ impl J {
     /// [x,y] pair
     pub fn xy(&self) -> (usize, usize) {
         let a = self.arr();
+        assert_eq!(a.len(), 2, "pair expected: {:?}", self);
