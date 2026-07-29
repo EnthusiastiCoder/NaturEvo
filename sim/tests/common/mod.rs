@@ -34,3 +34,4 @@ impl J {
     pub fn str(&self) -> &str {
         match self {
             J::Str(s) => s,
+            _ => panic!("not a string: {:?}", self),
