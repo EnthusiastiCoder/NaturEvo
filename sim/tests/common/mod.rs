@@ -92,3 +92,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                     return Err(format!("expected : at {}", i));
                 }
                 *i += 1;
+                m.insert(k, val(b, i)?);
