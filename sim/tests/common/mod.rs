@@ -93,3 +93,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                 }
                 *i += 1;
                 m.insert(k, val(b, i)?);
+                ws(b, i);
