@@ -91,3 +91,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                 if b.get(*i) != Some(&':') {
                     return Err(format!("expected : at {}", i));
                 }
+                *i += 1;
