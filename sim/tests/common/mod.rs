@@ -86,3 +86,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                 let k = match val(b, i)? {
                     J::Str(s) => s,
                     _ => return Err("key not string".into()),
+                };
