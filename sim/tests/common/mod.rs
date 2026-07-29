@@ -48,3 +48,4 @@ impl J {
     pub fn xy(&self) -> (usize, usize) {
         let a = self.arr();
         assert_eq!(a.len(), 2, "pair expected: {:?}", self);
+        (a[0].num() as usize, a[1].num() as usize)
