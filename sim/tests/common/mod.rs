@@ -95,3 +95,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                 m.insert(k, val(b, i)?);
                 ws(b, i);
                 match b.get(*i) {
+                    Some(',') => *i += 1,
