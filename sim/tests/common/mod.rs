@@ -27,3 +27,4 @@ impl J {
     }
     pub fn num(&self) -> f64 {
         match self {
+            J::Num(n) => *n,
