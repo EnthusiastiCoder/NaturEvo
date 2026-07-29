@@ -88,3 +88,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                     _ => return Err("key not string".into()),
                 };
                 ws(b, i);
+                if b.get(*i) != Some(&':') {
