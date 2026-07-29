@@ -101,3 +101,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                         return Ok(J::Obj(m));
                     }
                     _ => return Err(format!("bad object at {}", i)),
+                }
