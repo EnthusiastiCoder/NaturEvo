@@ -37,3 +37,4 @@ impl J {
             _ => panic!("not a string: {:?}", self),
         }
     }
+    pub fn is_null(&self) -> bool {
