@@ -58,3 +58,4 @@ pub fn parse(s: &str) -> Result<J, String> {
     let v = val(&b, &mut i)?;
     ws(&b, &mut i);
     if i != b.len() {
+        return Err(format!("trailing data at {}", i));
