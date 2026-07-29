@@ -46,3 +46,4 @@ impl J {
     }
     /// [x,y] pair
     pub fn xy(&self) -> (usize, usize) {
+        let a = self.arr();
