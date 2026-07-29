@@ -42,3 +42,4 @@ impl J {
     }
     /// numeric field as usize; panics with the key name when missing
     pub fn u(&self, k: &str) -> usize {
+        self.get(k).unwrap_or_else(|| panic!("missing key {}", k)).num() as usize
