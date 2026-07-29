@@ -62,3 +62,5 @@ pub fn parse(s: &str) -> Result<J, String> {
     }
     Ok(v)
 }
+
+fn ws(b: &[char], i: &mut usize) {
