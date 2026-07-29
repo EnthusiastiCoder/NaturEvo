@@ -39,3 +39,4 @@ impl J {
     }
     pub fn is_null(&self) -> bool {
         matches!(self, J::Null)
+    }
