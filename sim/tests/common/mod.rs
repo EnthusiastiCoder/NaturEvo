@@ -118,3 +118,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                 match b.get(*i) {
                     Some(',') => *i += 1,
                     Some(']') => {
+                        *i += 1;
