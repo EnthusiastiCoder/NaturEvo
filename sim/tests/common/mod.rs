@@ -130,3 +130,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
             let mut s = String::new();
             loop {
                 let c = *b.get(*i).ok_or("eof in string")?;
+                *i += 1;
