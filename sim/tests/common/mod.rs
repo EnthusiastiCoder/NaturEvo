@@ -113,3 +113,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                 return Ok(J::Arr(a));
             }
             loop {
+                a.push(val(b, i)?);
