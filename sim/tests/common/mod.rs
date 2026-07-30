@@ -126,3 +126,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
             }
         }
         '"' => {
+            *i += 1;
