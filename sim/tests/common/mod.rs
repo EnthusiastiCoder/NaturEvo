@@ -123,3 +123,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                     }
                     _ => return Err(format!("bad array at {}", i)),
                 }
+            }
