@@ -121,3 +121,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                         *i += 1;
                         return Ok(J::Arr(a));
                     }
+                    _ => return Err(format!("bad array at {}", i)),
