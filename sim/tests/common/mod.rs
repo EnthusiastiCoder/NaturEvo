@@ -114,3 +114,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
             }
             loop {
                 a.push(val(b, i)?);
+                ws(b, i);
