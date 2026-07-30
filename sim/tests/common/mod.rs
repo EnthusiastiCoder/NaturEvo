@@ -110,3 +110,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
             ws(b, i);
             if b.get(*i) == Some(&']') {
                 *i += 1;
+                return Ok(J::Arr(a));
