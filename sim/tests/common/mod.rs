@@ -143,3 +143,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                             'n' => s.push('\n'),
                             'r' => s.push('\r'),
                             't' => s.push('\t'),
+                            'b' => s.push('\u{8}'),
