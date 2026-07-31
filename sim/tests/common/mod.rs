@@ -132,3 +132,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                 let c = *b.get(*i).ok_or("eof in string")?;
                 *i += 1;
                 match c {
+                    '"' => return Ok(J::Str(s)),
