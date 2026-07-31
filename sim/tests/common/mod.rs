@@ -133,3 +133,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                 *i += 1;
                 match c {
                     '"' => return Ok(J::Str(s)),
+                    '\\' => {
