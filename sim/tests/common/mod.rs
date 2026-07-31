@@ -135,3 +135,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                     '"' => return Ok(J::Str(s)),
                     '\\' => {
                         let e = *b.get(*i).ok_or("eof in escape")?;
+                        *i += 1;
