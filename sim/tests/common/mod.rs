@@ -139,3 +139,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                         match e {
                             '"' => s.push('"'),
                             '\\' => s.push('\\'),
+                            '/' => s.push('/'),
