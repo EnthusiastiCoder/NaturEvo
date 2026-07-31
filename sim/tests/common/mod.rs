@@ -147,3 +147,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                             'f' => s.push('\u{c}'),
                             'u' => {
                                 let h: String = b.get(*i..*i + 4).ok_or("short unicode escape")?.iter().collect();
+                                *i += 4;
