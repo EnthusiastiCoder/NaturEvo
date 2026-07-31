@@ -137,3 +137,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                         let e = *b.get(*i).ok_or("eof in escape")?;
                         *i += 1;
                         match e {
+                            '"' => s.push('"'),
