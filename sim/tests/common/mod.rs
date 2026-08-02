@@ -153,3 +153,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                             }
                             _ => return Err(format!("bad escape {}", e)),
                         }
+                    }
