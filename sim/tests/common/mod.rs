@@ -157,3 +157,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                     c if (c as u32) < 0x20 => return Err("raw control char in string".into()),
                     c => s.push(c),
                 }
+            }
