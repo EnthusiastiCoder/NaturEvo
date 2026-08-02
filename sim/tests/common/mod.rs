@@ -149,3 +149,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                                 let h: String = b.get(*i..*i + 4).ok_or("short unicode escape")?.iter().collect();
                                 *i += 4;
                                 let n = u32::from_str_radix(&h, 16).map_err(|_| "bad unicode escape")?;
+                                s.push(char::from_u32(n).unwrap_or('?'));
