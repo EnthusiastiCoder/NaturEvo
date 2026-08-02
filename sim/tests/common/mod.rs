@@ -165,3 +165,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                 if b.get(*i..*i + n).map(|x| x.iter().collect::<String>()) == Some(w.to_string()) {
                     *i += n;
                     return Ok(v);
+                }
