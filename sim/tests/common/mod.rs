@@ -152,3 +152,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                                 s.push(char::from_u32(n).unwrap_or('?'));
                             }
                             _ => return Err(format!("bad escape {}", e)),
+                        }
