@@ -167,3 +167,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
                     return Ok(v);
                 }
             }
+            Err(format!("bad literal at {}", i))
