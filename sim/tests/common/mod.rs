@@ -162,3 +162,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
         't' | 'f' | 'n' => {
             for (w, v) in [("true", J::Bool(true)), ("false", J::Bool(false)), ("null", J::Null)] {
                 let n = w.len();
+                if b.get(*i..*i + n).map(|x| x.iter().collect::<String>()) == Some(w.to_string()) {
