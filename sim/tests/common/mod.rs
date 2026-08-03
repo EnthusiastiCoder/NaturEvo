@@ -170,3 +170,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
             Err(format!("bad literal at {}", i))
         }
         _ => {
+            let st = *i;
