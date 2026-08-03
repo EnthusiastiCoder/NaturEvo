@@ -174,3 +174,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
             while *i < b.len() && (b[*i].is_ascii_digit() || "+-.eE".contains(b[*i])) {
                 *i += 1;
             }
+            let t: String = b[st..*i].iter().collect();
