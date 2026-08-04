@@ -106,3 +106,9 @@ Backwards compatibility:
 - Files: sim/src/sim.rs, sim/src/report.rs, sim/src/server.rs, sim/src/main.rs (steps in batch/summary output if printed), sim/tests/* (only superseded assertions).
 - Tests that must pass: sim/tests/walk_tests.rs, map_server_tests.rs, and all existing sim tests (postgame, server, report, config).
 - Verify: `cargo test --manifest-path sim/Cargo.toml`. A manual check that `/api/run?seed=1&from=0&count=50` shows x,y and npcs.
+
+### 3. viewer-map (sonnet; depends on 2's JSON shape)
+- Task: viewer/data/map.js, the `#map` canvas, tokens in both themes, hover tooltip, zoom toggle, trail, markers, (x,y) in log lines, the STYLE.md doc.
+- Files: viewer/index.html, viewer/data/map.js (new), viewer/STYLE.md.
+- Tests that must pass: tests/viewer_map_check.mjs, and the existing viewer_*_check.mjs (style, layout, theme, canvas, clip, postgame).
+- Verify: `node tests/<each>.mjs`.
