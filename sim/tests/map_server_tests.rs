@@ -54,3 +54,18 @@ fn map_route_is_deterministic_and_seed_dependent() {
     assert_eq!(text(&get("/api/map?seed=9&map_size=32")), text(&get("/api/map?seed=9&map_size=32")));
     assert_ne!(text(&get("/api/map?seed=9&map_size=32")), text(&get("/api/map?seed=10&map_size=32")));
 }
+
+#[test]
+fn map_route_validates_input() {
+    for t in ["/api/map?map_size=abc", "/api/map?map_size=31", "/api/map?map_size=129", "/api/map?map_size=0", "/api/map?map_size=40.5", "/api/map?seed=-1", "/api/map?seed=x"] {
+        let r = get(t);
+        assert_eq!(r.status, 400, "{} -> {}", t, r.status);
+        assert!(text(&r).contains("error"));
+    }
+    for t in ["/api/map?map_size=32", "/api/map?map_size=128"] {
+        assert_eq!(get(t).status, 200, "{}", t);
+    }
+    assert_eq!(route(&root(), "GET", "/api/map?seed=1", Some("evil.example.com")).status, 403);
+    assert_eq!(route(&root(), "GET", "/api/map?seed=1", None).status, 403);
+    assert_eq!(route(&root(), "POST", "/api/map?seed=1", Some("127.0.0.1")).status, 405);
+}
