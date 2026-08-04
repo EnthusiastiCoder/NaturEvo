@@ -88,3 +88,12 @@ Backwards compatibility:
 12. Determinism: same seed and cfg gives byte-identical /api/run JSON and map. The lean summary equals the full summary, including steps.
 
 ## Workstreams (dependency order)
+
+### 1. map-core (sonnet)
+- Task: sim/src/map.rs with tile kinds, generate(seed,size), zone_of, passable, A* `path(from,to)` and `nearest_tile_of_zone`, the flood-fill reachability fix, and the JSON `map_body`.
+- Data tables: weighted zone species and MOVES (data.rs). Registered in lib.rs.
+- Config: the 6 new knobs in config.rs (struct, Default, KNOBS, set, validate).
+- Files: sim/src/map.rs (new), sim/src/lib.rs, sim/src/data.rs, sim/src/config.rs.
+- No sim behaviour change yet, so existing tests must still pass. Zone.species type change is handled with an adapter so sim.rs still compiles.
+- Tests that must pass: sim/tests/map_tests.rs, the extended config_tests.
+- Verify: `cargo test --manifest-path sim/Cargo.toml` (map and config tests green, nothing else regressed).
