@@ -14,3 +14,11 @@ fn get(t: &str) -> Response {
 fn text(r: &Response) -> String {
     String::from_utf8(r.body.clone()).unwrap()
 }
+
+#[test]
+fn map_route_matches_generate() {
+    let r = get("/api/map?seed=5&map_size=48");
+    assert_eq!(r.status, 200, "{}", text(&r));
+    assert!(r.content_type.starts_with("application/json"));
+    assert_eq!(text(&r), map_body(&Map::generate(5, 48)));
+}
