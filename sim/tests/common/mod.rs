@@ -178,3 +178,4 @@ fn val(b: &[char], i: &mut usize) -> Result<J, String> {
             t.parse::<f64>().map(J::Num).map_err(|_| format!("bad number {:?} at {}", t, st))
         }
     }
+}
