@@ -134,3 +134,19 @@ fn encounters_happen_on_the_hero_tile_and_on_grass() {
     }
     assert!(n > 50, "encounters: {}", n);
 }
+
+#[test]
+fn elite_fights_are_adjacent_and_use_zone_species() {
+    let mut n = 0;
+    for seed in 1u64..=6 {
+        let (_, j, _) = load(seed, &cfg(&[("event_cap", "20000"), ("elites_per_zone", "3")]));
+        for e in events(&j).iter().filter(|e| kind(e) == "elite") {
+            n += 1;
+            let mo = mon(e).expect("elite has a mon");
+            assert!(dist((mo.u("x"), mo.u("y")), hero_xy(e)) <= 1, "elite not adjacent to hero");
+            let z = e.get("hero").unwrap().u("zone");
+            assert!(ZONES[z].species.iter().any(|s| s.0 == mo.u("species")), "elite species not in zone {} table", z);
+        }
+    }
+    assert!(n > 0, "no elite fights observed");
+}
