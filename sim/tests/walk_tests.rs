@@ -83,3 +83,30 @@ fn hero_positions_are_in_map_and_on_floor() {
         }
     }
 }
+
+#[test]
+fn walk_events_have_valid_paths() {
+    let (_, j, m) = load(1, &cfg(&[("event_cap", "8000")]));
+    let ev = events(&j);
+    let mut walks = 0;
+    for (i, e) in ev.iter().enumerate() {
+        if kind(e) != "walk" {
+            continue;
+        }
+        walks += 1;
+        let path: Vec<(usize, usize)> = e.get("path").expect("walk event needs path").arr().iter().map(|p| p.xy()).collect();
+        assert!(!path.is_empty() && path.len() <= 64, "event {} path len {}", i, path.len());
+        assert_eq!(*path.last().unwrap(), hero_xy(e), "event {}: path must end at the hero tile", i);
+        if i > 0 && kind(&ev[i - 1]) != "travel" {
+            assert!(dist(path[0], hero_xy(&ev[i - 1])) <= 1, "event {}: path must start adjacent to the previous hero tile", i);
+        }
+        let tiles = expand(&path);
+        for w in tiles.windows(2) {
+            assert!(dist(w[0], w[1]) <= 1, "event {}: tiles {:?}->{:?} more than 1 apart", i, w[0], w[1]);
+        }
+        for t in &tiles {
+            assert!(m.passable(t.0, t.1), "event {}: path crosses a wall at {:?}", i, t);
+        }
+    }
+    assert!(walks > 20, "expected many walk events, got {}", walks);
+}
