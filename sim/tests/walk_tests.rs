@@ -291,3 +291,21 @@ fn same_seed_same_body_across_runs_and_threads() {
     let b4 = batch_with(24, 4, &c);
     assert_eq!(b1, b4);
 }
+
+#[test]
+fn lean_summary_equals_full_summary() {
+    for seed in [1u64, 2, 7, 13] {
+        let c = cfg(&[("event_cap", "12000")]);
+        let r = simulate_with(seed, &c);
+        let s = simulate_summary(seed, &c);
+        assert_eq!(s.won, r.won, "seed {}", seed);
+        assert_eq!(s.deaths, r.deaths);
+        assert_eq!(s.final_level, r.final_level);
+        assert_eq!(s.events as usize, r.events.len());
+        assert_eq!(s.capped, r.capped);
+        assert_eq!(s.max_stage, r.max_stage);
+        assert_eq!(s.post_kills, r.post_kills);
+        assert_eq!(s.steps as u64, r.steps as u64, "steps differ between lean and full, seed {}", seed);
+        assert_eq!(s.first_win_event, r.first_win_event);
+    }
+}
