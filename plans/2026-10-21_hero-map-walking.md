@@ -194,3 +194,9 @@ None blocking. These defaults can be overridden:
 
 ## Addendum: replay on the map and shared attack animation (new user requirement)
 User, verbatim: "replay gotta show the shit on map bro, and on battles you can just use the hero hitting npc or vice versa using some cheap animation (same for all attacks)".
+
+Applies to workstream 3 (viewer-map), which now also owns:
+- Replay on the map: the map canvas redraws on every cursor change from the current event's hero x,y and npcs (and mon x,y). Play, pause, step, scrubbing (timeline click/drag, seek) and the speed slider all drive it. Walk events animate the hero along `path` waypoints within that event's playback tick. At high speed the animation is skipped and the hero snaps to its tile. No per-step events are added, so the event cap is respected.
+- Windowed fetch: the map uses only events in the loaded window, via the existing inWin/fetchWin. If the cursor leaves the window, the map holds the last drawn frame and redraws when the window arrives. It never throws.
+- Shared attack animation: one `attackAnim(attackerXY, targetXY)` function. The attacker's marker lunges about 40% of the way toward the target and back, with a short flash ring on the target. It lasts about 250 ms at 1x and shortens or is skipped at high speed. It is the same for every attack kind and both directions (hero to NPC, NPC to hero). Direction comes from the event kind: attack, skill and potion kinds start from the hero. hit_taken starts from the NPC. The attacker flash colour comes from tokens. The target is on the encounter tile (mon x,y).
+- Constraints: crisp canvas (DPR aware, no smoothing), tokens for both themes, no new px fonts or hex literals, no scroll. requestAnimationFrame is used only while an animation is active. Animation state is exposed for tests as `window.__mapAnim` = {active, kind, from:[x,y], to:[x,y], t}.
