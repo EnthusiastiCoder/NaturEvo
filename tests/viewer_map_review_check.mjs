@@ -28,3 +28,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pathToFileURL } from 'node:url';
 import { runner } from './_viewer_harness.mjs';
+
+const { check, done } = runner('viewer_map_review_check');
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
