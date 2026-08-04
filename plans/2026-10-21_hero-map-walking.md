@@ -175,3 +175,12 @@ Workstream 3, tests/viewer_map_check.mjs (using the existing _viewer_harness.mjs
 - Missing map or old-format run data (no x,y) degrades gracefully (no exception, the map shows an empty state).
 - The log lines for walk/encounter events show "(x,y)".
 Workstream 4: README contains each new knob key, `/api/map`, the move tables heading and the hero skills.
+
+## Acceptance criteria
+- A won run shows the hero crossing the map zone by zone, grinding on Grass tiles, and returning to the camp tile to rest.
+- Hero and NPC (x,y) are present in the events, the log and the API. The map renders crisp in both themes, fits the screen without scrolling, is bird's-eye with hover and zoom detail, and follows STYLE.md.
+- The encounter table is weighted. Elites roam visibly and the boss is a placed NPC. Monsters use weighted moves; the hero skills are unchanged.
+- Determinism, lean/full parity, the event cap (65,536 default) and the post-game stages are all intact. Steps never become per-step events.
+- 6 knobs are present in /api/config and the viewer controls, and are documented. The README is updated.
+- `cargo test` passes entirely, and all tests/*.mjs pass.
+- Commits are granular, on a feat/ branch, never on main.
