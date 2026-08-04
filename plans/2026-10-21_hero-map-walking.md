@@ -116,3 +116,21 @@ Backwards compatibility:
 ### 4. docs (sonnet; depends on 1..3)
 - Task: README.md section for the map, hero/monster movesets (hero skill table, monster move table), new knobs, the /api/map route, the event schema additions, the steps-vs-cap note.
 - Files: README.md. Verify: the README mentions every new knob key in KNOBS (a test checks this).
+
+## Planned commits (one file each, tests first)
+1. test: map generation, A* and config knob tests (sim/tests/map_tests.rs, config_tests.rs)
+2. test: walking, encounters, elites, determinism and cap tests (sim/tests/walk_tests.rs)
+3. test: map route and JSON schema tests (sim/tests/map_server_tests.rs)
+4. test: viewer map checks (tests/viewer_map_check.mjs)
+5. feat: weighted species and monster move tables (sim/src/data.rs)
+6. feat: map generation and A* (sim/src/map.rs)
+7. chore: register the map module (sim/src/lib.rs)
+8. feat: map knobs (sim/src/config.rs)
+9. feat: walking hero, encounters, elites, monster moves (sim/src/sim.rs)
+10. feat: coordinates, npcs and path in run JSON (sim/src/report.rs)
+11. feat: /api/map route (sim/src/server.rs)
+12. fix: update tests pinned to the old RNG stream (the affected sim/tests files, one commit per file)
+13. feat: map data module (viewer/data/map.js)
+14. feat: map canvas, tokens, tooltip, zoom (viewer/index.html)
+15. docs: map classes (viewer/STYLE.md)
+16. docs: map, movesets, knobs and API (README.md)
