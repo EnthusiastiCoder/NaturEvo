@@ -417,3 +417,16 @@ fn json_schema_has_coordinates_npcs_and_head_fields() {
         assert!(j.get(k).is_some(), "head field {} missing", k);
     }
 }
+
+#[test]
+fn windowed_run_still_works() {
+    let r = simulate_with(1, &Config::default());
+    let j = parse(&run_window_body(&r, 100, 50)).expect("valid JSON");
+    assert_eq!(j.u("from"), 100);
+    assert_eq!(events(&j).len(), 50);
+    assert_eq!(j.u("total"), r.events.len());
+    assert_eq!(j.u("w"), 64);
+    assert!(j.get("level_series").is_some());
+    assert_eq!(events(&j)[0].u("idx"), 100);
+    assert!(events(&j)[0].get("hero").unwrap().get("x").is_some());
+}
