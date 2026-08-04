@@ -336,3 +336,37 @@ fn zone1_species_are_weighted() {
         assert!(counts.get(&s.0).copied().unwrap_or(0) > 0, "species {} never appeared", s.0);
     }
 }
+
+#[test]
+fn monster_moves_appear_and_hero_skills_remain() {
+    let mut seen: HashSet<(usize, &'static str)> = HashSet::new();
+    let mut skills: HashSet<&str> = HashSet::new();
+    for seed in 1u64..=20 {
+        let c = cfg(&[("evolve_kills", "20")]);
+        let r = simulate_with(seed, &c);
+        for e in &r.events {
+            for s in ["Power Strike", "Brace", "Stun", "Heal"] {
+                if e.text.contains(s) && e.text.starts_with("Hero") {
+                    skills.insert(s);
+                }
+            }
+            let Some(m) = &e.mon else { continue };
+            if !e.text.contains(" uses ") || e.text.starts_with("Hero") {
+                continue;
+            }
+            let sp = m.species;
+            let names_ok = std::iter::once(SPECIES[sp].name).chain((0..=MAX_STAGE).map(|s| stage_name(sp, s))).any(|n| e.text.starts_with(&format!("The {} uses ", n)));
+            assert!(names_ok, "monster text does not name the species: {}", e.text);
+            let mv = MOVES[sp].iter().find(|mv| e.text.contains(&format!("uses {}", mv.name))).unwrap_or_else(|| panic!("text {:?} uses a move not in MOVES[{}]", e.text, sp));
+            seen.insert((sp, mv.name));
+        }
+    }
+    for (sp, ms) in MOVES.iter().enumerate() {
+        for mv in ms.iter() {
+            assert!(seen.contains(&(sp, mv.name)), "move {} of species {} never observed in 20 runs", mv.name, sp);
+        }
+    }
+    for s in ["Power Strike", "Brace", "Stun", "Heal"] {
+        assert!(skills.contains(s), "hero skill {} no longer appears", s);
+    }
+}
