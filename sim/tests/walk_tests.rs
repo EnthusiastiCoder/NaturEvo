@@ -120,3 +120,17 @@ fn only_walk_events_carry_a_path() {
         }
     }
 }
+
+#[test]
+fn encounters_happen_on_the_hero_tile_and_on_grass() {
+    let (_, j, m) = load(2, &cfg(&[("event_cap", "8000")]));
+    let mut n = 0;
+    for e in events(&j).iter().filter(|e| kind(e) == "encounter") {
+        n += 1;
+        let mo = mon(e).expect("encounter has a mon");
+        let p = hero_xy(e);
+        assert_eq!((mo.u("x"), mo.u("y")), p, "encounter mon must stand on the hero tile");
+        assert_eq!(m.tile(p.0, p.1), Tile::Grass, "encounter at {:?} is not Grass", p);
+    }
+    assert!(n > 50, "encounters: {}", n);
+}
