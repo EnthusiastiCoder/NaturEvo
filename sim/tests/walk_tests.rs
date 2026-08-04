@@ -187,3 +187,19 @@ fn hero_starts_at_camp_and_camp_events_happen_there() {
     assert!(respawns > 0 && rests > 0, "respawns {} rests {}", respawns, rests);
     let _ = c;
 }
+
+#[test]
+fn won_run_reaches_the_grove_and_fights_boss_near_the_boss_npc() {
+    let seed = won_seed();
+    let (run, j, m) = load(seed, &Config::default());
+    assert!(run.won);
+    let ev = events(&j);
+    assert!(ev.iter().any(|e| m.zone_of(hero_xy(e).0, hero_xy(e).1) == 8), "hero never reached zone 8");
+    let mut boss_fights = 0;
+    for e in ev.iter().filter(|e| kind(e) == "boss") {
+        boss_fights += 1;
+        let npc = e.get("npcs").unwrap().arr().iter().find(|n| n.get("id").unwrap().str() == "boss").expect("boss npc listed");
+        assert!(dist(hero_xy(e), (npc.u("x"), npc.u("y"))) <= 2, "boss fight farther than 2 tiles from the boss NPC");
+    }
+    assert!(boss_fights > 0);
+}
