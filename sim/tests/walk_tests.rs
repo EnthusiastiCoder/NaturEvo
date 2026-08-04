@@ -248,3 +248,15 @@ fn steps_are_not_events() {
     let j = parse(&run_window_body(&r, 0, 10)).unwrap();
     assert_eq!(j.u("steps") as u64, r.steps as u64);
 }
+
+#[test]
+fn max_steps_terminates_with_capped() {
+    let c = cfg(&[("encounter_rate", "0.01"), ("max_steps", "1000")]);
+    let r = simulate_with(1, &c);
+    assert!(r.capped, "max_steps must set capped");
+    assert!(r.steps as u64 <= 1000, "steps {}", r.steps);
+    assert!(r.events.len() < 65536);
+    let s = simulate_summary(1, &c);
+    assert!(s.capped);
+    assert_eq!(s.steps as u64, r.steps as u64);
+}
