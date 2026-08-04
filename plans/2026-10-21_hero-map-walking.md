@@ -200,3 +200,14 @@ Applies to workstream 3 (viewer-map), which now also owns:
 - Windowed fetch: the map uses only events in the loaded window, via the existing inWin/fetchWin. If the cursor leaves the window, the map holds the last drawn frame and redraws when the window arrives. It never throws.
 - Shared attack animation: one `attackAnim(attackerXY, targetXY)` function. The attacker's marker lunges about 40% of the way toward the target and back, with a short flash ring on the target. It lasts about 250 ms at 1x and shortens or is skipped at high speed. It is the same for every attack kind and both directions (hero to NPC, NPC to hero). Direction comes from the event kind: attack, skill and potion kinds start from the hero. hit_taken starts from the NPC. The attacker flash colour comes from tokens. The target is on the encounter tile (mon x,y).
 - Constraints: crisp canvas (DPR aware, no smoothing), tokens for both themes, no new px fonts or hex literals, no scroll. requestAnimationFrame is used only while an animation is active. Animation state is exposed for tests as `window.__mapAnim` = {active, kind, from:[x,y], to:[x,y], t}.
+
+Added test cases (tests/viewer_replay_map_check.mjs, written first, failing):
+- Seeking to an event moves the hero marker to that event's (x,y). Seeking backward and forward is consistent.
+- Play advances the cursor and the marker. The speed slider changes how fast the marker advances.
+- Scrubbing the timeline updates the marker.
+- A walk event animates along its path (a mid-animation position lies on a path segment), and at max speed it snaps to the end tile.
+- A windowed run (total > window) still replays: crossing a window boundary fetches and the map keeps drawing without errors.
+- A hero attack, skill or potion event sets `__mapAnim` with from = hero and to = mon tile. A hit_taken event sets it with from = mon and to = hero. The same animation kind and duration applies to both.
+- All attack events use the same animation path (a single code path, same kind field).
+- The animation ends (active false) and the marker returns to its tile. It is skipped at the highest speed.
+- Canvas stays crisp with no scroll during an animation, in both themes. No console errors.
