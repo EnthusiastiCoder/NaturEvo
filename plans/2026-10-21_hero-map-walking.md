@@ -211,3 +211,6 @@ Added test cases (tests/viewer_replay_map_check.mjs, written first, failing):
 - All attack events use the same animation path (a single code path, same kind field).
 - The animation ends (active false) and the marker returns to its tile. It is skipped at the highest speed.
 - Canvas stays crisp with no scroll during an animation, in both themes. No console errors.
+
+Updated workstream 3 files and tests: viewer/index.html, viewer/data/map.js, viewer/STYLE.md. Tests: tests/viewer_map_check.mjs, tests/viewer_replay_map_check.mjs, plus the existing viewer checks.
+Added commit after commit 14: "feat: replay playback and shared attack animation on map (viewer/index.html)", with a test commit "test: replay on map checks (tests/viewer_replay_map_check.mjs)" placed with the other test commits.
