@@ -97,3 +97,12 @@ Backwards compatibility:
 - No sim behaviour change yet, so existing tests must still pass. Zone.species type change is handled with an adapter so sim.rs still compiles.
 - Tests that must pass: sim/tests/map_tests.rs, the extended config_tests.
 - Verify: `cargo test --manifest-path sim/Cargo.toml` (map and config tests green, nothing else regressed).
+
+### 2. sim-walk (sonnet; depends on 1)
+- Task: sim.rs integration.
+- Hero x,y, the Goal loop, A* walking, the per-step encounter roll, weighted species picking, elites and boss NPC state with respawn, the monster move picker, walk/travel events with path, NpcSnap per event, the steps counter, max_steps, lean/full parity.
+- report.rs: JSON fields (hero.x/y, mon.x/y, npcs, path, head w/h/steps), `run_window_body` unchanged semantics. server.rs: the `/api/map` route and its validation.
+- Update the exact-number tests superseded by the new RNG stream, in their own commit with a reason.
+- Files: sim/src/sim.rs, sim/src/report.rs, sim/src/server.rs, sim/src/main.rs (steps in batch/summary output if printed), sim/tests/* (only superseded assertions).
+- Tests that must pass: sim/tests/walk_tests.rs, map_server_tests.rs, and all existing sim tests (postgame, server, report, config).
+- Verify: `cargo test --manifest-path sim/Cargo.toml`. A manual check that `/api/run?seed=1&from=0&count=50` shows x,y and npcs.
