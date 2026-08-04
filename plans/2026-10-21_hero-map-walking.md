@@ -191,3 +191,6 @@ None blocking. These defaults can be overridden:
 - Elite chase radius 3, and the elite respawn period of 400 hero steps (a constant).
 - `npcs` is per-event only for the hero's zone, to keep the log small.
 - The species weight pattern is 4/3/2/1.
+
+## Addendum: replay on the map and shared attack animation (new user requirement)
+User, verbatim: "replay gotta show the shit on map bro, and on battles you can just use the hero hitting npc or vice versa using some cheap animation (same for all attacks)".
