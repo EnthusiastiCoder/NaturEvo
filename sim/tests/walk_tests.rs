@@ -110,3 +110,13 @@ fn walk_events_have_valid_paths() {
     }
     assert!(walks > 20, "expected many walk events, got {}", walks);
 }
+
+#[test]
+fn only_walk_events_carry_a_path() {
+    let (_, j, _) = load(1, &cfg(&[("event_cap", "3000")]));
+    for e in events(&j) {
+        if kind(e) != "walk" {
+            assert!(e.get("path").is_none(), "{} event has a path", kind(e));
+        }
+    }
+}
