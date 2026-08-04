@@ -309,3 +309,30 @@ fn lean_summary_equals_full_summary() {
         assert_eq!(s.first_win_event, r.first_win_event);
     }
 }
+
+#[test]
+fn zone1_species_are_weighted() {
+    let table = ZONES[1].species;
+    let mut counts: HashMap<usize, u32> = HashMap::new();
+    let mut total = 0;
+    'outer: for seed in 1u64..=200 {
+        let c = cfg(&[("event_cap", "3000"), ("encounter_rate", "0.5"), ("elites_per_zone", "0")]);
+        let r = simulate_with(seed, &c);
+        for e in r.events.iter().filter(|e| e.kind == "encounter") {
+            if e.hero.zone == 1 {
+                *counts.entry(e.mon.as_ref().unwrap().species).or_default() += 1;
+                total += 1;
+                if total >= 5000 {
+                    break 'outer;
+                }
+            }
+        }
+    }
+    assert!(total >= 5000, "only {} zone-1 encounters", total);
+    let first = counts.get(&table[0].0).copied().unwrap_or(0);
+    let last = counts.get(&table[table.len() - 1].0).copied().unwrap_or(0);
+    assert!(first > last, "first species {} not more frequent than last {}", first, last);
+    for s in table {
+        assert!(counts.get(&s.0).copied().unwrap_or(0) > 0, "species {} never appeared", s.0);
+    }
+}
