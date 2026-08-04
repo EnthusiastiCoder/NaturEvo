@@ -203,3 +203,23 @@ fn won_run_reaches_the_grove_and_fights_boss_near_the_boss_npc() {
     }
     assert!(boss_fights > 0);
 }
+
+#[test]
+fn npcs_are_valid_and_in_the_hero_zone() {
+    let (_, j, m) = load(1, &cfg(&[("event_cap", "10000"), ("elites_per_zone", "3")]));
+    let mut seen = 0;
+    for e in events(&j) {
+        let npcs = e.get("npcs").expect("npcs array on every event").arr();
+        assert!(npcs.len() <= 3, "{} npcs", npcs.len());
+        let z = e.get("hero").unwrap().u("zone");
+        for n in npcs {
+            seen += 1;
+            let (x, y) = (n.u("x"), n.u("y"));
+            assert!(x < m.size() && y < m.size() && m.passable(x, y), "npc {:?} off map or on wall", n);
+            assert_eq!(m.zone_of(x, y), z, "npc outside the hero zone");
+            assert!(!n.get("id").unwrap().str().is_empty());
+            assert!(n.get("sp").is_some() && n.get("lv").is_some());
+        }
+    }
+    assert!(seen > 100, "npcs seen: {}", seen);
+}
