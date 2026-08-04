@@ -184,3 +184,10 @@ Workstream 4: README contains each new knob key, `/api/map`, the move tables hea
 - 6 knobs are present in /api/config and the viewer controls, and are documented. The README is updated.
 - `cargo test` passes entirely, and all tests/*.mjs pass.
 - Commits are granular, on a feat/ branch, never on main.
+
+## Open questions
+None blocking. These defaults can be overridden:
+- The map is 64x64 (knob), 4-connected movement, and the walk-event granularity is per leg.
+- Elite chase radius 3, and the elite respawn period of 400 hero steps (a constant).
+- `npcs` is per-event only for the hero's zone, to keep the log small.
+- The species weight pattern is 4/3/2/1.
