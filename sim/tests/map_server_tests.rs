@@ -48,3 +48,9 @@ fn map_route_shape_and_defaults() {
     }
     assert_eq!(text(&get("/api/map")), text(&r), "default seed is 1");
 }
+
+#[test]
+fn map_route_is_deterministic_and_seed_dependent() {
+    assert_eq!(text(&get("/api/map?seed=9&map_size=32")), text(&get("/api/map?seed=9&map_size=32")));
+    assert_ne!(text(&get("/api/map?seed=9&map_size=32")), text(&get("/api/map?seed=10&map_size=32")));
+}
