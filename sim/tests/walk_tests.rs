@@ -150,3 +150,14 @@ fn elite_fights_are_adjacent_and_use_zone_species() {
     }
     assert!(n > 0, "no elite fights observed");
 }
+
+#[test]
+fn elites_disabled_gives_no_elite_events() {
+    let (_, j, _) = load(1, &cfg(&[("event_cap", "8000"), ("elites_per_zone", "0")]));
+    assert!(events(&j).iter().all(|e| kind(e) != "elite"));
+    for e in events(&j) {
+        for n in e.get("npcs").unwrap().arr() {
+            assert!(!n.get("id").unwrap().str().starts_with('e'), "elite npc present with elites_per_zone=0");
+        }
+    }
+}
