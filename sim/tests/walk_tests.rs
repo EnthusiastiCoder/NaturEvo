@@ -270,3 +270,24 @@ fn event_cap_still_truncates() {
         assert_eq!(e.idx as usize, i);
     }
 }
+
+#[test]
+fn same_seed_same_body_across_runs_and_threads() {
+    let c = cfg(&[("event_cap", "5000")]);
+    let a = run_body(&simulate_with(3, &c));
+    assert_eq!(a, run_body(&simulate_with(3, &c)));
+    assert_ne!(a, run_body(&simulate_with(4, &c)));
+    let hs: Vec<_> = (0..4)
+        .map(|_| {
+            let c = c.clone();
+            std::thread::spawn(move || run_body(&simulate_with(3, &c)))
+        })
+        .collect();
+    for h in hs {
+        assert_eq!(h.join().unwrap(), a);
+    }
+    // batch is order-independent of thread count
+    let b1 = batch_with(24, 1, &c);
+    let b4 = batch_with(24, 4, &c);
+    assert_eq!(b1, b4);
+}
