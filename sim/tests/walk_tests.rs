@@ -383,3 +383,37 @@ fn postgame_stages_still_work_with_the_map() {
     assert_eq!(b.stage_hist.iter().sum::<u32>(), b.wins);
     assert!(b.stage_hist.iter().skip(1).sum::<u32>() > 0);
 }
+
+#[test]
+fn json_schema_has_coordinates_npcs_and_head_fields() {
+    let r = simulate_with(1, &cfg(&[("event_cap", "6000")]));
+    let j = parse(&run_body(&r)).expect("valid JSON (escape check)");
+    // run_body is the head+events form; w/h/steps live in the head
+    assert_eq!(j.u("w"), 64);
+    assert_eq!(j.u("h"), 64);
+    assert_eq!(j.u("steps") as u64, r.steps as u64);
+    let mut walks = 0;
+    for e in events(&j) {
+        let h = e.get("hero").unwrap();
+        assert!(h.get("x").is_some() && h.get("y").is_some());
+        if let Some(m) = mon(e) {
+            assert!(m.get("x").is_some() && m.get("y").is_some(), "mon needs x,y");
+        }
+        for n in e.get("npcs").unwrap().arr() {
+            for k in ["id", "sp", "lv", "x", "y"] {
+                assert!(n.get(k).is_some(), "npc missing {}", k);
+            }
+        }
+        if kind(e) == "walk" {
+            walks += 1;
+            for p in e.get("path").unwrap().arr() {
+                assert_eq!(p.arr().len(), 2);
+            }
+        }
+    }
+    assert!(walks > 0);
+    // old fields untouched
+    for k in ["seed", "won", "deaths", "final_level", "first_win_event", "end_level", "post_kills", "post_deaths", "max_stage", "capped", "total"] {
+        assert!(j.get(k).is_some(), "head field {} missing", k);
+    }
+}
