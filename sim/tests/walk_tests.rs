@@ -370,3 +370,16 @@ fn monster_moves_appear_and_hero_skills_remain() {
         assert!(skills.contains(s), "hero skill {} no longer appears", s);
     }
 }
+
+#[test]
+fn postgame_stages_still_work_with_the_map() {
+    let c = cfg(&[("evolve_kills", "20")]);
+    let seed = (1u64..=40).find(|s| simulate_with(*s, &c).max_stage >= 1).expect("some seed reaches stage 1");
+    let r = simulate_with(seed, &c);
+    assert!(r.won);
+    assert!(r.events.iter().any(|e| e.mon.as_ref().map(|m| m.stage >= 1).unwrap_or(false)));
+    let b = batch_with(40, 4, &c);
+    assert_eq!(b.stage_hist.len(), MAX_STAGE + 1);
+    assert_eq!(b.stage_hist.iter().sum::<u32>(), b.wins);
+    assert!(b.stage_hist.iter().skip(1).sum::<u32>() > 0);
+}
