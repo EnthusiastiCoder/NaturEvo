@@ -260,3 +260,13 @@ fn max_steps_terminates_with_capped() {
     assert!(s.capped);
     assert_eq!(s.steps as u64, r.steps as u64);
 }
+
+#[test]
+fn event_cap_still_truncates() {
+    let r = simulate_with(1, &cfg(&[("event_cap", "100")]));
+    assert_eq!(r.events.len(), 100);
+    assert!(r.capped);
+    for (i, e) in r.events.iter().enumerate() {
+        assert_eq!(e.idx as usize, i);
+    }
+}
