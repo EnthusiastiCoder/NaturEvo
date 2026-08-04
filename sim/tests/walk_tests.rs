@@ -223,3 +223,19 @@ fn npcs_are_valid_and_in_the_hero_zone() {
     }
     assert!(seen > 100, "npcs seen: {}", seen);
 }
+
+#[test]
+fn encounter_rate_scales_steps_per_encounter() {
+    let avg = |rate: &str| {
+        let (mut steps, mut enc) = (0f64, 0f64);
+        for seed in 1u64..=10 {
+            let c = cfg(&[("encounter_rate", rate), ("event_cap", "4000"), ("elites_per_zone", "0")]);
+            let r = simulate_with(seed, &c);
+            steps += r.steps as f64;
+            enc += r.events.iter().filter(|e| e.kind == "encounter").count() as f64;
+        }
+        steps / enc
+    };
+    let ratio = avg("0.05") / avg("0.5");
+    assert!((5.0..=20.0).contains(&ratio), "steps/encounter ratio {}", ratio);
+}
