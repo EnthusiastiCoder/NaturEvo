@@ -134,3 +134,44 @@ Backwards compatibility:
 14. feat: map canvas, tokens, tooltip, zoom (viewer/index.html)
 15. docs: map classes (viewer/STYLE.md)
 16. docs: map, movesets, knobs and API (README.md)
+
+## Test cases (written first, as failing tests)
+Workstream 1, sim/tests/map_tests.rs:
+- Same seed and size give an identical map. Different seeds differ.
+- All tiles have a zone 0..8. Every zone has at least 20 reachable Grass tiles (zone 0 and 8 excepted: zone 0 has the camp tile, zone 8 has at least 1 reachable floor tile).
+- Every non-wall tile is reachable from the camp (flood fill). Wall share is between 3% and 20%.
+- Camp zone and the boss grove contain no Grass tiles.
+- Zones are 4-connected regions (the Voronoi property).
+- A* on an open path: the length equals the Manhattan distance, never crosses walls, never repeats a tile, and is identical on repeat calls. A* to an unreachable or wall target returns None. A* from a tile to itself is empty.
+- The map works for sizes 32, 64 and 128.
+- Config: the 6 new knobs have defaults, ranges and set/validate rejection of out-of-range or non-numeric values. KNOBS keys match the validate() list. map_size is an integer.
+- data: every zone's weights sum > 0, every species has 2 or 3 moves with weight > 0, move power > 0.
+Workstream 2, sim/tests/walk_tests.rs and map_server_tests.rs:
+- Every event has hero x,y inside the map and on a non-wall tile. Consecutive events' hero positions are within the walk path (a walk event's path starts adjacent to the previous hero tile and ends at the hero tile). Consecutive path waypoints differ in one axis.
+- No two consecutive tiles in an expanded path are more than 1 apart.
+- Encounter events (kind encounter) have mon.x,y equal to hero.x,y and that tile is Grass.
+- Elite events: the elite is adjacent to or on the hero tile, and the species is in the zone table.
+- The hero starts at the camp tile and respawn events put the hero back on it. Rest and shop events happen only on the camp tile.
+- The hero reaches zone 8's grove in a won run, and the boss fight happens within 2 tiles of the boss NPC.
+- Every NPC in `npcs` is inside the map, not on a wall, in the hero's zone, and `npcs` has at most 3 entries.
+- The encounter rate: with encounter_rate=0.5 versus 0.05 the number of steps per encounter differs about 10x (ratio between 5 and 20 over a 10-run average). Steps are not events: events.len() <= event_cap and steps > events for default cfg.
+- encounter_rate=0.01 with a small max_steps terminates with capped=true. The event cap still truncates at event_cap and capped=true.
+- Determinism: the same seed gives identical run_body strings across runs, and across threads (the batch). Lean summary equals the full summary (including steps). Different seeds differ.
+- A weighted table check: over 5,000 encounters in zone 1, the first species is picked more than the last one and every species appears.
+- A monster move test: encounter logs contain "uses" a move from that species' MOVES; every move of a species is observed in a 20-run sweep; hero skill texts (Power Strike, Brace, Stun, Heal) still appear.
+- A post-game test: evolution stage events still fire, max_stage and stage_hist still work with the map.
+- JSON schema: hero.x, hero.y, mon.x, mon.y, npcs[], head w,h,steps, and walk events carry a path array of [x,y] pairs, at most 64 points. The json parses as valid JSON (escape check). Windowed `/api/run?from&count` still works.
+- `/api/map` returns w,h,tiles,zones with the right dimensions and matches Map::generate. A bad map_size gives 400. A bad Host gives 403. The same seed gives the same body.
+Workstream 3, tests/viewer_map_check.mjs (using the existing _viewer_harness.mjs):
+- A `#map` canvas exists in the Replay view and its size is within the viewport (no page scroll: document scroll height <= viewport) at 1280x720 and 1920x1080, and 800x600.
+- Canvas backing size = css size x DPR and imageSmoothingEnabled is false.
+- Bird's-eye shows the whole map (the integer tile size times the map size fits in the canvas).
+- The hero marker is drawn at the pixel of the current event's (x,y) (sample pixel colour), and moves when the cursor moves.
+- NPC markers are drawn from the event npcs.
+- Hover over the canvas shows a tooltip with the coordinates and the zone name.
+- The Zoom toggle (and double-click) switches to a 16x16 window centred on the hero (the hero marker stays at the canvas centre) and the state persists via localStorage.
+- Both themes: the tile colours are read from tokens and differ between dark and light. The hero marker contrast against the tile is >= 3:1 in both.
+- The existing style check still passes (no hex literal, px font or inline style outside the token blocks).
+- Missing map or old-format run data (no x,y) degrades gracefully (no exception, the map shows an empty state).
+- The log lines for walk/encounter events show "(x,y)".
+Workstream 4: README contains each new knob key, `/api/map`, the move tables heading and the hero skills.
