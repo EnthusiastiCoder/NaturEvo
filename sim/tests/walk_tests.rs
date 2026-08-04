@@ -239,3 +239,12 @@ fn encounter_rate_scales_steps_per_encounter() {
     let ratio = avg("0.05") / avg("0.5");
     assert!((5.0..=20.0).contains(&ratio), "steps/encounter ratio {}", ratio);
 }
+
+#[test]
+fn steps_are_not_events() {
+    let r = simulate_with(1, &Config::default());
+    assert!(r.events.len() <= 65536);
+    assert!(r.steps as usize > r.events.len(), "steps {} events {}", r.steps, r.events.len());
+    let j = parse(&run_window_body(&r, 0, 10)).unwrap();
+    assert_eq!(j.u("steps") as u64, r.steps as u64);
+}
