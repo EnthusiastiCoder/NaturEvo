@@ -69,3 +69,11 @@ fn map_route_validates_input() {
     assert_eq!(route(&root(), "GET", "/api/map?seed=1", None).status, 403);
     assert_eq!(route(&root(), "POST", "/api/map?seed=1", Some("127.0.0.1")).status, 405);
 }
+
+#[test]
+fn config_route_lists_new_knobs() {
+    let b = text(&get("/api/config"));
+    for k in ["map_size", "encounter_rate", "wander_radius", "elites_per_zone", "elite_mult", "max_steps"] {
+        assert!(b.contains(&format!("\"{}\"", k)), "{}", k);
+    }
+}
