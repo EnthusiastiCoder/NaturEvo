@@ -9,6 +9,7 @@ All values come from `:root` custom properties. Outside the token blocks use `va
 literals, no `px` font sizes, no inline `style=` in markup (JS may set dynamic widths/heights/positions only).
 
 - Colours (per theme): `--bg --card --card-2 --border --fg --muted --good --bad --warn --ring`
+- Map colours (per theme, `#rrggbb` so contrast can be computed): `--tile-floor --tile-grass --tile-wall --tile-camp` and the zone tints `--biome-0..--biome-8`. The hero marker (`--accent`) keeps at least 3:1 contrast against floor and grass in both themes.
 - Accent (user-settable): `--accent`, `--accent-fg` (text on accent), `--accent-text` (accent used as text/border)
 - Spacing: `--s1..--s6` = 4, 8, 12, 16, 24, 32 px
 - Radii: `--r-sm`, `--r-md` (8px)
@@ -130,3 +131,22 @@ scale uses 0, 1, 10, 100, ... Histogram x labels are every Nth bin, anchored so 
 - `#stage` is a `.badge` in the monster header showing "Stage N" (hidden at stage 0). `.post-stats` is the dashboard row of
   post-game averages (`.pstat` items). `.lev` marks evolve events in the log. Runs longer than the loaded window are
   fetched in windows (`from`, `count`); the seed is kept as a string so 20-digit seeds are never rounded.
+
+## Map (replay)
+
+- `#map-card` (a `.card`) sits above the battle card in the Replay view. `.map-head` is its title row with the `#mapzoom` toggle,
+  `#mapwrap` is the sized box, `#map` the canvas (fills the box by percentage, no fixed px, no width/height attributes),
+  `.map-tip` the hover tooltip (`#maptip`, `.hidden` when off) and `.map-empty` the empty state (`#mapempty`).
+- The map is fetched once per seed and size from `GET /api/map?seed=&map_size=` (an optional `data/map.js` may set `window.MAP` for file://).
+  Without a map or without hero x,y in the run the empty state shows and nothing throws.
+- Canvas is DPR aware: backing size = round(css size x dpr), drawn in device pixels, `imageSmoothingEnabled = false`, integer tile size.
+  Bird's-eye fits the whole map. Zoom (`#mapzoom` or double-click, stored as `localStorage jv-mapzoom` "1"/"0") shows a 16 x 16 tile
+  window with the hero at the canvas centre and emoji on NPCs.
+- Markers: hero `--accent`, elite NPC `--warn`, boss `--bad`, the fought monster `--fg`; the last walk path is a `--accent-text` trail.
+  Tiles use `--tile-*` plus a translucent `--biome-N` overlay. Hover shows tile x,y, zone, kind and any NPC.
+- Replay: every cursor change redraws from the current event (only events in the loaded window; outside it the last frame is held).
+  A walk event animates the hero along `path`. All attacks (attack, skill, potion from the hero, hit_taken from the NPC) use the single
+  `attackAnim` function: the attacker lunges 40% toward the target and back (250 ms at 1x) with a flash ring on the target.
+  Animations are skipped when the scaled duration is under 40 ms (high speed). `requestAnimationFrame` runs only while one is active.
+  State for tests: `window.__mapAnim = {active, kind, from, to, t, duration, pos, mpos}`.
+- Log rows for walk, encounter, elite and boss events end with "(x,y)".
