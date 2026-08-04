@@ -93,3 +93,13 @@ fn run_window_has_coordinates_npcs_and_head_dims() {
         assert!(e.get("npcs").unwrap().arr().len() <= 3);
     }
 }
+
+#[test]
+fn run_route_respects_map_knobs() {
+    let r = get("/api/run?seed=1&from=0&count=20&map_size=32");
+    assert_eq!(r.status, 200);
+    let j = parse(&text(&r)).unwrap();
+    assert_eq!(j.u("w"), 32);
+    assert_eq!(get("/api/run?seed=1&map_size=500").status, 400);
+    assert_eq!(get("/api/run?seed=1&from=0&count=5&encounter_rate=0.9").status, 400);
+}
