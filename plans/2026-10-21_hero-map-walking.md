@@ -1,0 +1,2 @@
+## Goal
+Replace zone teleporting with a deterministic tile map. The hero walks tile by tile with A*, meets enemies Pokemon-style (tall-grass random encounters plus visible roaming elites and the boss), and both hero and NPCs have (x,y) in the event log. Monsters get a small weighted move list. The viewer draws the map. The existing event log, windowed API, post-game stages (stage_hist) and 2^16 event cap keep working.
