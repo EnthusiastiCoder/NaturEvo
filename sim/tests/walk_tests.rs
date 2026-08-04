@@ -70,3 +70,16 @@ fn expand(path: &[(usize, usize)]) -> Vec<(usize, usize)> {
     }
     out
 }
+
+#[test]
+fn hero_positions_are_in_map_and_on_floor() {
+    for seed in [1u64, 2, 3] {
+        let (_, j, m) = load(seed, &cfg(&[("event_cap", "6000")]));
+        for e in events(&j) {
+            let p = hero_xy(e);
+            assert!(p.0 < m.size() && p.1 < m.size(), "seed {} event out of map {:?}", seed, p);
+            assert!(m.passable(p.0, p.1), "seed {} hero on a wall at {:?}", seed, p);
+            assert_eq!(m.zone_of(p.0, p.1), e.get("hero").unwrap().u("zone"), "hero.zone must be the zone of the hero tile");
+        }
+    }
+}
