@@ -86,3 +86,5 @@ Backwards compatibility:
    - New classes are documented in viewer/STYLE.md.
 11. Config knobs (config.rs KNOBS array length and validate() array grow; /api/config lists them; viewer controls are auto-built): map_size, encounter_rate, wander_radius (2..20), elites_per_zone, elite_mult, max_steps.
 12. Determinism: same seed and cfg gives byte-identical /api/run JSON and map. The lean summary equals the full summary, including steps.
+
+## Workstreams (dependency order)
