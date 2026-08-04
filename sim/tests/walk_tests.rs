@@ -161,3 +161,29 @@ fn elites_disabled_gives_no_elite_events() {
         }
     }
 }
+
+#[test]
+fn hero_starts_at_camp_and_camp_events_happen_there() {
+    let c = Config::default();
+    let (_, j, m) = load(1, &cfg(&[("event_cap", "20000")]));
+    let camp = m.camp();
+    let ev = events(&j);
+    assert_eq!(hero_xy(&ev[0]), camp, "hero starts on the camp tile");
+    let (mut respawns, mut rests) = (0, 0);
+    for (i, e) in ev.iter().enumerate() {
+        match kind(e) {
+            "respawn" => {
+                respawns += 1;
+                assert_eq!(hero_xy(e), camp, "respawn {} not at camp", i);
+            }
+            "shop" => assert_eq!(hero_xy(e), camp, "shop event {} away from camp", i),
+            "rest" if mon(e).is_none() => {
+                rests += 1;
+                assert_eq!(hero_xy(e), camp, "rest event {} away from camp", i)
+            }
+            _ => {}
+        }
+    }
+    assert!(respawns > 0 && rests > 0, "respawns {} rests {}", respawns, rests);
+    let _ = c;
+}
