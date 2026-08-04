@@ -112,3 +112,7 @@ Backwards compatibility:
 - Files: viewer/index.html, viewer/data/map.js (new), viewer/STYLE.md.
 - Tests that must pass: tests/viewer_map_check.mjs, and the existing viewer_*_check.mjs (style, layout, theme, canvas, clip, postgame).
 - Verify: `node tests/<each>.mjs`.
+
+### 4. docs (sonnet; depends on 1..3)
+- Task: README.md section for the map, hero/monster movesets (hero skill table, monster move table), new knobs, the /api/map route, the event schema additions, the steps-vs-cap note.
+- Files: README.md. Verify: the README mentions every new knob key in KNOBS (a test checks this).
