@@ -77,3 +77,19 @@ fn config_route_lists_new_knobs() {
         assert!(b.contains(&format!("\"{}\"", k)), "{}", k);
     }
 }
+
+#[test]
+fn run_window_has_coordinates_npcs_and_head_dims() {
+    let r = get("/api/run?seed=1&from=0&count=50");
+    assert_eq!(r.status, 200);
+    let j = parse(&text(&r)).expect("valid JSON");
+    assert_eq!((j.u("w"), j.u("h")), (64, 64));
+    assert!(j.u("steps") > 0);
+    let ev = j.get("events").unwrap().arr();
+    assert_eq!(ev.len(), 50);
+    for e in ev {
+        assert!(e.get("hero").unwrap().get("x").is_some());
+        assert!(e.get("hero").unwrap().get("y").is_some());
+        assert!(e.get("npcs").unwrap().arr().len() <= 3);
+    }
+}
