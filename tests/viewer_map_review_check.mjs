@@ -98,3 +98,34 @@ const HELP = `(() => {
         const i = (y * W + x) * 4; if (Math.abs(d[i]-o[i]) + Math.abs(d[i+1]-o[i+1]) + Math.abs(d[i+2]-o[i+2]) > 12) n++; } return n; },
   };
   return true; })()`;
+
+async function open(url, { w, h, dpr = 1, theme = null, pre = null, helpers = true } = {}) {
+  const { browserContextId } = await send('Target.createBrowserContext');
+  const { targetId } = await send('Target.createTarget', { url: 'about:blank', browserContextId });
+  const { sessionId } = await send('Target.attachToTarget', { targetId, flatten: true });
+  const S = (m, p) => send(m, p, sessionId);
+  const log = { errors: [], bad: [], reqs: new Map() };
+  const onEv = d => {
+    if (d.sessionId !== sessionId) return;
+    if (d.method === 'Runtime.exceptionThrown') log.errors.push('exception: ' + (d.params.exceptionDetails.exception && d.params.exceptionDetails.exception.description || d.params.exceptionDetails.text));
+    if (d.method === 'Runtime.consoleAPICalled' && d.params.type === 'error') log.errors.push('console.error: ' + d.params.args.map(a => a.value || a.description).join(' '));
+    if (d.method === 'Log.entryAdded' && d.params.entry.level === 'error') log.errors.push('log: ' + d.params.entry.text + ' ' + (d.params.entry.url || ''));
+    if (d.method === 'Network.requestWillBeSent') log.reqs.set(d.params.requestId, d.params.request.url);
+    if (d.method === 'Network.responseReceived' && d.params.response.status >= 400) log.bad.push(d.params.response.status + ' ' + d.params.response.url);
+    if (d.method === 'Network.loadingFailed' && !d.params.canceled) log.bad.push('failed ' + (log.reqs.get(d.params.requestId) || '') + ' ' + d.params.errorText);
+  };
+  handlers.push(onEv);
+  for (const m of ['Page.enable', 'Runtime.enable', 'Network.enable', 'Log.enable']) await S(m);
+  await S('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: dpr, mobile: false });
+  if (theme) await S('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('jv-theme','${theme}')}catch(e){}` });
+  if (pre) await S('Page.addScriptToEvaluateOnNewDocument', { source: pre });
+  await S('Page.navigate', { url });
+  const page = {
+    log, S,
+    ev: async expr => { const r = await S('Runtime.evaluate', { expression: expr, returnByValue: true, awaitPromise: true }); if (r.exceptionDetails) throw new Error(expr.slice(0, 80) + ' -> ' + (r.exceptionDetails.exception && r.exceptionDetails.exception.description)); return r.result.value; },
+    close: async () => { handlers.splice(handlers.indexOf(onEv), 1); try { await send('Target.disposeBrowserContext', { browserContextId }); } catch { /* */ } },
+  };
+  if (helpers) { for (let i = 0; i < 100; i++) { await sleep(50); if (await page.ev('!!document.getElementById("map") && document.readyState!=="loading"').catch(() => false)) break; } await page.ev(HELP).catch(() => {}); }
+  return page;
+}
+const settle = async (p, idx) => { await p.ev(`window.__jv.goto(${idx})`); await sleep(600); };
