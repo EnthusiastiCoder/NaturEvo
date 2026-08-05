@@ -75,3 +75,26 @@ ws.onmessage = m => {
 };
 const send = (method, params = {}, sessionId) => new Promise((res, rej) => { const id = ++nid; pending.set(id, { res, rej }); ws.send(JSON.stringify({ id, method, params, sessionId })); });
 function cleanup() { try { ws && ws.close(); } catch { /* */ } try { edge.kill(); } catch { /* */ } try { server.kill(); } catch { /* */ } try { rmSync(tmp, { recursive: true, force: true }); } catch { /* */ } }
+
+// In-page helpers (device-pixel image access, token colours).
+const HELP = `(() => {
+  const cv = () => document.getElementById('map');
+  const data = () => { const c = cv(); return c.getContext('2d').getImageData(0, 0, c.width, c.height); };
+  const tokRgb = n => { const v = getComputedStyle(document.documentElement).getPropertyValue(n).trim(); const m = v.match(/^#([0-9a-f]{6})$/i); return m ? [0,2,4].map(i => parseInt(m[1].slice(i, i+2), 16)) : null; };
+  window.__t = {
+    geom() { const c = cv(); const r = c.getBoundingClientRect(); return { W: c.width, H: c.height, cssW: r.width, cssH: r.height, dpr: window.devicePixelRatio }; },
+    px(x, y) { const c = cv(); const d = c.getContext('2d').getImageData(Math.round(x), Math.round(y), 1, 1).data; return [d[0], d[1], d[2], d[3]]; },
+    tok: tokRgb,
+    filled() { const d = data().data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i] > 0) n++; return n / (d.length / 4); },
+    // bbox of pixels within tol (euclid rgb) of rgb inside box [x0,y0,x1,y1] (device px)
+    near(rgb, tol, box) { const im = data(), W = im.width, d = im.data; let a = 1e9, b = 1e9, c = -1, e = -1, n = 0;
+      for (let y = Math.max(0, Math.floor(box[1])); y < Math.min(im.height, Math.ceil(box[3])); y++) for (let x = Math.max(0, Math.floor(box[0])); x < Math.min(W, Math.ceil(box[2])); x++) {
+        const i = (y * W + x) * 4; if (d[i+3] < 200) continue; const dd = Math.hypot(d[i]-rgb[0], d[i+1]-rgb[1], d[i+2]-rgb[2]);
+        if (dd <= tol) { n++; if (x < a) a = x; if (x > c) c = x; if (y < b) b = y; if (y > e) e = y; } }
+      return { n, x0: a, y0: b, x1: c, y1: e, w: c - a + 1, h: e - b + 1 }; },
+    save(name) { window.__f = window.__f || {}; window.__f[name] = data().data.slice(); },
+    diff(name, box) { const im = data(), W = im.width, d = im.data, o = window.__f[name]; let n = 0;
+      for (let y = Math.max(0, Math.floor(box[1])); y < Math.min(im.height, Math.ceil(box[3])); y++) for (let x = Math.max(0, Math.floor(box[0])); x < Math.min(W, Math.ceil(box[2])); x++) {
+        const i = (y * W + x) * 4; if (Math.abs(d[i]-o[i]) + Math.abs(d[i+1]-o[i+1]) + Math.abs(d[i+2]-o[i+2]) > 12) n++; } return n; },
+  };
+  return true; })()`;
