@@ -50,3 +50,8 @@ const gen = spawnSync(exe, ['run', '--seed', '1', '--out', join(site, 'data', 'r
 if (gen.status !== 0) { check(false, 'sim run failed: ' + gen.stderr); done(); }
 const RUN = JSON.parse(readFileSync(join(site, 'data', 'run.js'), 'utf8').replace(/^[^{]*/, '').replace(/;\s*$/, ''));
 const MW = RUN.w || 64, EV = RUN.events;
+
+const freePort = () => new Promise(res => { const s = createServer(); s.listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => res(p)); }); });
+const port = await freePort();
+const server = spawn(exe, ['serve', '--port', String(port), '--root', site], { stdio: 'ignore' });
+const BASE = `http://127.0.0.1:${port}/`;
