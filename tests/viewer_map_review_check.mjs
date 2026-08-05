@@ -42,3 +42,11 @@ if (!EDGE) { check(false, 'no Edge/Chrome found for the browser checks'); done()
 const build = spawnSync('cargo', ['build', '--release'], { cwd: join(root, 'sim'), env: cargoEnv, encoding: 'utf8', shell: true });
 if (build.status !== 0) console.error('warning: cargo build failed, using the existing binary if any: ' + (build.stderr || '').slice(-300));
 if (!existsSync(exe)) { check(false, 'sim binary missing: ' + exe); done(); }
+
+const tmp = mkdtempSync(join(tmpdir(), 'jv-review-'));
+const site = join(tmp, 'site');
+cpSync(join(root, 'viewer'), site, { recursive: true });
+const gen = spawnSync(exe, ['run', '--seed', '1', '--out', join(site, 'data', 'run.js')], { encoding: 'utf8' });
+if (gen.status !== 0) { check(false, 'sim run failed: ' + gen.stderr); done(); }
+const RUN = JSON.parse(readFileSync(join(site, 'data', 'run.js'), 'utf8').replace(/^[^{]*/, '').replace(/;\s*$/, ''));
+const MW = RUN.w || 64, EV = RUN.events;
