@@ -129,3 +129,19 @@ async function open(url, { w, h, dpr = 1, theme = null, pre = null, helpers = tr
   return page;
 }
 const settle = async (p, idx) => { await p.ev(`window.__jv.goto(${idx})`); await sleep(600); };
+
+// ---------------- helpers ----------------
+const lumC = c => { const [r, g, b] = c.map(x => { x /= 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+const contrast = (a, b) => (Math.max(lumC(a), lumC(b)) + 0.05) / (Math.min(lumC(a), lumC(b)) + 0.05);
+const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+const birdMap = g => { const ts = Math.floor(Math.min(g.W, g.H) / MW); const ox = Math.floor((g.W - ts * MW) / 2), oy = Math.floor((g.H - ts * MW) / 2); return { ts, c: (x, y) => [ox + (x + 0.5) * ts, oy + (y + 0.5) * ts] }; };
+const inB = (v, lo = 10, hi = MW - 11) => v >= lo && v <= hi;
+const heroOf = e => e.hero, away = e => inB(e.hero.x) && inB(e.hero.y);
+const pickElite = EV.find(e => away(e) && (e.npcs || []).some(n => /^e/.test(n.id) && inB(n.x) && inB(n.y) && Math.max(Math.abs(n.x - e.hero.x), Math.abs(n.y - e.hero.y)) >= 3 && Math.max(Math.abs(n.x - e.hero.x), Math.abs(n.y - e.hero.y)) <= 6));
+const pickBoss = EV.find(e => (e.npcs || []).some(n => n.id === 'boss' && inB(n.x, 4, MW - 5) && inB(n.y, 4, MW - 5)));
+const pickAtk = EV.find(e => ['attack', 'skill', 'potion'].includes(e.kind) && e.mon && away(e) && inB(e.mon.x) && inB(e.mon.y));
+const pickHit = EV.find(e => e.kind === 'hit_taken' && e.mon && away(e) && inB(e.mon.x) && inB(e.mon.y));
+const pickFree = EV.find(e => away(e) && !(e.npcs || []).length && !e.mon);
+const pickEdge = EV[0];
+check(pickElite && pickBoss && pickAtk && pickHit && pickFree, 'fixture events missing in the seed-1 run: ' + JSON.stringify({ elite: !!pickElite, boss: !!pickBoss, atk: !!pickAtk, hit: !!pickHit, free: !!pickFree }));
+const VIEWPORTS = [[1282, 642], [1282, 722], [1540, 890]];
