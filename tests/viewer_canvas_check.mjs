@@ -54,7 +54,8 @@ const fitOK = (h, dpr, cw, ch, label) => {
   const { cv } = h, W = Math.round(cw * dpr), H = Math.round(ch * dpr), t = h.lastT();
   check(cv.width === W, `${label}: cv.width ${cv.width} must be round(${cw}*${dpr}) = ${W}`);
   check(cv.height === H, `${label}: cv.height ${cv.height} must be round(${ch}*${dpr}) = ${H}`);
-  check(Math.abs(cv.width / cv.height - cw / ch) <= 1 / H + 1 / cw + 1e-9, `${label}: backing aspect ratio must equal CSS box`);
+  // crisp = backing is css x dpr rounded; an exact aspect at fractional dpr is impossible, so allow +-1 backing px per axis
+  check(Math.abs(cv.width - cw * dpr) <= 1 && Math.abs(cv.height - ch * dpr) <= 1, `${label}: backing ${cv.width}x${cv.height} must be within 1px per axis of css*dpr ${cw * dpr}x${ch * dpr}`);
   check(t && t.length === 6 && Math.abs(t[0] - dpr) < 1e-9 && t[1] === 0 && t[2] === 0 && Math.abs(t[3] - dpr) < 1e-9 && t[4] === 0 && t[5] === 0, `${label}: last setTransform must be (${dpr},0,0,${dpr},0,0), got ${JSON.stringify(t)}`);
 };
 const draw = h => { h.v.$('tab-dashboard').click(); h.v.$('tab-replay').click(); };
