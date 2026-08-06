@@ -258,3 +258,33 @@ try {
     check(p.log.errors.length === 0, 'file:// first load: no console errors, got ' + JSON.stringify(p.log.errors));
     await p.close();
   }
+
+  // ============ 5. attack animation hook ============
+  {
+    const p = await open(BASE, { w: 1540, h: 890, dpr: 1 }); await sleep(900);
+    const kinds = {};
+    for (const [label, e, who] of [['hero attack', pickAtk, 'hero'], ['hit_taken', pickHit, 'npc']]) {
+      if (!e) continue;
+      await settle(p, Math.max(0, e.idx - 1));
+      const act = await p.ev(`(() => { window.__jv.goto(${e.idx}); const a = window.__mapAnim; return { active: a.active, kind: a.kind }; })()`);
+      check(act.active === true, `${label}: __mapAnim.active must be true right after seeking to the event, got ${JSON.stringify(act)}`);
+      kinds[label] = act.kind;
+      await sleep(700);
+      check(await p.ev('typeof window.__mapAnimStep') === 'function', `${label}: window.__mapAnimStep(t) hook missing`);
+      if (await p.ev('typeof window.__mapAnimStep') !== 'function') continue;
+      const g = await p.ev('__t.geom()'), bm = birdMap(g);
+      await p.ev('window.__mapAnimStep(1)');
+      const idle = await p.ev('({ pos: window.__mapAnim.pos.slice(), mpos: window.__mapAnim.mpos.slice() })');
+      await p.ev('__t.save("idle")');
+      await p.ev('window.__mapAnimStep(0.5)');
+      const mid = await p.ev('({ pos: window.__mapAnim.pos.slice(), mpos: window.__mapAnim.mpos.slice() })');
+      const tgt = who === 'hero' ? e.mon : e.hero, tc = bm.c(tgt.x, tgt.y), r = bm.ts * 1.5;
+      const nd = await p.ev(`__t.diff("idle", ${JSON.stringify([tc[0] - r, tc[1] - r, tc[0] + r, tc[1] + r])})`);
+      check(nd > 0, `${label}: pixels at the target tile must differ from the idle frame at t=0.5 (flash), changed pixels ${nd}`);
+      const [a0, a1, t1] = who === 'hero' ? [idle.pos, mid.pos, idle.mpos] : [idle.mpos, mid.mpos, idle.pos];
+      const toward = (t1[0] - a0[0]) * (a1[0] - a0[0]) + (t1[1] - a0[1]) * (a1[1] - a0[1]);
+      check(Math.hypot(a1[0] - a0[0], a1[1] - a0[1]) > 0.05 && toward > 0, `${label}: attacker marker must be offset toward the target at t=0.5, idle ${JSON.stringify(a0)} mid ${JSON.stringify(a1)} target ${JSON.stringify(t1)}`);
+    }
+    if (kinds['hero attack'] && kinds['hit_taken']) check(kinds['hero attack'] === kinds['hit_taken'], `both directions must use the same animation kind, got ${JSON.stringify(kinds)}`);
+    await p.close();
+  }
