@@ -347,3 +347,6 @@ try {
 } catch (e) {
   check(false, 'test harness error: ' + (e && e.stack || e));
 }
+
+cleanup();
+done();
