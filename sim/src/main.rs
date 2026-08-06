@@ -1,4 +1,4 @@
-use jungle_sim::report::{batch, run_json, stats_json};
+use jungle_sim::report::{batch, stats_json};
 use jungle_sim::sim::simulate;
 use std::time::Instant;
 
@@ -23,7 +23,11 @@ fn main() {
             let seed: u64 = arg(&args, "--seed").and_then(|v| v.parse().ok()).unwrap_or(1);
             let out = arg(&args, "--out").unwrap_or_else(|| "viewer/data/run.js".into());
             let r = simulate(seed);
-            write(&out, &run_json(&r));
+            let mut body = jungle_sim::report::run_body(&r);
+            body.pop();
+            let mp = jungle_sim::map::Map::generate(r.seed, r.map_size as usize);
+            write(&out, &format!("window.RUN = {},\"map\":{}}};
+", body, jungle_sim::map::map_body(&mp)));
             println!("seed {} won={} deaths={} level={} events={} steps={} -> {} ({:?})",
                 seed, r.won, r.deaths, r.final_level, r.events.len(), r.steps, out, t.elapsed());
         }
