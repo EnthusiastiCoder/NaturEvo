@@ -162,3 +162,44 @@ try {
     }
     await p.close();
   }
+
+  // ============ 2. markers and legend (both themes) ============
+  for (const theme of ['dark', 'light']) {
+    const L = theme + ' 1540x890';
+    const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme }); await sleep(900);
+    if (pickElite && pickFree && pickBoss) {
+      const accent = await p.ev('__t.tok("--accent")'), warn = await p.ev('__t.tok("--warn")'), bad = await p.ev('__t.tok("--bad")');
+      await settle(p, pickFree.idx);
+      let g = await p.ev('__t.geom()'), bm = birdMap(g);
+      const hc = bm.c(pickFree.hero.x, pickFree.hero.y), r = bm.ts * 4;
+      const hb = await p.ev(`__t.near(${JSON.stringify(accent)}, 60, ${JSON.stringify([hc[0] - r, hc[1] - r, hc[0] + r, hc[1] + r])})`);
+      check(hb.n > 0 && hb.w >= 8, `${L}: hero marker (accent) must be >= 8 css px across, got ${hb.n ? hb.w : 'none drawn'}`);
+      check(hb.n > 0 && hb.w >= 1.5 * bm.ts, `${L}: hero marker must be >= 1.5 tiles across (${1.5 * bm.ts}), got ${hb.w}`);
+      const heroCentre = await p.ev(`__t.px(${hc[0]},${hc[1]})`);
+      await settle(p, pickElite.idx);
+      g = await p.ev('__t.geom()'); bm = birdMap(g);
+      const en = pickElite.npcs.find(n => /^e/.test(n.id)), ec = bm.c(en.x, en.y);
+      const ep = await p.ev(`__t.px(${ec[0]},${ec[1]})`);
+      const eb = await p.ev(`__t.near(${JSON.stringify(warn)}, 60, ${JSON.stringify([ec[0] - bm.ts * 2, ec[1] - bm.ts * 2, ec[0] + bm.ts * 2, ec[1] + bm.ts * 2])})`);
+      check(eb.n > 0 && eb.w >= 8, `${L}: elite marker (warn colour) must be >= 8 css px across, got ${eb.n ? eb.w : 'none drawn'}`);
+      check(dist(ep, heroCentre) > 40, `${L}: elite centre pixel ${ep} must differ from hero centre pixel ${heroCentre}`);
+      check(contrast(ep.slice(0, 3), heroCentre.slice(0, 3)) >= 3, `${L}: hero vs elite fill contrast ${contrast(ep.slice(0, 3), heroCentre.slice(0, 3)).toFixed(2)} must be >= 3:1`);
+      // hero ring vs tile: the ring colour (accent) against a plain tile pixel
+      const tilePx = await p.ev(`__t.px(${hc[0] + bm.ts * 3},${hc[1] + bm.ts * 3})`);
+      check(contrast(accent, tilePx.slice(0, 3)) >= 3, `${L}: hero ring (accent) vs tile contrast ${contrast(accent, tilePx.slice(0, 3)).toFixed(2)} must be >= 3:1`);
+      await settle(p, pickBoss.idx);
+      g = await p.ev('__t.geom()'); bm = birdMap(g);
+      const bn = pickBoss.npcs.find(n => n.id === 'boss'), bc = bm.c(bn.x, bn.y);
+      const bb = await p.ev(`__t.near(${JSON.stringify(bad)}, 60, ${JSON.stringify([bc[0] - bm.ts * 3, bc[1] - bm.ts * 3, bc[0] + bm.ts * 3, bc[1] + bm.ts * 3])})`);
+      check(bb.n > 0 && bb.w >= 8, `${L}: boss marker (bad colour) must be >= 8 css px across, got ${bb.n ? bb.w : 'none drawn'}`);
+      check(bb.n > 0 && eb.n > 0 && bb.w > eb.w, `${L}: boss marker (${bb.w}) must be larger than an elite marker (${eb.w})`);
+    }
+    const leg = await p.ev(`(() => { const l = document.getElementById('maplegend'); if (!l) return null; const r = l.getBoundingClientRect(); return { n: l.children.length, t: l.textContent.toLowerCase(), w: r.width, h: r.height }; })()`);
+    check(leg, `${L}: #maplegend element missing`);
+    if (leg) {
+      check(leg.n === 6, `${L}: legend must have 6 entries, got ${leg.n}`);
+      check(['hero', 'elite', 'boss', 'grass', 'wall', 'camp'].every(k => leg.t.includes(k)), `${L}: legend must name hero, elite, boss, grass, wall, camp, got ${JSON.stringify(leg.t.trim())}`);
+      check(leg.w > 0 && leg.h > 0, `${L}: legend must be visible`);
+    }
+    await p.close();
+  }
