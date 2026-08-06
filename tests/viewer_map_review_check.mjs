@@ -288,3 +288,28 @@ try {
     if (kinds['hero attack'] && kinds['hit_taken']) check(kinds['hero attack'] === kinds['hit_taken'], `both directions must use the same animation kind, got ${JSON.stringify(kinds)}`);
     await p.close();
   }
+
+  // ============ 6. layout: no scroll, no overlap ============
+  for (const [w, h] of VIEWPORTS) {
+    const L = `layout ${w}x${h}`;
+    const p = await open(BASE, { w, h, dpr: 1 }); await sleep(1000);
+    const m = await p.ev(`(() => {
+      const R = e => { const r = e.getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height, r: r.right, b: r.bottom }; };
+      const main = document.querySelector('.main'), de = document.documentElement, bd = document.body;
+      const hit = (a, b) => Math.min(a.r, b.r) - Math.max(a.x, b.x) > 1 && Math.min(a.b, b.b) - Math.max(a.y, b.y) > 1;
+      const logb = document.getElementById('log-open'), tl = document.getElementById('timeline');
+      const vis = e => { const r = e.getBoundingClientRect(), s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'; };
+      const ctl = [...document.querySelectorAll('button, input, select, summary, a[href]')].filter(e => vis(e) && !e.closest('details:not([open])'));
+      const bad = [];
+      for (let i = 0; i < ctl.length; i++) for (let j = i + 1; j < ctl.length; j++) { if (ctl[i].contains(ctl[j]) || ctl[j].contains(ctl[i])) continue; if (hit(R(ctl[i]), R(ctl[j]))) bad.push((ctl[i].id || ctl[i].className || ctl[i].tagName) + ' x ' + (ctl[j].id || ctl[j].className || ctl[j].tagName)); }
+      const cv = document.getElementById('map');
+      return { main: main ? [main.scrollHeight, main.clientHeight] : null, doc: [de.scrollHeight, de.clientHeight, de.scrollWidth, de.clientWidth, bd.scrollHeight, bd.scrollWidth],
+        log: logb && vis(logb) ? R(logb) : null, tl: tl ? R(tl) : null, map: R(cv), bad, sy: window.scrollY }; })()`);
+    check(m.main && m.main[0] <= m.main[1], `${L}: .main must not overflow, scrollHeight/clientHeight ${JSON.stringify(m.main)}`);
+    check(m.doc[0] <= m.doc[1] && m.doc[2] <= m.doc[3] && m.doc[4] <= h && m.doc[5] <= w, `${L}: the document must not scroll, ${JSON.stringify(m.doc)}`);
+    check(m.log && m.tl && !(Math.min(m.log.r, m.tl.r) - Math.max(m.log.x, m.tl.x) > 1 && Math.min(m.log.b, m.tl.b) - Math.max(m.log.y, m.tl.y) > 1), `${L}: Event log button ${JSON.stringify(m.log)} must not intersect the timeline ${JSON.stringify(m.tl)}`);
+    check(m.log && !(Math.min(m.log.r, m.map.r) - Math.max(m.log.x, m.map.x) > 1 && Math.min(m.log.b, m.map.b) - Math.max(m.log.y, m.map.y) > 1), `${L}: Event log button must not overlap the map`);
+    check(m.tl && m.tl.h >= 60, `${L}: the timeline must keep a minimum height of 60 css px, got ${m.tl && m.tl.h}`);
+    check(m.bad.length === 0, `${L}: controls must not overlap each other: ${m.bad.join('; ')}`);
+    await p.close();
+  }
