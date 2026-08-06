@@ -79,7 +79,8 @@ const posOfId = id => { const m = markup.match(new RegExp('<\\w+[^>]*\\bid\\s*=\
 }
 
 // ---------- (3) drawers are closed <details> ----------
-for (const id of ['knob-box', 'log-box', 'more-box', 'batch-box']) {
+// log-box/more-box moved: the log is the #log-modal dialog and the hero details drawer was removed (viewer_polish_check.mjs)
+for (const id of ['knob-box', 'batch-box']) {
   const d = dets.find(x => x.id === id);
   check(!!d, `#${id} must exist as a <details>`);
   if (d) check(!d.open, `#${id} must not have the open attribute (closed by default)`);
@@ -91,7 +92,7 @@ for (const id of ['knob-box', 'log-box', 'more-box', 'batch-box']) {
     const d = dets.find(x => x.id === outer); const p = posOfId(inner);
     return !!d && p > d.start && p < d.end;
   };
-  check(within('log-box', 'log'), '#log must be inside #log-box');
+  { const s = markup.search(/id\s*=\s*["']log-modal["']/), e = markup.indexOf('</dialog>', s), l = posOfId('log'); check(s >= 0 && l > s && l < e, '#log must be inside #log-modal'); }
   check(within('knob-box', 'knobs'), '#knobs must be inside #knob-box');
 }
 
@@ -102,7 +103,7 @@ for (const id of ['knob-box', 'log-box', 'more-box', 'batch-box']) {
     const t = (m[1].match(/\btype\s*=\s*["']?(\w+)/) || [, 'text'])[1].toLowerCase();
     if (t !== 'text' && t !== 'number') continue;
     const id = (m[1].match(/\bid\s*=\s*["']([^"']+)["']/) || [, '(no id)'])[1];
-    if (id === 'seed') continue;
+    if (id === 'seed' || id === 'speed-num') continue; // speed-num: playback multiplier, a replay control (STYLE.md)
     const inClosed = dets.some(d => !d.open && m.index > d.start && m.index < d.end);
     if (!inClosed) bad.push(id);
   }
@@ -177,7 +178,7 @@ for (const id of ['summary', 'outcome', 'sum-level', 'sum-hp', 'sum-zone', 'sum-
 
 // ---------- (10) legacy ids still present ----------
 for (const id of ['run-controls', 'seed', 'run-btn', 'random-seed', 'batch-runs', 'batch-btn', 'run-status', 'knob-box', 'knobs', 'knobs-reset',
-  'tab-replay', 'tab-dashboard', 'replay', 'play', 'speed', 'info', 'scrub', 'battle', 'hbar', 'hhp', 'hmeta', 'zone', 'memo', 'mbar', 'mhp',
+  'tab-replay', 'tab-dashboard', 'replay', 'play', 'speed', 'info', 'scrub', 'battle', 'hbar', 'hhp', 'zone', 'memo', 'mbar', 'mhp',
   'timeline', 'log', 'dashboard', 'dstats', 'hist']) {
   check(idsInMarkup.has(id), `legacy id #${id} missing`);
 }
