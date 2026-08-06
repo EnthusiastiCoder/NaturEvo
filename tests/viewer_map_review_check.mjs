@@ -145,3 +145,20 @@ const pickFree = EV.find(e => away(e) && !(e.npcs || []).length && !e.mon);
 const pickEdge = EV[0];
 check(pickElite && pickBoss && pickAtk && pickHit && pickFree, 'fixture events missing in the seed-1 run: ' + JSON.stringify({ elite: !!pickElite, boss: !!pickBoss, atk: !!pickAtk, hit: !!pickHit, free: !!pickFree }));
 const VIEWPORTS = [[1282, 642], [1282, 722], [1540, 890]];
+
+try {
+  // ============ 1. map size and squareness ============
+  for (const [w, h] of VIEWPORTS) for (const dpr of [1, 2]) {
+    const L = `${w}x${h} dpr ${dpr}`;
+    const p = await open(BASE, { w, h, dpr }); await sleep(900);
+    const m = await p.ev(`(() => { const r = document.getElementById('map').getBoundingClientRect(), v = document.getElementById('replay').getBoundingClientRect(), c = document.getElementById('map'); return { mw: r.width, mh: r.height, vw: v.width, vh: v.height, bw: c.width, bh: c.height }; })()`);
+    const short = Math.min(m.mw, m.mh), vshort = Math.min(m.vw, m.vh);
+    check(short >= 0.7 * vshort, `${L}: map short side ${short.toFixed(0)} must be >= 70% of #replay short side ${vshort.toFixed(0)} (>= ${(0.7 * vshort).toFixed(0)})`);
+    check(Math.abs(m.mw - m.mh) <= 1, `${L}: map canvas must be square within 1px, got ${m.mw.toFixed(1)}x${m.mh.toFixed(1)}`);
+    check(Math.abs(m.bw - m.mw * dpr) <= 1 && Math.abs(m.bh - m.mh * dpr) <= 1, `${L}: backing ${m.bw}x${m.bh} must be css*dpr`);
+    if (dpr === 1) {
+      const ts = Math.floor(Math.min(m.bw, m.bh) / MW);
+      check(ts >= 4, `${L}: bird's-eye tile must be an integer >= 4 css px, got ${ts}`);
+    }
+    await p.close();
+  }
