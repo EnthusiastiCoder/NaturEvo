@@ -82,7 +82,7 @@ const attr = (t, a) => t && ((t[2].match(new RegExp('\\b' + a + '\\s*=\\s*["\'](
   check(/position\s*:\s*relative/.test(css.replace(/\s+/g, ' ').match(/#log\s*\{[^}]*\}/) ? css.match(/#log\s*\{[^}]*\}/)[0] : ''), '#log needs position:relative');
   const gs = (markup.match(/<select\b[^>]*\bid\s*=\s*["']log-group["'][^>]*>([\s\S]*?)<\/select>/) || [, ''])[1];
   check(/type/i.test(gs) && /zone/i.test(gs) && /none/i.test(gs), '#log-group needs options by type, zone, none');
-  const opts = [...gs.matchAll(/<option([^>]*)>([^<]*)/gi)];
+  const opts = [...gs.matchAll(/<option\b([^>]*)>([^<]*)/gi)];
   const def = opts.find(o => /selected/.test(o[1])) || opts[0];
   check(!!def && /type/i.test(def[1] + def[2]), 'by type must be the default grouping (selected or first option)');
 }
