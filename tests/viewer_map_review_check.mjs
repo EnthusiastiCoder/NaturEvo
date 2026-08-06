@@ -313,3 +313,37 @@ try {
     check(m.bad.length === 0, `${L}: controls must not overlap each other: ${m.bad.join('; ')}`);
     await p.close();
   }
+
+  // ============ 7. theme via the real toggle ============
+  {
+    const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
+    const sample = async () => {
+      await settle(p, pickFree ? pickFree.idx : 0);
+      const g = await p.ev('__t.geom()'), bm = birdMap(g), e = pickFree || EV[0];
+      const hc = bm.c(e.hero.x, e.hero.y);
+      const th = await p.ev('document.documentElement.getAttribute("data-theme")');
+      const accent = await p.ev('__t.tok("--accent")');
+      const tile = await p.ev(`__t.px(${hc[0] + bm.ts * 3},${hc[1] + bm.ts * 3})`);
+      const hb = await p.ev(`__t.near(${JSON.stringify(accent)}, 60, ${JSON.stringify([hc[0] - bm.ts * 4, hc[1] - bm.ts * 4, hc[0] + bm.ts * 4, hc[1] + bm.ts * 4])})`);
+      const hero = await p.ev(`__t.px(${hc[0]},${hc[1]})`);
+      const legend = await p.ev(`(() => { const l = document.getElementById('maplegend'); return l ? [...l.querySelectorAll('*')].map(e => getComputedStyle(e).backgroundColor + '|' + getComputedStyle(e).color).join(',') : ''; })()`);
+      return { th, accent, tile, hero, hb, legend };
+    };
+    const a = await sample();
+    await p.ev(`document.getElementById('theme-toggle').click()`); await sleep(500);
+    const b = await sample();
+    check(a.th !== b.th, `#theme-toggle must switch the theme, before ${a.th} after ${b.th}`);
+    check(dist(a.tile, b.tile) > 30, `tile colours must change with the theme, ${a.tile} -> ${b.tile}`);
+    check(dist(a.hero, b.hero) > 20 || dist(a.accent, b.accent) > 20 || a.hb.n !== b.hb.n, `marker colours must update with the theme (hero ${a.hero} -> ${b.hero})`);
+    check(a.legend && a.legend !== b.legend, 'legend colours must update with the theme');
+    for (const s of [a, b]) {
+      check(s.hb.n > 0, `${s.th}: hero marker (accent) must be drawn`);
+      check(contrast(s.accent, s.tile.slice(0, 3)) >= 3, `${s.th}: hero vs tile contrast ${contrast(s.accent, s.tile.slice(0, 3)).toFixed(2)} must be >= 3:1`);
+    }
+    const stored = await p.ev('localStorage.getItem("jv-theme")');
+    check(stored === b.th, `the choice must persist in localStorage jv-theme, got ${stored} want ${b.th}`);
+    await p.close();
+  }
+} catch (e) {
+  check(false, 'test harness error: ' + (e && e.stack || e));
+}
