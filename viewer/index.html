@@ -617,7 +617,7 @@ function logCur(force){
  $("log").addEventListener("scroll",function(){paintLog();});
 })();
 /* ---- map canvas: tiles, markers, hover, zoom, replay and the shared attack animation (see viewer/STYLE.md) ---- */
-var mapData=window.MAP||null,mapKey="",mapSize=run&&run.w?run.w:0,mapZoom=sget("jv-mapzoom")==="1",lay=null,lastCur=-1,lastEv=null,rafId=0,viewHero=null;
+var mapData=window.MAP||(run&&run.map)||null,mapKey=mapData&&run?seedStr()+":"+(run.w||0):"",mapSize=run&&run.w?run.w:0,mapZoom=sget("jv-mapzoom")==="1",lay=null,lastCur=-1,lastEv=null,rafId=0,viewHero=null;
 var MAP_KIND={".":["Floor","--tile-floor"],",":["Grass","--tile-grass"],"#":["Wall","--tile-wall"],"C":["Camp","--tile-camp"]};
 var ATK_KINDS={attack:1,skill:1,potion:1,hit_taken:1},ATTACK_MS=250,MIN_MS=40,LUNGE=0.4,SEP=0.35;
 var anim=window.__mapAnim={active:false,kind:"",from:null,to:null,t:0,duration:0,pos:null,mpos:null};
