@@ -203,3 +203,31 @@ try {
     }
     await p.close();
   }
+
+  // ============ 3. zoom ============
+  for (const [w, h] of VIEWPORTS) {
+    const L = `zoom ${w}x${h}`;
+    const p = await open(BASE, { w, h, dpr: 1 }); await sleep(900);
+    await p.ev(`document.getElementById('mapzoom') && document.getElementById('mapzoom').click()`);
+    if (pickElite) {
+      await settle(p, pickElite.idx);
+      const g = await p.ev('__t.geom()'), ts = g.W / 16;
+      check(g.cssW / 16 >= 24, `${L}: zoom tile must be >= 24 css px (16 tiles across), canvas ${g.cssW.toFixed(0)} -> ${(g.cssW / 16).toFixed(1)}`);
+      const accent = await p.ev('__t.tok("--accent")');
+      const hb = await p.ev(`__t.near(${JSON.stringify(accent)}, 60, ${JSON.stringify([g.W / 2 - ts * 1.5, g.H / 2 - ts * 1.5, g.W / 2 + ts * 1.5, g.H / 2 + ts * 1.5])})`);
+      check(hb.n > 0 && Math.abs((hb.x0 + hb.x1) / 2 - g.W / 2) <= ts / 2 && Math.abs((hb.y0 + hb.y1) / 2 - g.H / 2) <= ts / 2, `${L}: hero must be at the canvas centre, accent pixels bbox ${JSON.stringify(hb)}`);
+      const en = pickElite.npcs.find(n => /^e/.test(n.id));
+      const nx = g.W / 2 + (en.x - pickElite.hero.x) * ts, ny = g.H / 2 + (en.y - pickElite.hero.y) * ts;
+      const npc = await p.ev(`(() => { const a = __t.near(${JSON.stringify(await p.ev('__t.tok("--warn")'))}, 70, ${JSON.stringify([nx - ts / 2, ny - ts / 2, nx + ts / 2, ny + ts / 2])}); const c = __t.px(${nx},${ny}), t = __t.px(${nx - ts / 2 + 2},${ny - ts / 2 + 2}); return { a, c, t }; })()`);
+      check(npc.a.n > 0 || dist(npc.c, npc.t) > 30, `${L}: NPC in the window must be drawn at its tile, centre pixel ${npc.c} vs tile pixel ${npc.t}`);
+      const glyphs = await p.ev(`(() => { const im = document.getElementById('map').getContext('2d').getImageData(${Math.round(nx - ts / 2)}, ${Math.round(ny - ts / 2)}, ${Math.round(ts)}, ${Math.round(ts)}).data; const set = new Set(); for (let i = 0; i < im.length; i += 4) set.add((im[i] >> 4) + ',' + (im[i+1] >> 4) + ',' + (im[i+2] >> 4)); return set.size; })()`);
+      check(glyphs >= 6, `${L}: NPC tile must show a species emoji (many colours), got ${glyphs} distinct colours`);
+    }
+    if (pickEdge) {
+      await settle(p, pickEdge.idx);
+      const g = await p.ev('__t.geom()'), ts = g.W / 16, accent = await p.ev('__t.tok("--accent")');
+      const hb = await p.ev(`__t.near(${JSON.stringify(accent)}, 60, ${JSON.stringify([0, 0, g.W, g.H])})`);
+      check(hb.n > 0 && (hb.x0 + hb.x1) / 2 < g.W / 2 - ts && (hb.y0 + hb.y1) / 2 < g.H / 2 - ts, `${L}: at the map corner the window is clamped, so the hero must be off centre, bbox ${JSON.stringify(hb)}`);
+    }
+    await p.close();
+  }
