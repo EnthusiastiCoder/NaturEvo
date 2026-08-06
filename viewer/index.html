@@ -280,6 +280,16 @@ input[type=checkbox]{accent-color:var(--accent-text)}
 </header>
 <main class="main">
 <div id="replay" class="view">
+ <div class="card playback">
+  <span class="tipwrap"><button type="button" id="play" class="btn-icon" aria-label="Play" aria-describedby="tip-play"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></button><span role="tooltip" id="tip-play" class="tip">Play or pause the replay.</span></span>
+  <span class="field"><label class="label" for="speed">Speed</label><input id="speed" class="range" type="range" min="0" max="1000" step="1" value="143" aria-label="Playback speed (logarithmic)"><input id="speed-num" class="input" type="number" step="any" min="0.25" max="4096" value="1" aria-label="Playback speed multiplier"><span class="tipwrap"><button type="button" id="speed-info" class="btn-icon info" aria-label="About speed" aria-describedby="tip-speed"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-speed" class="tip">Speed is an events per second multiplier on a base of 10 events per second. Range 0.25 to 4096. Type any value or drag the logarithmic slider.</span></span></span>
+  <span id="info"></span>
+  <span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About scrub bar" aria-describedby="tip-scrub"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-scrub" class="tip">Drag to jump to any event of the run.</span></span>
+  <input id="scrub" class="range" type="range" min="0" max="0" value="0" aria-label="Scrub through events">
+ </div>
+ <div class="stage">
+ <div id="map-card" class="card"><div id="mapwrap"><canvas id="map"></canvas><div id="maptip" class="map-tip hidden" role="tooltip"></div><div id="mapempty" class="map-empty">No map data</div></div></div>
+ <div class="side">
  <div id="summary" class="card summary">
   <span id="outcome" class="badge">No run</span>
   <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-trophy"/></svg>Level <span id="sum-level" class="sval"></span></span>
