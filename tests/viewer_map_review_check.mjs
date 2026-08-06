@@ -231,3 +231,30 @@ try {
     }
     await p.close();
   }
+
+  // ============ 4. first load, no interaction ============
+  {
+    const p = await open(BASE, { w: 1282, h: 722, dpr: 1 });
+    let frac = 0; const t0 = Date.now();
+    while (Date.now() - t0 < 3000 && frac <= 0.3) { await sleep(150); frac = await p.ev('(window.__t||(' + HELP + ')) && __t.filled()').catch(() => 0); }
+    check(frac > 0.3, `http first load: map must be drawn within 3 s with no interaction, filled fraction ${(+frac).toFixed(2)}`);
+    await sleep(500);
+    check(p.log.bad.length === 0, 'http first load: no request may fail or 404, got ' + JSON.stringify(p.log.bad));
+    check(p.log.errors.length === 0, 'http first load: no console errors, got ' + JSON.stringify(p.log.errors));
+    await p.close();
+    // run start / window refetch must not blank the canvas
+    const q = await open(BASE, { w: 1282, h: 722, dpr: 1 }); await sleep(1200);
+    const blank = await q.ev(`(async () => { let min = 1; const f = () => { try { min = Math.min(min, __t.filled()); } catch (e) { min = 0; } };
+      for (let i = 0; i < 12; i++) { window.__jv.goto(i * 1100); f(); await new Promise(r => setTimeout(r, 120)); f(); } return min; })()`);
+    check(blank > 0.3, `http: the canvas must never blank while seeking across windows, min filled ${(+blank).toFixed(2)}`);
+    await q.close();
+  }
+  {
+    const url = pathToFileURL(join(site, 'index.html')).href;
+    const p = await open(url, { w: 1282, h: 722, dpr: 1 });
+    let frac = 0; const t0 = Date.now();
+    while (Date.now() - t0 < 3000 && frac <= 0.3) { await sleep(150); frac = await p.ev('(window.__t||(' + HELP + ')) && __t.filled()').catch(() => 0); }
+    check(frac > 0.3, `file:// first load: map must be drawn within 3 s (window.MAP shipped in the run data), filled fraction ${(+frac).toFixed(2)}`);
+    check(p.log.errors.length === 0, 'file:// first load: no console errors, got ' + JSON.stringify(p.log.errors));
+    await p.close();
+  }
