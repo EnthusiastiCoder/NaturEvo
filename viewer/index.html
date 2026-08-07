@@ -703,7 +703,7 @@ function drawMap(){
  var kc,x,y,row;
  for(kc in MAP_KIND){g.fillStyle=tok(MAP_KIND[kc][1]);
   for(y=y0;y<=y1;y++){row=tiles[y]||"";for(x=x0;x<=x1;x++)if(row.charAt(x)===kc)g.fillRect(ox+x*tsd,oy+y*tsd,tsd,tsd);}}
- g.globalAlpha=0.22;
+ g.globalAlpha=0.07;
  for(var z=0;z<9;z++){g.fillStyle=tok("--biome-"+z);var zs=String(z);
   for(y=y0;y<=y1;y++){row=tiles[y]||"";var zr=zones[y]||"";for(x=x0;x<=x1;x++)if(zr.charAt(x)===zs&&row.charAt(x)!=="#")g.fillRect(ox+x*tsd,oy+y*tsd,tsd,tsd);}}
  g.globalAlpha=1;
