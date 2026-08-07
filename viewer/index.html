@@ -644,7 +644,7 @@ function attackAnim(attackerXY,targetXY,who){
 }
 function walkAnim(path,end){
  var len=0,i;for(i=1;i<path.length;i++)len+=Math.abs(path[i][0]-path[i-1][0])+Math.abs(path[i][1]-path[i-1][1]);
- var d=Math.max(150,Math.min(700,len*40))/speedVal;if(!(d>=MIN_MS)||typeof window.requestAnimationFrame!=="function")return false;
+ var d=Math.max(120,Math.min(400,len*25))/speedVal;if(!(d>=MIN_MS)||typeof window.requestAnimationFrame!=="function")return false;
  anim.active=true;anim.kind="walk";anim.from=path[0].slice();anim.to=end;anim.t=0;anim.duration=d;animAtk="";animPath=path;animT0=nowMs();schedule();return true;
 }
 function startAnim(e){
