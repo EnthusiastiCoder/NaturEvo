@@ -734,6 +734,11 @@ function drawMap(){
   g.globalAlpha=1-anim.t;g.strokeStyle=cWarn;g.lineWidth=lw*1.5;g.beginPath();g.arc(c[0],c[1],rr*(1+anim.t),0,Math.PI*2);g.stroke();g.globalAlpha=1;}
  if(mapZoom)g.restore();
 }
+window.__mapAnimStep=function(t){
+ var e=inWin(cur)?ev[cur-base]:null;if(!e||!hasXY(e.hero)||!ATK_KINDS[e.kind]||!e.mon||!hasXY(e.mon))return false;
+ animAtk=e.kind==="hit_taken"?"npc":"hero";anim.kind="strike";anim.from=[e.hero.x,e.hero.y];anim.to=[e.mon.x,e.mon.y];
+ anim.t=Math.max(0,Math.min(1,+t||0));anim.active=true;animPath=null;drawMap();anim.active=false;return true;
+};
 function tileAt(ev0){
  var cv=$("map");if(!lay||!cv)return null;
  var mx=ev0.offsetX,my=ev0.offsetY;
