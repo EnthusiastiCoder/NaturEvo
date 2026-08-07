@@ -689,10 +689,11 @@ function drawMap(){
  showEmpty("");
  var w=mapData.w,h=mapData.h,tiles=mapData.tiles,zones=mapData.zones||[],tsd,ox,oy,x0=0,y0=0,x1=w-1,y1=h-1,hp=viewHero.hp;
  if(mapZoom){
-  tsd=Math.max(2,Math.floor(Math.min(Wd,Hd)/16));
-  ox=Math.round(Wd/2-(hp[0]+0.5)*tsd);oy=Math.round(Hd/2-(hp[1]+0.5)*tsd);
-  x0=Math.max(0,Math.floor(hp[0])-9);x1=Math.min(w-1,Math.floor(hp[0])+9);y0=Math.max(0,Math.floor(hp[1])-9);y1=Math.min(h-1,Math.floor(hp[1])+9);
-  g.save();g.beginPath();g.rect(Math.round(Wd/2)-8*tsd,Math.round(Hd/2)-8*tsd,16*tsd,16*tsd);g.clip();
+  var N=16,vx=Math.max(0,Math.min(w-N,hp[0]+0.5-N/2)),vy=Math.max(0,Math.min(h-N,hp[1]+0.5-N/2)),cx0,cy0;
+  tsd=Math.max(2,Math.floor(Math.min(Wd,Hd)/N));cx0=Math.round((Wd-N*tsd)/2);cy0=Math.round((Hd-N*tsd)/2);
+  ox=Math.round(cx0-vx*tsd);oy=Math.round(cy0-vy*tsd);
+  x0=Math.max(0,Math.floor(vx));x1=Math.min(w-1,Math.ceil(vx+N));y0=Math.max(0,Math.floor(vy));y1=Math.min(h-1,Math.ceil(vy+N));
+  g.save();g.beginPath();g.rect(cx0,cy0,N*tsd,N*tsd);g.clip();
  }else{
   tsd=Math.max(1,Math.floor(Math.min(Wd/w,Hd/h)));ox=Math.floor((Wd-tsd*w)/2);oy=Math.floor((Hd-tsd*h)/2);
  }
