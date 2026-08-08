@@ -320,6 +320,7 @@ try {
     const url = pathToFileURL(join(root, 'viewer', 'index.html')).href;
     const p = await open(url, { w: 1282, h: 722, dpr: 1 });
     let frac = 0; const t0 = Date.now();
+    while (Date.now() - t0 < 3000 && frac <= 0.3) { await sleep(150); frac = await p.ev('(window.__t||(' + HELP + ')) && __t.filled()').catch(() => 0); }
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
