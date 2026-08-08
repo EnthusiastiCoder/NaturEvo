@@ -328,6 +328,7 @@ try {
     await p.S('Page.reload'); await sleep(1200); await p.ev(HELP).catch(() => {});
     check(await p.ev('__t.filled()') > 0.3, 'committed run.js: the map must also be drawn after a reload');
     await p.close();
+  }
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
