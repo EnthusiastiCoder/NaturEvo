@@ -319,6 +319,7 @@ try {
     // 8.1 the committed viewer/data/run.js (what a user opens) shows a map on first load and after reload, file://
     const url = pathToFileURL(join(root, 'viewer', 'index.html')).href;
     const p = await open(url, { w: 1282, h: 722, dpr: 1 });
+    let frac = 0; const t0 = Date.now();
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
