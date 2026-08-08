@@ -317,6 +317,7 @@ try {
   // ============ 8. second review: committed data, fill, animation, tiles, ticks, summary, zoom, dpr ============
   {
     // 8.1 the committed viewer/data/run.js (what a user opens) shows a map on first load and after reload, file://
+    const url = pathToFileURL(join(root, 'viewer', 'index.html')).href;
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
