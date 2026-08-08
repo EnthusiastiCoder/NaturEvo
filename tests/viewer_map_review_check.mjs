@@ -333,6 +333,7 @@ try {
     const L = `fill ${w}x${h}`;
     const p = await open(BASE, { w, h, dpr: 1 }); await sleep(900);
     const m = await p.ev(`(() => { const R = e => { const r = e.getBoundingClientRect(); return { x: r.left, y: r.top, r: r.right, b: r.bottom, w: r.width, h: r.height }; };
+      const v = R(document.getElementById('replay')), c = R(document.getElementById('map')), side = document.querySelector('.side'), sr = R(side);
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
