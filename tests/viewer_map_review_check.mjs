@@ -324,6 +324,7 @@ try {
     check(frac > 0.3, `committed viewer/data/run.js over file://: map must be drawn on first load, filled ${(+frac).toFixed(2)} (regenerate run.js with the current binary)`);
     const empty = await p.ev(`(() => { const e = document.getElementById('mapempty'); return e && !e.classList.contains('hidden') ? e.textContent : ""; })()`);
     check(!empty, `committed run.js: the map empty state must be hidden, got "${empty}"`);
+    check(p.log.errors.length === 0, 'committed run.js: no console errors, got ' + JSON.stringify(p.log.errors));
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
