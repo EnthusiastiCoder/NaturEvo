@@ -357,6 +357,7 @@ try {
       check(nd >= 2 * bm.ts * bm.ts, `${label}: the hit flash must be clearly visible, >= 2 tiles of changed pixels (${2 * bm.ts * bm.ts}), got ${nd}`);
       const idle = await p.ev('(window.__mapAnimStep(1), ({ pos: __mapAnim.pos.slice(), mpos: __mapAnim.mpos.slice() }))');
       const mid = await p.ev('(window.__mapAnimStep(0.5), ({ pos: __mapAnim.pos.slice(), mpos: __mapAnim.mpos.slice() }))');
+      const [a0, a1] = who === 'hero' ? [idle.pos, mid.pos] : [idle.mpos, mid.mpos];
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
