@@ -347,6 +347,7 @@ try {
       if (!e) continue;
       await settle(p, Math.max(0, e.idx - 1));
       const a = await p.ev(`(() => { window.__jv.goto(${e.idx}); const a = window.__mapAnim; return { d: a.duration, active: a.active }; })()`);
+      check(a.d >= 380 && a.d <= 600, `${label}: the attack animation must last about 400 ms at 1x, got ${a.d}`);
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
