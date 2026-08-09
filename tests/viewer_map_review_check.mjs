@@ -349,6 +349,7 @@ try {
       const a = await p.ev(`(() => { window.__jv.goto(${e.idx}); const a = window.__mapAnim; return { d: a.duration, active: a.active }; })()`);
       check(a.d >= 380 && a.d <= 600, `${label}: the attack animation must last about 400 ms at 1x, got ${a.d}`);
       await sleep(700);
+      const g = await p.ev('__t.geom()'), bm = birdMap(g);
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
