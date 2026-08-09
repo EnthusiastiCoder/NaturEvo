@@ -356,6 +356,7 @@ try {
       const nd = await p.ev(`__t.diff("idle", ${JSON.stringify([tc[0] - r, tc[1] - r, tc[0] + r, tc[1] + r])})`);
       check(nd >= 2 * bm.ts * bm.ts, `${label}: the hit flash must be clearly visible, >= 2 tiles of changed pixels (${2 * bm.ts * bm.ts}), got ${nd}`);
       const idle = await p.ev('(window.__mapAnimStep(1), ({ pos: __mapAnim.pos.slice(), mpos: __mapAnim.mpos.slice() }))');
+      const mid = await p.ev('(window.__mapAnimStep(0.5), ({ pos: __mapAnim.pos.slice(), mpos: __mapAnim.mpos.slice() }))');
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
