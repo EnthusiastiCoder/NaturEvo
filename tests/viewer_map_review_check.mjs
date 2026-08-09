@@ -354,6 +354,7 @@ try {
       await p.ev('window.__mapAnimStep(0.5)');
       const tgt = who === 'hero' ? e.mon : e.hero, tc = bm.c(tgt.x, tgt.y), r = bm.ts * 2;
       const nd = await p.ev(`__t.diff("idle", ${JSON.stringify([tc[0] - r, tc[1] - r, tc[0] + r, tc[1] + r])})`);
+      check(nd >= 2 * bm.ts * bm.ts, `${label}: the hit flash must be clearly visible, >= 2 tiles of changed pixels (${2 * bm.ts * bm.ts}), got ${nd}`);
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
