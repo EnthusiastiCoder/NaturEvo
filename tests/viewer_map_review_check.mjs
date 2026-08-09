@@ -345,6 +345,7 @@ try {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1 }); await sleep(900);
     for (const [label, e, who] of [['hero attack', pickAtk, 'hero'], ['hit_taken', pickHit, 'npc']]) {
       if (!e) continue;
+      await settle(p, Math.max(0, e.idx - 1));
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
