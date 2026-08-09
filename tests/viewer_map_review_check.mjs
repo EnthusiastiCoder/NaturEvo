@@ -351,6 +351,7 @@ try {
       await sleep(700);
       const g = await p.ev('__t.geom()'), bm = birdMap(g);
       await p.ev('window.__mapAnimStep(1)'); await p.ev('__t.save("idle")');
+      await p.ev('window.__mapAnimStep(0.5)');
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
