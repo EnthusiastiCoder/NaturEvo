@@ -336,6 +336,7 @@ try {
       const v = R(document.getElementById('replay')), c = R(document.getElementById('map')), side = document.querySelector('.side'), sr = R(side);
       const kids = [...side.children].map(R); const used = kids.reduce((a, k) => a + k.h, 0);
       return { v, c, sr, used, last: kids.length ? Math.max(...kids.map(k => k.b)) : 0 }; })()`);
+    check(Math.min(m.c.w, m.c.h) >= 0.9 * Math.min(m.v.w, m.v.h), `${L}: map short side ${m.c.h.toFixed(0)} must fill >= 90% of the replay area short side ${Math.min(m.v.w, m.v.h).toFixed(0)}`);
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
