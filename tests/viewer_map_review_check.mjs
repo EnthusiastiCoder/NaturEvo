@@ -341,6 +341,7 @@ try {
     check(m.used >= 0.85 * m.sr.h && m.last >= m.sr.b - 16, `${L}: the right panel must not be mostly empty: cards use ${m.used.toFixed(0)} of ${m.sr.h.toFixed(0)}, last bottom ${m.last.toFixed(0)} vs ${m.sr.b.toFixed(0)}`);
     await p.close();
   }
+  {
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
