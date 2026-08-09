@@ -359,6 +359,7 @@ try {
       const mid = await p.ev('(window.__mapAnimStep(0.5), ({ pos: __mapAnim.pos.slice(), mpos: __mapAnim.mpos.slice() }))');
       const [a0, a1] = who === 'hero' ? [idle.pos, mid.pos] : [idle.mpos, mid.mpos];
       check(Math.hypot(a1[0] - a0[0], a1[1] - a0[1]) >= 0.3, `${label}: the lunge must move the attacker >= 0.3 tile at mid-animation, got ${Math.hypot(a1[0] - a0[0], a1[1] - a0[1]).toFixed(2)}`);
+    }
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
