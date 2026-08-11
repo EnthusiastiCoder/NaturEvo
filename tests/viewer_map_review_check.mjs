@@ -414,6 +414,7 @@ try {
   {
     // device pixel ratio change without a resize event: backing store follows
     const p = await open(BASE, { w: 1282, h: 722, dpr: 1 }); await sleep(900);
+    await p.S('Emulation.setDeviceMetricsOverride', { width: 1282, height: 722, deviceScaleFactor: 2, mobile: false });
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
