@@ -409,6 +409,7 @@ try {
     check(picks.length >= 3, 'zoom fixture: not enough events away from edges');
     check(bad === 0, `zoom: the hero must stay centred at every event away from map edges, ${bad} of ${picks.length} were off centre`);
     check(holes === 0, `zoom: tiles must cover the whole canvas with no transparent gaps or seams, ${holes} frames had gaps`);
+    await p.close();
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
