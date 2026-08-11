@@ -416,6 +416,7 @@ try {
     const p = await open(BASE, { w: 1282, h: 722, dpr: 1 }); await sleep(900);
     await p.S('Emulation.setDeviceMetricsOverride', { width: 1282, height: 722, deviceScaleFactor: 2, mobile: false });
     await sleep(1500);
+    const m = await p.ev(`(() => { const c = document.getElementById('map'), t = document.getElementById('timeline'), r = c.getBoundingClientRect(); return { bw: c.width, cw: r.width, tw: t.width, tcw: t.getBoundingClientRect().width, dpr: devicePixelRatio }; })()`);
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
