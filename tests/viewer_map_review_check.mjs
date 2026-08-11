@@ -403,6 +403,7 @@ try {
       await settle(p, e.idx);
       const g = await p.ev('__t.geom()'), ts = Math.floor(g.W / 16), accent = await p.ev('__t.tok("--accent")');
       const hb = await p.ev(`__t.near(${JSON.stringify(accent)}, 40, ${JSON.stringify([g.W / 2 - ts * 2, g.H / 2 - ts * 2, g.W / 2 + ts * 2, g.H / 2 + ts * 2])})`);
+      if (!(hb.n > 0 && Math.abs((hb.x0 + hb.x1) / 2 - g.W / 2) <= ts / 2 + 1 && Math.abs((hb.y0 + hb.y1) / 2 - g.H / 2) <= ts / 2 + 1)) bad++;
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
