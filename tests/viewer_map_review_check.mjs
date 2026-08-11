@@ -385,6 +385,7 @@ try {
       let minGap = 1e9; for (let i = 1; i < ys.length; i++) minGap = Math.min(minGap, ys[i] - ys[i - 1]);
       check(minGap >= 1.4 * tk.font, `timeline y labels are cramped: min gap ${minGap.toFixed(1)}px for a ${tk.font}px font`);
     }
+    // end of run: summary stays on one line
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
