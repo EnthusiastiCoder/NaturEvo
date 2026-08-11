@@ -389,6 +389,7 @@ try {
     await p.ev(`window.__jv.goto(${EV.length - 1})`); await sleep(800);
     await p.ev(`window.__jv.goto(+document.getElementById('scrub').max)`); await sleep(1000);
     const sm = await p.ev(`(() => { const R = e => e.getBoundingClientRect(), s = document.getElementById('summary'), o = document.getElementById('outcome'), i = s.querySelector('.info'); return { h: R(s).height, oc: o.textContent, dt: Math.abs(R(i).top - R(o).top), sw: s.scrollWidth, cw: s.clientWidth }; })()`);
+    check(/WON|LOST/.test(sm.oc), 'end of run: outcome must read WON or LOST, got ' + sm.oc);
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
