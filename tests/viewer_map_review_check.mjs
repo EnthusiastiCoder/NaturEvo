@@ -371,6 +371,7 @@ try {
     const t = await p.ev(`(() => Object.fromEntries(['floor', 'grass', 'wall', 'camp'].map(k => [k, __t.tok('--tile-' + k)])))()`);
     const names = Object.keys(t);
     for (let i = 0; i < names.length; i++) for (let j = i + 1; j < names.length; j++) check(dist(t[names[i]], t[names[j]]) >= 28, `${theme}: tiles ${names[i]} and ${names[j]} are nearly the same shade (rgb distance ${dist(t[names[i]], t[names[j]]).toFixed(0)} < 28)`);
+    check(contrast(t.wall, t.floor) >= 1.5, `${theme}: wall vs floor contrast ${contrast(t.wall, t.floor).toFixed(2)} must be >= 1.5`);
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
