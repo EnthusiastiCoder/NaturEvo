@@ -397,6 +397,7 @@ try {
     // zoom: hero centred at several events away from the edges, no transparent gaps
     const p = await open(BASE, { w: 1282, h: 642, dpr: 1 }); await sleep(900);
     await p.ev(`document.getElementById('mapzoom').click()`);
+    const picks = EV.filter(e => away(e) && inB(e.hero.x, 9, MW - 10) && inB(e.hero.y, 9, MW - 10)).filter((e, i) => i % 400 === 0).slice(0, 6);
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
