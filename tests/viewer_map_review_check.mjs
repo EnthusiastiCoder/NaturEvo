@@ -380,6 +380,7 @@ try {
     const p = await open(BASE, { w: 1282, h: 642, dpr: 1 }); await sleep(1000);
     const tk = await p.ev('window.__timelineTicks || null');
     check(tk && tk.y && tk.y.length >= 2 && tk.font > 0, 'window.__timelineTicks = {font, y:[{v,y}]} hook missing');
+    if (tk && tk.y && tk.y.length >= 2) {
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
