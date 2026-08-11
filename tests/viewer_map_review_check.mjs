@@ -400,6 +400,7 @@ try {
     const picks = EV.filter(e => away(e) && inB(e.hero.x, 9, MW - 10) && inB(e.hero.y, 9, MW - 10)).filter((e, i) => i % 400 === 0).slice(0, 6);
     let bad = 0, holes = 0;
     for (const e of picks) {
+      await settle(p, e.idx);
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
