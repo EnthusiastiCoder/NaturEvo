@@ -367,6 +367,7 @@ try {
   }
   for (const theme of ['dark', 'light']) {
     // tiles must be clearly distinguishable from one another (rgb distance), wall clearly lighter or darker than floor
+    const p = await open(BASE, { w: 1282, h: 722, dpr: 1, theme }); await sleep(600);
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
