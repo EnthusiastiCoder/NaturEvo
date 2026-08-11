@@ -392,6 +392,7 @@ try {
     check(/WON|LOST/.test(sm.oc), 'end of run: outcome must read WON or LOST, got ' + sm.oc);
     check(sm.h <= 56 && sm.dt <= 8 && sm.sw <= sm.cw + 1, `end of run: the summary row must stay on one line, height ${sm.h}, info icon offset ${sm.dt}, scroll ${sm.sw}/${sm.cw}`);
     await p.close();
+  }
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
