@@ -374,6 +374,7 @@ try {
     check(contrast(t.wall, t.floor) >= 1.5, `${theme}: wall vs floor contrast ${contrast(t.wall, t.floor).toFixed(2)} must be >= 1.5`);
     check(contrast(t.wall, t.grass) >= 1.5, `${theme}: wall vs grass contrast ${contrast(t.wall, t.grass).toFixed(2)} must be >= 1.5`);
     await p.close();
+  }
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
