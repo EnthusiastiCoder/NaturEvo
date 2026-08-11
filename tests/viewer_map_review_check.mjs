@@ -411,6 +411,7 @@ try {
     check(holes === 0, `zoom: tiles must cover the whole canvas with no transparent gaps or seams, ${holes} frames had gaps`);
     await p.close();
   }
+  {
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
