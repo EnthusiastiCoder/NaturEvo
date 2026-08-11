@@ -382,6 +382,7 @@ try {
     check(tk && tk.y && tk.y.length >= 2 && tk.font > 0, 'window.__timelineTicks = {font, y:[{v,y}]} hook missing');
     if (tk && tk.y && tk.y.length >= 2) {
       const ys = tk.y.map(o => o.y).sort((a, b) => a - b);
+      let minGap = 1e9; for (let i = 1; i < ys.length; i++) minGap = Math.min(minGap, ys[i] - ys[i - 1]);
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
