@@ -401,6 +401,7 @@ try {
     let bad = 0, holes = 0;
     for (const e of picks) {
       await settle(p, e.idx);
+      const g = await p.ev('__t.geom()'), ts = Math.floor(g.W / 16), accent = await p.ev('__t.tok("--accent")');
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
