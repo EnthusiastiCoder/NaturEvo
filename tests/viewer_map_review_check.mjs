@@ -362,6 +362,7 @@ try {
     }
     // speed scales the duration
     await p.ev(`(() => { const n = document.getElementById('speed-num'); n.value = '4'; n.dispatchEvent(new Event('input')); n.dispatchEvent(new Event('change')); })()`);
+    if (pickAtk) { await settle(p, Math.max(0, pickAtk.idx - 1)); const d4 = await p.ev(`(() => { window.__jv.goto(${pickAtk.idx}); return window.__mapAnim.duration; })()`); check(d4 > 0 && d4 <= 140, `at 4x the attack animation must shorten to about a quarter, got ${d4}`); }
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
