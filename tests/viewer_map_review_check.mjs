@@ -376,6 +376,7 @@ try {
     await p.close();
   }
   {
+    // timeline ticks: spacing between y labels >= 1.4 x font size
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
