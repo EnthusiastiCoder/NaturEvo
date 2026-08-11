@@ -407,6 +407,7 @@ try {
       holes += (await p.ev(`(() => { const c = document.getElementById('map'), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i] < 255) n++; return n; })()`)) > 0 ? 1 : 0;
     }
     check(picks.length >= 3, 'zoom fixture: not enough events away from edges');
+    check(bad === 0, `zoom: the hero must stay centred at every event away from map edges, ${bad} of ${picks.length} were off centre`);
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
