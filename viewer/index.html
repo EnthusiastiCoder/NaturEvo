@@ -4,7 +4,7 @@
 <style>
 /* Design tokens. See viewer/STYLE.md. */
 :root{--accent:#2e7d4f;--accent-fg:#ffffff;--accent-text:#4cb27a;--bg:#0b0c0e;--card:#131518;--card-2:#1b1e23;--border:#2a2e34;--fg:#e8eaed;--muted:#9aa1ab;--good:#4ade80;--bad:#f87171;--warn:#fbbf24;--ring:#60a5fa;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--r-sm:4px;--r-md:8px;--fs-xs:12px;--fs-2xs:11px;--fs-sm:13px;--fs-md:14px;--fs-lg:18px;--fs-kpi:28px;--icon:16px;--control-h:32px;--shadow-pop:0 8px 24px rgba(0,0,0,.28)}
-:root[data-theme="dark"]{--bg:#0b0c0e;--card:#131518;--card-2:#1b1e23;--border:#2a2e34;--fg:#e8eaed;--muted:#9aa1ab;--good:#4ade80;--bad:#f87171;--warn:#fbbf24;--ring:#60a5fa;--tile-floor:#141815;--tile-grass:#08180d;--tile-wall:#2c3036;--tile-camp:#3a3320;--biome-0:#b08d57;--biome-1:#5fbf7a;--biome-2:#2f9e6b;--biome-3:#4a90d9;--biome-4:#8a7fc7;--biome-5:#c28a5a;--biome-6:#6b7280;--biome-7:#d9a441;--biome-8:#d96a8a}
+:root[data-theme="dark"]{--bg:#0b0c0e;--card:#131518;--card-2:#1b1e23;--border:#2a2e34;--fg:#e8eaed;--muted:#9aa1ab;--good:#4ade80;--bad:#f87171;--warn:#fbbf24;--ring:#60a5fa;--tile-floor:#241a14;--tile-grass:#08280e;--tile-wall:#606470;--tile-camp:#3a3320;--biome-0:#b08d57;--biome-1:#5fbf7a;--biome-2:#2f9e6b;--biome-3:#4a90d9;--biome-4:#8a7fc7;--biome-5:#c28a5a;--biome-6:#6b7280;--biome-7:#d9a441;--biome-8:#d96a8a}
 :root[data-theme="light"]{--bg:#f6f7f8;--card:#ffffff;--card-2:#eef0f2;--border:#d9dde2;--fg:#16181b;--muted:#5b626b;--good:#15803d;--bad:#b91c1c;--warn:#b45309;--ring:#2563eb;--tile-floor:#e8ebe0;--tile-grass:#c9e3b8;--tile-wall:#8a929c;--tile-camp:#f0e2b8;--biome-0:#a07a3c;--biome-1:#3aa55c;--biome-2:#1f8a57;--biome-3:#2f73c0;--biome-4:#6f62b8;--biome-5:#b0733f;--biome-6:#58606c;--biome-7:#c48a1f;--biome-8:#c24d70}
 *{box-sizing:border-box}
 ::-webkit-scrollbar{width:var(--s2);height:var(--s2)}
@@ -161,10 +161,13 @@ input[type=checkbox]{accent-color:var(--accent-text)}
 #log div.cur{background:var(--card-2);box-shadow:inset 2px 0 var(--accent-text)}
 
 /* replay */
-.summary{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s5)}
-.sitem{display:inline-flex;align-items:center;gap:var(--s2);font-size:var(--fs-sm);min-width:0}
+.summary{display:flex;flex-wrap:nowrap;align-items:center;gap:var(--s2) var(--s3)}
+.summary>*{flex:none}
+.summary .sitem:has(#sum-zone){flex:0 1 auto;min-width:0}
+#sum-zone{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.sitem{display:inline-flex;align-items:center;gap:var(--s1);font-size:var(--fs-sm);min-width:0;white-space:nowrap}
 .sitem .icon{color:var(--muted)}
-.sitem .bar{width:80px}
+.sitem .bar{width:48px}
 .sval{font-weight:600}
 .playback{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s3)}
 .playback .range{flex:1 1 200px;width:auto}
@@ -197,7 +200,8 @@ input[type=checkbox]{accent-color:var(--accent-text)}
 .side>.card{flex:none;padding:var(--s2) var(--s3)}
 .map-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s2)}
 .map-head .card-title{margin:0}
-.maplegend{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s4);font-size:var(--fs-xs);color:var(--muted)}
+.map-head .maplegend{flex:1;justify-content:center}
+.maplegend{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s3);font-size:var(--fs-xs);color:var(--muted)}
 .lg{display:inline-flex;align-items:center;gap:var(--s2)}
 .sw{display:inline-block;width:var(--s3);height:var(--s3);flex:none;border:1px solid var(--border)}
 .sw-hero{border-radius:50%;background:var(--accent);border:2px solid var(--fg)}
@@ -206,10 +210,10 @@ input[type=checkbox]{accent-color:var(--accent-text)}
 .sw-grass{background:var(--tile-grass)}.sw-wall{background:var(--tile-wall)}.sw-camp{background:var(--tile-camp)}
 .map-tip{position:absolute;z-index:5;pointer-events:none;width:max-content;max-width:90%;padding:var(--s1) var(--s2);border-radius:var(--r-sm);background:var(--fg);color:var(--bg);font-size:var(--fs-xs);line-height:1.4;box-shadow:var(--shadow-pop)}
 .map-empty{position:absolute;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:var(--fs-sm);pointer-events:none}
-#timeline-card{flex:none;min-height:0;display:flex;align-items:stretch;gap:var(--s3);padding:var(--s2) var(--s3)}
-#timeline-wrap{flex:1;min-width:0;height:64px;position:relative}
+#timeline-card{flex:1 1 auto;min-height:0;display:flex;align-items:stretch;gap:var(--s3);padding:var(--s2) var(--s3)}
+#timeline-wrap{flex:1;min-width:0;min-height:60px;position:relative}
 #timeline{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
-.tl-side{flex:none;width:190px;display:flex;flex-direction:column;justify-content:center;gap:var(--s2)}
+.tl-side{flex:none;width:150px;display:flex;flex-direction:column;justify-content:center;gap:var(--s2)}
 .tl-side .card-title{margin:0}
 @media(max-width:900px){.toolbar{padding:var(--s2)}.main{padding:var(--s2)}}
 @media(max-width:700px){#battle{grid-template-columns:1fr 1fr}.center{grid-column:1/3;order:-1}}
@@ -280,6 +284,9 @@ input[type=checkbox]{accent-color:var(--accent-text)}
 </header>
 <main class="main">
 <div id="replay" class="view">
+ <div class="stage">
+ <div id="map-card" class="card"><div id="mapwrap"><canvas id="map"></canvas><div id="maptip" class="map-tip hidden" role="tooltip"></div><div id="mapempty" class="map-empty">No map data</div></div></div>
+ <div class="side">
  <div class="card playback">
   <span class="tipwrap"><button type="button" id="play" class="btn-icon" aria-label="Play" aria-describedby="tip-play"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></button><span role="tooltip" id="tip-play" class="tip">Play or pause the replay.</span></span>
   <span class="field"><label class="label" for="speed">Speed</label><input id="speed" class="range" type="range" min="0" max="1000" step="1" value="143" aria-label="Playback speed (logarithmic)"><input id="speed-num" class="input" type="number" step="any" min="0.25" max="4096" value="1" aria-label="Playback speed multiplier"><span class="tipwrap"><button type="button" id="speed-info" class="btn-icon info" aria-label="About speed" aria-describedby="tip-speed"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-speed" class="tip">Speed is an events per second multiplier on a base of 10 events per second. Range 0.25 to 4096. Type any value or drag the logarithmic slider.</span></span></span>
@@ -287,9 +294,6 @@ input[type=checkbox]{accent-color:var(--accent-text)}
   <span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About scrub bar" aria-describedby="tip-scrub"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-scrub" class="tip">Drag to jump to any event of the run.</span></span>
   <input id="scrub" class="range" type="range" min="0" max="0" value="0" aria-label="Scrub through events">
  </div>
- <div class="stage">
- <div id="map-card" class="card"><div id="mapwrap"><canvas id="map"></canvas><div id="maptip" class="map-tip hidden" role="tooltip"></div><div id="mapempty" class="map-empty">No map data</div></div></div>
- <div class="side">
  <div id="summary" class="card summary">
   <span id="outcome" class="badge">No run</span>
   <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-trophy"/></svg>Level <span id="sum-level" class="sval"></span></span>
@@ -300,16 +304,15 @@ input[type=checkbox]{accent-color:var(--accent-text)}
   <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-flask-round"/></svg>Potions <span id="sum-potions" class="sval"></span></span>
   <span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About run summary" aria-describedby="tip-summary"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-summary" class="tip">State of the hero at the current event. Outcome is only final at the last event.</span></span>
  </div>
- <div class="card map-head"><span class="card-title">Map<span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About map" aria-describedby="tip-map"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-map" class="tip">Bird's-eye map of the run. Hover a tile for details. Zoom (or double-click) follows the hero in a 16 by 16 tile window.</span></span></span><button type="button" id="mapzoom" class="btn btn-outline" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-zoom-in"/></svg>Zoom</button></div>
- <div id="maplegend" class="card maplegend" aria-label="Map legend"><span class="lg"><span class="sw sw-hero"></span>Hero</span><span class="lg"><span class="sw sw-elite"></span>Elite</span><span class="lg"><span class="sw sw-boss"></span>Boss</span><span class="lg"><span class="sw sw-grass"></span>Grass</span><span class="lg"><span class="sw sw-wall"></span>Wall</span><span class="lg"><span class="sw sw-camp"></span>Camp</span></div>
+ <div class="card map-head"><span class="card-title">Map<span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About map" aria-describedby="tip-map"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-map" class="tip">Bird's-eye map of the run. Hover a tile for details. Zoom (or double-click) follows the hero in a 16 by 16 tile window.</span></span></span><div id="maplegend" class="maplegend" aria-label="Map legend"><span class="lg"><span class="sw sw-hero"></span>Hero</span><span class="lg"><span class="sw sw-elite"></span>Elite</span><span class="lg"><span class="sw sw-boss"></span>Boss</span><span class="lg"><span class="sw sw-grass"></span>Grass</span><span class="lg"><span class="sw sw-wall"></span>Wall</span><span class="lg"><span class="sw sw-camp"></span>Camp</span></div><button type="button" id="mapzoom" class="btn btn-outline" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-zoom-in"/></svg>Zoom</button></div>
  <div id="battle" class="card"><div class="fighter"><div class="emo" id="hemo"></div><div class="fname">Hero</div><div class="bar"><div id="hbar"></div></div><div class="fhp" id="hhp"></div></div>
  <div class="center"><div id="zone"></div><div id="last"></div></div>
  <div class="fighter mon"><div class="emo" id="memo"></div><div class="fname"><span id="mname"></span> <span id="stage" class="badge hidden"></span></div><div class="bar"><div id="mbar"></div></div><div class="fhp" id="mhp"></div></div>
  <div id="hero-details" aria-label="Hero details"></div></div>
- </div>
- </div>
  <div id="timeline-card" class="card"><div id="timeline-wrap"><canvas id="timeline"></canvas></div>
   <div class="tl-side"><div class="card-title">Hero level over the run<span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About timeline" aria-describedby="tip-timeline"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-timeline" class="tip">Hero level at each event. The vertical line marks the current event.</span></span></div><button type="button" id="log-open" class="btn btn-outline"><svg class="icon" aria-hidden="true"><use href="#i-list"/></svg>Event log</button></div></div>
+ </div>
+ </div>
 </div>
 <div id="dashboard" class="view hidden">
  <div id="dstats"></div>
@@ -505,8 +508,11 @@ function timeline(){
  var yt=niceTicks(mx),ytop=yt[yt.length-1],xmax=Math.max(1,T0-1),xtop=xmax,xt=niceTicks(xmax).filter(function(v){return v<=xmax;});
  var L=32,R=8,T=6,B=18,pw=W-L-R,ph=H-T-B;if(pw<20||ph<20)return;
  if(xt[xt.length-1]<xmax){if(xt.length&&(xmax-xt[xt.length-1])/xmax*pw<44)xt.pop();xt.push(xmax);}
- g.font=tok("--fs-2xs")+" system-ui,sans-serif";g.lineWidth=1;
- yt.forEach(function(v){var y=T+ph*(1-v/ytop);g.strokeStyle=tok("--border");g.beginPath();g.moveTo(L,y);g.lineTo(W-R,y);g.stroke();
+ var fpx=parseFloat(tok("--fs-2xs"))||11,maxT=Math.max(2,Math.floor(ph/(1.6*fpx))+1),kk=Math.max(1,Math.ceil((yt.length-1)/(maxT-1))),ytl=[];
+ yt.forEach(function(v,i){if(i%kk===0)ytl.push(v);});
+ window.__timelineTicks={font:fpx,y:ytl.map(function(v){return{v:v,y:T+ph*(1-v/ytop)};})};
+ g.font=fpx+"px system-ui,sans-serif";g.lineWidth=1;
+ ytl.forEach(function(v){var y=T+ph*(1-v/ytop);g.strokeStyle=tok("--border");g.beginPath();g.moveTo(L,y);g.lineTo(W-R,y);g.stroke();
   g.fillStyle=tok("--muted");g.textAlign="right";g.textBaseline="middle";g.fillText(String(v),L-4,y);});
  g.textBaseline="alphabetic";
  xt.forEach(function(v,k){var x=L+pw*v/xtop;g.fillStyle=tok("--muted");
@@ -521,6 +527,7 @@ if(window.ResizeObserver){try{new ResizeObserver(function(){timeline();}).observ
 function watchDpr(){try{var q=window.matchMedia("(resolution: "+(window.devicePixelRatio||1)+"dppx)");
  var f=function(){timeline();refit();if(window.drawMapNow)window.drawMapNow();watchDpr();};if(q.addEventListener)q.addEventListener("change",f,{once:true});else if(q.addListener)q.addListener(f);}catch(e){}}
 watchDpr();
+(function(){var last=window.devicePixelRatio||1;setInterval(function(){var d=window.devicePixelRatio||1;if(d!==last){last=d;timeline();refit();if(window.drawMapNow)window.drawMapNow();}},400);})();
 window.addEventListener("jv-themechange",function(){timeline();if(!$("dashboard").classList.contains("hidden"))dash();});
 var SMIN=0.25,SMAX=4096,speedVal=1,lastTick=0,acc=0;
 function sPos(v){return Math.round(Math.log(v/SMIN)/Math.log(SMAX/SMIN)*1000);}
@@ -619,7 +626,7 @@ function logCur(force){
 /* ---- map canvas: tiles, markers, hover, zoom, replay and the shared attack animation (see viewer/STYLE.md) ---- */
 var mapData=window.MAP||(run&&run.map)||null,mapKey=mapData&&run?seedStr()+":"+(run.w||0):"",mapSize=run&&run.w?run.w:0,mapZoom=sget("jv-mapzoom")==="1",lay=null,lastCur=-1,lastEv=null,rafId=0,viewHero=null;
 var MAP_KIND={".":["Floor","--tile-floor"],",":["Grass","--tile-grass"],"#":["Wall","--tile-wall"],"C":["Camp","--tile-camp"]};
-var ATK_KINDS={attack:1,skill:1,potion:1,hit_taken:1},ATTACK_MS=250,MIN_MS=40,LUNGE=0.4,SEP=0.35;
+var ATK_KINDS={attack:1,skill:1,potion:1,hit_taken:1},ATTACK_MS=400,MIN_MS=40,LUNGE=0.5,SEP=1;
 var anim=window.__mapAnim={active:false,kind:"",from:null,to:null,t:0,duration:0,pos:null,mpos:null};
 var animPath=null,animT0=0,animAtk="";
 function nowMs(){try{if(window.performance&&window.performance.now)return window.performance.now();}catch(e){}return Date.now();}
@@ -659,7 +666,7 @@ function mapSync(){
  if(!same)startAnim(ev[cur-base]);
  drawMap();
 }
-function monDraw(h,m){return[m.x+(m.x===h.x&&m.y===h.y?SEP:0),m.y];}
+function monDraw(h,m){var same=m.x===h.x&&m.y===h.y,w=(mapData&&mapData.w)||64;return[m.x+(same?(m.x<w-2?SEP:-SEP):0),m.y];}
 /* hero and monster marker positions in tile units for the current frame */
 function viewPos(e){
  var h=e.hero,m=e.mon&&hasXY(e.mon)?e.mon:null,hp=[h.x,h.y],mp=m?monDraw(h,m):null;
@@ -689,11 +696,11 @@ function drawMap(){
  showEmpty("");
  var w=mapData.w,h=mapData.h,tiles=mapData.tiles,zones=mapData.zones||[],tsd,ox,oy,x0=0,y0=0,x1=w-1,y1=h-1,hp=viewHero.hp;
  if(mapZoom){
-  var N=16,vx=Math.max(0,Math.min(w-N,hp[0]+0.5-N/2)),vy=Math.max(0,Math.min(h-N,hp[1]+0.5-N/2)),cx0,cy0;
-  tsd=Math.max(2,Math.floor(Math.min(Wd,Hd)/N));cx0=Math.round((Wd-N*tsd)/2);cy0=Math.round((Hd-N*tsd)/2);
-  ox=Math.round(cx0-vx*tsd);oy=Math.round(cy0-vy*tsd);
-  x0=Math.max(0,Math.floor(vx));x1=Math.min(w-1,Math.ceil(vx+N));y0=Math.max(0,Math.floor(vy));y1=Math.min(h-1,Math.ceil(vy+N));
-  g.save();g.beginPath();g.rect(cx0,cy0,N*tsd,N*tsd);g.clip();
+  tsd=Math.max(2,Math.floor(Math.min(Wd,Hd)/16));
+  var sx=Wd/tsd,sy=Hd/tsd,vx=sx>=w?(w-sx)/2:Math.max(0,Math.min(w-sx,hp[0]+0.5-sx/2)),vy=sy>=h?(h-sy)/2:Math.max(0,Math.min(h-sy,hp[1]+0.5-sy/2));
+  ox=Math.round(-vx*tsd);oy=Math.round(-vy*tsd);
+  x0=Math.max(0,Math.floor(-ox/tsd));x1=Math.min(w-1,Math.ceil((Wd-ox)/tsd));y0=Math.max(0,Math.floor(-oy/tsd));y1=Math.min(h-1,Math.ceil((Hd-oy)/tsd));
+  g.fillStyle=tok("--bg");g.fillRect(0,0,Wd,Hd);
  }else{
   tsd=Math.max(1,Math.floor(Math.min(Wd/w,Hd/h)));ox=Math.floor((Wd-tsd*w)/2);oy=Math.floor((Hd-tsd*h)/2);
  }
@@ -732,8 +739,7 @@ function drawMap(){
  if(anim.active&&anim.kind==="strike"){var tg=animAtk==="hero"?viewHero.mp:hp,c=ctr(tg[0],tg[1]),rr=Math.max(rH,rM)*1.3;
   g.globalAlpha=0.7*(1-anim.t);g.fillStyle=cWarn;g.beginPath();g.arc(c[0],c[1],rr,0,Math.PI*2);g.fill();
   g.globalAlpha=1-anim.t;g.strokeStyle=cWarn;g.lineWidth=lw*1.5;g.beginPath();g.arc(c[0],c[1],rr*(1+anim.t),0,Math.PI*2);g.stroke();g.globalAlpha=1;}
- if(mapZoom)g.restore();
-}
+ }
 window.__mapAnimStep=function(t){
  var e=inWin(cur)?ev[cur-base]:null;if(!e||!hasXY(e.hero)||!ATK_KINDS[e.kind]||!e.mon||!hasXY(e.mon))return false;
  animAtk=e.kind==="hit_taken"?"npc":"hero";anim.kind="strike";anim.from=[e.hero.x,e.hero.y];anim.to=[e.mon.x,e.mon.y];
