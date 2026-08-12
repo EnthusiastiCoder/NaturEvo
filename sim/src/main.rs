@@ -23,7 +23,11 @@ fn main() {
             let seed: u64 = arg(&args, "--seed").and_then(|v| v.parse().ok()).unwrap_or(1);
             let out = arg(&args, "--out").unwrap_or_else(|| "viewer/data/run.js".into());
             let r = simulate(seed);
-            let mut body = jungle_sim::report::run_body(&r);
+            let count: Option<usize> = arg(&args, "--count").and_then(|v| v.parse().ok());
+            let mut body = match count {
+                Some(c) => jungle_sim::report::run_window_body(&r, 0, c),
+                None => jungle_sim::report::run_body(&r),
+            };
             body.pop();
             let mp = jungle_sim::map::Map::generate(r.seed, r.map_size as usize);
             write(&out, &format!("window.RUN = {},\"map\":{}}};
