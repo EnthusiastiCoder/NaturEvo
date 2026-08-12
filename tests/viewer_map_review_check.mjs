@@ -418,6 +418,7 @@ try {
     await sleep(1500);
     const m = await p.ev(`(() => { const c = document.getElementById('map'), t = document.getElementById('timeline'), r = c.getBoundingClientRect(); return { bw: c.width, cw: r.width, tw: t.width, tcw: t.getBoundingClientRect().width, dpr: devicePixelRatio }; })()`);
     check(m.dpr === 2 && Math.abs(m.bw - m.cw * 2) <= 1 && Math.abs(m.tw - m.tcw * 2) <= 1, `dpr change: canvases must re-fit, map backing ${m.bw} vs css ${m.cw} x2, timeline ${m.tw} vs ${m.tcw} x2`);
+    await p.close();
   // ============ 7. theme via the real toggle ============
   {
     const p = await open(BASE, { w: 1540, h: 890, dpr: 1, theme: 'dark' }); await sleep(900);
