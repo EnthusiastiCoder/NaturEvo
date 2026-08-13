@@ -15,3 +15,27 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 type P = (usize, usize);
+
+fn dist(a: P, b: P) -> usize {
+    a.0.abs_diff(b.0) + a.1.abs_diff(b.1)
+}
+fn kind(e: &J) -> &str {
+    e.get("kind").unwrap().str()
+}
+fn hero_xy(e: &J) -> P {
+    let h = e.get("hero").unwrap();
+    (h.u("x"), h.u("y"))
+}
+fn events(j: &J) -> &[J] {
+    j.get("events").unwrap().arr()
+}
+fn cfg(k: &[(&str, &str)]) -> Config {
+    let mut c = Config::default();
+    for (a, b) in k {
+        c.set(a, b).unwrap();
+    }
+    c
+}
+fn steps_of(e: &J) -> Vec<P> {
+    e.get("steps").expect("walk event needs steps").arr().iter().map(|p| p.xy()).collect()
+}
