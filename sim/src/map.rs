@@ -207,6 +207,17 @@ impl Map {
                 m.tiles[i] = kind_of(m.zones[i] as usize, kind_noise[i]);
             }
         }
+        // grass on open tiles (never in camp or grove)
+        let elig_grass: Vec<bool> = (0..n * n)
+            .map(|i| !m.tiles[i].is_blocking() && m.zones[i] != 0 && m.zones[i] != 8 && !m.near(i % n, i / n))
+            .collect();
+        let grass = top_share(&grass_noise, &elig_grass, GRASS_SHARE, Some(&m.zones), 45);
+        for i in 0..n * n {
+            if grass[i] {
+                m.tiles[i] = Tile::Grass;
+            }
+        }
+        m.tiles[camp.1 * n + camp.0] = Tile::Camp;
         m
     }
 
