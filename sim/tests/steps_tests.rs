@@ -134,3 +134,16 @@ fn same_seed_gives_byte_identical_json_with_steps() {
     assert!(a.contains("\"nsteps\":["), "no nsteps in body");
     assert_eq!(a, run_body(&simulate_with(3, &c)));
 }
+
+#[test]
+fn event_cap_counts_walk_events_not_steps() {
+    let c = cfg(&[("event_cap", "300")]);
+    let r = simulate_with(1, &c);
+    assert_eq!(r.events.len(), 300);
+    assert!(r.capped);
+    let j = parse(&run_body(&r)).unwrap();
+    let ev = events(&j);
+    assert!(ev.len() <= 300);
+    let total_steps: usize = ev.iter().filter(|e| kind(e) == "walk").map(|e| steps_of(e).len()).sum();
+    assert!(total_steps > ev.iter().filter(|e| kind(e) == "walk").count(), "steps must outnumber walk events");
+}
