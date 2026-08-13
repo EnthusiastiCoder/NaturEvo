@@ -323,7 +323,7 @@ impl Map {
             }
             for nb in self.nbrs(p) {
                 let j = nb.1 * n + nb.0;
-                if self.tiles[j] == Tile::Wall || closed[j] {
+                if self.tiles[j].is_blocking() || closed[j] {
                     continue;
                 }
                 let ng = g[i] + 1;
