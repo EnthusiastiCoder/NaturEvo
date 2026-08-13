@@ -147,3 +147,23 @@ fn event_cap_counts_walk_events_not_steps() {
     let total_steps: usize = ev.iter().filter(|e| kind(e) == "walk").map(|e| steps_of(e).len()).sum();
     assert!(total_steps > ev.iter().filter(|e| kind(e) == "walk").count(), "steps must outnumber walk events");
 }
+
+#[test]
+fn window_of_5000_is_valid_and_within_the_byte_budget() {
+    let r = simulate_with(1, &Config::default());
+    let b = run_window_body(&r, 0, 5000);
+    assert!(b.len() <= 2 * 1024 * 1024, "window body {} bytes", b.len());
+    let j = parse(&b).expect("valid JSON");
+    assert_eq!(j.u("from"), 0);
+    assert_eq!(j.u("total"), r.events.len());
+    let n = events(&j).len();
+    assert!((1..=5000).contains(&n), "events in window {}", n);
+    assert_eq!(events(&j)[0].u("idx"), 0);
+    let root = PathBuf::from(concat!(env!("CARGO_MANIFEST_DIR"), "/../viewer"));
+    let resp = route(&root, "GET", "/api/run?seed=1&from=0&count=5000", Some("127.0.0.1:8080"));
+    assert_eq!(resp.status, 200);
+    assert!(resp.body.len() <= 2 * 1024 * 1024, "route body {} bytes", resp.body.len());
+    let jr = parse(&String::from_utf8(resp.body).unwrap()).expect("valid JSON");
+    assert!(!events(&jr).is_empty() && events(&jr).len() <= 5000);
+    assert!(jr.get("from").is_some() && jr.get("total").is_some());
+}
