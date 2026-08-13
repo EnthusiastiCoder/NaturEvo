@@ -241,7 +241,7 @@ impl Map {
         q.push_back(c);
         while let Some(p) = q.pop_front() {
             for nb in self.nbrs(p) {
-                if self.tiles[nb.1 * n + nb.0] != Tile::Wall && !seen[nb.1 * n + nb.0] {
+                if !self.tiles[nb.1 * n + nb.0].is_blocking() && !seen[nb.1 * n + nb.0] {
                     seen[nb.1 * n + nb.0] = true;
                     q.push_back(nb);
                 }
