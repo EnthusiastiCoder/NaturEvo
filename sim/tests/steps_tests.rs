@@ -39,3 +39,36 @@ fn cfg(k: &[(&str, &str)]) -> Config {
 fn steps_of(e: &J) -> Vec<P> {
     e.get("steps").expect("walk event needs steps").arr().iter().map(|p| p.xy()).collect()
 }
+
+#[test]
+fn step_lists_are_unit_moves_on_open_tiles_ending_at_the_hero() {
+    for seed in [1u64, 2] {
+        let c = cfg(&[("event_cap", "8000")]);
+        let m = Map::generate(seed, c.map_size as usize);
+        let j = parse(&run_body(&simulate_with(seed, &c))).unwrap();
+        let ev = events(&j);
+        let mut walks = 0;
+        for (i, e) in ev.iter().enumerate() {
+            if kind(e) != "walk" {
+                assert!(e.get("steps").is_none() && e.get("nsteps").is_none(), "{} event {} carries steps", kind(e), i);
+                continue;
+            }
+            walks += 1;
+            let st = steps_of(e);
+            assert!(!st.is_empty() && st.len() <= 256, "seed {} event {} has {} steps", seed, i, st.len());
+            assert_eq!(*st.last().unwrap(), hero_xy(e), "event {}: last step must equal hero tile", i);
+            if i > 0 && kind(&ev[i - 1]) != "travel" {
+                assert_eq!(dist(st[0], hero_xy(&ev[i - 1])), 1, "event {}: first step not adjacent to previous hero tile", i);
+            }
+            for w in st.windows(2) {
+                assert_eq!(dist(w[0], w[1]), 1, "event {}: steps {:?}->{:?} not one tile in one axis", i, w[0], w[1]);
+            }
+            for t in &st {
+                assert!(m.passable(t.0, t.1), "event {}: step on blocking tile {:?}", i, t);
+            }
+            // path waypoints stay for compatibility
+            assert!(e.get("path").is_some(), "event {}: path must remain", i);
+        }
+        assert!(walks > 20, "walks {}", walks);
+    }
+}
