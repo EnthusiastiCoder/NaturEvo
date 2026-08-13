@@ -34,6 +34,30 @@ const OBSTACLE_SHARE: f64 = 0.095;
 const CAMP_RING: usize = 2;
 const GROVE_RING: usize = 4;
 
+/// Obstacle kinds allowed per zone (first kind is the default for pocket fills).
+const PALETTE: [&[Tile]; 9] = [
+    &[Tile::Fence],
+    &[Tile::Tree, Tile::Rock],
+    &[Tile::Tree, Tile::Rock],
+    &[Tile::Water, Tile::Rock],
+    &[Tile::Water, Tile::Tree],
+    &[Tile::Wall, Tile::Rock],
+    &[Tile::Rock, Tile::Wall],
+    &[Tile::Wall, Tile::Fence],
+    &[Tile::Fence, Tile::Tree],
+];
+/// Kind-noise below this picks the first palette kind.
+const FIRST_KIND: [f32; 9] = [1.0, 0.56, 0.56, 0.5, 0.5, 0.5, 0.56, 0.5, 0.4];
+
+fn kind_of(zone: usize, v: f32) -> Tile {
+    let pal = PALETTE[zone];
+    if pal.len() == 1 || v < FIRST_KIND[zone] {
+        pal[0]
+    } else {
+        pal[1]
+    }
+}
+
 /// Smooth value noise: a coarse random lattice, smoothstep-interpolated.
 fn noise_field(rng: &mut Rng, n: usize, cell: usize) -> Vec<f32> {
     let g = n / cell + 2;
