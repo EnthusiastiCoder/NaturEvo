@@ -203,8 +203,8 @@ impl Map {
         }
         let seen = m.flood();
         for i in 0..n * n {
-            if !seen[i] {
-                m.tiles[i] = Tile::Wall;
+            if !seen[i] && !m.tiles[i].is_blocking() {
+                m.tiles[i] = kind_of(m.zones[i] as usize, kind_noise[i]);
             }
         }
         m
