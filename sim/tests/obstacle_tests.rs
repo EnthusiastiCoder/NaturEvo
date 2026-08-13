@@ -121,3 +121,42 @@ fn obstacle_share_is_6_to_18_percent() {
         }
     }
 }
+
+#[test]
+fn connectivity_and_placement_rules_hold_over_50_seeds() {
+    for seed in 1u64..=50 {
+        let m = Map::generate(seed, 64);
+        let seen = flood(&m);
+        let boss = m.anchors()[8];
+        let c = m.camp();
+        assert_eq!(m.tile(c.0, c.1), Tile::Camp);
+        assert!(!m.tile(boss.0, boss.1).is_blocking(), "seed {} boss tile blocked", seed);
+        assert!(seen.contains(&boss), "seed {} boss unreachable", seed);
+        let mut grass = [0usize; 9];
+        for (x, y) in all(&m) {
+            let t = m.tile(x, y);
+            assert_eq!(m.passable(x, y), !t.is_blocking(), "seed {} passable vs tile at {:?}", seed, (x, y));
+            if t.is_blocking() {
+                continue;
+            }
+            assert!(seen.contains(&(x, y)), "seed {} open tile {:?} unreachable from camp", seed, (x, y));
+            if t == Tile::Grass {
+                grass[m.zone_of(x, y)] += 1;
+            }
+        }
+        for z in 1..=7 {
+            assert!(grass[z] >= 20, "seed {} zone {} has {} grass", seed, z, grass[z]);
+        }
+        for (z, a) in m.anchors().iter().enumerate() {
+            assert!(!m.tile(a.0, a.1).is_blocking(), "seed {} anchor {} blocked", seed, z);
+            if z >= 1 {
+                assert!(m.path(c, *a).is_some(), "seed {} no A* path camp -> zone {} anchor", seed, z);
+            }
+        }
+        assert!(m.path(c, boss).is_some(), "seed {} no A* path to boss", seed);
+        // gates: the camp zone is a fence ring that still lets the hero out
+        let ring = all(&m).iter().filter(|p| m.zone_of(p.0, p.1) == 0 && m.tile(p.0, p.1) == Tile::Fence).count();
+        assert!(ring >= 4, "seed {} camp zone has {} fence tiles, expected a ring", seed, ring);
+        assert!(m.path(c, m.anchors()[1]).is_some(), "seed {} camp ring has no gate", seed);
+    }
+}
