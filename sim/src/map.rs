@@ -144,7 +144,7 @@ impl Map {
 
         // obstacles (never near an anchor), kind by biome palette
         let near_anchor = |x: usize, y: usize| anchors.iter().any(|&a| a.0.abs_diff(x) <= 2 && a.1.abs_diff(y) <= 2);
-        let wall_noise = noise_field(&mut rng, n, 4);
+        let obst_noise = noise_field(&mut rng, n, 4);
         let grass_noise = noise_field(&mut rng, n, 5);
         let elig_wall: Vec<bool> = (0..n * n).map(|i| !near_anchor(i % n, i / n)).collect();
         let walls = top_share(&wall_noise, &elig_wall, WALL_SHARE, None, 0);
