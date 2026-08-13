@@ -233,3 +233,27 @@ fn encounters_still_fire_at_the_configured_rate() {
     let per = steps / enc;
     assert!(per >= 0.5 / rate && per <= 2.0 / rate, "steps per encounter {} not within a factor 2 of {}", per, 1.0 / rate);
 }
+
+#[test]
+fn api_map_legend_has_8_entries_and_tiles_use_only_legend_chars() {
+    let root = PathBuf::from(concat!(env!("CARGO_MANIFEST_DIR"), "/../viewer"));
+    let r = route(&root, "GET", "/api/map?seed=4&map_size=48", Some("127.0.0.1:8080"));
+    assert_eq!(r.status, 200);
+    let j = parse(&String::from_utf8(r.body).unwrap()).unwrap();
+    let legend = j.get("legend").expect("legend field").arr();
+    assert_eq!(legend.len(), 8);
+    let want = [('#', "Wall", true), ('R', "Rock", true), ('F', "Fence", true), ('T', "Tree", true), ('W', "Water", true), ('.', "Floor", false), (',', "Grass", false), ('C', "Camp", false)];
+    let mut chars = String::new();
+    for (e, (ch, name, blocking)) in legend.iter().zip(want) {
+        assert_eq!(e.get("ch").unwrap().str(), ch.to_string());
+        assert_eq!(e.get("name").unwrap().str(), name);
+        assert_eq!(e.get("blocking"), Some(&common::J::Bool(blocking)), "blocking flag of {}", name);
+        chars.push(ch);
+    }
+    for row in j.get("tiles").unwrap().arr() {
+        assert!(row.str().chars().all(|c| chars.contains(c)), "tile char outside the legend in {}", row.str());
+    }
+    for k in ["w", "h", "tiles", "zones", "anchors"] {
+        assert!(j.get(k).is_some(), "old field {} missing", k);
+    }
+}
