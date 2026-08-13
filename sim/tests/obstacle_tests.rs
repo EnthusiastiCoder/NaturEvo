@@ -16,3 +16,5 @@ use jungle_sim::server::route;
 use jungle_sim::sim::simulate_with;
 use std::collections::{HashSet, VecDeque};
 use std::path::PathBuf;
+
+type P = (usize, usize);
