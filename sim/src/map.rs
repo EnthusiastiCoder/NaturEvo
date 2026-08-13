@@ -278,7 +278,7 @@ impl Map {
         self.zones[y * self.n + x] as usize
     }
     pub fn passable(&self, x: usize, y: usize) -> bool {
-        x < self.n && y < self.n && self.tiles[y * self.n + x] != Tile::Wall
+        x < self.n && y < self.n && !self.tiles[y * self.n + x].is_blocking()
     }
     pub fn camp(&self) -> (usize, usize) {
         self.anchors[0]
