@@ -218,3 +218,18 @@ fn no_entity_stands_on_a_blocking_tile_in_5_runs() {
         assert!(seen > 500);
     }
 }
+
+#[test]
+fn encounters_still_fire_at_the_configured_rate() {
+    let rate = 0.2f64;
+    let (mut steps, mut enc) = (0f64, 0f64);
+    for seed in 1u64..=10 {
+        let c = cfg(&[("encounter_rate", "0.2"), ("event_cap", "4000"), ("elites_per_zone", "0")]);
+        let r = simulate_with(seed, &c);
+        steps += r.steps as f64;
+        enc += r.events.iter().filter(|e| e.kind == "encounter").count() as f64;
+    }
+    assert!(enc > 50.0, "encounters {}", enc);
+    let per = steps / enc;
+    assert!(per >= 0.5 / rate && per <= 2.0 / rate, "steps per encounter {} not within a factor 2 of {}", per, 1.0 / rate);
+}
