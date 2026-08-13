@@ -178,7 +178,7 @@ impl Map {
         tiles[camp.1 * n + camp.0] = Tile::Camp;
 
         let mut m = Map { n, tiles, zones, anchors };
-        // reachability: carve an L corridor to any cut-off anchor, then wall off unreachable floor
+        // reachability: carve an L corridor to any cut-off anchor, then fill unreachable open pockets
         for _ in 0..16 {
             let seen = m.flood();
             let Some(z) = (1..9).find(|&z| {
