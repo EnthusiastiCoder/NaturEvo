@@ -109,3 +109,15 @@ fn all_five_kinds_appear_each_only_in_allowed_zones() {
         assert!(seen.contains(&format!("{:?}", k)), "{:?} never appeared in 20 seeds", k);
     }
 }
+
+#[test]
+fn obstacle_share_is_6_to_18_percent() {
+    for size in [32usize, 64, 128] {
+        for seed in [1u64, 2, 3, 7] {
+            let m = Map::generate(seed, size);
+            let b = all(&m).iter().filter(|p| m.tile(p.0, p.1).is_blocking()).count();
+            let share = b as f64 / (size * size - 1) as f64;
+            assert!((0.06..=0.18).contains(&share), "size {} seed {} share {}", size, seed, share);
+        }
+    }
+}
