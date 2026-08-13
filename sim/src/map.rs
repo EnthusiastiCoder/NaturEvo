@@ -9,6 +9,10 @@ pub enum Tile {
     Grass,
     Wall,
     Camp,
+    Rock,
+    Fence,
+    Tree,
+    Water,
 }
 
 pub struct Map {
