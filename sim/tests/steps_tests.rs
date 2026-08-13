@@ -72,3 +72,11 @@ fn step_lists_are_unit_moves_on_open_tiles_ending_at_the_hero() {
         assert!(walks > 20, "walks {}", walks);
     }
 }
+
+#[test]
+fn step_counts_sum_to_the_head_total() {
+    let seed = (1u64..=10).find(|s| !simulate_with(*s, &Config::default()).capped).expect("an uncapped seed in 1..=10");
+    let j = parse(&run_body(&simulate_with(seed, &Config::default()))).unwrap();
+    let sum: usize = events(&j).iter().filter(|e| kind(e) == "walk").map(|e| steps_of(e).len()).sum();
+    assert_eq!(sum, j.u("steps"), "seed {}: sum of walk steps vs head steps", seed);
+}
