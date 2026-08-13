@@ -15,6 +15,12 @@ pub enum Tile {
     Water,
 }
 
+impl Tile {
+    pub fn is_blocking(self) -> bool {
+        matches!(self, Tile::Wall | Tile::Rock | Tile::Fence | Tile::Tree | Tile::Water)
+    }
+}
+
 pub struct Map {
     n: usize,
     tiles: Vec<Tile>,
