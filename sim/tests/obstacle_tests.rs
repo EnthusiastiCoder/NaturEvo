@@ -90,3 +90,22 @@ fn same_seed_same_map_different_seed_differs_only_legend_chars() {
         }
     }
 }
+
+#[test]
+fn all_five_kinds_appear_each_only_in_allowed_zones() {
+    let mut seen: HashSet<String> = HashSet::new();
+    for seed in 1u64..=20 {
+        let m = Map::generate(seed, 64);
+        for (x, y) in all(&m) {
+            let t = m.tile(x, y);
+            if t.is_blocking() {
+                seen.insert(format!("{:?}", t));
+                let z = m.zone_of(x, y);
+                assert!(allowed(z).contains(&t), "seed {} {:?} at {:?} not allowed in zone {}", seed, t, (x, y), z);
+            }
+        }
+    }
+    for k in BLOCKING {
+        assert!(seen.contains(&format!("{:?}", k)), "{:?} never appeared in 20 seeds", k);
+    }
+}
