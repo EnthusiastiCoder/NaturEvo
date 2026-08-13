@@ -75,3 +75,18 @@ fn cfg(k: &[(&str, &str)]) -> Config {
     }
     c
 }
+
+#[test]
+fn same_seed_same_map_different_seed_differs_only_legend_chars() {
+    for size in [32usize, 64] {
+        let a = map_body(&Map::generate(5, size));
+        assert_eq!(a, map_body(&Map::generate(5, size)));
+        assert_ne!(a, map_body(&Map::generate(6, size)));
+    }
+    for seed in 1u64..=5 {
+        let j = parse(&map_body(&Map::generate(seed, 64))).unwrap();
+        for row in j.get("tiles").unwrap().arr() {
+            assert!(row.str().chars().all(|c| "#RFTW.,C".contains(c)), "seed {} bad char in {}", seed, row.str());
+        }
+    }
+}
