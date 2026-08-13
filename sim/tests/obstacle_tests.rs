@@ -18,3 +18,5 @@ use std::collections::{HashSet, VecDeque};
 use std::path::PathBuf;
 
 type P = (usize, usize);
+
+const BLOCKING: [Tile; 5] = [Tile::Wall, Tile::Rock, Tile::Fence, Tile::Tree, Tile::Water];
