@@ -80,3 +80,48 @@ fn step_counts_sum_to_the_head_total() {
     let sum: usize = events(&j).iter().filter(|e| kind(e) == "walk").map(|e| steps_of(e).len()).sum();
     assert_eq!(sum, j.u("steps"), "seed {}: sum of walk steps vs head steps", seed);
 }
+
+#[test]
+fn nsteps_matches_steps_and_npcs_move_one_tile() {
+    let c = cfg(&[("event_cap", "8000"), ("elites_per_zone", "3")]);
+    let j = parse(&run_body(&simulate_with(1, &c))).unwrap();
+    let ev = events(&j);
+    let mut moves = 0;
+    for (i, e) in ev.iter().enumerate() {
+        if kind(e) != "walk" {
+            continue;
+        }
+        let st = steps_of(e);
+        let ns = e.get("nsteps").expect("walk event needs nsteps").arr();
+        assert_eq!(ns.len(), st.len(), "event {}: nsteps length", i);
+        // last known tile of each npc: previous event's npcs, then each step's moves
+        let mut pos: HashMap<String, P> = HashMap::new();
+        if i > 0 {
+            for n in ev[i - 1].get("npcs").unwrap().arr() {
+                pos.insert(n.get("id").unwrap().str().to_string(), (n.u("x"), n.u("y")));
+            }
+        }
+        let ids: Vec<String> = e.get("npcs").unwrap().arr().iter().map(|n| n.get("id").unwrap().str().to_string()).collect();
+        for step in ns {
+            for mv in step.arr() {
+                let a = mv.arr();
+                assert_eq!(a.len(), 3, "event {}: move must be [id,x,y]", i);
+                let id = a[0].str().to_string();
+                let p = (a[1].num() as usize, a[2].num() as usize);
+                assert!(ids.contains(&id), "event {}: unknown npc id {}", i, id);
+                if let Some(prev) = pos.get(&id) {
+                    assert_eq!(dist(*prev, p), 1, "event {}: npc {} moved {:?}->{:?}", i, id, prev, p);
+                }
+                pos.insert(id, p);
+                moves += 1;
+            }
+        }
+        for n in e.get("npcs").unwrap().arr() {
+            let id = n.get("id").unwrap().str().to_string();
+            if let Some(p) = pos.get(&id) {
+                assert_eq!(*p, (n.u("x"), n.u("y")), "event {}: npc {} end of leg differs from npcs", i, id);
+            }
+        }
+    }
+    assert!(moves > 50, "npc moves {}", moves);
+}
