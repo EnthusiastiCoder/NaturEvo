@@ -142,7 +142,7 @@ impl Map {
             }
         }
 
-        // walls (never near an anchor) then grass (never in camp or grove)
+        // obstacles (never near an anchor), kind by biome palette
         let near_anchor = |x: usize, y: usize| anchors.iter().any(|&a| a.0.abs_diff(x) <= 2 && a.1.abs_diff(y) <= 2);
         let wall_noise = noise_field(&mut rng, n, 4);
         let grass_noise = noise_field(&mut rng, n, 5);
