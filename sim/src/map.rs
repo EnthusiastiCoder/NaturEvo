@@ -189,6 +189,7 @@ impl Map {
             };
             let (a, b) = (m.anchors[z], m.anchors[z - 1]);
             let (mut x, mut y) = a;
+            m.tiles[y * n + x] = Tile::Floor;
             while (x, y) != b {
                 if x != b.0 {
                     x = if x < b.0 { x + 1 } else { x - 1 };
