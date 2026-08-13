@@ -125,3 +125,12 @@ fn nsteps_matches_steps_and_npcs_move_one_tile() {
     }
     assert!(moves > 50, "npc moves {}", moves);
 }
+
+#[test]
+fn same_seed_gives_byte_identical_json_with_steps() {
+    let c = cfg(&[("event_cap", "4000")]);
+    let a = run_body(&simulate_with(3, &c));
+    assert!(a.contains("\"steps\":[["), "no step list in body");
+    assert!(a.contains("\"nsteps\":["), "no nsteps in body");
+    assert_eq!(a, run_body(&simulate_with(3, &c)));
+}
