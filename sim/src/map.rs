@@ -30,7 +30,9 @@ pub struct Map {
 
 const MAP_SALT: u64 = 0x4D41_505F_5345_4544;
 const GRASS_SHARE: f64 = 0.35;
-const WALL_SHARE: f64 = 0.08;
+const OBSTACLE_SHARE: f64 = 0.095;
+const CAMP_RING: usize = 2;
+const GROVE_RING: usize = 4;
 
 /// Smooth value noise: a coarse random lattice, smoothstep-interpolated.
 fn noise_field(rng: &mut Rng, n: usize, cell: usize) -> Vec<f32> {
