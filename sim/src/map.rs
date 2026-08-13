@@ -196,7 +196,7 @@ impl Map {
                 } else {
                     y = if y < b.1 { y + 1 } else { y - 1 };
                 }
-                if m.tiles[y * n + x] == Tile::Wall {
+                if m.tiles[y * n + x].is_blocking() {
                     m.tiles[y * n + x] = Tile::Floor;
                 }
             }
