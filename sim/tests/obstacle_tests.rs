@@ -193,3 +193,28 @@ fn astar_never_crosses_blocking_and_detours_around_a_hand_built_block() {
     assert_eq!(*p.last().unwrap(), b);
     assert_eq!(blocked.path(a, (x + 3, y)), None, "blocked target");
 }
+
+#[test]
+fn no_entity_stands_on_a_blocking_tile_in_5_runs() {
+    for seed in 1u64..=5 {
+        let c = cfg(&[("event_cap", "8000"), ("elites_per_zone", "3")]);
+        let m = Map::generate(seed, c.map_size as usize);
+        let j = parse(&run_body(&simulate_with(seed, &c))).unwrap();
+        let mut seen = 0;
+        for e in j.get("events").unwrap().arr() {
+            let h = e.get("hero").unwrap();
+            let mut pts = vec![(h.u("x"), h.u("y"))];
+            if let Some(mo) = e.get("mon").filter(|m| !m.is_null()) {
+                pts.push((mo.u("x"), mo.u("y")));
+            }
+            for n in e.get("npcs").unwrap().arr() {
+                pts.push((n.u("x"), n.u("y")));
+            }
+            for p in pts {
+                seen += 1;
+                assert!(m.passable(p.0, p.1), "seed {} entity on blocking tile {:?} ({:?})", seed, p, m.tile(p.0, p.1));
+            }
+        }
+        assert!(seen > 500);
+    }
+}
