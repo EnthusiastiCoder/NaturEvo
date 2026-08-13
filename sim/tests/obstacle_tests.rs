@@ -160,3 +160,36 @@ fn connectivity_and_placement_rules_hold_over_50_seeds() {
         assert!(m.path(c, m.anchors()[1]).is_some(), "seed {} camp ring has no gate", seed);
     }
 }
+
+#[test]
+fn astar_never_crosses_blocking_and_detours_around_a_hand_built_block() {
+    let m = Map::generate(3, 64);
+    for z in 1..9 {
+        for &(x, y) in &m.path(m.camp(), m.anchors()[z]).unwrap() {
+            assert!(!m.tile(x, y).is_blocking(), "path crosses blocking tile at {:?}", (x, y));
+        }
+    }
+    // find a 7-wide, 3-tall fully open window and block the middle of the centre row
+    let n = m.size();
+    let open = |x: usize, y: usize| !m.tile(x, y).is_blocking();
+    let mut found = None;
+    'f: for y in 1..n - 1 {
+        for x in 0..n - 6 {
+            if (y - 1..=y + 1).all(|yy| (x..x + 7).all(|xx| open(xx, yy))) {
+                found = Some((x, y));
+                break 'f;
+            }
+        }
+    }
+    let (x, y) = found.expect("an open 7x3 window");
+    let (a, b) = ((x, y), (x + 6, y));
+    assert_eq!(m.path(a, b).unwrap().len(), 6);
+    let blocked = m.with_tile(x + 3, y, Tile::Rock);
+    assert_eq!(blocked.tile(x + 3, y), Tile::Rock);
+    assert!(!blocked.passable(x + 3, y));
+    let p = blocked.path(a, b).expect("detour exists");
+    assert!(!p.contains(&(x + 3, y)), "path goes through the block");
+    assert_eq!(p.len(), 8, "detour around one tile is 2 steps longer");
+    assert_eq!(*p.last().unwrap(), b);
+    assert_eq!(blocked.path(a, (x + 3, y)), None, "blocked target");
+}
