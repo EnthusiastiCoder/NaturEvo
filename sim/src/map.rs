@@ -404,6 +404,14 @@ pub fn map_body(m: &Map) -> String {
         }
         s.push_str(&format!("[{},{}]", a.0, a.1));
     }
+    s.push_str("],\"legend\":[");
+    let legend = [('#', "Wall", true), ('R', "Rock", true), ('F', "Fence", true), ('T', "Tree", true), ('W', "Water", true), ('.', "Floor", false), (',', "Grass", false), ('C', "Camp", false)];
+    for (i, (ch, name, b)) in legend.iter().enumerate() {
+        if i > 0 {
+            s.push(',');
+        }
+        s.push_str(&format!("{{\"ch\":\"{}\",\"name\":\"{}\",\"blocking\":{}}}", ch, name, b));
+    }
     s.push_str("]}");
     s
 }
