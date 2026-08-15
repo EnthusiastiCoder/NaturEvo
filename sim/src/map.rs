@@ -378,6 +378,10 @@ pub fn map_body(m: &Map) -> String {
                 Tile::Grass => ',',
                 Tile::Wall => '#',
                 Tile::Camp => 'C',
+                Tile::Rock => 'R',
+                Tile::Fence => 'F',
+                Tile::Tree => 'T',
+                Tile::Water => 'W',
             });
         }
         s.push('"');
