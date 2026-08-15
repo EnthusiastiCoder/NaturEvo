@@ -53,6 +53,10 @@ pub struct Event {
     pub npcs: Vec<NpcSnap>,
     /// turn-point waypoints of a "walk" event (empty for every other kind)
     pub path: Vec<(u16, u16)>,
+    /// every tile of a "walk" leg in order, excluding the start tile
+    pub steps: Vec<(u16, u16)>,
+    /// per hero step, the (npc id, x, y) of NPCs that moved on it
+    pub nsteps: Vec<Vec<(String, u16, u16)>>,
 }
 
 #[derive(Clone, Debug)]
