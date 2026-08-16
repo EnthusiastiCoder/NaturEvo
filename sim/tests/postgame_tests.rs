@@ -309,7 +309,7 @@ fn evo_encounter_text_uses_stage_name() {
 fn evo_stage_monsters_are_stronger_at_same_level() {
     let mut base: HashMap<(usize, u32), i32> = HashMap::new();
     let mut evolved = Vec::new();
-    for seed in [3u64, 7, 10] {
+    for seed in [7u64, 3, 1] {
         for e in simulate_with(seed, &cfg(&[("evolve_kills", "10")])).events {
             if let Some(m) = e.mon {
                 if m.species == BOSS {
