@@ -890,7 +890,7 @@ impl Sim {
             return moved;
         }
         if hz == 0 {
-            return;
+            return moved;
         }
         for i in 0..self.elites.len() {
             if self.elites[i].zone != hz || self.elites[i].dead_until != 0 {
