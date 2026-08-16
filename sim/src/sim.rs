@@ -1186,6 +1186,8 @@ fn run_sim(seed: u64, cfg: &Config, lean: bool) -> Sim {
         leg_dir: (0, 0),
         leg_tiles: 0,
         next_path: Vec::new(),
+        leg_steps: Vec::new(),
+        leg_nsteps: Vec::new(),
         zone_grass: vec![Vec::new(); 9],
         outbound: vec![None; 9],
     };
