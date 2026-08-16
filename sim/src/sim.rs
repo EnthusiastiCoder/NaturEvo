@@ -946,6 +946,10 @@ impl Sim {
             self.leg_dir = dir;
         }
         self.leg_tiles += 1;
+        if !self.lean {
+            self.leg_steps.push((p.0 as u16, p.1 as u16));
+            self.leg_nsteps.push(Vec::new());
+        }
         if self.steps >= self.cfg.max_steps {
             self.flush_walk();
             self.done = true;
