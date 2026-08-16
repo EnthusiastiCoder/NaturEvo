@@ -112,6 +112,9 @@ pub fn run_body(run: &Run) -> String {
     s
 }
 
+/// Byte budget of a windowed run response (events only; the level series adds a little).
+const WINDOW_BUDGET: usize = 2 * 1024 * 1024 - 32 * 1024;
+
 pub fn run_window_body(run: &Run, from: usize, count: usize) -> String {
     let n = run.events.len();
     let from = from.min(n);
