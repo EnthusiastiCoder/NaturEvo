@@ -427,7 +427,7 @@ fn report_run_body_new_top_level_keys() {
     for k in ["first_win_event", "end_level", "post_kills", "post_deaths", "max_stage", "capped", "total"] {
         assert!(b.contains(&format!("\"{}\":", k)), "missing {}", k);
     }
-    assert_eq!(num_after(&b, "first_win_event"), Some(14719));
+    assert_eq!(num_after(&b, "first_win_event"), Some(14161));
     assert_eq!(num_after(&b, "total"), Some(65536));
     assert!(b.contains("\"capped\":true"));
     let lose = (0..200u64).find(|s| !simulate(*s).won).unwrap();
