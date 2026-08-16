@@ -222,6 +222,8 @@ struct Sim {
     leg_dir: (i32, i32),
     leg_tiles: u32,
     next_path: Vec<(u16, u16)>,
+    leg_steps: Vec<(u16, u16)>,
+    leg_nsteps: Vec<Vec<(u16, u16, u16)>>,
     /// grass tiles per zone, row-major
     zone_grass: Vec<Vec<(usize, usize)>>,
     /// cached camp -> zone entry tile and route, per zone
