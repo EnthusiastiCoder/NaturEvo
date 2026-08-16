@@ -918,6 +918,7 @@ impl Sim {
             let np = (nx as usize, ny as usize);
             if np != hp && self.map.passable(np.0, np.1) && self.map.zone_of(np.0, np.1) == hz {
                 self.elites[i].pos = np;
+                moved.push((i as u16, np.0 as u16, np.1 as u16));
             }
         }
     }
