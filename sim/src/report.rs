@@ -71,6 +71,27 @@ fn push_event(s: &mut String, e: &crate::sim::Event) {
             }
             s.push_str(&format!("[{},{}]", p.0, p.1));
         }
+        s.push_str("],\"steps\":[");
+        for (i, p) in e.steps.iter().enumerate() {
+            if i > 0 {
+                s.push(',');
+            }
+            s.push_str(&format!("[{},{}]", p.0, p.1));
+        }
+        s.push_str("],\"nsteps\":[");
+        for (i, mv) in e.nsteps.iter().enumerate() {
+            if i > 0 {
+                s.push(',');
+            }
+            s.push('[');
+            for (j, (id, x, y)) in mv.iter().enumerate() {
+                if j > 0 {
+                    s.push(',');
+                }
+                s.push_str(&format!("[\"{}\",{},{}]", esc(id), x, y));
+            }
+            s.push(']');
+        }
         s.push(']');
     }
     s.push('}');
