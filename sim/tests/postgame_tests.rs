@@ -113,9 +113,9 @@ fn prefix_small_cap_is_prefix_of_default() {
 
 #[test]
 fn prefix_across_win_boundary() {
-    let full = simulate(3);
-    let mid = simulate_with(3, &cfg(&[("event_cap", "20000")]));
-    assert_eq!(mid.first_win_event, Some(14719));
+    let full = simulate(7);
+    let mid = simulate_with(7, &cfg(&[("event_cap", "20000")]));
+    assert_eq!(mid.first_win_event, Some(14161));
     assert_eq!(mid.events.len(), 20000);
     for (a, b) in mid.events.iter().zip(full.events.iter()) {
         assert_eq!((a.kind, &a.text), (b.kind, &b.text));
