@@ -921,6 +921,7 @@ impl Sim {
                 moved.push((i as u16, np.0 as u16, np.1 as u16));
             }
         }
+        moved
     }
 
     /// One tile of walking: movement, zone entry, NPC movement, contact fights, grass encounters.
