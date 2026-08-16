@@ -883,6 +883,7 @@ impl Sim {
                     let centre = self.map.anchors()[8];
                     if self.map.passable(np.0, np.1) && self.map.zone_of(np.0, np.1) == 8 && dist(np, centre) <= 2 && np != hp {
                         self.boss = np;
+                        moved.push((BOSS_ID, np.0 as u16, np.1 as u16));
                     }
                 }
             }
