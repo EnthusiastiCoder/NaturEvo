@@ -871,7 +871,8 @@ impl Sim {
     }
 
     /// Elites and the boss only move while the hero is in their zone.
-    fn step_npcs(&mut self) {
+    fn step_npcs(&mut self) -> Vec<(u16, u16, u16)> {
+        let mut moved = Vec::new();
         let hz = self.hero.zone;
         let hp = self.pos();
         if hz == 8 {
