@@ -123,8 +123,10 @@ pub fn run_window_body(run: &Run, from: usize, count: usize) -> String {
     s.push('{');
     s.push_str(&head_fields(run));
     s.push_str(&format!(",\"from\":{},\"events\":[", from));
-    for (i, e) in run.events[from..end].iter().enumerate() {
-        if i > 0 {
+    let mut shown = 0;
+    for e in &run.events[from..end] {
+        let mark = s.len();
+        if shown > 0 {
             s.push(',');
         }
         push_event(&mut s, e);
