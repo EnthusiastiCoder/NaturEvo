@@ -421,6 +421,8 @@ impl Sim {
             }
         }
         self.leg.clear();
+        self.leg_steps.clear();
+        self.leg_nsteps.clear();
         self.leg_tiles = 0;
     }
 
