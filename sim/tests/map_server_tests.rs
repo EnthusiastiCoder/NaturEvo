@@ -36,7 +36,7 @@ fn map_route_shape_and_defaults() {
     for (t, z) in tiles.iter().zip(zones) {
         assert_eq!(t.str().chars().count(), 64);
         assert_eq!(z.str().chars().count(), 64);
-        assert!(t.str().chars().all(|c| ".,#C".contains(c)), "{}", t.str());
+        assert!(t.str().chars().all(|c| ".,#CRFTW".contains(c)), "{}", t.str());
         assert!(z.str().chars().all(|c| ('0'..='8').contains(&c)));
     }
     assert_eq!(tiles.iter().map(|t| t.str().matches('C').count()).sum::<usize>(), 1, "exactly one camp tile");
