@@ -138,7 +138,7 @@ fn cap_default_winning_run_is_capped_at_65536() {
 
 #[test]
 fn cap_2000_exact_and_consecutive() {
-    let r = simulate_with(3, &cfg(&[("event_cap", "2000")]));
+    let r = simulate_with(7, &cfg(&[("event_cap", "2000")]));
     assert_eq!(r.events.len(), 2000);
     assert!(r.capped);
     assert!(!r.won, "win happens at 14719, after the cap");
