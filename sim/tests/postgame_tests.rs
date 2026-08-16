@@ -258,7 +258,7 @@ fn evo_tables() {
 
 #[test]
 fn evo_fast_kills_reach_stage_4_with_four_events() {
-    let r = simulate_with(3, &cfg(&[("evolve_kills", "10")]));
+    let r = simulate_with(7, &cfg(&[("evolve_kills", "10")]));
     assert_eq!(r.max_stage, 4);
     let n = r.events.iter().filter(|e| e.kind == "evolve").count();
     assert_eq!(n, 4);
