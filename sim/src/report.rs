@@ -130,6 +130,11 @@ pub fn run_window_body(run: &Run, from: usize, count: usize) -> String {
             s.push(',');
         }
         push_event(&mut s, e);
+        if shown > 0 && s.len() > WINDOW_BUDGET {
+            s.truncate(mark);
+            break;
+        }
+        shown += 1;
     }
     s.push_str("],\"level_series\":[");
     let pts = n.min(2048);
