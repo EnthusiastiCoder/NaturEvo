@@ -337,8 +337,8 @@ fn evo_stage_monsters_are_stronger_at_same_level() {
 #[test]
 fn det_same_seed_same_cfg() {
     let c = cfg(&[("evolve_kills", "10")]);
-    let a = simulate_with(3, &c);
-    let b = simulate_with(3, &c);
+    let a = simulate_with(7, &c);
+    let b = simulate_with(7, &c);
     assert_eq!(a.events.len(), b.events.len());
     for (x, y) in a.events.iter().zip(b.events.iter()) {
         assert_eq!((x.kind, &x.text, stage_of(x)), (y.kind, &y.text, stage_of(y)));
