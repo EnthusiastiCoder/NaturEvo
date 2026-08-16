@@ -24,6 +24,8 @@ fn json_escapes_quotes() {
             mon: None,
             npcs: vec![],
             path: vec![],
+            steps: vec![],
+            nsteps: vec![],
         }],
         won: false,
         deaths: 0,
