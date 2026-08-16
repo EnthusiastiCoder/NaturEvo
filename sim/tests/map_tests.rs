@@ -73,8 +73,8 @@ fn check_map(m: &Map, label: &str) {
         let z = m.zone_of(x, y);
         assert!(z <= 8, "{} zone {} at {:?}", label, z, (x, y));
         let t = m.tile(x, y);
-        assert_eq!(m.passable(x, y), t != Tile::Wall, "{} passable vs tile at {:?}", label, (x, y));
-        if t == Tile::Wall {
+        assert_eq!(m.passable(x, y), !t.is_blocking(), "{} passable vs tile at {:?}", label, (x, y));
+        if t.is_blocking() {
             walls += 1;
             continue;
         }
@@ -208,7 +208,7 @@ fn astar_edge_cases() {
     let m = Map::generate(3, 64);
     let c = m.camp();
     assert_eq!(m.path(c, c), Some(vec![]));
-    let wall = all(&m).find(|&(x, y)| m.tile(x, y) == Tile::Wall).expect("map has walls");
+    let wall = all(&m).find(|&(x, y)| m.tile(x, y).is_blocking()).expect("map has walls");
     assert_eq!(m.path(c, wall), None, "wall target");
     assert_eq!(m.path(c, (64, 64)), None, "out of bounds target");
     assert_eq!(m.path(c, (10_000, 3)), None);
