@@ -887,7 +887,7 @@ impl Sim {
                     }
                 }
             }
-            return;
+            return moved;
         }
         if hz == 0 {
             return;
