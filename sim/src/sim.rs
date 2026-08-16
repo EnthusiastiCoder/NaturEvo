@@ -377,6 +377,13 @@ impl Sim {
         });
         let npcs = self.npc_snaps();
         let path = std::mem::take(&mut self.next_path);
+        let steps = std::mem::take(&mut self.leg_steps);
+        let raw = std::mem::take(&mut self.leg_nsteps);
+        let name = |id: u16| if id == BOSS_ID { "boss".to_string() } else { format!("e{}", id) };
+        let nsteps = raw
+            .iter()
+            .map(|mv| mv.iter().map(|&(id, x, y)| (name(id), x, y)).filter(|m| npcs.iter().any(|n| n.id == m.0)).collect())
+            .collect();
         let idx = self.count as u32;
         self.events.push(Event { idx, kind, text, hero, mon, npcs, path });
         self.count += 1;
