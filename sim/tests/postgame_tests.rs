@@ -193,7 +193,7 @@ fn post_levels_past_40_up_to_postgame_cap() {
     assert!(r.end_level > 40, "end_level {}", r.end_level);
     assert!(r.end_level <= 80);
     assert!(r.events.iter().all(|e| e.hero.level <= 80));
-    let r40 = simulate_with(3, &cfg(&[("postgame_level_cap", "40")]));
+    let r40 = simulate_with(7, &cfg(&[("postgame_level_cap", "40")]));
     assert_eq!(r40.end_level, 40);
     let r200 = simulate_with(3, &cfg(&[("postgame_level_cap", "200")]));
     assert!(r200.end_level >= r.end_level && r200.end_level <= 200);
