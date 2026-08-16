@@ -191,6 +191,8 @@ const ELITE_RESPAWN_STEPS: u32 = 400;
 const ELITE_CHASE_RADIUS: usize = 3;
 const ELITE_LEVEL_MARGIN: u32 = 3;
 const MAX_WAYPOINTS: usize = 64;
+const MAX_LEG_STEPS: usize = 256;
+const BOSS_ID: u16 = u16::MAX;
 
 struct Sim {
     cfg: Config,
