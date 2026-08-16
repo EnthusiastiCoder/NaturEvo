@@ -385,7 +385,7 @@ impl Sim {
             .map(|mv| mv.iter().map(|&(id, x, y)| (name(id), x, y)).filter(|m| npcs.iter().any(|n| n.id == m.0)).collect())
             .collect();
         let idx = self.count as u32;
-        self.events.push(Event { idx, kind, text, hero, mon, npcs, path });
+        self.events.push(Event { idx, kind, text, hero, mon, npcs, path, steps, nsteps });
         self.count += 1;
         if self.count >= self.cfg.event_cap as usize {
             self.done = true;
