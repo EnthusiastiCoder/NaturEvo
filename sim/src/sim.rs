@@ -956,7 +956,13 @@ impl Sim {
             self.capped = true;
             return Some(Walk::Aborted);
         }
-        if self.leg.len() >= MAX_WAYPOINTS {
+        // NPCs move before any flush so the event's snapshot includes this step's moves
+        self.respawn_elites();
+        let moved = self.step_npcs();
+        if let Some(l) = self.leg_nsteps.last_mut() {
+            *l = moved;
+        }
+        if self.leg.len() >= MAX_WAYPOINTS || self.leg_steps.len() >= MAX_LEG_STEPS {
             self.flush_walk();
         }
         if (z == dest_zone || z == 0) && z != self.last_travel {
