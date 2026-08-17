@@ -118,3 +118,26 @@ const css = (html.match(/<style[^>]*>([\s\S]*?)<\/style>/) || [, ''])[1].replace
     else check(false, `cannot compute contrast for ${n} in ${name} (tokens must be #rrggbb)`);
   }
 }
+
+// ---------------- behaviour ----------------
+for (const [W, H, vw, vh] of [[640, 480, 1280, 720], [1000, 700, 1920, 1080], [380, 300, 800, 600]]) {
+  for (const dpr of [1, 2]) {
+    const label = `${vw}x${vh} dpr ${dpr}`;
+    const b = boot({ dpr, W, H });
+    await tick();
+    if (!b.cv) { check(false, '#map canvas missing at ' + label); continue; }
+    check(b.v.fetchCalls.some(u => u.startsWith('/api/map')), label + ': map must be fetched from /api/map');
+    await goto(b, 0);
+    check(b.cv.width === Math.round(b.cv.clientWidth * dpr) && b.cv.height === Math.round(b.cv.clientHeight * dpr), `${label}: backing size ${b.cv.width}x${b.cv.height} != css ${b.cv.clientWidth}x${b.cv.clientHeight} * dpr`);
+    check(b.cv.clientWidth <= vw && b.cv.clientHeight <= vh, label + ': canvas larger than the viewport');
+    check(b.rec.smoothing.length > 0 && b.rec.smoothing.every(x => x === false), label + ': imageSmoothingEnabled must be set to false');
+    if (dpr === 1) {
+      const t = await transform(b);
+      if (!t) { check(false, label + ': no accent hero marker drawn'); continue; }
+      check(Number.isInteger(t.ts) && t.ts >= 1, `${label}: bird's-eye tile size must be a positive integer, got ${t.ts}`);
+      check(Math.abs(t.tsY - t.ts) < 1e-6, label + ': tiles must be square');
+      check(t.ts * N <= Math.min(W, H) + 1e-6, `${label}: whole map must fit: ${t.ts}*${N} > ${Math.min(W, H)}`);
+      check(t.ox >= -1e-6 && t.oy >= -1e-6 && t.ox + t.ts * N <= W + 1e-6 && t.oy + t.ts * N <= H + 1e-6, label + ': map extends beyond the canvas');
+    }
+  }
+}
