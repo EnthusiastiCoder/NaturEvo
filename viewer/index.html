@@ -562,8 +562,8 @@ function step(){if(!timer)return;var now=Date.now(),dt=Math.max(0,now-lastTick);
  if(!go)stop();}
 function playIcon(p){var b=$("play");b.innerHTML='<svg class="icon" aria-hidden="true"><use href="#i-'+(p?"pause":"play")+'"/></svg>';b.setAttribute("aria-label",p?"Pause":"Play");}
 function stop(){clearInterval(timer);timer=null;playIcon(false);}
-$("play").onclick=function(){if(timer)return stop();if(cur>=total()-1)cur=0;playIcon(true);lastTick=Date.now();acc=1;timer=setInterval(step,50);};
-$("scrub").oninput=function(){cur=+this.value;render();};
+$("play").onclick=function(){if(timer)return stop();if(cur>=total()-1){cur=0;sub=-1;}playIcon(true);lastTick=Date.now();acc=1;timer=setInterval(step,50);};
+$("scrub").oninput=function(){cur=+this.value;sub=-1;render();};
 $("scrub").max=Math.max(0,total()-1);
 
 /* ---- hero detail chips ---- */
