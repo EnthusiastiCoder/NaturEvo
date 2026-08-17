@@ -173,3 +173,23 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
     check(after.length >= 1 && after[0][0] === 1 && after[0][1] === k + 1, `pause: play must resume at step ${k + 1}, got ${JSON.stringify(after[0])}`);
   }
 }
+
+// ---------- scrubbing and seeking ----------
+{
+  const h = boot();
+  if (hasApi(h, 'scrub')) {
+    for (const k of [9, 0, 19, 3, 15, 3]) {
+      h.jv().gotoStep(1, k); await h.advance(1000);
+      check(eq(h.anim().tile, STEPS[k]) && eq(h.anim().pos, STEPS[k]), `gotoStep(1,${k}): tile and drawn position must be ${JSON.stringify(STEPS[k])}, got ${JSON.stringify(h.anim().tile)} / ${JSON.stringify(h.anim().pos)}`);
+      check(h.anim().step === k, `gotoStep(1,${k}): step index must be ${k}, got ${h.anim().step}`);
+      check(eq(h.anim().ntile && h.anim().ntile.e1, ELITE[k]), `gotoStep(1,${k}): elite must be at ${JSON.stringify(ELITE[k])}`);
+    }
+    // seeking to the event shows the end tile; back and forth is consistent
+    for (const i of [1, 0, 2, 1, 150, 1, 0]) {
+      h.jv().goto(i); await h.advance(1000);
+      const want = i === 0 ? [10, 10] : i === 1 ? [30, 10] : [30, 10];
+      check(eq(h.anim().pos, want), `goto(${i}): hero must be at ${JSON.stringify(want)}, got ${JSON.stringify(h.anim().pos)}`);
+    }
+    check(h.errors.length === 0, 'scrub: no errors: ' + h.errors.map(String));
+  }
+}
