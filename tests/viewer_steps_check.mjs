@@ -193,3 +193,26 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
     check(h.errors.length === 0, 'scrub: no errors: ' + h.errors.map(String));
   }
 }
+
+// ---------- windowed fetch across a walk boundary ----------
+{
+  const total = 6000, run = mkRun(300); run.total = total;
+  const fetchImpl = async url => {
+    const from = +/from=(\d+)/.exec(url)[1], count = +/count=(\d+)/.exec(url)[1];
+    const r = mkRun(Math.min(count, total - from)); r.from = from; r.total = total;
+    r.events.forEach((e, i) => { e.idx = from + i; });
+    return jsonResp(r);
+  };
+  // walk event as the last event of the first window
+  run.events[299].kind = 'walk'; run.events[299].steps = STEPS.map(s => s.slice()); run.events[299].nsteps = ELITE.map(([x, y]) => [['e1', x, y]]);
+  run.events[299].path = [[10, 10], [30, 10]]; run.events[299].hero.x = 30;
+  run.events[1].kind = 'travel'; delete run.events[1].steps; delete run.events[1].nsteps; delete run.events[1].path;
+  const h = boot({ run, protocol: 'http:', fetchImpl });
+  if (hasApi(h, 'window')) {
+    h.jv().goto(298); h.setSpeed(1);
+    try { h.play(); await h.pump(5000); h.play(); } catch (e) { h.errors.push(e); }
+    check(h.errors.length === 0, 'window: crossing a walk boundary must not throw: ' + h.errors.map(String));
+    const idx = h.log().filter(e => e[0] === 299).map(e => e[1]);
+    check(eq(idx, STEPS.map((_, k) => k)), `window: no steps skipped across the boundary, got ${JSON.stringify(idx)}`);
+  }
+}
