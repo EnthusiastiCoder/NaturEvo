@@ -68,3 +68,18 @@ const evOf = (r, i) => r.events[i];
     check(near(h.pos(), e.hero.x, e.hero.y), `seek ${i}: marker must be at hero (${e.hero.x},${e.hero.y}), got ${JSON.stringify(h.pos())}`);
   }
 }
+
+// ---------- play advances cursor and marker; speed slider changes rate ----------
+{
+  const rate = async s => {
+    const run = mapRun(300), h = boot({ run }); h.go(0); h.setSpeed(s); h.v.$('play').click();
+    await h.pump(1000);
+    const p = h.pos(); h.v.$('play').click();
+    return { p, scrub: +h.v.$('scrub').value };
+  };
+  const a = await rate(1), b = await rate(8);
+  check(a.p !== null && a.scrub > 0, `play at 1x must advance cursor and marker, scrub=${a.scrub} pos=${JSON.stringify(a.p)}`);
+  check(b.scrub > a.scrub, `8x must advance further than 1x (${b.scrub} vs ${a.scrub})`);
+  const run = mapRun(300);
+  check(b.p && near(b.p, run.events[b.scrub].hero.x, run.events[b.scrub].hero.y), `8x: marker must sit at event ${b.scrub} tile, got ${JSON.stringify(b.p)}`);
+}
