@@ -216,3 +216,19 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
     check(eq(idx, STEPS.map((_, k) => k)), `window: no steps skipped across the boundary, got ${JSON.stringify(idx)}`);
   }
 }
+
+// ---------- crisp canvas, no scroll, both themes, no errors ----------
+for (const theme of ['dark', 'light']) {
+  const h = boot(); h.v.root.dataset.theme = theme; h.v.win.dispatchEvent({ type: 'jv-themechange' });
+  h.jv().goto(0); h.setSpeed(1);
+  if (hasApi(h, theme)) {
+    h.play(); await h.pump(300); await h.advance(32);
+    check(h.map.width === 640 && h.map.height === 640, `${theme}: canvas backing size must equal CSS size at dpr 1 mid-glide, got ${h.map.width}x${h.map.height}`);
+    check(h.errors.length === 0, `${theme}: no errors mid-walk: ` + h.errors.map(String));
+  }
+}
+{
+  const markup = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<style[\s\S]*?<\/style>/g, '');
+  check(!/overflow\s*:\s*scroll/i.test(markup), 'no forced scroll');
+  check(/imageSmoothingEnabled\s*=\s*false/.test(html), 'map must keep image smoothing off');
+}
