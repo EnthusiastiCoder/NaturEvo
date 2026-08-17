@@ -85,3 +85,17 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
     check(eq(h.anim().tile, h.anim().tile) && h.jv().stepLog.length >= NSTEP, 'full walk: log must hold every tick');
   }
 }
+
+// ---------- 4x: four times as many steps per second, still one tile per sub-tick ----------
+{
+  const count = async s => {
+    const h = boot(); h.jv().goto(0); h.setSpeed(s);
+    if (!hasApi(h, s + 'x')) return null;
+    h.play(); await h.pump(200); const a = h.log().length; await h.pump(400); const n = h.log().length - a;
+    const idx = h.log().filter(e => e[0] === 1).map(e => e[1]);
+    idx.forEach((v, i) => { if (i && v !== idx[i - 1] + 1) check(false, `${s}x: sub-tick skipped a step ${idx[i - 1]} -> ${v}`); });
+    return n;
+  };
+  const one = await count(1), four = await count(4);
+  if (one !== null) check(four === 4 * one || Math.abs(four - 4 * one) <= 1, `4x must take 4 times as many steps per second as 1x (${four} vs ${one})`);
+}
