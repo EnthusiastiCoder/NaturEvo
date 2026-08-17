@@ -221,3 +221,20 @@ for (const [W, H, vw, vh] of [[640, 480, 1280, 720], [1000, 700, 1920, 1080], [3
   check(/\(\s*20\s*,\s*12\s*\)/.test(lt), 'log line for the walk event must show (20,12)');
   check(/\(\s*14\s*,\s*12\s*\)/.test(lt), 'log line for the encounter event must show (14,12)');
 }
+
+// ---------------- both themes: drawn tile colours come from tokens and differ ----------------
+{
+  const drawn = {};
+  for (const theme of ['dark', 'light']) {
+    const b = boot({ storage: { 'jv-theme': theme } });
+    await tick();
+    await goto(b, 2);
+    const want = ['--tile-floor', '--tile-grass', '--tile-wall', '--tile-camp'].map(n => norm(b.tok(n)));
+    drawn[theme] = want;
+    check(want.every(Boolean), `${theme}: tile tokens must resolve`);
+    const fills = new Set(b.rec.ops.filter(o => o.op === 'fillRect').map(o => o.fill));
+    check(want.slice(0, 3).every(c => fills.has(c)), `${theme}: tile fills must use the --tile-* token values, drew ${[...fills].join(',')}`);
+    check(marker(b, '--accent').length > 0, theme + ': hero marker missing');
+  }
+  check(drawn.dark.join() !== drawn.light.join(), 'tile colours must differ between themes');
+}
