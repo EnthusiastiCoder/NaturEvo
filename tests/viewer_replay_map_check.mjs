@@ -173,3 +173,5 @@ for (const theme of ['dark', 'light']) {
   check(/imageSmoothingEnabled\s*=\s*false/.test(html), 'map must disable image smoothing');
   void css;
 }
+
+done();
