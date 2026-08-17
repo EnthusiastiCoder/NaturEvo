@@ -111,3 +111,5 @@ for (const theme of ['dark', 'light']) {
   const entries = new Set([...(lg + script).matchAll(/sw-(wall|rock|fence|tree|water|floor|grass|camp)\b/g)].map(m => m[1]));
   check(entries.size === 8, `legend must list 8 tile kinds, found ${entries.size}`);
 }
+
+done();
