@@ -545,8 +545,21 @@ $("speed").value=String(sPos(1));$("speed-num").value="1";
 $("speed").oninput=$("speed").onchange=function(){var v=sClamp(SMIN*Math.pow(SMAX/SMIN,(+this.value)/1000));v=sClamp(sSnap(v));setSpeed(v,true);};
 $("speed-num").oninput=function(){var v=parseFloat(this.value);if(isFinite(v)){speedVal=sClamp(v);$("speed").value=String(sPos(speedVal));}};
 $("speed-num").onchange=function(){var v=parseFloat(this.value);if(!isFinite(v)){this.value=String(speedVal);return;}v=sClamp(v);this.value=String(v);setSpeed(v,false);};
-function step(){var now=Date.now(),dt=Math.max(0,now-lastTick);lastTick=now;acc+=10*speedVal*dt/1000;var n=Math.floor(acc);acc-=n;
- if(n>0){cur=Math.min(total()-1,cur+n);render();}if(cur>=total()-1)stop();}
+/* one tick = one tile step of a walk (sub-cursor sub inside the walk event) or one event; see viewer/STYLE.md */
+var sub=-1,subFor=-1,keepAnim=false,lastSub=-2,stepLog=[];
+function stepEv(){var e=inWin(cur)?ev[cur-base]:null;return e&&e.kind==="walk"&&e.steps&&e.steps.length?e:null;}
+function advanceOne(){
+ var e=stepEv();
+ if(e&&sub>=0&&subFor===cur&&sub<e.steps.length-1)sub++;
+ else{if(cur>=total()-1)return false;cur++;sub=-1;var ne=stepEv();if(ne||!inWin(cur)){sub=0;subFor=cur;}}
+ stepLog.push([cur,sub]);if(stepLog.length>20000)stepLog.splice(0,10000);
+ return true;
+}
+function step(){if(!timer)return;var now=Date.now(),dt=Math.max(0,now-lastTick);lastTick=now;acc+=10*speedVal*dt/1000;var n=Math.floor(acc);acc-=n;
+ var moved=false,pc=null,i,go=true;
+ for(i=0;i<n&&go;i++){if(i===n-1)pc=commit();go=advanceOne();if(go)moved=true;}
+ if(moved){var nc=commit();keepAnim=false;if(pc&&nc&&nc.step>=0)stepGlide(pc,nc);render();}
+ if(!go)stop();}
 function playIcon(p){var b=$("play");b.innerHTML='<svg class="icon" aria-hidden="true"><use href="#i-'+(p?"pause":"play")+'"/></svg>';b.setAttribute("aria-label",p?"Pause":"Play");}
 function stop(){clearInterval(timer);timer=null;playIcon(false);}
 $("play").onclick=function(){if(timer)return stop();if(cur>=total()-1)cur=0;playIcon(true);lastTick=Date.now();acc=1;timer=setInterval(step,50);};
