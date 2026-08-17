@@ -83,3 +83,13 @@ const evOf = (r, i) => r.events[i];
   const run = mapRun(300);
   check(b.p && near(b.p, run.events[b.scrub].hero.x, run.events[b.scrub].hero.y), `8x: marker must sit at event ${b.scrub} tile, got ${JSON.stringify(b.p)}`);
 }
+
+// ---------- scrubbing ----------
+{
+  const run = mapRun(300), h = boot({ run });
+  for (const i of [60, 25, 199]) {
+    const s = h.v.$('scrub'); s.value = String(i); s.fire('input'); await h.advance(1000);
+    const e = evOf(run, i);
+    check(near(h.pos(), e.hero.x, e.hero.y), `scrub to ${i}: marker must be at (${e.hero.x},${e.hero.y}), got ${JSON.stringify(h.pos())}`);
+  }
+}
