@@ -264,3 +264,5 @@ for (const [label, opts] of [
   const empty = b.v.$('mapempty');
   check(!empty || empty.classList.contains('hidden'), 'empty state must be hidden when the map is shown');
 }
+
+done();
