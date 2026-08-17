@@ -245,3 +245,5 @@ for (const theme of ['dark', 'light']) {
     if (typeof h.jv().gotoStep === 'function') { try { h.jv().gotoStep(1, 5); } catch (e) { check(false, `old format (${label}): gotoStep must not throw: ${e}`); } }
   }
 }
+
+done();
