@@ -55,3 +55,22 @@ const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const isInt = n => Math.abs(n - Math.round(n)) < 1e-9;
 const manh = (a, b) => Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]);
 const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' && Array.isArray(h.jv().stepLog); check(ok, msg + ': __jv.gotoStep and __jv.stepLog must exist'); return ok; };
+
+// ---------- 1x: one tile per tick over the 20-tile walk ----------
+{
+  const h = boot(); h.jv().goto(0); h.setSpeed(1);
+  if (hasApi(h, '1x')) {
+    h.play(); await h.pump(100); // first interval call carries one extra tick; sample after it
+    const tiles = [], seen = [];
+    for (let i = 0; i < 12; i++) { await h.pump(100); tiles.push(h.anim().tile && h.anim().tile.slice()); seen.push(h.anim().step); }
+    const walkSteps = h.log().filter(e => e[0] === 1);
+    check(walkSteps.length >= 12, `1x: expected the walk to be stepping, log has ${walkSteps.length} walk steps`);
+    walkSteps.forEach((e, i) => { if (i && e[1] !== walkSteps[i - 1][1] + 1) check(false, `1x: step index jumped ${walkSteps[i - 1][1]} -> ${e[1]}`); });
+    for (let i = 1; i < tiles.length; i++) check(tiles[i] && tiles[i - 1] && manh(tiles[i], tiles[i - 1]) === 1, `1x: tick ${i} moved ${JSON.stringify(tiles[i - 1])} -> ${JSON.stringify(tiles[i])}, expected exactly one tile`);
+    for (let i = 0; i < tiles.length; i++) check(eq(tiles[i], STEPS[seen[i]]), `1x: committed tile ${JSON.stringify(tiles[i])} must be steps[${seen[i]}] ${JSON.stringify(STEPS[seen[i]])}`);
+    // drawn tile sequence equals `steps` (every step, in order, nothing skipped)
+    const idx = walkSteps.map(e => e[1]);
+    check(eq(idx, idx.map((_, i) => idx[0] + i)), 'drawn tile sequence must be consecutive entries of steps');
+    check(h.errors.length === 0, '1x: no errors: ' + h.errors.map(String));
+  }
+}
