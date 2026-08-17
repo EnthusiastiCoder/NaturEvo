@@ -124,3 +124,35 @@ const evOf = (r, i) => r.events[i];
   check(h.errors.length === 0, 'crossing a window must not throw: ' + h.errors.map(String));
   check(near(h.pos(), 3, 4), `after window arrives the map must draw the event tile (3,4), got ${JSON.stringify(h.pos())}`);
 }
+
+// ---------- shared attack animation ----------
+{
+  const run = mapRun(300), h = boot({ run }), seen = {};
+  for (const i of [3, 4, 5, 6]) {
+    h.go(i);
+    const a = h.anim(), e = evOf(run, i);
+    check(a && a.active === true, `${e.kind}: __mapAnim.active must be true after seek`);
+    if (!a) continue;
+    seen[e.kind] = JSON.parse(JSON.stringify(a));
+    const hero = [e.hero.x, e.hero.y], mon = [e.mon.x, e.mon.y];
+    const [f, t] = e.kind === 'hit_taken' ? [mon, hero] : [hero, mon];
+    check(JSON.stringify(a.from) === JSON.stringify(f) && JSON.stringify(a.to) === JSON.stringify(t), `${e.kind}: from/to must be ${JSON.stringify(f)}->${JSON.stringify(t)}, got ${JSON.stringify(a.from)}->${JSON.stringify(a.to)}`);
+    check(typeof a.kind === 'string' && a.kind.length > 0, `${e.kind}: __mapAnim.kind must be a non-empty string`);
+    await h.advance(2000);
+    check(h.anim().active === false, `${e.kind}: animation must end`);
+    check(near(h.pos(), e.hero.x, e.hero.y), `${e.kind}: marker must return to hero tile, got ${JSON.stringify(h.pos())}`);
+  }
+  const kinds = new Set(Object.values(seen).map(a => a.kind));
+  check(kinds.size === 1, `all attack events must share one animation kind, got ${[...kinds]}`);
+  const durs = new Set(Object.values(seen).map(a => a.duration).filter(d => d !== undefined));
+  check(durs.size <= 1, 'attack animations must share one duration');
+  // single code path: only one attackAnim definition in source
+  check((html.match(/function\s+attackAnim\s*\(/g) || []).length === 1, 'exactly one attackAnim function must exist');
+  // skipped at highest speed
+  const h2 = boot({ run: mapRun(300) }); h2.setSpeed(4096); h2.go(3);
+  check(!h2.anim() || h2.anim().active === false, 'attack animation must be skipped at max speed');
+  check(h2.anim() !== undefined, '__mapAnim must exist after a map draw');
+  // rAF only while animating
+  const h3 = boot({ run: mapRun(300) }); h3.go(0); await h3.advance(500); h3.raf.length = 0;
+  h3.go(1); check(h3.raf.length === 0, 'requestAnimationFrame must not be scheduled when no animation is active');
+}
