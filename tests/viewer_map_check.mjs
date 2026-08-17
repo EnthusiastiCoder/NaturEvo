@@ -10,3 +10,5 @@
 //   tok('--warn') (elite npc, id starting "e"), tok('--bad') (npc id "boss").
 // Pixel positions are derived from the drawn markers themselves (the harness has no real pixels).
 import { html, load, tick, runner, jsonResp } from './_viewer_harness.mjs';
+
+const { check, done } = runner('viewer_map_check');
