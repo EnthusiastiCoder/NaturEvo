@@ -25,3 +25,35 @@ function mapRun(n) {
   const w2 = r.events[11]; w2.kind = 'walk'; w2.hero.x = 20; w2.hero.y = 14; w2.path = [[20, 10], [20, 14]];
   return r;
 }
+
+function boot(opts = {}) {
+  const errors = [];
+  let now = 1e6; const raf = [];
+  const pre = w => {
+    w.devicePixelRatio = 1; w.innerWidth = 1280; w.innerHeight = 720;
+    w.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} };
+    w.requestAnimationFrame = f => { raf.push(f); return raf.length; };
+    w.cancelAnimationFrame = () => {};
+    w.performance = { now: () => now };
+    const RD = Date; w.Date = class extends RD { static now() { return now; } };
+  };
+  const origErr = console.error;
+  const v = load({ run: opts.run || mapRun(300), pre, protocol: opts.protocol || 'file:', fetchImpl: opts.fetchImpl });
+  const map = v.$('map');
+  if (map) { map.clientWidth = 640; map.clientHeight = 640; if (map.parent) { map.parent.clientWidth = 640; map.parent.clientHeight = 640; } }
+  const advance = async ms => { // advance fake clock in 16 ms frames, firing rAF callbacks and the play interval
+    for (let t = 0; t < ms; t += 16) { now += 16; const q = raf.splice(0); q.forEach(f => f(now)); }
+    await tick();
+  };
+  const anim = () => v.win.__mapAnim;
+  const pos = () => (anim() && anim().pos) || null;
+  const go = i => v.win.__jv.goto(i);
+  const setSpeed = s => { const n = v.$('speed-num'); n.value = String(s); n.fire('change'); };
+  const pump = async ms => { // play interval ticks
+    for (let t = 0; t < ms; t += 50) { now += 50; v.intervals.forEach(f => { try { f(); } catch (e) { errors.push(e); } }); const q = raf.splice(0); q.forEach(f => f(now)); }
+    await tick();
+  };
+  return { v, map, advance, anim, pos, go, setSpeed, pump, errors, raf };
+}
+const near = (p, x, y, eps = 1e-6) => p && Math.abs(p[0] - x) < eps && Math.abs(p[1] - y) < eps;
+const evOf = (r, i) => r.events[i];
