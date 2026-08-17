@@ -238,3 +238,29 @@ for (const [W, H, vw, vh] of [[640, 480, 1280, 720], [1000, 700, 1920, 1080], [3
   }
   check(drawn.dark.join() !== drawn.light.join(), 'tile colours must differ between themes');
 }
+
+// ---------------- graceful degradation ----------------
+for (const [label, opts] of [
+  ['map 404', { mapFetch: '404' }],
+  ['map network error', { mapFetch: 'down' }],
+  ['old run (no x,y) with map', { run: OLD_RUN }],
+  ['old run and no map', { run: OLD_RUN, mapFetch: '404' }],
+]) {
+  let threw = null, b;
+  try {
+    b = boot(opts);
+    await tick();
+    for (const i of [0, 1, 2]) await goto(b, i);
+  } catch (e) { threw = e; }
+  check(!threw, label + ': threw ' + (threw && threw.message));
+  const empty = b && b.v.$('mapempty');
+  if (b && label !== 'old run (no x,y) with map') check(empty && !empty.classList.contains('hidden'), label + ': #mapempty empty state must be shown');
+  if (b && label === 'old run (no x,y) with map') check(!b.rec.ops.some(o => SHAPES.has(o.op) && o.fill === norm(b.tok('--accent'))), label + ': no hero marker without coordinates');
+}
+{
+  const b = boot();
+  await tick();
+  await goto(b, 1);
+  const empty = b.v.$('mapempty');
+  check(!empty || empty.classList.contains('hidden'), 'empty state must be hidden when the map is shown');
+}
