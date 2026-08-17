@@ -141,3 +141,40 @@ for (const [W, H, vw, vh] of [[640, 480, 1280, 720], [1000, 700, 1920, 1080], [3
     }
   }
 }
+
+{
+  const b = boot({ W: 640, H: 480 });
+  await tick();
+  const t = await transform(b);
+  check(t, 'transform not derivable');
+  if (t) {
+    // hero marker is at the pixel of (x,y) and moves with the cursor
+    check(near(t.a, px(t, 10, 10), t.ts / 2), 'hero marker not at tile (10,10)');
+    check(near(t.c, px(t, 14, 12), t.ts / 2), 'hero marker did not move to tile (14,12)');
+    check(Math.abs(t.c[0] - t.a[0]) > 0, 'hero marker must move when the cursor moves');
+    // NPC markers come from event npcs
+    await goto(b, 2);
+    const el = marker(b, '--warn').map(centre), boss = marker(b, '--bad').map(centre);
+    check(el.some(p => near(p, px(t, 17, 12), t.ts / 2)), 'elite npc e1 marker (warn colour) not at (17,12)');
+    check(boss.some(p => near(p, px(t, 12, 15), t.ts / 2)), 'boss marker (bad colour) not at (12,15)');
+    await goto(b, 1);
+    check(!marker(b, '--warn').length, 'no elite marker expected when the event has no npcs');
+    // hover tooltip
+    const tip = b.v.$('maptip');
+    await goto(b, 2);
+    const hp = px(t, 7, 3);
+    b.cv.fire('mousemove', { offsetX: hp[0], offsetY: hp[1], clientX: hp[0], clientY: hp[1] });
+    const tx = tip ? tip.textContent : '';
+    check(/\b7\s*,\s*3\b/.test(tx), 'tooltip must show the tile coordinates 7,3, got ' + JSON.stringify(tx));
+    check(/Jungle Edge/.test(tx), 'tooltip must show the zone name (zone 1 = Jungle Edge), got ' + JSON.stringify(tx));
+    check(tip && !tip.classList.contains('hidden'), 'tooltip must be visible while hovering');
+    const np = px(t, 17, 12);
+    b.cv.fire('mousemove', { offsetX: np[0], offsetY: np[1], clientX: np[0], clientY: np[1] });
+    check(/e1|elite|Elite/.test(tip.textContent), 'tooltip over an npc must mention it, got ' + JSON.stringify(tip.textContent));
+    b.cv.fire('mouseleave', {});
+    check(tip.classList.contains('hidden') || tip.textContent.trim() === '', 'tooltip must hide on mouseleave');
+    // grass vs floor kind in the tooltip
+    const gp = px(t, 6, 3); // (6+3)%3===0 -> grass
+    b.cv.fire('mousemove', { offsetX: gp[0], offsetY: gp[1], clientX: gp[0], clientY: gp[1] });
+    check(/grass/i.test(tip.textContent), 'tooltip must show the tile kind (grass), got ' + JSON.stringify(tip.textContent));
+    b.cv.fire('mouseleave', {});
