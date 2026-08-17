@@ -97,3 +97,17 @@ for (const theme of ['dark', 'light']) {
     check(new RegExp(name).test(b.v.$('maptip').textContent), `${theme}: tooltip must name ${name}, got "${b.v.$('maptip').textContent}"`);
   }
 }
+
+// ---- legend: 8 tile entries ----
+{
+  const markup = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<style[\s\S]*?<\/style>/g, '');
+  const lg = (markup.match(/id\s*=\s*["']maplegend["'][^>]*>([\s\S]*?)<\/div>/) || [, ''])[1];
+  const script = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]).join('\n');
+  for (const k of ['wall', 'rock', 'fence', 'tree', 'water', 'floor', 'grass', 'camp']) {
+    check(new RegExp('sw-' + k + '\\b').test(lg) || new RegExp('sw-' + k + '\\b').test(script) || (k === 'floor' && /sw-floor/.test(html)), `legend must have a sw-${k} swatch`);
+  }
+  const css = (html.match(/<style[^>]*>([\s\S]*?)<\/style>/) || [, ''])[1];
+  for (const k of ['rock', 'fence', 'tree', 'water']) check(new RegExp('\\.sw-' + k + '\\s*\\{[^}]*--tile-' + k).test(css), `.sw-${k} must use --tile-${k}`);
+  const entries = new Set([...(lg + script).matchAll(/sw-(wall|rock|fence|tree|water|floor|grass|camp)\b/g)].map(m => m[1]));
+  check(entries.size === 8, `legend must list 8 tile kinds, found ${entries.size}`);
+}
