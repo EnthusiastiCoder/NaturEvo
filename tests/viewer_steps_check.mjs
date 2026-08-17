@@ -156,3 +156,20 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
     check(np && isInt(np[1]) && !isInt(np[0]), `elite: mid-tick drawn position ${JSON.stringify(np)} must be between two tile centres`);
   }
 }
+
+// ---------- pause freezes, play resumes from the same step ----------
+{
+  const h = boot(); h.jv().goto(0); h.setSpeed(1);
+  if (hasApi(h, 'pause')) {
+    h.play(); await h.pump(600);
+    h.play(); await h.pump(50); await h.advance(300);
+    const k = h.anim().step, tile = h.anim().tile.slice(), n = h.log().length, pos = h.anim().pos.slice();
+    check(k > 0 && k < NSTEP - 1, `pause: must be mid-walk, step ${k}`);
+    await h.pump(2000);
+    check(h.log().length === n && eq(h.anim().tile, tile), 'pause: step must not advance while paused');
+    check(eq(h.anim().pos, pos) || isInt(h.anim().pos[0]), `pause: position must hold, ${JSON.stringify(pos)} -> ${JSON.stringify(h.anim().pos)}`);
+    h.play(); await h.pump(300);
+    const after = h.log().slice(n);
+    check(after.length >= 1 && after[0][0] === 1 && after[0][1] === k + 1, `pause: play must resume at step ${k + 1}, got ${JSON.stringify(after[0])}`);
+  }
+}
