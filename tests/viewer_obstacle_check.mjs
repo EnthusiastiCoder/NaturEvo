@@ -52,3 +52,17 @@ function tileInfo(b, token) {
   const extra = b.rec.ops.filter(o => o !== r && /^(fillRect|strokeRect|arc|ellipse|moveTo|lineTo|rect)$/.test(o.op) && inside(o));
   return { rect: r.a, sig: base + '|' + extra.map(o => `${o.op}:${o.fill}:${o.stroke}`).sort().join(','), extra };
 }
+
+// ---- tokens in both themes ----
+{
+  const b = boot();
+  const per = {};
+  for (const theme of ['dark', 'light']) {
+    b.v.root.dataset.theme = theme;
+    per[theme] = Object.fromEntries([...KINDS.map(k => k[2]), '--tile-floor', '--tile-grass'].map(n => [n, norm(b.tok(n))]));
+    const vals = Object.values(per[theme]);
+    for (const [, name, t] of KINDS) check(per[theme][t], `${theme}: ${t} token missing`);
+    check(new Set(vals).size === vals.length, `${theme}: obstacle tokens must be distinct from each other and from floor and grass`);
+  }
+  for (const [, , t] of KINDS) check(per.dark[t] !== per.light[t], `${t} must differ between dark and light`);
+}
