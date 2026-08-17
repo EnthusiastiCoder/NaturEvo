@@ -108,3 +108,19 @@ const evOf = (r, i) => r.events[i];
   const h2 = boot({ run: mapRun(300) }); h2.setSpeed(4096); h2.go(10);
   check(near(h2.pos(), 20, 10), `max speed: hero must snap to end tile at once, got ${JSON.stringify(h2.pos())}`);
 }
+
+// ---------- windowed run ----------
+{
+  const total = 6000, run = mapRun(300); run.total = total;
+  const fetchImpl = async url => {
+    const from = +/from=(\d+)/.exec(url)[1], count = +/count=(\d+)/.exec(url)[1];
+    const r = mapRun(Math.min(count, total - from)); r.from = from; r.total = total;
+    r.events.forEach((e, i) => { e.idx = from + i; e.hero.x = 3; e.hero.y = 4; });
+    return jsonResp(r);
+  };
+  const h = boot({ run, protocol: 'http:', fetchImpl });
+  try { h.go(5000); await h.advance(500); await tick(); } catch (e) { h.errors.push(e); }
+  check(h.v.fetchCalls.some(u => /\/api\/run\?/.test(u) && /from=\d+/.test(u)), 'crossing window must fetch a new window');
+  check(h.errors.length === 0, 'crossing a window must not throw: ' + h.errors.map(String));
+  check(near(h.pos(), 3, 4), `after window arrives the map must draw the event tile (3,4), got ${JSON.stringify(h.pos())}`);
+}
