@@ -495,7 +495,7 @@ fn losing_seed_3_has_no_postgame() {
     assert_eq!(r.max_stage, 0);
     assert!(r.events.len() <= 65536);
     assert!(r.events.iter().all(|e| e.kind != "win" && e.kind != "evolve"));
-    let small = simulate_with(7, &cfg(&[("event_cap", "5000")]));
+    let small = simulate_with(3, &cfg(&[("event_cap", "5000")]));
     assert_eq!(small.events.len(), 5000);
     assert!(small.capped);
     assert_eq!(small.first_win_event, None);
