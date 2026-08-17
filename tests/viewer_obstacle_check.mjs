@@ -66,3 +66,34 @@ function tileInfo(b, token) {
   }
   for (const [, , t] of KINDS) check(per.dark[t] !== per.light[t], `${t} must differ between dark and light`);
 }
+
+// ---- each kind draws a distinct tile with a pattern, in both themes ----
+for (const theme of ['dark', 'light']) {
+  const b = boot();
+  await tick(); // let /api/map arrive
+  await redraw(b, theme);
+  const sigs = [];
+  for (const [ch, name, t] of KINDS) {
+    const info = tileInfo(b, t);
+    check(info, `${theme}: ${name} tile must be painted with ${t}`);
+    if (!info) continue;
+    check(info.extra.length >= 1, `${theme}: ${name} must draw a pattern (at least one op inside its tile), got none`);
+    sigs.push(info.sig);
+  }
+  check(new Set(sigs).size === sigs.length, `${theme}: the five obstacle kinds must differ in colour and pattern`);
+  // tooltip names the kind
+  const info = tileInfo(b, '--tile-rock');
+  if (info) {
+    const cx = info.rect[0] + info.rect[2] / 2, cy = info.rect[1] + info.rect[3] / 2;
+    b.cv.fire('mousemove', { offsetX: cx, offsetY: cy, clientX: cx, clientY: cy });
+    const tip = b.v.$('maptip');
+    check(!tip.classList.contains('hidden') && /Rock/.test(tip.textContent), `${theme}: tooltip over a rock tile must name Rock, got "${tip.textContent}"`);
+  }
+  for (const [ch, name, t] of KINDS.filter(k => k[1] !== 'Rock')) {
+    const i = tileInfo(b, t);
+    if (!i) continue;
+    const cx = i.rect[0] + i.rect[2] / 2, cy = i.rect[1] + i.rect[3] / 2;
+    b.cv.fire('mousemove', { offsetX: cx, offsetY: cy, clientX: cx, clientY: cy });
+    check(new RegExp(name).test(b.v.$('maptip').textContent), `${theme}: tooltip must name ${name}, got "${b.v.$('maptip').textContent}"`);
+  }
+}
