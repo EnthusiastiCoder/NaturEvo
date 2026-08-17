@@ -136,3 +136,23 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
     check(idx.length > 1 && idx.every((v, i) => i === 0 || v === idx[i - 1] + 1), `16x: steps must still advance one per tick, got ${JSON.stringify(idx)}`);
   }
 }
+
+// ---------- elites move one tile per tick, in sync with the hero ----------
+{
+  const h = boot(); h.jv().goto(0); h.setSpeed(1);
+  if (hasApi(h, 'elite')) {
+    h.play(); await h.pump(100);
+    let prev = null;
+    for (let i = 0; i < 10; i++) {
+      await h.pump(100);
+      const k = h.anim().step, nt = (h.anim().ntile || {}).e1;
+      check(k >= 0 && eq(nt, ELITE[k]), `elite: committed tile ${JSON.stringify(nt)} must equal nsteps[${k}] ${JSON.stringify(ELITE[k])}`);
+      if (prev && nt) check(manh(prev, nt) === 1, `elite: moved ${JSON.stringify(prev)} -> ${JSON.stringify(nt)}, expected one tile per tick`);
+      prev = nt;
+    }
+    // elite glides too: mid-tick drawn position between two tile centres
+    await h.advance(16);
+    const np = (h.anim().npcs || {}).e1;
+    check(np && isInt(np[1]) && !isInt(np[0]), `elite: mid-tick drawn position ${JSON.stringify(np)} must be between two tile centres`);
+  }
+}
