@@ -99,3 +99,40 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
   const one = await count(1), four = await count(4);
   if (one !== null) check(four === 4 * one || Math.abs(four - 4 * one) <= 1, `4x must take 4 times as many steps per second as 1x (${four} vs ${one})`);
 }
+
+// ---------- glide: strictly between two adjacent tile centres up to 8x; snap at 16x ----------
+{
+  const sample = async speed => {
+    const h = boot(); h.jv().goto(0); h.setSpeed(speed);
+    if (!hasApi(h, speed + 'x glide')) return null;
+    h.play(); await h.pump(50); await h.pump(50);
+    const out = [];
+    for (let i = 0; i < 6; i++) {
+      // advance a frame inside the tick period (tick = 100/speed ms; frames are 16 ms) without firing the interval
+      await h.advance(16);
+      out.push({ pos: (h.anim().pos || []).slice(), tile: (h.anim().tile || []).slice(), walking: h.anim().step >= 0 });
+      await h.pump(100);
+    }
+    return out;
+  };
+  for (const sp of [1, 4]) {
+    const s = await sample(sp);
+    if (!s) continue;
+    const mids = s.filter(o => o.walking);
+    check(mids.length >= 3, `${sp}x: walk must be in progress during sampling`);
+    for (const o of mids) {
+      const [x, y] = o.pos, between = !isInt(x) && isInt(y) && Math.abs(x - o.tile[0]) < 1 && Math.abs(x - o.tile[0]) > 0 && Math.abs(Math.round(x - 0.5 + 0.5) - x) > 0;
+      const lo = Math.floor(x), hi = Math.ceil(x);
+      check(between && hi - lo === 1 && Math.abs(o.tile[0] - lo) <= 1 && o.tile[1] === y, `${sp}x: mid-tick drawn position ${JSON.stringify(o.pos)} must lie strictly between two adjacent tile centres next to tile ${JSON.stringify(o.tile)}`);
+    }
+  }
+  const s16 = await sample(16);
+  if (s16) for (const o of s16.filter(o => o.walking)) check(isInt(o.pos[0]) && isInt(o.pos[1]) && eq(o.pos, o.tile), `16x: glide must be skipped, drawn ${JSON.stringify(o.pos)} vs tile ${JSON.stringify(o.tile)}`);
+  // above 8x steps still advance one per tick, never a whole path
+  const h = boot(); h.jv().goto(0); h.setSpeed(16);
+  if (hasApi(h, '16x')) {
+    h.play(); await h.pump(500);
+    const idx = h.log().filter(e => e[0] === 1).map(e => e[1]);
+    check(idx.length > 1 && idx.every((v, i) => i === 0 || v === idx[i - 1] + 1), `16x: steps must still advance one per tick, got ${JSON.stringify(idx)}`);
+  }
+}
