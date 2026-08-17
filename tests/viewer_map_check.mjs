@@ -31,3 +31,7 @@ const RUN = {
   ],
 };
 const OLD_RUN = { seed: 1, won: false, deaths: 0, final_level: 1, events: [0, 1, 2].map(i => ({ idx: i, kind: 'travel', text: 'event ' + i, hero: { level: 1, hp: 10, max_hp: 10, xp: 0, gold: 0, potions: 0, zone: 0, weapon: 0, armor: 0 }, mon: null })) };
+
+const norm = c => String(c || '').trim().toLowerCase().replace(/\s+/g, '');
+const centre = o => (o.op === 'arc' || o.op === 'ellipse') ? [o.a[0], o.a[1]] : [o.a[0] + o.a[2] / 2, o.a[1] + o.a[3] / 2];
+const SHAPES = new Set(['fillRect', 'strokeRect', 'arc', 'ellipse']);
