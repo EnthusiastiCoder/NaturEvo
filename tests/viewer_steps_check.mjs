@@ -26,3 +26,32 @@ const mkRun = (n = 300, { withSteps = true } = {}) => {
   for (let i = 2; i < n; i++) { r.events[i].hero.x = 30; r.events[i].hero.y = 10; r.events[i].npcs = [{ id: 'e1', sp: 0, lv: 1, x: 21, y: 12 }]; }
   return r;
 };
+
+function boot(opts = {}) {
+  const errors = [];
+  let now = 1e6; const raf = [];
+  const pre = w => {
+    w.devicePixelRatio = 1; w.innerWidth = 1280; w.innerHeight = 720;
+    w.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} };
+    w.requestAnimationFrame = f => { raf.push(f); return raf.length; };
+    w.cancelAnimationFrame = () => {};
+    w.performance = { now: () => now };
+    const RD = Date; w.Date = class extends RD { static now() { return now; } };
+  };
+  const v = load({ run: opts.run || mkRun(), pre, protocol: opts.protocol || 'file:', fetchImpl: opts.fetchImpl });
+  const map = v.$('map');
+  if (map) { map.clientWidth = 640; map.clientHeight = 640; if (map.parent) { map.parent.clientWidth = 640; map.parent.clientHeight = 640; } }
+  const frames = () => { const q = raf.splice(0); q.forEach(f => { try { f(now); } catch (e) { errors.push(e); } }); };
+  const advance = async ms => { for (let t = 0; t < ms; t += 16) { now += 16; frames(); } await tick(); };
+  const pump = async ms => { for (let t = 0; t < ms; t += 50) { now += 50; v.intervals.forEach(f => { try { f(); } catch (e) { errors.push(e); } }); frames(); } await tick(); };
+  const anim = () => v.win.__mapAnim || {};
+  const jv = () => v.win.__jv;
+  const setSpeed = s => { const n = v.$('speed-num'); n.value = String(s); n.fire('change'); };
+  const log = () => (jv().stepLog || []).map(e => e.slice());
+  const play = () => v.$('play').click();
+  return { v, map, advance, pump, anim, jv, setSpeed, log, play, errors, raf };
+}
+const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const isInt = n => Math.abs(n - Math.round(n)) < 1e-9;
+const manh = (a, b) => Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]);
+const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' && Array.isArray(h.jv().stepLog); check(ok, msg + ': __jv.gotoStep and __jv.stepLog must exist'); return ok; };
