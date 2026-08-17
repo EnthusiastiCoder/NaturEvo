@@ -178,3 +178,46 @@ for (const [W, H, vw, vh] of [[640, 480, 1280, 720], [1000, 700, 1920, 1080], [3
     b.cv.fire('mousemove', { offsetX: gp[0], offsetY: gp[1], clientX: gp[0], clientY: gp[1] });
     check(/grass/i.test(tip.textContent), 'tooltip must show the tile kind (grass), got ' + JSON.stringify(tip.textContent));
     b.cv.fire('mouseleave', {});
+
+    // zoom toggle, double click, persistence
+    const tsBird = t.ts;
+    const zoomBtn = b.v.$('mapzoom');
+    check(zoomBtn, 'Zoom button missing');
+    if (zoomBtn) {
+      zoomBtn.click();
+      await goto(b, 2);
+      check(b.v.store.get('jv-mapzoom') === '1', 'zoom state must persist as jv-mapzoom=1, got ' + b.v.store.get('jv-mapzoom'));
+      const h = marker(b, '--accent').map(centre)[0], e1 = marker(b, '--warn').map(centre)[0];
+      check(h && Math.abs(h[0] - b.W / 2) <= b.W / 16 && Math.abs(h[1] - b.H / 2) <= b.H / 16, 'zoomed: hero marker must stay at the canvas centre, got ' + JSON.stringify(h));
+      if (h && e1) {
+        const tsZ = (e1[0] - h[0]) / 3;
+        check(Number.isInteger(tsZ) && tsZ >= 2 * tsBird, `zoomed tile size ${tsZ} must be an integer >= 2x bird's-eye ${tsBird}`);
+        check(tsZ * 16 <= Math.min(b.W, b.H) + 1e-6, `16x16 window must fit: ${tsZ}*16`);
+      } else check(false, 'zoomed: elite npc within 3 tiles must still be drawn');
+      await goto(b, 3);
+      const h3 = marker(b, '--accent').map(centre)[0];
+      check(h3 && Math.abs(h3[0] - b.W / 2) <= b.W / 16, 'zoomed: hero marker stays centred after the hero moves');
+      zoomBtn.click();
+      check(b.v.store.get('jv-mapzoom') === '0', 'toggling back must store jv-mapzoom=0');
+      await goto(b, 1);
+      const back = marker(b, '--accent').map(centre)[0];
+      check(back && near(back, px(t, 14, 12), t.ts / 2), 'bird\'s-eye view must be restored');
+    }
+    b.cv.fire('dblclick', { offsetX: 100, offsetY: 100, clientX: 100, clientY: 100 });
+    check(b.v.store.get('jv-mapzoom') === '1', 'double click must switch to zoom');
+    b.cv.fire('dblclick', { offsetX: 100, offsetY: 100, clientX: 100, clientY: 100 });
+    check(b.v.store.get('jv-mapzoom') === '0', 'double click again must switch back');
+  }
+  // persisted zoom is applied on load
+  const z = boot({ W: 640, H: 480, storage: { 'jv-mapzoom': '1' } });
+  await tick();
+  await goto(z, 1);
+  const h = marker(z, '--accent').map(centre)[0];
+  check(h && Math.abs(h[0] - 320) <= 40 && Math.abs(h[1] - 240) <= 30, 'stored zoom must start zoomed (hero at the centre), got ' + JSON.stringify(h));
+  // log lines show (x,y) for walk and encounter events
+  const log = b.v.$('log');
+  b.v.win.__jv.goto(3);
+  const lt = (log.textContent || '') + (log.innerHTML || '');
+  check(/\(\s*20\s*,\s*12\s*\)/.test(lt), 'log line for the walk event must show (20,12)');
+  check(/\(\s*14\s*,\s*12\s*\)/.test(lt), 'log line for the encounter event must show (14,12)');
+}
