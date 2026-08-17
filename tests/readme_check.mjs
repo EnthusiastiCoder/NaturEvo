@@ -25,3 +25,5 @@ for (const s of ['Power Strike', 'Brace', 'Stun', 'Heal']) check(readme.includes
 for (const w of ['walk', 'npcs', 'path', 'steps']) check(new RegExp('\\b' + w + '\\b').test(readme), 'README must mention ' + w);
 check(/steps?[^.\n]*(not|never)[^.\n]*events?|events?[^.\n]*(not|never)[^.\n]*steps?/i.test(readme), 'README must note that steps are not events (event cap)');
 check(/jv-mapzoom|zoom/i.test(readme), 'README should mention the map zoom in the viewer');
+
+done();
