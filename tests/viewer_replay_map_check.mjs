@@ -156,3 +156,20 @@ const evOf = (r, i) => r.events[i];
   const h3 = boot({ run: mapRun(300) }); h3.go(0); await h3.advance(500); h3.raf.length = 0;
   h3.go(1); check(h3.raf.length === 0, 'requestAnimationFrame must not be scheduled when no animation is active');
 }
+
+// ---------- crisp, no scroll, themes, no console errors ----------
+for (const theme of ['dark', 'light']) {
+  const h = boot({ run: mapRun(300) });
+  h.v.root.dataset.theme = theme; h.v.win.dispatchEvent({ type: 'jv-themechange' });
+  h.go(3); await h.advance(100);
+  check(h.map && h.map.width === 640 && h.map.height === 640, `${theme}: map backing size must equal CSS size at dpr 1 during animation, got ${h.map && h.map.width}x${h.map && h.map.height}`);
+  check(h.errors.length === 0, `${theme}: no errors during animation`);
+  check(!/overflow\s*:\s*scroll/i.test(markup), 'no forced scroll');
+}
+{
+  const css = (html.match(/<style[^>]*>([\s\S]*?)<\/style>/) || [, ''])[1];
+  const mapSrc = (html.match(/function\s+attackAnim[\s\S]{0,2000}/) || [''])[0];
+  check(!/#[0-9a-fA-F]{3,8}\b/.test(mapSrc) && !/\b\d+px\s+\w/.test(mapSrc), 'attackAnim must use tokens: no hex literals or px fonts');
+  check(/imageSmoothingEnabled\s*=\s*false/.test(html), 'map must disable image smoothing');
+  void css;
+}
