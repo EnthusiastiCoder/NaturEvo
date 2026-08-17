@@ -93,3 +93,18 @@ const evOf = (r, i) => r.events[i];
     check(near(h.pos(), e.hero.x, e.hero.y), `scrub to ${i}: marker must be at (${e.hero.x},${e.hero.y}), got ${JSON.stringify(h.pos())}`);
   }
 }
+
+// ---------- walk animation ----------
+{
+  const run = mapRun(300), h = boot({ run });
+  h.go(10); h.setSpeed(1);
+  await h.advance(100);
+  const p = h.pos(), onSeg = p && Math.abs(p[1] - 10) < 1e-6 && p[0] >= 10 - 1e-6 && p[0] <= 20 + 1e-6;
+  check(h.anim() && h.anim().active, 'walk at 1x must be animating (__mapAnim.active)');
+  check(onSeg, `mid-walk position must lie on path segment (10,10)-(20,10), got ${JSON.stringify(p)}`);
+  await h.advance(5000);
+  check(near(h.pos(), 20, 10), `walk must end at (20,10), got ${JSON.stringify(h.pos())}`);
+  check(h.anim() && h.anim().active === false, 'walk animation must end (active false)');
+  const h2 = boot({ run: mapRun(300) }); h2.setSpeed(4096); h2.go(10);
+  check(near(h2.pos(), 20, 10), `max speed: hero must snap to end tile at once, got ${JSON.stringify(h2.pos())}`);
+}
