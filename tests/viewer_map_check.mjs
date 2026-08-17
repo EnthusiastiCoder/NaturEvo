@@ -76,3 +76,45 @@ async function transform(b) {
 }
 const px = (t, x, y) => [t.ox + (x + 0.5) * t.ts, t.oy + (y + 0.5) * t.ts];
 const near = (p, q, tol) => Math.abs(p[0] - q[0]) <= tol && Math.abs(p[1] - q[1]) <= tol;
+
+// ---------------- static: markup and tokens ----------------
+const markup = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<style[\s\S]*?<\/style>/g, '');
+const css = (html.match(/<style[^>]*>([\s\S]*?)<\/style>/) || [, ''])[1].replace(/\/\*[\s\S]*?\*\//g, '');
+{
+  const tag = (markup.match(/<canvas\b[^>]*\bid\s*=\s*["']map["'][^>]*>/i) || [])[0];
+  check(tag, '<canvas id="map"> missing in markup');
+  if (tag) {
+    check(!/\swidth\s*=|\sheight\s*=/i.test(tag), '#map must not have width/height attributes');
+    check(!/\bstyle\s*=/i.test(tag), '#map must not have inline style');
+  }
+  const iMap = markup.search(/id\s*=\s*["']map["']/), iZone = markup.search(/id\s*=\s*["']zone["']/);
+  check(iMap >= 0 && iZone >= 0 && iMap < iZone, '#map must come before #zone in the centre column');
+  check(/id\s*=\s*["']mapzoom["']/.test(markup), '#mapzoom Zoom toggle button missing');
+  check(/id\s*=\s*["']maptip["']/.test(markup), '#maptip tooltip element missing');
+  check(/id\s*=\s*["']mapempty["']/.test(markup), '#mapempty empty-state element missing');
+  const idCss = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter(m => m[1].split(',').some(s => s.trim().endsWith('#map')));
+  for (const m of idCss) for (const d of m[2].split(';')) {
+    const mm = d.match(/^\s*(width|height)\s*:\s*([^;]+)$/i);
+    if (mm) check(!/^\s*\d+(\.\d+)?px\s*$/i.test(mm[2]), `#map css must not set fixed-px ${mm[1]}`);
+  }
+}
+{
+  const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(m => ({ sels: m[1].split(',').map(s => s.trim().replace(/\s+/g, ' ')), body: m[2] }));
+  const tokens = t => Object.fromEntries(rules.filter(r => r.sels.some(s => new RegExp('^:root\\[data-theme=["\']?' + t + '["\']?\\]$').test(s))).flatMap(r => r.body.split(';').map(d => { const k = d.indexOf(':'); return k < 0 ? null : [d.slice(0, k).trim(), d.slice(k + 1).trim()]; }).filter(Boolean)));
+  const dark = tokens('dark'), light = tokens('light');
+  const NEED = ['--tile-floor', '--tile-grass', '--tile-wall', '--tile-camp', ...Array.from({ length: 9 }, (_, i) => '--biome-' + i)];
+  for (const n of NEED) {
+    check(dark[n], `token ${n} missing in the dark theme block`);
+    check(light[n], `token ${n} missing in the light theme block`);
+  }
+  for (const n of ['--tile-floor', '--tile-grass', '--tile-wall', '--tile-camp']) check(dark[n] && light[n] && norm(dark[n]) !== norm(light[n]), `${n} must differ between dark and light`);
+  // contrast of the hero marker (accent) against the tiles, both themes (>= 3:1)
+  const rgb = c => { const m = String(c || '').trim().match(/^#([0-9a-f]{6})$/i); return m ? [0, 2, 4].map(i => parseInt(m[1].slice(i, i + 2), 16)) : null; };
+  const lum = c => { const [r, g, b] = rgb(c).map(x => { x /= 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+  const cr = (a, b) => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05);
+  const accent = (rules.find(r => r.sels.includes(':root')).body.match(/--accent\s*:\s*([^;]+)/) || [])[1];
+  for (const [name, set] of [['dark', dark], ['light', light]]) for (const n of ['--tile-floor', '--tile-grass']) {
+    if (rgb(accent) && rgb(set[n])) check(cr(accent, set[n]) >= 3, `hero marker (accent ${accent}) vs ${n} in ${name}: contrast ${cr(accent, set[n]).toFixed(2)} < 3`);
+    else check(false, `cannot compute contrast for ${n} in ${name} (tokens must be #rrggbb)`);
+  }
+}
