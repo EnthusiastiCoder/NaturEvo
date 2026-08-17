@@ -232,3 +232,16 @@ for (const theme of ['dark', 'light']) {
   check(!/overflow\s*:\s*scroll/i.test(markup), 'no forced scroll');
   check(/imageSmoothingEnabled\s*=\s*false/.test(html), 'map must keep image smoothing off');
 }
+
+// ---------- old-format data without steps: path fallback or snap, no exception ----------
+{
+  for (const [label, mod] of [['path only', r => r], ['no path no steps', r => { delete r.events[1].path; return r; }]]) {
+    const h = boot({ run: mod(mkRun(300, { withSteps: false })) });
+    h.jv().goto(0); h.setSpeed(1);
+    try { h.play(); await h.pump(4000); h.play(); h.jv().goto(1); await h.advance(1000); h.jv().goto(0); await h.advance(100); } catch (e) { h.errors.push(e); }
+    check(h.errors.length === 0, `old format (${label}): must not throw: ` + h.errors.map(String));
+    h.jv().goto(1); await h.advance(1000);
+    check(eq(h.anim().pos, [30, 10]), `old format (${label}): hero must end at (30,10), got ${JSON.stringify(h.anim().pos)}`);
+    if (typeof h.jv().gotoStep === 'function') { try { h.jv().gotoStep(1, 5); } catch (e) { check(false, `old format (${label}): gotoStep must not throw: ${e}`); } }
+  }
+}
