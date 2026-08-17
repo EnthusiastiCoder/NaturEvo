@@ -675,6 +675,29 @@ function walkAnim(path,end){
  var d=Math.max(120,Math.min(400,len*25))/speedVal;if(!(d>=MIN_MS)||typeof window.requestAnimationFrame!=="function")return false;
  anim.active=true;anim.kind="walk";anim.from=path[0].slice();anim.to=end;anim.t=0;anim.duration=d;animAtk="";animPath=path;animT0=nowMs();schedule();return true;
 }
+var animFromN=null;
+/* committed state of the replay cursor: hero tile, step index (-1 outside a walk) and npc tiles; npcs follow nsteps up to the step */
+function commit(){
+ var e=inWin(cur)?ev[cur-base]:null;if(!e||!hasXY(e.hero))return null;
+ var k=-1,tile=[e.hero.x,e.hero.y],nt={},i,j,q,id;
+ (e.npcs||[]).forEach(function(n){if(hasXY(n))nt[n.id]=[n.x,n.y];});
+ if(sub>=0&&subFor===cur&&e.kind==="walk"&&e.steps&&sub<e.steps.length&&e.steps[sub]){
+  k=sub;tile=[e.steps[k][0],e.steps[k][1]];
+  if(e.nsteps){
+   var pe=inWin(cur-1)?ev[cur-1-base]:null;
+   if(pe)(pe.npcs||[]).forEach(function(n){if(hasXY(n)&&nt[n.id])nt[n.id]=[n.x,n.y];});
+   for(i=0;i<=k&&i<e.nsteps.length;i++){var s0=e.nsteps[i]||[];for(j=0;j<s0.length;j++){q=s0[j];id=q[0];if(nt[id])nt[id]=[q[1],q[2]];}}
+  }
+ }
+ return{tile:tile,step:k,npcs:nt};
+}
+function stepGlide(pc,nc){
+ anim.active=false;
+ if(!(speedVal<=8)||typeof window.requestAnimationFrame!=="function")return;
+ var d=100/speedVal;
+ anim.active=true;anim.kind="step";anim.from=pc.tile.slice();anim.to=nc.tile.slice();anim.t=0;anim.duration=d;animFromN=pc.npcs;animPath=null;animAtk="";animT0=nowMs();keepAnim=true;schedule();
+}
+function lerp2(a,b,f){if(!a||Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])>1)return b.slice();return[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f];}
 function startAnim(e){
  anim.active=false;anim.kind="";anim.from=null;anim.to=null;anim.t=0;anim.duration=0;animPath=null;animAtk="";
  var h=e&&e.hero;if(!hasXY(h))return;
