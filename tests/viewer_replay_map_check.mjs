@@ -57,3 +57,14 @@ function boot(opts = {}) {
 }
 const near = (p, x, y, eps = 1e-6) => p && Math.abs(p[0] - x) < eps && Math.abs(p[1] - y) < eps;
 const evOf = (r, i) => r.events[i];
+
+// ---------- seek moves the marker ----------
+{
+  const run = mapRun(300), h = boot({ run });
+  h.v.$('tab-replay').click();
+  for (const i of [0, 7, 150, 42, 150, 0, 299]) {
+    h.go(i); await h.advance(1000);
+    const e = evOf(run, i);
+    check(near(h.pos(), e.hero.x, e.hero.y), `seek ${i}: marker must be at hero (${e.hero.x},${e.hero.y}), got ${JSON.stringify(h.pos())}`);
+  }
+}
