@@ -726,7 +726,7 @@ function viewPos(e){
   var k=Math.sin(Math.PI*anim.t)*LUNGE;
   if(animAtk==="hero")hp=[h.x+(mp[0]-h.x)*k,h.y+(mp[1]-h.y)*k];else mp=[mp[0]+(h.x-mp[0])*k,mp[1]+(h.y-mp[1])*k];
  }
- return{hp:hp,mp:mp};
+ return{hp:hp,mp:mp,np:np,cs:cs};
 }
 function showEmpty(msg){var el=$("mapempty");if(!el)return;if(msg){el.textContent=msg;el.classList.remove("hidden");}else el.classList.add("hidden");}
 function lastTrail(){for(var i=cur-base,n=0;i>=0&&n<200;i--,n++)if(ev[i].kind==="walk"&&ev[i].path&&ev[i].path.length>1)return ev[i].path;return null;}
