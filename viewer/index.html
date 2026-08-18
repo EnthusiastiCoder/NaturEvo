@@ -699,7 +699,7 @@ function stepGlide(pc,nc){
 }
 function lerp2(a,b,f){if(!a||Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])>1)return b.slice();return[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f];}
 function startAnim(e){
- anim.active=false;anim.kind="";anim.from=null;anim.to=null;anim.t=0;anim.duration=0;animPath=null;animAtk="";
+ anim.active=false;anim.kind="";anim.from=null;anim.to=null;anim.t=0;anim.duration=0;animPath=null;animAtk="";animFromN=null;
  var h=e&&e.hero;if(!hasXY(h))return;
  var p=e.path,m=e.mon;
  if(e.kind==="walk"&&p&&p.length>1)walkAnim(p,[h.x,h.y]);
