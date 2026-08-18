@@ -707,8 +707,8 @@ function startAnim(e){
  else if(ATK_KINDS[e.kind]&&m&&hasXY(m)){var hh=[h.x,h.y],mm=[m.x,m.y];if(e.kind==="hit_taken")attackAnim(mm,hh,"npc");else attackAnim(hh,mm,"hero");}
 }
 function mapSync(){
- var same=lastCur===cur&&lastEv===ev;lastCur=cur;lastEv=ev;
- if(!same)startAnim(ev[cur-base]);
+ var same=lastCur===cur&&lastEv===ev&&lastSub===sub;lastCur=cur;lastEv=ev;lastSub=sub;
+ if(!same){if(keepAnim)keepAnim=false;else startAnim(ev[cur-base]);}
  drawMap();
 }
 function monDraw(h,m){var same=m.x===h.x&&m.y===h.y,w=(mapData&&mapData.w)||64;return[m.x+(same?(m.x<w-2?SEP:-SEP):0),m.y];}
