@@ -714,8 +714,11 @@ function mapSync(){
 function monDraw(h,m){var same=m.x===h.x&&m.y===h.y,w=(mapData&&mapData.w)||64;return[m.x+(same?(m.x<w-2?SEP:-SEP):0),m.y];}
 /* hero and monster marker positions in tile units for the current frame */
 function viewPos(e){
- var h=e.hero,m=e.mon&&hasXY(e.mon)?e.mon:null,hp=[h.x,h.y],mp=m?monDraw(h,m):null;
- if(anim.active&&anim.kind==="walk"&&animPath){
+ var h=e.hero,m=e.mon&&hasXY(e.mon)?e.mon:null,cs=commit()||{tile:[h.x,h.y],step:-1,npcs:{}},hp=cs.tile.slice(),mp=m?monDraw(h,m):null,np={},id;
+ for(id in cs.npcs)np[id]=cs.npcs[id].slice();
+ if(anim.active&&anim.kind==="step"){
+  hp=lerp2(anim.from,cs.tile,anim.t);if(animFromN)for(id in np)if(animFromN[id])np[id]=lerp2(animFromN[id],cs.npcs[id],anim.t);
+ }else if(anim.active&&anim.kind==="walk"&&animPath){
   var segs=[],tot=0,i,L;for(i=1;i<animPath.length;i++){L=Math.abs(animPath[i][0]-animPath[i-1][0])+Math.abs(animPath[i][1]-animPath[i-1][1]);segs.push(L);tot+=L;}
   var dd=tot*anim.t;hp=[animPath[animPath.length-1][0],animPath[animPath.length-1][1]];
   for(i=0;i<segs.length;i++){if(dd<=segs[i]||i===segs.length-1){var f=segs[i]>0?Math.min(1,dd/segs[i]):1,a=animPath[i],b=animPath[i+1];hp=[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f];break;}dd-=segs[i];}
