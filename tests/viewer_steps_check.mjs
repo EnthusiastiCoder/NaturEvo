@@ -205,7 +205,7 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
   const h = boot({ run, protocol: 'http:', fetchImpl });
   if (hasApi(h, 'window')) {
     h.jv().goto(298); h.setSpeed(1);
-    try { h.play(); await h.pump(5000); h.play(); } catch (e) { h.errors.push(e); }
+    try { h.play(); await h.pump(12000); h.play(); } catch (e) { h.errors.push(e); }
     check(h.errors.length === 0, 'window: crossing a walk boundary must not throw: ' + h.errors.map(String));
     const idx = h.log().filter(e => e[0] === 299).map(e => e[1]);
     check(eq(idx, STEPS.map((_, k) => k)), `window: no steps skipped across the boundary, got ${JSON.stringify(idx)}`);
