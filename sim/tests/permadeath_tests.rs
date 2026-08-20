@@ -74,3 +74,20 @@ fn died_level_is_the_level_at_the_death_event() {
     }
     assert!(seen > 0);
 }
+
+#[test]
+fn off_keeps_the_respawn_loop() {
+    let c = cfg(&[("permadeath", "false"), ("monster_atk_mult", "3.0")]);
+    let mut many = false;
+    let mut respawns = 0;
+    for seed in 0..40u64 {
+        let r = simulate_with(seed, &c);
+        respawns += r.events.iter().filter(|e| e.kind == "respawn").count();
+        if r.deaths > 1 {
+            many = true;
+        }
+        assert!(!r.events.iter().any(|e| e.kind == "end"), "seed {}: end event with permadeath off", seed);
+    }
+    assert!(respawns > 0, "no respawn events with permadeath off");
+    assert!(many, "no run exceeded one death with permadeath off and monster_atk_mult 3.0");
+}
