@@ -145,4 +145,16 @@ fn oversized_request_line_rejected() {
 }
 
 // ---- Addendum 4: permadeath over the API (written before implementation) ----
+
+#[test]
+fn config_lists_permadeath_as_bool_default_true() {
+    let j = common::parse(&text(&get("/api/config"))).unwrap();
+    let ks = j.get("knobs").unwrap().arr();
+    let k = ks.iter().find(|k| k.get("key").unwrap().str() == "permadeath").expect("permadeath listed");
+    assert_eq!(k.get("kind").unwrap().str(), "bool");
+    assert_eq!(k.get("default"), Some(&common::J::Bool(true)));
+    for o in ks.iter().filter(|k| k.get("key").unwrap().str() != "permadeath") {
+        assert_eq!(o.get("kind").unwrap().str(), "number", "{:?}", o.get("key"));
+    }
+}
 }
