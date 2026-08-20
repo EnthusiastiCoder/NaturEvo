@@ -152,3 +152,22 @@ fn lean_summary_equals_full_summary() {
         }
     }
 }
+
+#[test]
+fn cap_and_windowing_still_work() {
+    let off = cfg(&[("permadeath", "false")]);
+    let r = simulate_with(7, &off);
+    assert_eq!(r.events.len(), 65536);
+    assert!(r.capped);
+    let w = parse(&run_window_body(&r, 0, 2000)).unwrap();
+    assert_eq!(w.get("events").unwrap().arr().len(), 2000);
+    // a permadeath run's last window ends with death then end
+    let on = Config::default();
+    let d = (0..200u64).map(|s| simulate_with(s, &on)).find(|r| r.outcome == "died").expect("a died run");
+    let n = d.events.len();
+    let w = parse(&run_window_body(&d, n - 2, 5)).unwrap();
+    let ev = w.get("events").unwrap().arr();
+    assert_eq!(ev.len(), 2);
+    assert_eq!(ev[0].get("kind").unwrap().str(), "death");
+    assert_eq!(ev[1].get("kind").unwrap().str(), "end");
+}
