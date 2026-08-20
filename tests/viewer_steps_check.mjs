@@ -127,6 +127,7 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
       check(between && hi - lo === 1 && Math.abs(o.tile[0] - lo) <= 1 && o.tile[1] === y, `${sp}x: mid-tick drawn position ${JSON.stringify(o.pos)} must lie strictly between two adjacent tile centres next to tile ${JSON.stringify(o.tile)}`);
     }
   }
+  // above 8x walk playback is capped at 8x: still a glide, still one tile per tick (see the cap block below)
   const s16 = await sample(16);
   if (s16) for (const o of s16.filter(o => o.walking)) check(isInt(o.pos[0]) && isInt(o.pos[1]) && eq(o.pos, o.tile), `16x: glide must be skipped, drawn ${JSON.stringify(o.pos)} vs tile ${JSON.stringify(o.tile)}`);
   // above 8x steps still advance one per tick, never a whole path
