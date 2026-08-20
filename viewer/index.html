@@ -777,6 +777,8 @@ function drawMap(){
  for(var z=0;z<9;z++){g.fillStyle=tok("--biome-"+z);var zs=String(z);
   for(y=y0;y<=y1;y++){row=tiles[y]||"";var zr=zones[y]||"";for(x=x0;x<=x1;x++)if(zr.charAt(x)===zs&&!OBST[row.charAt(x)])g.fillRect(ox+x*tsd,oy+y*tsd,tsd,tsd);}}
  g.globalAlpha=1;
+ if(tsd>=5)for(kc in OBST)obstPattern(g,kc,tiles,x0,x1,y0,y1,ox,oy,tsd);
+ g.globalAlpha=1;
  var tr=e.kind==="walk"&&e.path&&e.path.length>1?e.path:lastTrail();
  if(tr){var tw=Math.max(2,Math.round(tsd/4)),pts=tr.map(function(p){return ctr(p[0],p[1]);});g.globalAlpha=0.7;g.fillStyle=tok("--muted");
   for(var q=1;q<pts.length;q++){var pa=pts[q-1],pb=pts[q],lx=Math.round(Math.min(pa[0],pb[0])-tw/2),ly=Math.round(Math.min(pa[1],pb[1])-tw/2);g.fillRect(lx,ly,Math.round(Math.abs(pb[0]-pa[0]))+tw,Math.round(Math.abs(pb[1]-pa[1]))+tw);}
