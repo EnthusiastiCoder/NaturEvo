@@ -303,6 +303,62 @@ impl Map {
         &self.anchors
     }
 
+    /// Home tiles for `per_zone` roaming elites in each of zones 1..=7 (zone-major order).
+    /// Rules (scaled with size): at least 12 from camp, 14 from the boss home and from each other,
+    /// 6 from a zone border where possible. 200 attempts, minimums relaxed 25% per 50 failures, floor 8.
+    pub fn elite_homes(&self, seed: u64, per_zone: u32) -> Vec<(usize, usize)> {
+        let n = self.n;
+        let mut rng = Rng::new(seed ^ MAP_SALT ^ 0x4E50_4353);
+        let camp = self.camp();
+        let boss = self.anchors[8];
+        let d = |a: (usize, usize), b: (usize, usize)| a.0.abs_diff(b.0) + a.1.abs_diff(b.1);
+        let border = |p: (usize, usize)| {
+            let z = self.zone_of(p.0, p.1);
+            let mut best = 99usize;
+            for dy in -6i32..=6 {
+                for dx in -6i32..=6 {
+                    let (x, y) = (p.0 as i32 + dx, p.1 as i32 + dy);
+                    if x < 0 || y < 0 || x >= n as i32 || y >= n as i32 {
+                        continue;
+                    }
+                    if self.zone_of(x as usize, y as usize) != z {
+                        best = best.min((dx.abs() + dy.abs()) as usize);
+                    }
+                }
+            }
+            best
+        };
+        let mut homes: Vec<(usize, usize)> = Vec::new();
+        for z in 1..=7usize {
+            let tiles: Vec<(usize, usize)> = (0..n * n)
+                .map(|i| (i % n, i / n))
+                .filter(|&(x, y)| self.zone_of(x, y) == z && self.passable(x, y))
+                .collect();
+            for _ in 0..per_zone {
+                let mut chosen = None;
+                for attempt in 0..200usize {
+                    let relax = 1.0 - 0.25 * (attempt / 50) as f64;
+                    let m = |base: usize| ((scaled_min(base, n) as f64 * relax) as usize).max(8.min(scaled_min(base, n)));
+                    let p = tiles[rng.range(0, tiles.len() as i32 - 1) as usize];
+                    let edge = if attempt < 100 { 6 } else { 0 };
+                    if d(p, camp) >= m(12) && d(p, boss) >= m(14) && homes.iter().all(|&h| d(h, p) >= m(14)) && border(p) >= edge {
+                        chosen = Some(p);
+                        break;
+                    }
+                }
+                // last resort: the tile that maximises the smallest distance to everything placed
+                let p = chosen.unwrap_or_else(|| {
+                    *tiles
+                        .iter()
+                        .max_by_key(|&&p| homes.iter().map(|&h| d(h, p)).chain([d(p, camp), d(p, boss)]).min().unwrap())
+                        .unwrap()
+                });
+                homes.push(p);
+            }
+        }
+        homes
+    }
+
     /// 4-connected A* (Manhattan heuristic). Ties: lower f, lower h, lower index.
     /// The result excludes `from` and includes `to`; `from == to` gives an empty path.
     pub fn path(&self, from: (usize, usize), to: (usize, usize)) -> Option<Vec<(usize, usize)>> {
