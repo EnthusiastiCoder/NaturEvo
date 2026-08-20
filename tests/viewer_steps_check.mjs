@@ -61,7 +61,7 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
 {
   const h = boot(); h.jv().goto(0); h.setSpeed(1);
   if (hasApi(h, '1x')) {
-    h.play(); await h.pump(100); // first interval call carries one extra tick; sample after it
+    h.play(); await h.pump(300); // first walk step lands at 300 ms (play banks 100 ms); sample at each tick after it
     const tiles = [], seen = [];
     for (let i = 0; i < 12; i++) { await h.pump(100); tiles.push(h.anim().tile && h.anim().tile.slice()); seen.push(h.anim().step); }
     const walkSteps = h.log().filter(e => e[0] === 1);
