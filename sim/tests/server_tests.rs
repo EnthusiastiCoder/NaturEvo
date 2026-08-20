@@ -157,4 +157,21 @@ fn config_lists_permadeath_as_bool_default_true() {
         assert_eq!(o.get("kind").unwrap().str(), "number", "{:?}", o.get("key"));
     }
 }
+
+#[test]
+fn run_permadeath_param_changes_behaviour() {
+    let mut off = Config::default();
+    off.set("permadeath", "false").unwrap();
+    off.set("monster_atk_mult", "3.0").unwrap();
+    let mut on = off.clone();
+    on.set("permadeath", "true").unwrap();
+    let b_off = text(&get("/api/run?seed=3&monster_atk_mult=3.0&permadeath=false"));
+    let b_on = text(&get("/api/run?seed=3&monster_atk_mult=3.0&permadeath=true"));
+    assert_eq!(b_off, run_body(&simulate_with(3, &off)));
+    assert_eq!(b_on, run_body(&simulate_with(3, &on)));
+    assert_ne!(b_off, b_on);
+    assert_eq!(text(&get("/api/run?seed=3&monster_atk_mult=3.0&permadeath=1")), b_on);
+    assert_eq!(text(&get("/api/run?seed=3&monster_atk_mult=3.0&permadeath=0")), b_off);
+    assert_eq!(text(&get("/api/run?seed=3&monster_atk_mult=3.0")), b_on, "default is on");
+}
 }
