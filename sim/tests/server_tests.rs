@@ -183,4 +183,13 @@ fn permadeath_junk_is_400() {
         assert!(text(&r).contains("\"error\""), "{}", t);
     }
 }
+
+#[test]
+fn batch_honours_permadeath() {
+    let mut off = Config::default();
+    off.set("permadeath", "false").unwrap();
+    let r = get("/api/batch?runs=50&permadeath=false");
+    assert_eq!(r.status, 200);
+    assert_eq!(text(&r), stats_body(&jungle_sim::report::batch_with(50, 2, &off)));
+    assert_ne!(text(&r), text(&get("/api/batch?runs=50&permadeath=true")));
 }
