@@ -9,7 +9,7 @@ All values come from `:root` custom properties. Outside the token blocks use `va
 literals, no `px` font sizes, no inline `style=` in markup (JS may set dynamic widths/heights/positions only).
 
 - Colours (per theme): `--bg --card --card-2 --border --fg --muted --good --bad --warn --ring`
-- Map colours (per theme, `#rrggbb` so contrast can be computed): `--tile-floor --tile-grass --tile-wall --tile-camp` and the zone tints `--biome-0..--biome-8`. The hero marker (`--accent`) keeps at least 3:1 contrast against floor and grass in both themes.
+- Map colours (per theme, `#rrggbb` so contrast can be computed): `--tile-floor --tile-grass --tile-wall --tile-rock --tile-fence --tile-tree --tile-water --tile-camp` and the zone tints `--biome-0..--biome-8`. The hero marker (`--accent`) keeps at least 3:1 contrast against floor and grass in both themes.
 - Accent (user-settable): `--accent`, `--accent-fg` (text on accent), `--accent-text` (accent used as text/border)
 - Spacing: `--s1..--s6` = 4, 8, 12, 16, 24, 32 px
 - Radii: `--r-sm`, `--r-md` (8px)
@@ -139,7 +139,7 @@ scale uses 0, 1, 10, 100, ... Histogram x labels are every Nth bin, anchored so 
   `#map` is the canvas (percentage size, no fixed px, no width/height attributes), `.map-tip` the hover tooltip (`#maptip`), `.map-empty` the empty state (`#mapempty`).
 - `.side` (right) stacks cards top to bottom: `.playback`, `#summary` (one line, the zone name truncates with an ellipsis), `.map-head`
   (title, `#maplegend`, `#mapzoom`), `#battle`, and `#timeline-card`, which grows to fill what is left so the panel has no empty area.
-  `#maplegend` (`.maplegend`) has 6 `.lg` entries, each a `.sw` swatch (`.sw-hero .sw-elite .sw-boss .sw-grass .sw-wall .sw-camp`,
+  `#maplegend` (`.maplegend`) has 11 `.lg` entries (3 markers and 8 tile kinds), each a `.sw` swatch (`.sw-hero .sw-elite .sw-boss .sw-floor .sw-grass .sw-camp .sw-wall .sw-rock .sw-fence .sw-tree .sw-water`,
   token colours only) and a word: Hero, Elite, Boss, Grass, Wall, Camp.
 - `#timeline-card` is a row: `#timeline-wrap` (min 60px plot) and `.tl-side`, its own slot holding the title and the `#log-open` Event log button.
   Y tick labels are thinned so they are at least 1.6 font heights apart (`window.__timelineTicks` exposes them for tests).
@@ -159,3 +159,8 @@ scale uses 0, 1, 10, 100, ... Histogram x labels are every Nth bin, anchored so 
   Animations are skipped when the scaled duration is under 40 ms (high speed). `requestAnimationFrame` runs only while one is active.
   State for tests: `window.__mapAnim = {active, kind, from, to, t, duration, pos, mpos}`.
 - Log rows for walk, encounter, elite and boss events end with "(x,y)".
+
+## Obstacles and one-step replay (map)
+- Obstacle tiles (`#` wall, `R` rock, `F` fence, `T` tree, `W` water) are filled with their `--tile-*` token, then a pattern is drawn over it when a tile is at least 5 px: brick lines, rock blob, fence rails and posts, tree canopy, water wave stripes. The tooltip names the kind.
+- One tick is one tile. A walk event with `steps` (and `nsteps` for roaming NPCs) is replayed through a sub-cursor: each tick moves the hero and the NPCs exactly one tile, with a linear one-tile glide lasting 100 ms divided by the speed. Above 8x the glide is skipped but steps still advance one per tick. Scrubbing to an event shows its end tile; `__jv.gotoStep(event, step)` seeks into a walk. Data without `steps` falls back to the `path` animation.
+- Test hooks: `__jv.stepLog` (one `[event, step]` per tick), `__mapAnim.tile`, `.step`, `.ntile`, `.npcs`, `.pos`.
