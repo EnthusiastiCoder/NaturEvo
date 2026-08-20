@@ -156,8 +156,8 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
 {
   const h = boot(); h.jv().goto(0); h.setSpeed(1);
   if (hasApi(h, 'pause')) {
-    h.play(); await h.pump(600);
-    h.play(); await h.pump(50); await h.advance(300);
+    h.play(); await h.pump(2000);
+    h.play(); await h.pump(50); await h.advance(500);
     const k = h.anim().step, tile = h.anim().tile.slice(), n = h.log().length, pos = h.anim().pos.slice();
     check(k > 0 && k < NSTEP - 1, `pause: must be mid-walk, step ${k}`);
     await h.pump(2000);
