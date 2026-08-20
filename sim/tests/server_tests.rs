@@ -143,4 +143,6 @@ fn oversized_request_line_rejected() {
     let ok = raw(port, b"GET /api/config HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n");
     assert!(ok.starts_with("HTTP/1.1 200"));
 }
+
+// ---- Addendum 4: permadeath over the API (written before implementation) ----
 }
