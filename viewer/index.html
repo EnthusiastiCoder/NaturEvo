@@ -476,7 +476,7 @@ function render(){
  $("scrub").value=String(cur);
  if(!inWin(cur)){if(fetchWin(cur)){$("info").textContent="Loading events around "+cur+"...";return;}}
  var e=ev[cur-base],h=e.hero||{},m=e.mon;
- $("info").textContent="event "+cur+" / "+(total()-1)+" · seed "+seedStr();
+ $("info").textContent="event "+cur+" / "+(total()-1)+" · seed "+seedStr()+(speedVal>WALK_MAX&&stepEv()?" · skipping steps: walk steps capped at "+WALK_MAX+"x":"");
  $("hemo").textContent=SP[SP.length-1][1];
  $("hbar").style.width=pct(h.hp,h.max_hp)+"%";
  $("hhp").textContent="HP "+h.hp+"/"+h.max_hp+" · Lv "+h.level;$("last").textContent=e.text||"";$("last").title=e.text||"";
@@ -555,14 +555,24 @@ function advanceOne(){
  stepLog.push([cur,sub]);if(stepLog.length>20000)stepLog.splice(0,10000);
  return true;
 }
-function step(){if(!timer)return;var now=Date.now(),dt=Math.max(0,now-lastTick);lastTick=now;acc+=10*speedVal*dt/1000;var n=Math.floor(acc);acc-=n;
- var moved=false,pc=null,i,go=true;
- for(i=0;i<n&&go;i++){if(i===n-1)pc=commit();go=advanceOne();if(go)moved=true;}
+var WALK_MS=400,EVT_MS=100,WALK_MAX=8;
+/* cost in speed-1 milliseconds of the next tick: a walk step takes WALK_MS (speed multiplies, capped at WALK_MAX for walks), any other event EVT_MS */
+function peekCost(){
+ var e=stepEv();
+ if(e&&sub>=0&&subFor===cur&&sub<e.steps.length-1)return WALK_MS*Math.max(1,speedVal/WALK_MAX);
+ var ne=inWin(cur+1)?ev[cur+1-base]:null;
+ return ne&&ne.kind==="walk"&&ne.steps&&ne.steps.length?WALK_MS*Math.max(1,speedVal/WALK_MAX):EVT_MS;
+}
+function step(){if(!timer)return;var now=Date.now(),dt=Math.max(0,now-lastTick);lastTick=now;acc+=speedVal*dt;
+ var moved=false,pc=null,go=true,c,walked=false;
+ while(go){c=peekCost();if(acc<c)break;
+  var wk=c>EVT_MS;if(wk&&walked)break;
+  acc-=c;pc=commit();go=advanceOne();if(go){moved=true;if(wk){walked=true;acc=Math.min(acc,c);break;}}}
  if(moved){var nc=commit();keepAnim=false;if(pc&&nc&&nc.step>=0)stepGlide(pc,nc);render();}
  if(!go)stop();}
 function playIcon(p){var b=$("play");b.innerHTML='<svg class="icon" aria-hidden="true"><use href="#i-'+(p?"pause":"play")+'"/></svg>';b.setAttribute("aria-label",p?"Pause":"Play");}
 function stop(){clearInterval(timer);timer=null;playIcon(false);}
-$("play").onclick=function(){if(timer)return stop();if(cur>=total()-1){cur=0;sub=-1;}playIcon(true);lastTick=Date.now();acc=1;timer=setInterval(step,50);};
+$("play").onclick=function(){if(timer)return stop();if(cur>=total()-1){cur=0;sub=-1;}playIcon(true);lastTick=Date.now();acc=EVT_MS;timer=setInterval(step,50);};
 $("scrub").oninput=function(){cur=+this.value;sub=-1;render();};
 $("scrub").max=Math.max(0,total()-1);
 
@@ -693,8 +703,8 @@ function commit(){
 }
 function stepGlide(pc,nc){
  anim.active=false;
- if(!(speedVal<=8)||typeof window.requestAnimationFrame!=="function")return;
- var d=100/speedVal;
+ if(typeof window.requestAnimationFrame!=="function")return;
+ var d=WALK_MS/Math.min(speedVal,WALK_MAX);
  anim.active=true;anim.kind="step";anim.from=pc.tile.slice();anim.to=nc.tile.slice();anim.t=0;anim.duration=d;animFromN=pc.npcs;animPath=null;animAtk="";animT0=nowMs();keepAnim=true;schedule();
 }
 function lerp2(a,b,f){if(!a||Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])>1)return b.slice();return[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f];}
