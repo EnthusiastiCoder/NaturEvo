@@ -203,3 +203,10 @@ fn balance_default_win_rate_is_15_to_40_percent() {
     let s = batch_with(2000, 4, &Config::default());
     assert!(s.wins >= 300 && s.wins <= 800, "wins {} of 2000", s.wins);
 }
+
+#[test]
+fn balance_permadeath_off_stays_within_5_points_of_old() {
+    // old value: 100 wins in 200 seeds (config_tests default_matches_baseline), so 50 percent
+    let s = batch_with(200, 4, &cfg(&[("permadeath", "false")]));
+    assert!(s.wins >= 90 && s.wins <= 110, "wins {} of 200", s.wins);
+}
