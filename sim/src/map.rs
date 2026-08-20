@@ -112,6 +112,8 @@ impl Map {
         let cell = n as f32 / 3.0;
         let jit = (n as f32 / 10.0) as i32;
         let mut cells: Vec<(usize, usize)> = Vec::new();
+        let min_gap = scaled_min(14, n);
+        let manh = |a: (usize, usize), b: (usize, usize)| a.0.abs_diff(b.0) + a.1.abs_diff(b.1);
         for cy in 0..3usize {
             for cx in 0..3usize {
                 if (cx, cy) == (0, 0) {
