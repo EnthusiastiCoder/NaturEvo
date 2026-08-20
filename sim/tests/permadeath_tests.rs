@@ -23,3 +23,37 @@ fn cfg(k: &[(&str, &str)]) -> Config {
 fn kinds(r: &Run) -> Vec<&'static str> {
     r.events.iter().map(|e| e.kind).collect()
 }
+
+#[test]
+fn on_death_is_followed_only_by_end() {
+    let c = cfg(&[("permadeath", "true")]);
+    let mut died = 0;
+    let mut survived = 0;
+    for seed in 0..200u64 {
+        let r = simulate_with(seed, &c);
+        let k = kinds(&r);
+        let deaths = k.iter().filter(|x| **x == "death").count();
+        assert!(deaths <= 1, "seed {} has {} death events", seed, deaths);
+        assert!(r.deaths <= 1, "seed {} deaths {}", seed, r.deaths);
+        assert!(!k.contains(&"respawn"), "seed {} respawned under permadeath", seed);
+        if deaths == 1 {
+            died += 1;
+            let n = k.len();
+            assert!(n >= 2 && k[n - 2] == "death" && k[n - 1] == "end", "seed {}: tail {:?}", seed, &k[n.saturating_sub(3)..]);
+            assert_eq!(k.iter().filter(|x| **x == "end").count(), 1, "seed {}", seed);
+        } else {
+            survived += 1;
+            assert!(!k.contains(&"end"), "seed {}: end without death", seed);
+        }
+        assert!(!(r.outcome == "won" && !r.won), "seed {}: outcome won with won=false", seed);
+        if r.outcome == "died" {
+            assert!(!r.won, "seed {}", seed);
+            assert_eq!(r.deaths, 1, "seed {}", seed);
+        }
+        if r.won && deaths == 1 {
+            assert_eq!(r.outcome, "won", "seed {}: death after the boss keeps outcome won", seed);
+            assert_eq!(r.post_deaths, 1, "seed {}", seed);
+        }
+    }
+    assert!(died >= 20 && survived >= 20, "died {} survived {}: toggle must matter", died, survived);
+}
