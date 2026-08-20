@@ -795,7 +795,7 @@ function drawMap(){
   g.beginPath();g.moveTo(l,c[1]-r*0.4);g.lineTo(l,tp);g.lineTo(l+r*0.5,tp+sp*0.5);g.lineTo(c[0],tp);g.lineTo(c[0]+r*0.5,tp+sp*0.5);g.lineTo(c[0]+r,tp);g.lineTo(c[0]+r,c[1]-r*0.4);g.closePath();g.fill();g.stroke();
   g.fillRect(l,c[1]-r*0.5,2*r,r*1.2);g.strokeRect(l,c[1]-r*0.5,2*r,r*1.2);glyph(c,t);};
  var disc=function(p,r,fill,t){var c=ctr(p[0],p[1]);g.fillStyle=fill;g.strokeStyle=fg;g.lineWidth=lw;g.beginPath();g.arc(c[0],c[1],r,0,Math.PI*2);g.fill();g.stroke();glyph(c,t);};
- (e.npcs||[]).forEach(function(n){if(hasXY(n)&&n.x>=x0&&n.x<=x1&&n.y>=y0&&n.y<=y1){var t=(SP[n.sp]||[0,""])[1];if(n.id==="boss")crown([n.x,n.y],rB,cBad,t);else diamond([n.x,n.y],rE,cWarn,t);}});
+ (e.npcs||[]).forEach(function(n){var d=viewHero.np[n.id]||[n.x,n.y];if(hasXY(n)&&d[0]>=x0-1&&d[0]<=x1+1&&d[1]>=y0-1&&d[1]<=y1+1){var t=(SP[n.sp]||[0,""])[1];if(n.id==="boss")crown(d,rB,cBad,t);else diamond(d,rE,cWarn,t);}});
  if(viewHero.mp)disc(viewHero.mp,rM,fg,(SP[e.mon.species]||[0,""])[1]);
  var hc=ctr(hp[0],hp[1]);
  g.fillStyle=fg;g.beginPath();g.arc(hc[0],hc[1],rH+lw,0,Math.PI*2);g.fill();
