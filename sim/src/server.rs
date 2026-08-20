@@ -70,9 +70,10 @@ fn config_body() -> String {
     let items: Vec<String> = knobs()
         .iter()
         .map(|k| {
+            let def = if k.kind == "bool" { (k.default != 0.0).to_string() } else { k.default.to_string() };
             format!(
-                "{{\"key\":\"{}\",\"label\":\"{}\",\"min\":{},\"max\":{},\"default\":{}}}",
-                k.key, k.label, k.min, k.max, k.default
+                "{{\"key\":\"{}\",\"label\":\"{}\",\"kind\":\"{}\",\"min\":{},\"max\":{},\"default\":{}}}",
+                k.key, k.label, k.kind, k.min, k.max, def
             )
         })
         .collect();
