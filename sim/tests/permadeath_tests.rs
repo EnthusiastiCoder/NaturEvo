@@ -181,3 +181,19 @@ fn deterministic_both_modes() {
         }
     }
 }
+
+#[test]
+fn batch_counts_add_up_and_stats_have_death_fields() {
+    let s = batch_with(300, 4, &Config::default());
+    assert_eq!(s.wins + s.died + s.capped, s.runs);
+    assert!(s.died > 0);
+    assert!((s.died_pct - s.died as f64 * 100.0 / s.runs as f64).abs() < 1e-6);
+    assert_eq!(s.died_level_hist.iter().sum::<u32>(), s.died);
+    assert_eq!(s.death_zones.iter().sum::<u32>(), s.died);
+    let j = parse(&stats_body(&s)).unwrap();
+    for k in ["died", "capped", "died_pct", "died_level_hist", "death_zones"] {
+        assert!(j.get(k).is_some(), "stats missing {}", k);
+    }
+    assert_eq!(j.u("died") as u32, s.died);
+    assert_eq!(j.get("died_level_hist").unwrap().arr().len(), s.died_level_hist.len());
+}
