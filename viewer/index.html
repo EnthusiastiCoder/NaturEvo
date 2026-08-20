@@ -748,8 +748,8 @@ function obstPattern(g,kc,tiles,x0,x1,y0,y1,ox,oy,s){
 function drawMap(){
  var cv=$("map");if(!cv||!inWin(cur))return;
  var e=ev[cur-base];
- if(!e||!hasXY(e.hero)){anim.pos=null;anim.mpos=null;viewHero=null;}
- else{viewHero=viewPos(e);anim.pos=viewHero.hp;anim.mpos=viewHero.mp;}
+ if(!e||!hasXY(e.hero)){anim.pos=null;anim.mpos=null;anim.tile=null;anim.step=-1;anim.ntile={};anim.npcs={};viewHero=null;}
+ else{viewHero=viewPos(e);anim.pos=viewHero.hp;anim.mpos=viewHero.mp;anim.tile=viewHero.cs.tile;anim.step=viewHero.cs.step;anim.ntile=viewHero.cs.npcs;anim.npcs=viewHero.np;}
  var fc=fitCanvas(cv),g=fc.g,dpr=fc.dpr;
  if(!(fc.W>0&&fc.H>0))return;
  var Wd=Math.round(fc.W*dpr),Hd=Math.round(fc.H*dpr);
