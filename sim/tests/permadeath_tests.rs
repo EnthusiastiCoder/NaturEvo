@@ -136,3 +136,19 @@ fn head_json_has_outcome_and_window_keeps_it() {
     let w = parse(&run_window_body(&r, 0, 10)).unwrap();
     assert_eq!(w.get("outcome").unwrap().str(), r.outcome);
 }
+
+#[test]
+fn lean_summary_equals_full_summary() {
+    for p in ["true", "false"] {
+        let c = cfg(&[("permadeath", p), ("monster_atk_mult", "2.0")]);
+        for seed in 0..30u64 {
+            let r = simulate_with(seed, &c);
+            let s = simulate_summary(seed, &c);
+            assert_eq!(s.outcome, r.outcome, "seed {} permadeath {}", seed, p);
+            assert_eq!(s.died_level, r.died_level, "seed {}", seed);
+            assert_eq!(s.deaths, r.deaths, "seed {}", seed);
+            assert_eq!(s.won, r.won, "seed {}", seed);
+            assert_eq!(s.events as usize, r.events.len(), "seed {}", seed);
+        }
+    }
+}
