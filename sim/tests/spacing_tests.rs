@@ -141,3 +141,11 @@ fn fights_are_spaced_out() {
     let avg = gaps.iter().sum::<usize>() as f64 / gaps.len() as f64;
     assert!(avg >= 10.0 && avg <= 25.0, "average steps between fights {}", avg);
 }
+
+#[test]
+fn spacing_is_deterministic() {
+    for seed in [1u64, 5] {
+        let c = cfg(&[("event_cap", "1500")]);
+        assert_eq!(run_body(&simulate_with(seed, &c)), run_body(&simulate_with(seed, &c)));
+    }
+}
