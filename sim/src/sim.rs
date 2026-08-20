@@ -197,7 +197,10 @@ struct Elite {
 }
 
 const ELITE_RESPAWN_STEPS: u32 = 400;
-const ELITE_CHASE_RADIUS: usize = 3;
+const ELITE_CHASE_RADIUS: usize = 2;
+const ELITE_ROAM: usize = 6;
+const NPC_GAP: usize = 4;
+const FIGHT_COOLDOWN: u32 = 6;
 const ELITE_LEVEL_MARGIN: u32 = 3;
 const MAX_WAYPOINTS: usize = 64;
 const MAX_LEG_STEPS: usize = 256;
