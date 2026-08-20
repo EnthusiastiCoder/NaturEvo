@@ -205,6 +205,15 @@ const ELITE_LEVEL_MARGIN: u32 = 3;
 const MAX_WAYPOINTS: usize = 64;
 const MAX_LEG_STEPS: usize = 256;
 const BOSS_ID: u16 = u16::MAX;
+// Hero AI under permadeath: a death is final, so the hero judges each fight before and during it.
+// With permadeath off the original thresholds apply.
+const HEAL_PCT: i32 = 50;
+const RETREAT_PCT: i32 = 80;
+const OLD_HEAL_PCT: i32 = 35;
+const OLD_RETREAT_PCT: i32 = 50;
+/// the hero backs out when the expected damage of finishing a fight exceeds this share of what it can absorb
+const RISK_SHARE: f32 = 0.85;
+const POST_RISK_SHARE: f32 = 0.6;
 
 struct Sim {
     cfg: Config,
