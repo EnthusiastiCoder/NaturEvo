@@ -12,3 +12,14 @@ use common::parse;
 use jungle_sim::config::Config;
 use jungle_sim::report::{batch_with, run_body, run_window_body, stats_body};
 use jungle_sim::sim::{simulate_summary, simulate_with, Run};
+
+fn cfg(k: &[(&str, &str)]) -> Config {
+    let mut c = Config::default();
+    for (a, b) in k {
+        c.set(a, b).unwrap();
+    }
+    c
+}
+fn kinds(r: &Run) -> Vec<&'static str> {
+    r.events.iter().map(|e| e.kind).collect()
+}
