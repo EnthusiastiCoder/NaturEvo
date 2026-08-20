@@ -113,3 +113,17 @@ fn off_outcome_is_consistent() {
     }
     assert!(died > 0, "no exhausted-attempts run in 60 seeds");
 }
+
+#[test]
+fn capped_alive_run_is_capped() {
+    let c = cfg(&[("event_cap", "300"), ("monster_atk_mult", "0.1"), ("permadeath", "true")]);
+    for seed in 1..=5u64 {
+        let r = simulate_with(seed, &c);
+        assert!(r.capped, "seed {}", seed);
+        assert!(!r.won);
+        assert_eq!(r.outcome, "capped", "seed {}", seed);
+        assert_eq!(r.died_level, None);
+        let j = parse(&run_body(&r)).unwrap();
+        assert_eq!(j.get("outcome").unwrap().str(), "capped");
+    }
+}
