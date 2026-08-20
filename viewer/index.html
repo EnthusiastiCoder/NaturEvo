@@ -775,7 +775,7 @@ function drawMap(){
   for(y=y0;y<=y1;y++){row=tiles[y]||"";for(x=x0;x<=x1;x++)if(row.charAt(x)===kc)g.fillRect(ox+x*tsd,oy+y*tsd,tsd,tsd);}}
  g.globalAlpha=0.07;
  for(var z=0;z<9;z++){g.fillStyle=tok("--biome-"+z);var zs=String(z);
-  for(y=y0;y<=y1;y++){row=tiles[y]||"";var zr=zones[y]||"";for(x=x0;x<=x1;x++)if(zr.charAt(x)===zs&&row.charAt(x)!=="#")g.fillRect(ox+x*tsd,oy+y*tsd,tsd,tsd);}}
+  for(y=y0;y<=y1;y++){row=tiles[y]||"";var zr=zones[y]||"";for(x=x0;x<=x1;x++)if(zr.charAt(x)===zs&&!OBST[row.charAt(x)])g.fillRect(ox+x*tsd,oy+y*tsd,tsd,tsd);}}
  g.globalAlpha=1;
  var tr=e.kind==="walk"&&e.path&&e.path.length>1?e.path:lastTrail();
  if(tr){var tw=Math.max(2,Math.round(tsd/4)),pts=tr.map(function(p){return ctr(p[0],p[1]);});g.globalAlpha=0.7;g.fillStyle=tok("--muted");
