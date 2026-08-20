@@ -730,6 +730,21 @@ function viewPos(e){
 }
 function showEmpty(msg){var el=$("mapempty");if(!el)return;if(msg){el.textContent=msg;el.classList.remove("hidden");}else el.classList.add("hidden");}
 function lastTrail(){for(var i=cur-base,n=0;i>=0&&n<200;i--,n++)if(ev[i].kind==="walk"&&ev[i].path&&ev[i].path.length>1)return ev[i].path;return null;}
+/* obstacle patterns drawn over the token fill: wall brick lines, rock blob, fence rails and posts, tree canopy, water wave stripes */
+function obstPattern(g,kc,tiles,x0,x1,y0,y1,ox,oy,s){
+ var b=toRgb(tok(MAP_KIND[kc][1])),f=toRgb(tok("--fg")),k=toRgb(tok("--bg"));if(!b||!f||!k)return;
+ var lo=toHex(mix(b,k,0.4)),hi=toHex(mix(b,f,0.35)),lw=Math.max(1,s/12),x,y,row,px,py;
+ for(y=y0;y<=y1;y++){row=tiles[y]||"";for(x=x0;x<=x1;x++){if(row.charAt(x)!==kc)continue;px=ox+x*s;py=oy+y*s;
+  if(kc==="#"){g.strokeStyle=lo;g.lineWidth=lw;g.beginPath();
+   g.moveTo(px,py+s/3);g.lineTo(px+s-1,py+s/3);g.moveTo(px,py+2*s/3);g.lineTo(px+s-1,py+2*s/3);
+   g.moveTo(px+s/2,py);g.lineTo(px+s/2,py+s/3);g.moveTo(px+s/4,py+s/3);g.lineTo(px+s/4,py+2*s/3);g.moveTo(px+3*s/4,py+s/3);g.lineTo(px+3*s/4,py+2*s/3);g.moveTo(px+s/2,py+2*s/3);g.lineTo(px+s/2,py+s-1);g.stroke();}
+  else if(kc==="R"){g.fillStyle=hi;g.beginPath();g.arc(px+s*0.5,py+s*0.55,s*0.32,0,Math.PI*2);g.fill();g.fillStyle=lo;g.beginPath();g.arc(px+s*0.58,py+s*0.62,s*0.12,0,Math.PI*2);g.fill();}
+  else if(kc==="F"){g.fillStyle=lo;var rh=Math.max(1,s*0.12);g.fillRect(px,py+s*0.3,s,rh);g.fillRect(px,py+s*0.62,s,rh);g.fillStyle=hi;var pw=Math.max(1,s*0.14);g.fillRect(px+s*0.12,py+s*0.15,pw,s*0.7);g.fillRect(px+s*0.72,py+s*0.15,pw,s*0.7);}
+  else if(kc==="T"){g.fillStyle=lo;g.beginPath();g.arc(px+s*0.5,py+s*0.5,s*0.42,0,Math.PI*2);g.fill();g.fillStyle=toHex(mix(b,k,0.15));g.beginPath();g.arc(px+s*0.4,py+s*0.4,s*0.14,0,Math.PI*2);g.fill();}
+  else if(kc==="W"){g.strokeStyle=hi;g.lineWidth=lw;g.beginPath();
+   for(var r=1;r<=3;r++){var wy=py+s*r/4;g.moveTo(px+s*0.1,wy);g.lineTo(px+s*0.35,wy-s*0.1);g.lineTo(px+s*0.6,wy);g.lineTo(px+s*0.85,wy-s*0.1);}g.stroke();}
+ }}
+}
 function drawMap(){
  var cv=$("map");if(!cv||!inWin(cur))return;
  var e=ev[cur-base];
