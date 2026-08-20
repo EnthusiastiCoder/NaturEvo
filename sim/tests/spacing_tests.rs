@@ -53,3 +53,18 @@ fn home_minimums_hold_at_sizes_32_64_128() {
         }
     }
 }
+
+#[test]
+fn zone_anchors_are_spread() {
+    for size in [32usize, 64, 128] {
+        for seed in 1..=50u64 {
+            let m = Map::generate(seed, size);
+            let a = m.anchors();
+            for i in 0..a.len() {
+                for k in i + 1..a.len() {
+                    assert!(dist(a[i], a[k]) >= scaled(14, size), "seed {} size {}: anchors {:?} {:?}", seed, size, a[i], a[k]);
+                }
+            }
+        }
+    }
+}
