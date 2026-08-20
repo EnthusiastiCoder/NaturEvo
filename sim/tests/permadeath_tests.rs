@@ -127,3 +127,12 @@ fn capped_alive_run_is_capped() {
         assert_eq!(j.get("outcome").unwrap().str(), "capped");
     }
 }
+
+#[test]
+fn head_json_has_outcome_and_window_keeps_it() {
+    let r = simulate_with(3, &Config::default());
+    let j = parse(&run_body(&r)).unwrap();
+    assert_eq!(j.get("outcome").unwrap().str(), r.outcome);
+    let w = parse(&run_window_body(&r, 0, 10)).unwrap();
+    assert_eq!(w.get("outcome").unwrap().str(), r.outcome);
+}
