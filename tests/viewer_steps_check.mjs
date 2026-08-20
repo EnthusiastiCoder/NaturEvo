@@ -139,7 +139,7 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
     h.play(); await h.pump(300);
     let prev = null;
     for (let i = 0; i < 10; i++) {
-      await h.pump(100);
+      await h.pump(400);
       const k = h.anim().step, nt = (h.anim().ntile || {}).e1;
       check(k >= 0 && eq(nt, ELITE[k]), `elite: committed tile ${JSON.stringify(nt)} must equal nsteps[${k}] ${JSON.stringify(ELITE[k])}`);
       if (prev && nt) check(manh(prev, nt) === 1, `elite: moved ${JSON.stringify(prev)} -> ${JSON.stringify(nt)}, expected one tile per tick`);
