@@ -171,3 +171,13 @@ fn cap_and_windowing_still_work() {
     assert_eq!(ev[0].get("kind").unwrap().str(), "death");
     assert_eq!(ev[1].get("kind").unwrap().str(), "end");
 }
+
+#[test]
+fn deterministic_both_modes() {
+    for p in ["true", "false"] {
+        let c = cfg(&[("permadeath", p), ("event_cap", "4000")]);
+        for seed in [1u64, 9, 21] {
+            assert_eq!(run_body(&simulate_with(seed, &c)), run_body(&simulate_with(seed, &c)), "seed {} {}", seed, p);
+        }
+    }
+}
