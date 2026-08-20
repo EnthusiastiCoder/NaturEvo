@@ -112,7 +112,7 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
       // advance a frame inside the tick period (tick = 100/speed ms; frames are 16 ms) without firing the interval
       await h.advance(16);
       out.push({ pos: (h.anim().pos || []).slice(), tile: (h.anim().tile || []).slice(), walking: h.anim().step >= 0 });
-      await h.pump(100);
+      await h.pump(400 / Math.min(speed, 8));
     }
     return out;
   };
