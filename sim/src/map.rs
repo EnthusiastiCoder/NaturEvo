@@ -119,11 +119,20 @@ impl Map {
                 if (cx, cy) == (0, 0) {
                     continue;
                 }
-                let jx = rng.range(-jit, jit);
-                let jy = rng.range(-jit, jit);
-                let x = ((cx as f32 + 0.5) * cell) as i32 + jx;
-                let y = ((cy as f32 + 0.5) * cell) as i32 + jy;
-                cells.push((x.clamp(3, n as i32 - 4) as usize, y.clamp(3, n as i32 - 4) as usize));
+                // retry the jitter, narrowing it, until the anchor keeps its distance from the others
+                let mut pick = (0usize, 0usize);
+                for attempt in 0..40i32 {
+                    let j = if attempt >= 39 { 0 } else { jit * (40 - attempt) / 40 };
+                    let jx = rng.range(-j, j);
+                    let jy = rng.range(-j, j);
+                    let x = ((cx as f32 + 0.5) * cell) as i32 + jx;
+                    let y = ((cy as f32 + 0.5) * cell) as i32 + jy;
+                    pick = (x.clamp(3, n as i32 - 4) as usize, y.clamp(3, n as i32 - 4) as usize);
+                    if manh(pick, camp) >= min_gap && cells.iter().all(|&c| manh(c, pick) >= min_gap) {
+                        break;
+                    }
+                }
+                cells.push(pick);
             }
         }
         let d2 = |a: (usize, usize), b: (usize, usize)| {
