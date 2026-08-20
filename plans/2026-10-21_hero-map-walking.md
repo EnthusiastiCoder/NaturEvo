@@ -266,3 +266,13 @@ Tests first (sim/tests/obstacle_tests.rs, failing):
 - Encounters still fire: steps per encounter within a factor of 2 of 1/encounter_rate.
 - /api/map returns only legend chars and a legend of 8 entries with correct blocking flags.
 Viewer (tests/viewer_obstacle_check.mjs): each kind has a different pixel colour/pattern at its tile in both themes; legend has 8 entries; tooltip names an obstacle.
+
+### Part B: one tile step per replay tick (workstream 6, viewer-steps)
+Unit and defaults:
+- One step = one tile move = one replay tick at 1x (existing base 10 ticks/s, about 100 ms). Speed multiplies the tick rate. Each step shows a smooth linear one-tile glide over the tick.
+- Replay expands each walk/travel event into one-tile steps through a sub-cursor (event index, step index), one step per tick. Non-walk events take one tick each as today; fight animation as in Addendum 1.
+- Elites and boss move one tile per hero step; their per-step positions come from data so they glide in sync.
+- Above 8x the glide is skipped (snap per step) but steps still advance one per tick, never a whole path. Scrubbing to an event shows the end tile; scrubbing into a walk's middle uses the sub-cursor. Pause mid-walk holds the step.
+- Data (sim steps are not events): walk event JSON carries `steps`: [[x,y],...] (every tile of the leg in order, excluding the start tile) and `nsteps`: one entry per hero step listing [id,x,y] for NPCs in the hero's zone that moved on that step. `path` waypoints stay for compatibility; `npcs` is the end-of-leg state.
+- A leg's `steps` is capped at 256 tiles; longer legs split into consecutive walk events. The event cap counts walk events only, not steps. Windowed fetch (count up to 5000) stays valid, with a 2 MB response byte budget: the server trims the window and reports the actual count; the viewer already handles shorter windows.
+- Lean mode builds no step lists; step counts unchanged. Same seed gives identical `steps`/`nsteps`.
