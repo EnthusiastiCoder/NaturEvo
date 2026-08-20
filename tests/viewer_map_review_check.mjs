@@ -12,7 +12,7 @@
 // Names the implementation must use where the plan is silent (or this test is updated):
 //   #map canvas inside #replay (existing), #mapzoom (existing Zoom button), #theme-toggle (existing),
 //   #log-open (existing Event log button), #timeline (existing canvas),
-//   #maplegend: legend container with exactly 6 entries (direct children), whose text names
+//   #maplegend: legend container with exactly 11 entries (direct children), whose text names
 //     hero, elite, boss, grass, wall, camp (any case),
 //   window.__mapAnimStep(t): renders the attack frame at t in [0,1] with no timers; afterwards
 //     window.__mapAnim.pos (hero) and .mpos (monster) are the drawn positions in tile units,
@@ -197,8 +197,8 @@ try {
     const leg = await p.ev(`(() => { const l = document.getElementById('maplegend'); if (!l) return null; const r = l.getBoundingClientRect(); return { n: l.children.length, t: l.textContent.toLowerCase(), w: r.width, h: r.height }; })()`);
     check(leg, `${L}: #maplegend element missing`);
     if (leg) {
-      check(leg.n === 6, `${L}: legend must have 6 entries, got ${leg.n}`);
-      check(['hero', 'elite', 'boss', 'grass', 'wall', 'camp'].every(k => leg.t.includes(k)), `${L}: legend must name hero, elite, boss, grass, wall, camp, got ${JSON.stringify(leg.t.trim())}`);
+      check(leg.n === 11, `${L}: legend must have 11 entries (3 markers + 8 tile kinds), got ${leg.n}`);
+      check(['hero', 'elite', 'boss', 'grass', 'wall', 'camp', 'floor', 'rock', 'fence', 'tree', 'water'].every(k => leg.t.includes(k)), `${L}: legend must name hero, elite, boss, grass, wall, camp, got ${JSON.stringify(leg.t.trim())}`);
       check(leg.w > 0 && leg.h > 0, `${L}: legend must be visible`);
     }
     await p.close();
