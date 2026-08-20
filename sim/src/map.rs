@@ -58,6 +58,11 @@ fn kind_of(zone: usize, v: f32) -> Tile {
     }
 }
 
+/// A spacing minimum defined for a 64-wide map, scaled to `n` (never below 6).
+pub fn scaled_min(base: usize, n: usize) -> usize {
+    (base * n / 64).max(6)
+}
+
 /// Smooth value noise: a coarse random lattice, smoothstep-interpolated.
 fn noise_field(rng: &mut Rng, n: usize, cell: usize) -> Vec<f32> {
     let g = n / cell + 2;
