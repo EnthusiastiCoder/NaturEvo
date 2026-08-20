@@ -255,3 +255,14 @@ Defaults (resolved):
 - `/api/map` tiles use the chars above and add `legend`: [{"ch","name","blocking"}] (8 entries). Old fields unchanged.
 - Viewer: each kind drawn distinctly (rock blob, fence rails and posts, tree canopy, water wave stripes, wall brick lines) with tokens `--tile-rock --tile-fence --tile-tree --tile-water --tile-wall` in both themes; legend entry per kind; tooltip names the kind.
 - Placement may change A* lengths and so the RNG stream: pinned-number tests get their own update commit.
+
+Tests first (sim/tests/obstacle_tests.rs, failing):
+- Same seed identical map, different seeds differ; only the 8 chars appear.
+- All 5 blocking kinds appear across 20 seeds at size 64, each only in an allowed zone.
+- Obstacle share 6-18% for sizes 32, 64, 128.
+- Over 50 seeds: flood fill from camp reaches every non-blocking tile, every anchor and the boss tile; A* camp to each zone and boss succeeds; >= 20 grass per zone; no obstacle on camp/anchors/boss. Fence rings keep a gate.
+- A* never crosses a blocking tile and detours around a hand-built block.
+- Over 5 full runs every event's hero, npcs and mon (x,y) is on a non-blocking tile.
+- Encounters still fire: steps per encounter within a factor of 2 of 1/encounter_rate.
+- /api/map returns only legend chars and a legend of 8 entries with correct blocking flags.
+Viewer (tests/viewer_obstacle_check.mjs): each kind has a different pixel colour/pattern at its tile in both themes; legend has 8 entries; tooltip names an obstacle.
