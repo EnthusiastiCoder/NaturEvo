@@ -10,7 +10,8 @@
 //   window.__mapAnim.step   index of the current step inside a walk event, or -1 when not in a walk;
 //   window.__mapAnim.ntile  {id:[x,y]} committed npc tiles; window.__mapAnim.npcs {id:[x,y]} drawn npc positions;
 //   window.__mapAnim.pos    drawn hero position in tile units (tile centres are integers), fractional mid-glide.
-// Timing: base 10 ticks per second at 1x; the harness steps Date.now by 50 ms per interval call.
+// Timing (user feedback: too fast): a walk step takes 400 ms at 1x (readable), speed multiplies up to 8x, above that walk
+// playback is capped at 8x and the info line says 'skipping steps'. Non-walk events stay 100 ms. The harness steps Date.now by 50 ms per interval call.
 import { html, load, makeRun, tick, runner, jsonResp } from './_viewer_harness.mjs';
 
 const { check, done } = runner('viewer_steps_check');
