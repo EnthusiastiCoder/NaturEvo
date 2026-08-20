@@ -92,7 +92,7 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
   const count = async s => {
     const h = boot(); h.jv().goto(0); h.setSpeed(s);
     if (!hasApi(h, s + 'x')) return null;
-    h.play(); await h.pump(200); const a = h.log().length; await h.pump(400); const n = h.log().length - a;
+    h.play(); await h.pump(300); const a = h.log().length; await h.pump(1600); const n = h.log().length - a;
     const idx = h.log().filter(e => e[0] === 1).map(e => e[1]);
     idx.forEach((v, i) => { if (i && v !== idx[i - 1] + 1) check(false, `${s}x: sub-tick skipped a step ${idx[i - 1]} -> ${v}`); });
     return n;
