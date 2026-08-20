@@ -74,6 +74,9 @@ pub struct Run {
     pub post_deaths: u32,
     pub max_stage: u8,
     pub capped: bool,
+    pub outcome: &'static str,
+    pub died_level: Option<u32>,
+    pub death_zone: Option<usize>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
