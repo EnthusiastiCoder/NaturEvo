@@ -362,6 +362,11 @@ impl Map {
     /// 4-connected A* (Manhattan heuristic). Ties: lower f, lower h, lower index.
     /// The result excludes `from` and includes `to`; `from == to` gives an empty path.
     pub fn path(&self, from: (usize, usize), to: (usize, usize)) -> Option<Vec<(usize, usize)>> {
+        self.path_in(from, to, None)
+    }
+
+    /// Like `path`, but every tile after `from` must lie in `zone`.
+    pub fn path_in(&self, from: (usize, usize), to: (usize, usize), zone: Option<usize>) -> Option<Vec<(usize, usize)>> {
         if !self.passable(from.0, from.1) || !self.passable(to.0, to.1) {
             return None;
         }
