@@ -111,6 +111,9 @@ impl Run {
             post_deaths: self.post_deaths,
             max_stage: self.max_stage,
             capped: self.capped,
+            outcome: self.outcome,
+            died_level: self.died_level,
+            death_zone: self.death_zone,
         }
     }
 }
