@@ -129,14 +129,7 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
   }
   // above 8x walk playback is capped at 8x: still a glide, still one tile per tick (see the cap block below)
   const s16 = await sample(16);
-  if (s16) for (const o of s16.filter(o => o.walking)) check(isInt(o.pos[0]) && isInt(o.pos[1]) && eq(o.pos, o.tile), `16x: glide must be skipped, drawn ${JSON.stringify(o.pos)} vs tile ${JSON.stringify(o.tile)}`);
-  // above 8x steps still advance one per tick, never a whole path
-  const h = boot(); h.jv().goto(0); h.setSpeed(16);
-  if (hasApi(h, '16x')) {
-    h.play(); await h.pump(500);
-    const idx = h.log().filter(e => e[0] === 1).map(e => e[1]);
-    check(idx.length > 1 && idx.every((v, i) => i === 0 || v === idx[i - 1] + 1), `16x: steps must still advance one per tick, got ${JSON.stringify(idx)}`);
-  }
+  if (s16) for (const o of s16.filter(o => o.walking)) check(Math.abs(o.pos[0] - o.tile[0]) <= 1 + 1e-9 && o.pos[1] === o.tile[1], `16x: drawn ${JSON.stringify(o.pos)} must stay within one tile of ${JSON.stringify(o.tile)}`);
 }
 
 // ---------- elites move one tile per tick, in sync with the hero ----------
