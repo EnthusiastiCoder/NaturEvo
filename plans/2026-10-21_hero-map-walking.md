@@ -230,3 +230,14 @@ Stale failing tests, decided from the requirements:
 - `tests/viewer_layout_check.mjs`: the requirement (no scroll, no overlap, fits) is current, so keep it and let the new layout satisfy it. If it hardcodes the old element ids or box sizes that the redesign legitimately moved, CORRECT those assertions to the requirement. Never delete the no-scroll and no-overlap assertions.
 - `tests/viewer_polish_check.mjs`: for each failing assertion, keep it if it states a requirement still in STYLE.md or the README (style, theme, controls). Delete only assertions that pin removed markup (the old centre `#zone` box size). Record each deletion with its reason in the commit message.
 - Each change is its own commit: "test: correct stale <name> to requirement".
+
+Added tests, written first and failing, in tests/viewer_map_review_check.mjs (new file, using tests/_viewer_harness.mjs):
+- Map canvas short side >= 70% of the `#replay` view's short side at 1282x642, 1282x722, 1540x890, and at DPR 1 and 2. The canvas is square (within 1 px).
+- Marker size: drawn hero marker >= 8 css px, and sampled pixels at hero and elite centres differ in colour, in both themes. A legend element exists with the 6 entries.
+- Zoom: a 16x16 window with tile css size >= 24. Zoom is centred on the hero (the hero pixel is at the canvas centre, except at edges). An NPC in the window is drawn (pixel differs from the tile).
+- First load: with no interaction, the map canvas has non-background pixels within 3 s of load. No request returns 404 (record the harness's requests), and no console errors. The file:// mode also shows a map.
+- Attack animation: `__mapAnimStep(0.5)` for a hero attack and for a hit_taken event gives a target-pixel change versus idle, and the attacker offset points toward the target.
+- Layout: `.main` scrollHeight <= clientHeight and document is not scrollable at 1282x642, 1282x722 and 1540x890. The log button's and timeline's boxes do not intersect, and no two toolbar controls overlap.
+- Theme: clicking `#theme-toggle` changes tile and marker colours, keeps contrast >= 3:1 for hero vs tile, and persists.
+Commit plan additions: test commits for tests/viewer_map_review_check.mjs and the three stale-test corrections come first. Then these fix commits: "fix: map fills replay area and layout no overflow (viewer/index.html)", "fix: markers, legend, zoom, first-load map and animation hook (viewer/index.html)", and "fix: serve viewer data module (sim/src/server.rs)" if the 404 is a server-side route issue.
+Acceptance: all new and corrected viewer tests pass and a re-run of the independent visual review shows no defects 1 to 7.
