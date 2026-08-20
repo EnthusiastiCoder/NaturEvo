@@ -197,3 +197,9 @@ fn batch_counts_add_up_and_stats_have_death_fields() {
     assert_eq!(j.u("died") as u32, s.died);
     assert_eq!(j.get("died_level_hist").unwrap().arr().len(), s.died_level_hist.len());
 }
+
+#[test]
+fn balance_default_win_rate_is_15_to_40_percent() {
+    let s = batch_with(2000, 4, &Config::default());
+    assert!(s.wins >= 300 && s.wins <= 800, "wins {} of 2000", s.wins);
+}
