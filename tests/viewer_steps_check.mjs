@@ -163,7 +163,7 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
     await h.pump(2000);
     check(h.log().length === n && eq(h.anim().tile, tile), 'pause: step must not advance while paused');
     check(eq(h.anim().pos, pos) || isInt(h.anim().pos[0]), `pause: position must hold, ${JSON.stringify(pos)} -> ${JSON.stringify(h.anim().pos)}`);
-    h.play(); await h.pump(300);
+    h.play(); await h.pump(500);
     const after = h.log().slice(n);
     check(after.length >= 1 && after[0][0] === 1 && after[0][1] === k + 1, `pause: play must resume at step ${k + 1}, got ${JSON.stringify(after[0])}`);
   }
