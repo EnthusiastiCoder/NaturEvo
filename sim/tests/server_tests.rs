@@ -174,4 +174,13 @@ fn run_permadeath_param_changes_behaviour() {
     assert_eq!(text(&get("/api/run?seed=3&monster_atk_mult=3.0&permadeath=0")), b_off);
     assert_eq!(text(&get("/api/run?seed=3&monster_atk_mult=3.0")), b_on, "default is on");
 }
+
+#[test]
+fn permadeath_junk_is_400() {
+    for t in ["/api/run?permadeath=maybe", "/api/run?permadeath=2", "/api/run?permadeath=", "/api/batch?runs=5&permadeath=maybe", "/api/batch?runs=5&permadeath=2"] {
+        let r = get(t);
+        assert_eq!(r.status, 400, "{}", t);
+        assert!(text(&r).contains("\"error\""), "{}", t);
+    }
+}
 }
