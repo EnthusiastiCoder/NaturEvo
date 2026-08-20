@@ -57,3 +57,20 @@ fn on_death_is_followed_only_by_end() {
     }
     assert!(died >= 20 && survived >= 20, "died {} survived {}: toggle must matter", died, survived);
 }
+
+#[test]
+fn died_level_is_the_level_at_the_death_event() {
+    let c = Config::default();
+    let mut seen = 0;
+    for seed in 0..100u64 {
+        let r = simulate_with(seed, &c);
+        if r.outcome == "died" {
+            let d = r.events.iter().find(|e| e.kind == "death").expect("death event");
+            assert_eq!(r.died_level, Some(d.hero.level), "seed {}", seed);
+            seen += 1;
+        } else {
+            assert_eq!(r.died_level, None, "seed {}", seed);
+        }
+    }
+    assert!(seen > 0);
+}
