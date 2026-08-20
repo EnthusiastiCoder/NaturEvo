@@ -244,3 +244,14 @@ Acceptance: all new and corrected viewer tests pass and a re-run of the independ
 
 ## Addendum 3: obstacle types and one-step replay movement
 User, verbatim: "are there obstacles, like walls, rocks, fences etc? add them, and currently, the replay shows movements very fast, I want a movement be one step".
+
+### Part A: obstacle types (workstream 5, sim-obstacles, sonnet; after workstreams 1 and 2)
+Defaults (resolved):
+- Blocking tile kinds replace the single Wall: Wall (ruin/temple stone), Rock, Fence, Tree, Water. Chars: '#' wall, 'R' rock, 'F' fence, 'T' tree, 'W' water; non-blocking '.' floor, ',' grass, 'C' camp.
+- Biome palette (zone to allowed kinds): 0 camp = Fence ring with a gate; 1 Jungle Edge = Tree, Rock; 2 Dense Jungle = Tree (dense), Rock; 3 River Bank = Water (river band), Rock; 4 Misty Swamp = Water, Tree; 5 Ancient Ruins = Wall, Rock; 6 Bat Caves = Rock, Wall; 7 Serpent Temple = Wall, Fence; 8 Kings Grove = Fence ring (gated), Tree.
+- Placement uses the map's own seeded Rng (never the sim stream). Density about 10-14% of non-camp tiles, clustered (blobs, river bands, fence lines).
+- Place obstacles first, then flood fill from camp; unreachable open pockets become the biome's obstacle kind; fences always keep a 1-tile gate. A* always finds camp to every zone and to the boss tile. Each zone keeps >= 20 grass tiles; grass is never replaced. No obstacle on anchors, camp tile or boss tile.
+- Hero, elites and boss never occupy a blocking tile; A* routes around; encounters unaffected.
+- `/api/map` tiles use the chars above and add `legend`: [{"ch","name","blocking"}] (8 entries). Old fields unchanged.
+- Viewer: each kind drawn distinctly (rock blob, fence rails and posts, tree canopy, water wave stripes, wall brick lines) with tokens `--tile-rock --tile-fence --tile-tree --tile-water --tile-wall` in both themes; legend entry per kind; tooltip names the kind.
+- Placement may change A* lengths and so the RNG stream: pinned-number tests get their own update commit.
