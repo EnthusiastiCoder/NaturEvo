@@ -91,3 +91,25 @@ fn off_keeps_the_respawn_loop() {
     assert!(respawns > 0, "no respawn events with permadeath off");
     assert!(many, "no run exceeded one death with permadeath off and monster_atk_mult 3.0");
 }
+
+#[test]
+fn off_outcome_is_consistent() {
+    let c = cfg(&[("permadeath", "false"), ("boss_attempts", "1"), ("monster_atk_mult", "1.5")]);
+    let mut died = 0;
+    for seed in 0..60u64 {
+        let r = simulate_with(seed, &c);
+        match r.outcome {
+            "won" => assert!(r.won, "seed {}", seed),
+            "capped" => assert!(r.capped && !r.won, "seed {}", seed),
+            "died" => {
+                assert!(!r.won && !r.capped, "seed {}", seed);
+                died += 1;
+            }
+            o => panic!("seed {}: bad outcome {}", seed, o),
+        }
+        if !r.won && !r.capped {
+            assert_eq!(r.outcome, "died", "seed {}: boss attempts exhausted must be died", seed);
+        }
+    }
+    assert!(died > 0, "no exhausted-attempts run in 60 seeds");
+}
