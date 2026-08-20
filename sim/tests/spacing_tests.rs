@@ -112,3 +112,32 @@ fn npcs_stay_in_radius_zone_open_tiles_and_apart() {
         }
     }
 }
+
+#[test]
+fn fights_are_spaced_out() {
+    let mut gaps: Vec<usize> = Vec::new();
+    for seed in 1..=10u64 {
+        let c = cfg(&[("event_cap", "6000"), ("permadeath", "false")]);
+        let j = parse(&run_body(&simulate_with(seed, &c))).unwrap();
+        let mut step = 0usize;
+        let mut in_fight = false;
+        let mut last: Option<usize> = None;
+        for e in j.get("events").unwrap().arr() {
+            if e.get("kind").unwrap().str() == "walk" {
+                step += e.get("steps").expect("steps").arr().len();
+            }
+            let fighting = !e.get("mon").unwrap().is_null();
+            if fighting && !in_fight {
+                if let Some(l) = last {
+                    assert!(step - l >= 6, "seed {}: fights {} steps apart", seed, step - l);
+                    gaps.push(step - l);
+                }
+                last = Some(step);
+            }
+            in_fight = fighting;
+        }
+    }
+    assert!(gaps.len() > 30, "only {} gaps", gaps.len());
+    let avg = gaps.iter().sum::<usize>() as f64 / gaps.len() as f64;
+    assert!(avg >= 10.0 && avg <= 25.0, "average steps between fights {}", avg);
+}
