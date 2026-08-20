@@ -106,7 +106,7 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
   const sample = async speed => {
     const h = boot(); h.jv().goto(0); h.setSpeed(speed);
     if (!hasApi(h, speed + 'x glide')) return null;
-    h.play(); await h.pump(50); await h.pump(50);
+    h.play(); await h.pump(300);
     const out = [];
     for (let i = 0; i < 6; i++) {
       // advance a frame inside the tick period (tick = 100/speed ms; frames are 16 ms) without firing the interval
