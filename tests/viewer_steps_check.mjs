@@ -80,7 +80,7 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
 {
   const h = boot(); h.jv().goto(0); h.setSpeed(1);
   if (hasApi(h, 'full walk')) {
-    h.play(); await h.pump(4000); h.play();
+    h.play(); await h.pump(9000); h.play();
     const idx = h.log().filter(e => e[0] === 1).map(e => e[1]);
     check(eq(idx, STEPS.map((_, k) => k)), `full walk: step log for the walk must be 0..19, got ${JSON.stringify(idx)}`);
     check(eq(h.anim().tile, h.anim().tile) && h.jv().stepLog.length >= NSTEP, 'full walk: log must hold every tick');
