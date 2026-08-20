@@ -136,7 +136,7 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
 {
   const h = boot(); h.jv().goto(0); h.setSpeed(1);
   if (hasApi(h, 'elite')) {
-    h.play(); await h.pump(100);
+    h.play(); await h.pump(300);
     let prev = null;
     for (let i = 0; i < 10; i++) {
       await h.pump(100);
