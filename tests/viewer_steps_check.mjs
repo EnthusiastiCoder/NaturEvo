@@ -116,7 +116,7 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
     }
     return out;
   };
-  for (const sp of [1, 4]) {
+  for (const sp of [1, 4, 8]) {
     const s = await sample(sp);
     if (!s) continue;
     const mids = s.filter(o => o.walking);
