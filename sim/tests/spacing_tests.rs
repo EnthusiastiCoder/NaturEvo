@@ -68,3 +68,47 @@ fn zone_anchors_are_spread() {
         }
     }
 }
+
+#[test]
+fn npcs_stay_in_radius_zone_open_tiles_and_apart() {
+    for seed in 1..=8u64 {
+        let c = cfg(&[("event_cap", "4000"), ("permadeath", "false")]);
+        let m = Map::generate(seed, c.map_size as usize);
+        let j = parse(&run_body(&simulate_with(seed, &c))).unwrap();
+        let home: HashMap<String, P> = homes(&j).into_iter().collect();
+        let mut cur: HashMap<String, P> = home.clone();
+        let check = |cur: &HashMap<String, P>, ctx: &str| {
+            let ids: Vec<&String> = cur.keys().collect();
+            for id in &ids {
+                let p = cur[*id];
+                let h = home[*id];
+                let max = if *id == "boss" { 2 } else { 6 };
+                assert!(dist(p, h) <= max, "seed {} {}: {} at {:?} is {} from home {:?} (max {})", seed, ctx, id, p, dist(p, h), h, max);
+                assert!(m.passable(p.0, p.1), "seed {} {}: {} on blocking tile {:?}", seed, ctx, id, p);
+                if *id != "boss" {
+                    assert_eq!(m.zone_of(p.0, p.1), m.zone_of(h.0, h.1), "seed {} {}: {} left its zone", seed, ctx, id);
+                }
+            }
+            for i in 0..ids.len() {
+                for k in i + 1..ids.len() {
+                    assert!(dist(cur[ids[i]], cur[ids[k]]) >= 4, "seed {} {}: {} and {} only {} apart", seed, ctx, ids[i], ids[k], dist(cur[ids[i]], cur[ids[k]]));
+                }
+            }
+        };
+        for (n, e) in j.get("events").unwrap().arr().iter().enumerate() {
+            if let Some(ns) = e.get("nsteps") {
+                for mv in ns.arr() {
+                    for t in mv.arr() {
+                        let a = t.arr();
+                        cur.insert(a[0].str().to_string(), (a[1].num() as usize, a[2].num() as usize));
+                    }
+                    check(&cur, &format!("step in event {}", n));
+                }
+            }
+            for t in e.get("npcs").unwrap().arr() {
+                cur.insert(t.get("id").unwrap().str().to_string(), (t.u("x"), t.u("y")));
+            }
+            check(&cur, &format!("event {}", n));
+        }
+    }
+}
