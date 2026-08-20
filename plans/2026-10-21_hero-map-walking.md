@@ -241,3 +241,6 @@ Added tests, written first and failing, in tests/viewer_map_review_check.mjs (ne
 - Theme: clicking `#theme-toggle` changes tile and marker colours, keeps contrast >= 3:1 for hero vs tile, and persists.
 Commit plan additions: test commits for tests/viewer_map_review_check.mjs and the three stale-test corrections come first. Then these fix commits: "fix: map fills replay area and layout no overflow (viewer/index.html)", "fix: markers, legend, zoom, first-load map and animation hook (viewer/index.html)", and "fix: serve viewer data module (sim/src/server.rs)" if the 404 is a server-side route issue.
 Acceptance: all new and corrected viewer tests pass and a re-run of the independent visual review shows no defects 1 to 7.
+
+## Addendum 3: obstacle types and one-step replay movement
+User, verbatim: "are there obstacles, like walls, rocks, fences etc? add them, and currently, the replay shows movements very fast, I want a movement be one step".
