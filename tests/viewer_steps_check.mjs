@@ -212,6 +212,65 @@ const hasApi = (h, msg) => { const ok = typeof h.jv().gotoStep === 'function' &&
   }
 }
 
+// ---------- readable pace: 400 ms per tile at 1x, one tile per tick, 4-connected, glide lasts the whole tick ----------
+{
+  const h0 = boot();
+  check(h0.v.$('speed-num').value === '1', `default speed must be 1x, got ${h0.v.$('speed-num').value}`);
+  const h = boot(); h.jv().goto(0); h.setSpeed(1);
+  if (hasApi(h, 'pace')) {
+    h.play();
+    const grow = []; let last = 0; const tiles = [], nts = [], steps = [];
+    for (let c = 1; c <= 60; c++) {
+      await h.pump(50);
+      const n = h.log().filter(e => e[0] === 1).length;
+      if (n > last) { grow.push(c); last = n; }
+      tiles.push((h.anim().tile || []).slice()); nts.push(((h.anim().ntile || {}).e1 || []).slice()); steps.push(h.anim().step);
+    }
+    const gaps = grow.slice(1).map((c, i) => (c - grow[i]) * 50);
+    check(gaps.length >= 5 && gaps.every(g => g >= 350 && g <= 450), `1x: each tile step must take 350-450 ms, gaps ${JSON.stringify(gaps)}`);
+    const walk = tiles.filter((t, i) => steps[i] >= 0);
+    for (let i = 1; i < walk.length; i++) if (!eq(walk[i], walk[i - 1])) check(manh(walk[i], walk[i - 1]) === 1 && (walk[i][0] === walk[i - 1][0] || walk[i][1] === walk[i - 1][1]), `hero path must be 4-connected: ${JSON.stringify(walk[i - 1])} -> ${JSON.stringify(walk[i])}`);
+    const el = nts.filter((t, i) => steps[i] >= 0 && t.length);
+    for (let i = 1; i < el.length; i++) if (!eq(el[i], el[i - 1])) check(manh(el[i], el[i - 1]) === 1, `npc path must be 4-connected: ${JSON.stringify(el[i - 1])} -> ${JSON.stringify(el[i])}`);
+    // glide lasts the whole tick: still strictly between tiles near the end of the tick, on the tile a full tick later
+    const g = boot(); g.jv().goto(0); g.setSpeed(1); g.play(); await g.pump(300);
+    await g.advance(352);
+    const late = g.anim().pos.slice();
+    check(!isInt(late[0]) && isInt(late[1]), `glide must last the whole tick: at 88% of the tick pos is ${JSON.stringify(late)}`);
+    await g.advance(64);
+    check(eq(g.anim().pos, g.anim().tile) || !isInt(g.anim().pos[0]) , 'glide completes on the committed tile');
+  }
+}
+// drawn frames never jump more than one tile and never move diagonally
+{
+  const h = boot(); h.jv().goto(0); h.setSpeed(1);
+  if (hasApi(h, 'frames')) {
+    h.play(); const ps = [];
+    for (let i = 0; i < 300; i++) { await h.pump(50); if (h.anim().step >= 0) ps.push(h.anim().pos.slice()); await h.advance(16); if (h.anim().step >= 0) ps.push(h.anim().pos.slice()); }
+    for (let i = 1; i < ps.length; i++) {
+      const dx = Math.abs(ps[i][0] - ps[i - 1][0]), dy = Math.abs(ps[i][1] - ps[i - 1][1]);
+      if (dx + dy > 1 + 1e-9 || (dx > 1e-9 && dy > 1e-9)) { check(false, `drawn position jumped ${JSON.stringify(ps[i - 1])} -> ${JSON.stringify(ps[i])}`); break; }
+    }
+  }
+}
+// never batch walk steps into one interval call, at any speed; above 8x the walk rate is capped and the user is told
+for (const sp of [1, 2, 4, 8, 16, 64, 4096]) {
+  const h = boot(); h.jv().goto(0); h.setSpeed(sp);
+  if (!hasApi(h, sp + 'x batch')) continue;
+  h.play(); let mx = 0, total = 0, prevN = 0, note = '';
+  for (let c = 0; c < 80; c++) {
+    await h.pump(50); if (c === 5) note = h.v.$('info').textContent;
+    const idx = h.log().filter(e => e[0] === 1).map(e => e[1]); const d = idx.length - prevN; prevN = idx.length; mx = Math.max(mx, d); total = idx.length;
+    idx.forEach((v, i) => { if (i && v !== idx[i - 1] + 1) check(false, `${sp}x: skipped a step ${idx[i - 1]} -> ${v}`); });
+  }
+  check(mx <= 1, `${sp}x: at most one walk step per frame/interval call, saw ${mx}`);
+  const per = total / 4; // steps per second over 4 s
+  const want = 2.5 * Math.min(sp, 8);
+  check(per <= want * 1.2 + 1, `${sp}x: walk rate ${per}/s must not exceed ${want}/s (cap at 8x)`);
+  if (sp > 8) check(/skipping steps|capped/i.test(note), `${sp}x: the info line must say walk steps are capped (skipping steps), got "${note}"`);
+  if (sp <= 8) check(!/skipping steps/i.test(note), `${sp}x: no skipping note expected`);
+}
+
 // ---------- crisp canvas, no scroll, both themes, no errors ----------
 for (const theme of ['dark', 'light']) {
   const h = boot(); h.v.root.dataset.theme = theme; h.v.win.dispatchEvent({ type: 'jv-themechange' });
