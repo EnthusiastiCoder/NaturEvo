@@ -165,7 +165,7 @@ fn elites_disabled_gives_no_elite_events() {
 #[test]
 fn hero_starts_at_camp_and_camp_events_happen_there() {
     let c = Config::default();
-    let (_, j, m) = load(1, &cfg(&[("event_cap", "20000")]));
+    let (_, j, m) = load(1, &cfg(&[("event_cap", "20000"), ("permadeath", "false")]));
     let camp = m.camp();
     let ev = events(&j);
     assert_eq!(hero_xy(&ev[0]), camp, "hero starts on the camp tile");
@@ -237,7 +237,8 @@ fn encounter_rate_scales_steps_per_encounter() {
         steps / enc
     };
     let ratio = avg("0.05") / avg("0.5");
-    assert!((5.0..=20.0).contains(&ratio), "steps/encounter ratio {}", ratio);
+    // the 6-step fight cooldown (Addendum 4) compresses the ratio, so the old 5.0 floor is now 2.0
+    assert!((2.0..=20.0).contains(&ratio), "steps/encounter ratio {}", ratio);
 }
 
 #[test]
@@ -342,7 +343,7 @@ fn monster_moves_appear_and_hero_skills_remain() {
     let mut seen: HashSet<(usize, &'static str)> = HashSet::new();
     let mut skills: HashSet<&str> = HashSet::new();
     for seed in 1u64..=20 {
-        let c = cfg(&[("evolve_kills", "20")]);
+        let c = cfg(&[("evolve_kills", "20"), ("permadeath", "false")]);
         let r = simulate_with(seed, &c);
         for e in &r.events {
             for s in ["Power Strike", "Brace", "Stun", "Heal"] {
