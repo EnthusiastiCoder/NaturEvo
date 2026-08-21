@@ -1127,7 +1127,7 @@ impl Sim {
                     && self.hero.hp * 2 >= self.hero.max_hp
                     && !(self.cfg.permadeath && self.won && self.stage >= 1);
                 let (hit, sp, lv, loc) = (
-                    brave && e.zone == z && e.dead_until == 0 && e.cooldown <= self.steps && dist(e.pos, p) <= 1,
+                    brave && self.steps >= self.fight_cd && e.zone == z && e.dead_until == 0 && e.cooldown <= self.steps && dist(e.pos, p) <= 1,
                     e.species,
                     e.level,
                     e.pos,
