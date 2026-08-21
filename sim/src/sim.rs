@@ -464,6 +464,7 @@ impl Sim {
 
     fn target_zone(&self) -> usize {
         let lvl = self.hero.level;
+        let margin = self.cfg.zone_margin;
         let mut best = 1;
         for z in 1..=7 {
             if ZONES[z].min <= lvl {
