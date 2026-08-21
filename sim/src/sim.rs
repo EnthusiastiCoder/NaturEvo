@@ -1116,7 +1116,7 @@ impl Sim {
         }
 
         // contact fights
-        if !self.won && z == 8 && self.target_zone() == 8 && dist(self.boss, p) <= 1 {
+        if !self.won && z == 8 && self.target_zone() == 8 && dist(self.boss, p) <= 1 && self.steps >= self.fight_cd {
             return self.boss_fight(check);
         }
         if (1..=7).contains(&z) {
