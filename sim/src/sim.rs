@@ -1179,6 +1179,28 @@ impl Sim {
         self.map.path(from, to)
     }
 
+    /// An L-shaped route (either bend) whose every tile is open and inside `zone`; no search.
+    fn l_route_in_zone(&self, from: (usize, usize), to: (usize, usize), zone: usize) -> Option<Vec<(usize, usize)>> {
+        'bend: for horizontal_first in [true, false] {
+            let mut out = Vec::with_capacity(dist(from, to));
+            let (mut x, mut y) = from;
+            while (x, y) != to {
+                let move_x = if horizontal_first { x != to.0 } else { y == to.1 };
+                if move_x {
+                    x = if x < to.0 { x + 1 } else { x - 1 };
+                } else {
+                    y = if y < to.1 { y + 1 } else { y - 1 };
+                }
+                if !self.map.passable(x, y) || self.map.zone_of(x, y) != zone {
+                    continue 'bend;
+                }
+                out.push((x, y));
+            }
+            return Some(out);
+        }
+        None
+    }
+
     fn walk_to(&mut self, dest: (usize, usize), dest_zone: usize, check: u8) -> Walk {
         let Some(path) = self.route(self.pos(), dest) else {
             self.done = true;
