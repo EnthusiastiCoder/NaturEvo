@@ -998,6 +998,14 @@ impl Sim {
         self.next_respawn = next;
     }
 
+    /// True when `p` keeps at least NPC_GAP from every other living NPC.
+    fn npc_clear(&self, p: (usize, usize), me: Option<usize>) -> bool {
+        if me.is_some() && dist(self.boss, p) < NPC_GAP {
+            return false;
+        }
+        self.elites.iter().enumerate().all(|(j, e)| Some(j) == me || e.dead_until != 0 || dist(e.pos, p) >= NPC_GAP)
+    }
+
     /// Elites and the boss only move while the hero is in their zone.
     fn step_npcs(&mut self) -> Vec<(u16, u16, u16)> {
         let mut moved = Vec::new();
