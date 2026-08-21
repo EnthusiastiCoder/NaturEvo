@@ -1123,7 +1123,9 @@ impl Sim {
             for i in 0..self.elites.len() {
                 let e = &self.elites[i];
                 // the hero picks its fights: it steers clear of elites far above its level or when hurt
-                let brave = self.hero.level + ELITE_LEVEL_MARGIN >= e.level && self.hero.hp * 2 >= self.hero.max_hp;
+                let brave = self.hero.level + ELITE_LEVEL_MARGIN >= e.level
+                    && self.hero.hp * 2 >= self.hero.max_hp
+                    && !(self.cfg.permadeath && self.won && self.stage >= 1);
                 let (hit, sp, lv, loc) = (
                     brave && e.zone == z && e.dead_until == 0 && e.cooldown <= self.steps && dist(e.pos, p) <= 1,
                     e.species,
