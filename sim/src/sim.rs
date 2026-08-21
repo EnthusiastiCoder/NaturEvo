@@ -1271,7 +1271,26 @@ impl Sim {
                 if wp == self.pos() {
                     break;
                 }
-                self.walk_to(wp, target, CHECK_SUPPLIES | CHECK_TARGET)
+                // stay inside the target zone: prefer a wander tile whose plain L route does,
+                // and only fall back to a zone-bound A* when a few draws all leave the zone
+                let mut direct = None;
+                for attempt in 0..5 {
+                    direct = self.l_route_in_zone(self.pos(), wp, target);
+                    if direct.is_some() || attempt == 4 {
+                        break;
+                    }
+                    wp = self.pick_wander(target);
+                    if wp == self.pos() {
+                        break;
+                    }
+                }
+                if wp == self.pos() {
+                    break;
+                }
+                match direct.or_else(|| self.map.path_in(self.pos(), wp, Some(target))) {
+                    Some(path) => self.walk_route(path, target, CHECK_SUPPLIES | CHECK_TARGET),
+                    None => self.walk_to(wp, target, CHECK_SUPPLIES | CHECK_TARGET),
+                }
             };
             if r != Walk::Arrived {
                 break;
