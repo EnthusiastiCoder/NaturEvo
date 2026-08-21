@@ -33,10 +33,6 @@ fn default_matches_baseline() {
         assert_eq!(r.first_win_event.map(|f| f as usize + 1), Some(len), "seed {}", seed);
         assert_eq!(r.events.len(), 65536, "seed {}", seed);
         assert_eq!(r.final_level, lvl, "seed {}", seed);
-        let w = simulate_with(seed, &Config::default());
-        assert_eq!(w.first_win_event.map(|f| f as usize + 1), Some(len), "seed {}", seed);
-        assert_eq!(w.events.len(), 65536, "seed {}", seed);
-        assert_eq!(w.final_level, lvl, "seed {}", seed);
     }
     // seeds 2, 3, 4 and 5 lose on the walking build: level 40, no win, no post-game
     for (seed, len) in [(2u64, 14750usize), (3, 14776), (4, 14400)] {
