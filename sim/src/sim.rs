@@ -959,7 +959,7 @@ impl Sim {
                     return Some(Walk::Retreat);
                 }
                 let h = &self.hero;
-                if check & CHECK_SUPPLIES != 0 && h.potions == 0 && h.hp * 2 < h.max_hp {
+                if check & CHECK_SUPPLIES != 0 && h.potions == 0 && h.hp * 100 < h.max_hp * self.retreat_pct() {
                     return Some(Walk::Retreat);
                 }
                 if check & CHECK_TARGET != 0 && self.target_zone() != self.goal {
