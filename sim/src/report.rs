@@ -225,6 +225,15 @@ pub fn batch_with(runs: u32, threads: usize, cfg: &Config) -> BatchStats {
             pd += r.post_deaths as u64;
             stage_hist[(r.max_stage as usize).min(4)] += 1;
         }
+        match r.outcome {
+            "died" => {
+                died += 1;
+                dl_hist[(r.died_level.unwrap_or(r.final_level) as usize).min(40)] += 1;
+                dz[r.death_zone.unwrap_or(0).min(8)] += 1;
+            }
+            "capped" => capped += 1,
+            _ => {}
+        }
         deaths += r.deaths as u64;
         lv += r.final_level as u64;
         ev += r.events as u64;
