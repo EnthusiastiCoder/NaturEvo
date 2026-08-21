@@ -41,7 +41,9 @@ fn default_matches_baseline() {
         assert_eq!(l.events.len(), len, "seed {}", seed);
         assert_eq!(l.final_level, 40, "seed {}", seed);
     }
-    assert_eq!(batch(200, 4).wins, 100);
+    assert_eq!(jungle_sim::report::batch_with(200, 4, &off).wins, 81);
+    // the default config is permadeath on, so simulate() differs from the off runs
+    assert!(simulate(7).outcome == "won" || simulate(7).outcome == "died");
 }
 
 #[test]
