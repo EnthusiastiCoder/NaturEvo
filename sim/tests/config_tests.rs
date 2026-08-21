@@ -151,6 +151,7 @@ fn knobs_cover_all_fields() {
         "hero_hp_per_level", "hero_atk_per_level", "hero_def_per_level", "xp_mult", "gold_mult",
         "potion_cost", "boss_level", "boss_attempts", "event_cap", "postgame_level_cap", "evolve_kills",
     "map_size", "encounter_rate", "wander_radius", "elites_per_zone", "elite_mult", "max_steps",
+        "permadeath", "zone_margin",
     ];
     assert_eq!(keys.len(), expect.len());
     for k in expect {
