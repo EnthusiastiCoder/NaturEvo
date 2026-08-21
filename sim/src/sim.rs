@@ -1267,7 +1267,7 @@ impl Sim {
             let r = if target == 8 {
                 self.chase_boss_step()
             } else {
-                let wp = self.pick_wander(target);
+                let mut wp = self.pick_wander(target);
                 if wp == self.pos() {
                     break;
                 }
