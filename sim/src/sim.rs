@@ -1258,7 +1258,7 @@ impl Sim {
                 break;
             }
             let h = &self.hero;
-            if h.potions == 0 && h.hp * 2 < h.max_hp {
+            if h.potions == 0 && h.hp * 100 < h.max_hp * self.retreat_pct() {
                 break;
             }
             if self.target_zone() != target {
