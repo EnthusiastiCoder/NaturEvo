@@ -36,6 +36,9 @@ fn json_escapes_quotes() {
         post_deaths: 0,
         max_stage: 0,
         capped: false,
+        outcome: "capped",
+        died_level: None,
+        death_zone: None,
     };
     let j = run_json(&run);
     assert!(j.contains("say \\\"hi\\\""), "{}", j);
