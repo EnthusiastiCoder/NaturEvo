@@ -213,6 +213,10 @@ pub fn batch_with(runs: u32, threads: usize, cfg: &Config) -> BatchStats {
     let mut pd = 0u64;
     let mut hist = vec![0u32; 41];
     let mut stage_hist = vec![0u32; 5];
+    let mut died = 0u32;
+    let mut capped = 0u32;
+    let mut dl_hist = vec![0u32; 41];
+    let mut dz = vec![0u32; 9];
     for r in &results {
         if r.won {
             wins += 1;
