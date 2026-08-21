@@ -698,7 +698,31 @@ impl Sim {
                     let hp = self.hero.hp;
                     let max = self.hero.max_hp;
                     let charge_next = m.behavior == Behavior::Charger && mon_actions % 3 == 2;
-                    if hp * 100 < max * 35 && self.hero.potions > 0 {
+                    let mut force_potion = false;
+                    if self.cfg.permadeath {
+                        let worst = self.worst_hit(&m);
+                        let can_heal = self.hero.potions > 0 && (hp + max / 2).min(max) > worst;
+                        let flee = if hp <= worst {
+                            if can_heal {
+                                force_potion = true;
+                                false
+                            } else {
+                                true
+                            }
+                        } else {
+                            self.too_risky(&m)
+                        };
+                        if flee {
+                            ev!(self, "rest", Some(&m), "Hero judges the {} too dangerous and backs away", s.name);
+                            if let Some(i) = elite_idx {
+                                self.elites[i].cooldown = self.steps + 25;
+                            }
+                            self.fight_cd = self.steps + FIGHT_COOLDOWN;
+                            return Outcome::Fled;
+                        }
+                    }
+                    let heal_at = if self.cfg.permadeath { HEAL_PCT } else { OLD_HEAL_PCT };
+                    if (force_potion || hp * 100 < max * heal_at) && self.hero.potions > 0 {
                         self.hero.potions -= 1;
                         let heal = max / 2;
                         self.hero.hp = (hp + heal).min(max);
