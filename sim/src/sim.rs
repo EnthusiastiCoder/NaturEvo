@@ -872,6 +872,16 @@ impl Sim {
                     }
                 }
                 ev!(self, "death", Some(&m), "Hero is slain by the {}", s.name);
+                if !self.won {
+                    self.died_level = Some(self.hero.level);
+                    self.death_zone = Some(self.hero.zone);
+                }
+                if self.cfg.permadeath {
+                    ev!(self, "end", None, "The hero has fallen. The journey ends here");
+                    self.ended = true;
+                    self.done = true;
+                    return Outcome::Died;
+                }
                 let lost = self.hero.gold / 4;
                 self.hero.gold -= lost;
                 let camp = self.map.camp();
