@@ -270,8 +270,8 @@ pub fn stats_body(s: &BatchStats) -> String {
     let dh: Vec<String> = s.died_level_hist.iter().map(|v| v.to_string()).collect();
     let dz: Vec<String> = s.death_zones.iter().map(|v| v.to_string()).collect();
     format!(
-        "{{\"runs\":{},\"wins\":{},\"avg_deaths\":{},\"avg_final_level\":{},\"level_hist\":[{}],\"avg_events\":{},\"avg_first_win_event\":{},\"avg_post_kills\":{},\"avg_post_deaths\":{},\"stage_hist\":[{}]}}",
-        s.runs, s.wins, s.avg_deaths, s.avg_final_level, hist.join(","), s.avg_events,
+        "{{\"died\":{},\"capped\":{},\"died_pct\":{},\"died_level_hist\":[{}],\"death_zones\":[{}],\"runs\":{},\"wins\":{},\"avg_deaths\":{},\"avg_final_level\":{},\"level_hist\":[{}],\"avg_events\":{},\"avg_first_win_event\":{},\"avg_post_kills\":{},\"avg_post_deaths\":{},\"stage_hist\":[{}]}}",
+        s.died, s.capped, s.died_pct, dh.join(","), dz.join(","), s.runs, s.wins, s.avg_deaths, s.avg_final_level, hist.join(","), s.avg_events,
         s.avg_first_win_event, s.avg_post_kills, s.avg_post_deaths, sh.join(",")
     )
 }
