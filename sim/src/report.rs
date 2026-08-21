@@ -189,6 +189,9 @@ pub fn batch_with(runs: u32, threads: usize, cfg: &Config) -> BatchStats {
             post_deaths: 0,
             max_stage: 0,
             capped: false,
+            outcome: "capped",
+            died_level: None,
+            death_zone: None,
         },
     );
     let chunk = ((runs as usize + threads - 1) / threads).max(1);
