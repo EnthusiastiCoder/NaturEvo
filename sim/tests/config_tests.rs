@@ -186,7 +186,7 @@ fn map_knobs_present_with_ranges_and_defaults() {
         assert!((k.default - def).abs() < 1e-6, "{} default {}", key, k.default);
         assert!(!k.label.is_empty());
     }
-    assert_eq!(knobs().len(), 22);
+    assert_eq!(knobs().len(), 24);
     let c = Config::default();
     assert_eq!(c.map_size as f64, 64.0);
     assert!((c.encounter_rate as f64 - 0.12).abs() < 1e-6);
