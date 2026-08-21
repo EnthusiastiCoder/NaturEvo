@@ -165,8 +165,8 @@ fn cap_len_never_exceeds_cap() {
 
 #[test]
 fn cap_losing_run_ends_without_postgame() {
-    let seed = (0..200u64).find(|s| !simulate(*s).won).expect("a losing seed in 0..200");
-    let r = simulate(seed);
+    let seed = (0..200u64).find(|s| !simulate_with(*s, &base()).won).expect("a losing seed in 0..200");
+    let r = simulate_with(seed, &base());
     assert!(r.events.len() < 65536);
     assert!(!r.capped);
     assert_eq!(r.first_win_event, None);
