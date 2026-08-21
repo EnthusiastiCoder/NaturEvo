@@ -1440,6 +1440,9 @@ pub fn simulate_with(seed: u64, cfg: &Config) -> Run {
         post_deaths: sim.post_deaths,
         max_stage: sim.stage,
         capped: sim.capped,
+        outcome: sim.outcome,
+        died_level: sim.died_level,
+        death_zone: sim.death_zone,
         events: sim.events,
     }
 }
