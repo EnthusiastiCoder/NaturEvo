@@ -1399,7 +1399,8 @@ fn run_sim(seed: u64, cfg: &Config, lean: bool) -> Sim {
     for z in 1..=7usize {
         for _ in 0..sim.cfg.elites_per_zone {
             let species = pick_weighted(&mut sim.rng, ZONES[z].species);
-            let home = tiles[sim.rng.range(0, tiles.len() as i32 - 1) as usize];
+            let home = homes[hi];
+            hi += 1;
             sim.elites.push(Elite { zone: z, species, level: ZONES[z].max + 2, home, pos: home, dead_until: 0, cooldown: 0 });
         }
     }
