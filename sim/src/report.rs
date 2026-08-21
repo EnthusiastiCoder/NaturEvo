@@ -161,6 +161,11 @@ pub struct BatchStats {
     pub avg_post_kills: f64,
     pub avg_post_deaths: f64,
     pub stage_hist: Vec<u32>,
+    pub died: u32,
+    pub capped: u32,
+    pub died_pct: f64,
+    pub died_level_hist: Vec<u32>,
+    pub death_zones: Vec<u32>,
 }
 
 pub fn batch(runs: u32, threads: usize) -> BatchStats {
