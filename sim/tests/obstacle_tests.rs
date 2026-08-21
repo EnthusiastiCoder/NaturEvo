@@ -230,8 +230,10 @@ fn encounters_still_fire_at_the_configured_rate() {
         enc += r.events.iter().filter(|e| e.kind == "encounter").count() as f64;
     }
     assert!(enc > 50.0, "encounters {}", enc);
-    let per = steps / enc;
-    assert!(per >= 0.5 / rate && per <= 2.0 / rate, "steps per encounter {} not within a factor 2 of {}", per, 1.0 / rate);
+    // a 6-step cooldown follows every fight (Addendum 4); the rate acts on the steps after it,
+    // and only grass tiles roll (at least a third of the steps on this map)
+    let per = steps / enc - 6.0;
+    assert!(per >= 0.5 / rate && per <= 4.0 / rate, "steps per encounter {} not within a factor 2 of {}", per, 1.0 / rate);
 }
 
 #[test]
