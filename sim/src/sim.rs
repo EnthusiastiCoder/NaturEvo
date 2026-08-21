@@ -917,6 +917,7 @@ impl Sim {
                     self.elites[i].dead_until = until;
                     self.next_respawn = self.next_respawn.min(until);
                 }
+                self.fight_cd = self.steps + FIGHT_COOLDOWN;
                 self.emit("victory_fight", text, Some(&m));
                 if boss {
                     if self.done {
