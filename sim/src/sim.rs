@@ -467,7 +467,7 @@ impl Sim {
         let margin = self.cfg.zone_margin;
         let mut best = 1;
         for z in 1..=7 {
-            if ZONES[z].min <= lvl {
+            if z == 1 || ZONES[z].min + margin <= lvl {
                 best = z;
             }
         }
