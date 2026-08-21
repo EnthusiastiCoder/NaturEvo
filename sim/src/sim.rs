@@ -1397,10 +1397,6 @@ fn run_sim(seed: u64, cfg: &Config, lean: bool) -> Sim {
     let homes = sim.map.elite_homes(seed, sim.cfg.elites_per_zone);
     let mut hi = 0;
     for z in 1..=7usize {
-        let tiles: Vec<(usize, usize)> = (0..n * n)
-            .map(|i| (i % n, i / n))
-            .filter(|&(x, y)| sim.map.zone_of(x, y) == z && sim.map.passable(x, y))
-            .collect();
         for _ in 0..sim.cfg.elites_per_zone {
             let species = pick_weighted(&mut sim.rng, ZONES[z].species);
             let home = tiles[sim.rng.range(0, tiles.len() as i32 - 1) as usize];
