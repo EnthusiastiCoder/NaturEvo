@@ -24,10 +24,12 @@ fn default_config_values() {
 
 #[test]
 fn default_matches_baseline() {
-    // constants captured from the walking build (the map, step and move-pick RNG draws changed the stream)
-    // old lengths are now first_win_event + 1; the run itself continues to the event cap
-    for (seed, len, lvl) in [(7u64, 14162usize, 40u32), (6, 15107, 40)] {
-        let r = simulate(seed);
+    // constants captured with permadeath off (the respawn loop), after the spacing and permadeath
+    // changes moved the map and RNG stream; the run continues to the event cap after a win
+    let mut off = Config::default();
+    off.set("permadeath", "false").unwrap();
+    for (seed, len, lvl) in [(7u64, 15437usize, 40u32), (0, 15620, 40)] {
+        let r = simulate_with(seed, &off);
         assert_eq!(r.first_win_event.map(|f| f as usize + 1), Some(len), "seed {}", seed);
         assert_eq!(r.events.len(), 65536, "seed {}", seed);
         assert_eq!(r.final_level, lvl, "seed {}", seed);
