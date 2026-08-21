@@ -1017,7 +1017,8 @@ impl Sim {
                 if nx >= 0 && ny >= 0 {
                     let np = (nx as usize, ny as usize);
                     let centre = self.map.anchors()[8];
-                    if self.map.passable(np.0, np.1) && self.map.zone_of(np.0, np.1) == 8 && dist(np, centre) <= 2 && np != hp {
+                    let clear = self.elites.iter().all(|e| e.dead_until != 0 || dist(e.pos, np) >= NPC_GAP);
+                    if self.map.passable(np.0, np.1) && self.map.zone_of(np.0, np.1) == 8 && dist(np, centre) <= 2 && np != hp && clear {
                         self.boss = np;
                         moved.push((BOSS_ID, np.0 as u16, np.1 as u16));
                     }
