@@ -10,6 +10,11 @@ use std::time::Instant;
 /// Post-game scenarios assume the respawn loop, so the base config has permadeath off (Addendum 4).
 fn base() -> Config {
     let mut c = Config::default();
+    c.set("permadeath", "false").unwrap();
+    c
+}
+fn cfg(k: &[(&str, &str)]) -> Config {
+    let mut c = base();
     for (a, b) in k {
         c.set(a, b).unwrap();
     }
