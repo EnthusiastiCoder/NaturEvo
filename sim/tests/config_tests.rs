@@ -278,3 +278,41 @@ fn knob_keys_match_new_set() {
     }
     assert!(c.validate().is_ok());
 }
+
+// ---- Addendum 4: permadeath toggle (written before implementation) ----
+// Picked API: Config.permadeath: bool, Knob.kind: &'static str ("number" or "bool").
+
+#[test]
+fn permadeath_defaults_to_true() {
+    assert!(Config::default().permadeath);
+}
+
+#[test]
+fn permadeath_set_accepts_true_false_1_0() {
+    let mut c = Config::default();
+    for (v, want) in [("false", false), ("true", true), ("0", false), ("1", true)] {
+        c.set("permadeath", v).unwrap();
+        assert_eq!(c.permadeath, want, "{}", v);
+        assert!(c.validate().is_ok());
+    }
+}
+
+#[test]
+fn permadeath_set_rejects_junk_and_keeps_value() {
+    let mut c = Config::default();
+    for v in ["2", "abc", "", "yes", "-1", "0.5"] {
+        let e = c.set("permadeath", v).unwrap_err();
+        assert!(e.contains("permadeath"), "{}: {}", v, e);
+        assert!(c.permadeath, "value changed by rejected input {:?}", v);
+    }
+}
+
+#[test]
+fn permadeath_knob_is_boolean_and_others_numeric() {
+    let k = knobs().iter().find(|k| k.key == "permadeath").expect("permadeath knob");
+    assert_eq!(k.kind, "bool");
+    assert_eq!(k.default, 1.0);
+    for o in knobs().iter().filter(|k| k.key != "permadeath") {
+        assert_eq!(o.kind, "number", "{}", o.key);
+    }
+}
