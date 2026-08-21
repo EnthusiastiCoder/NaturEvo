@@ -344,6 +344,48 @@ impl Sim {
         }
     }
 
+    /// Expected damage to finish this fight versus what the hero can absorb (hp plus potions).
+    fn too_risky(&self, m: &Mon) -> bool {
+        let h = &self.hero;
+        let atk = h.atk(&self.cfg) * 1.25;
+        let hit = (atk - m.def * 0.5).max(atk * 0.1).max(1.0);
+        let rounds = (m.hp as f32 / hit).ceil().max(1.0);
+        let factor = match m.behavior {
+            Behavior::Aggressive => 1.25,
+            Behavior::Charger => 1.4,
+            Behavior::Berserker => 1.3,
+            _ => 1.0,
+        };
+        let matk = m.atk * factor;
+        let per_round = (matk - h.def(&self.cfg) * 0.5).max(matk * 0.1).max(1.0);
+        let expected = rounds * per_round * 1.15;
+        let budget = h.hp as f32 + h.potions as f32 * (h.max_hp / 2) as f32 * 0.9;
+        let share = if self.won { POST_RISK_SHARE } else { RISK_SHARE };
+        expected > budget * share
+    }
+
+    /// The hardest single hit this monster can land next round (best move, burst behaviour, high roll).
+    fn worst_hit(&self, m: &Mon) -> i32 {
+        let best = MOVES[m.species].iter().map(|mv| mv.power).fold(0.0f32, f32::max);
+        let mut atk = m.atk * best / mean_power(m.species);
+        match m.behavior {
+            Behavior::Aggressive => atk *= 1.25,
+            Behavior::Berserker => atk *= 1.6,
+            Behavior::Charger => atk *= 2.2,
+            _ => {}
+        }
+        let def = self.hero.def(&self.cfg);
+        ((atk - def * 0.5).max(atk * 0.1).max(1.0) * 1.15) as i32 + 1
+    }
+
+    fn retreat_pct(&self) -> i32 {
+        if self.cfg.permadeath {
+            RETREAT_PCT
+        } else {
+            OLD_RETREAT_PCT
+        }
+    }
+
     fn level_cap(&self) -> u32 {
         if self.won {
             self.cfg.postgame_level_cap
