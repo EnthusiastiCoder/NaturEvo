@@ -252,6 +252,11 @@ pub fn batch_with(runs: u32, threads: usize, cfg: &Config) -> BatchStats {
         avg_post_kills: if wins > 0 { pk as f64 / w } else { 0.0 },
         avg_post_deaths: if wins > 0 { pd as f64 / w } else { 0.0 },
         stage_hist,
+        died,
+        capped,
+        died_pct: died as f64 * 100.0 / runs.max(1) as f64,
+        died_level_hist: dl_hist,
+        death_zones: dz,
     }
 }
 
