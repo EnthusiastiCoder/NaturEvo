@@ -975,6 +975,7 @@ impl Sim {
         let z = &ZONES[8];
         let level = self.rng.range(z.min as i32, z.max as i32) as u32;
         let loc = self.boss;
+        self.boss_go = false;
         let o = self.fight(BOSS, level, 0, loc, None);
         self.after_fight(o, true, check)
     }
