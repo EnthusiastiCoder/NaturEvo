@@ -1139,7 +1139,7 @@ impl Sim {
                     return self.after_fight(o, false, check);
                 }
             }
-            if self.map.tile(p.0, p.1) == Tile::Grass && self.rng.chance(self.cfg.encounter_rate) {
+            if self.steps >= self.fight_cd && self.map.tile(p.0, p.1) == Tile::Grass && self.rng.chance(self.cfg.encounter_rate) {
                 self.flush_walk();
                 let zone = &ZONES[z];
                 let sp = pick_weighted(&mut self.rng, zone.species);
