@@ -107,7 +107,7 @@ fn prefix_first_win_events_and_level() {
 #[test]
 fn prefix_small_cap_is_prefix_of_default() {
     for seed in [7u64, 3, 1] {
-        let full = simulate(seed);
+        let full = simulate_with(seed, &base());
         let short = simulate_with(seed, &cfg(&[("event_cap", "5000")]));
         assert_eq!(short.events.len(), 5000);
         for (a, b) in short.events.iter().zip(full.events.iter()) {
