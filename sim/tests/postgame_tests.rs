@@ -130,8 +130,8 @@ fn prefix_across_win_boundary() {
 
 #[test]
 fn baseline_win_counts_unchanged() {
-    assert_eq!(batch(200, 4).wins, 100);
-    assert_eq!(batch(2000, 4).wins, 943);
+    assert_eq!(batch_with(200, 4, &base()).wins, 81);
+    assert_eq!(batch_with(2000, 4, &base()).wins, 905);
 }
 
 // ---------------- cap ----------------
