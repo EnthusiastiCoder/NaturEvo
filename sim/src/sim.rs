@@ -1393,7 +1393,9 @@ fn run_sim(seed: u64, cfg: &Config, lean: bool) -> Sim {
             }
         }
     }
-    // roaming elites: species from the zone table, a home tile inside the zone
+    // roaming elites: species from the zone table, spaced home tiles inside the zone
+    let homes = sim.map.elite_homes(seed, sim.cfg.elites_per_zone);
+    let mut hi = 0;
     for z in 1..=7usize {
         let tiles: Vec<(usize, usize)> = (0..n * n)
             .map(|i| (i % n, i / n))
