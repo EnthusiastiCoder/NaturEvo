@@ -642,6 +642,26 @@ impl Sim {
             self.emit(kind, t, Some(&m));
         }
 
+        // before the first blow: a hero that could be one-shot drinks up or walks away
+        if self.cfg.permadeath {
+            let worst = self.worst_hit(&m);
+            let (hp, max) = (self.hero.hp, self.hero.max_hp);
+            if hp <= worst {
+                if self.hero.potions > 0 && (hp + max / 2).min(max) > worst {
+                    self.hero.potions -= 1;
+                    self.hero.hp = (hp + max / 2).min(max);
+                    ev!(self, "potion", Some(&m), "Hero drinks a potion and heals {}", self.hero.hp - hp);
+                } else {
+                    ev!(self, "rest", Some(&m), "Hero judges the {} too dangerous and backs away", s.name);
+                    if let Some(i) = elite_idx {
+                        self.elites[i].cooldown = self.steps + 25;
+                    }
+                    self.fight_cd = self.steps + FIGHT_COOLDOWN;
+                    return Outcome::Fled;
+                }
+            }
+        }
+
         let mut round = 0u32;
         let mut mon_actions = 0u32;
         let mut poison = 0u32;
