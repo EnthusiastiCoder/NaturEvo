@@ -7,7 +7,8 @@ use jungle_sim::sim::{simulate_summary, simulate_with, Run};
 use std::collections::HashMap;
 use std::time::Instant;
 
-fn cfg(k: &[(&str, &str)]) -> Config {
+/// Post-game scenarios assume the respawn loop, so the base config has permadeath off (Addendum 4).
+fn base() -> Config {
     let mut c = Config::default();
     for (a, b) in k {
         c.set(a, b).unwrap();
