@@ -1409,6 +1409,19 @@ fn run_sim(seed: u64, cfg: &Config, lean: bool) -> Sim {
     if !sim.won {
         sim.final_level = sim.hero.level;
     }
+    sim.outcome = if sim.won {
+        "won"
+    } else if sim.ended {
+        "died"
+    } else if sim.capped {
+        "capped"
+    } else {
+        "died"
+    };
+    if sim.outcome != "died" {
+        sim.died_level = None;
+        sim.death_zone = None;
+    }
     sim
 }
 
