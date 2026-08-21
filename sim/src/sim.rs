@@ -471,7 +471,8 @@ impl Sim {
                 best = z;
             }
         }
-        if !self.won && lvl >= (self.cfg.boss_level + 2 * self.boss_deaths).min(MAX_LEVEL) {
+        let gate = (!self.cfg.permadeath || self.boss_go) && lvl >= (self.cfg.boss_level + 2 * self.boss_deaths).min(MAX_LEVEL);
+        if !self.won && gate {
             best = 8;
         }
         best
