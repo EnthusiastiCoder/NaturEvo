@@ -1311,6 +1311,8 @@ impl Sim {
             if self.done {
                 break;
             }
+            let h = &self.hero;
+            self.boss_go = !self.cfg.permadeath || (h.hp * 10 >= h.max_hp * 8 && h.potions >= 5);
             // outbound: re-aim in place when the target zone changes on the way
             let (target, outcome) = loop {
                 let target = self.target_zone();
