@@ -681,6 +681,7 @@ impl Sim {
                 if let Some(i) = elite_idx {
                     self.elites[i].cooldown = self.steps + 25;
                 }
+                self.fight_cd = self.steps + FIGHT_COOLDOWN;
                 return Outcome::Fled;
             }
             cd_power = cd_power.saturating_sub(1);
