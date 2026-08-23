@@ -169,3 +169,13 @@ try {
       if (!(zoneRef[Z(x, y)] || []).some(r => dist(c, r) < 25)) other++;
     }
     check(other / total >= 0.05 && other / total <= 0.25, `${L}: non-floor/grass pixel share must be 5-25%, got ${(100 * other / total).toFixed(1)}%`);
+
+    // legend swatches use the same colours as the map
+    const sw = await p.ev('__t.swatches()');
+    check(sw, `${L}: #maplegend missing`);
+    if (sw) for (const name of Object.values(KINDS)) {
+      check(sw[name], `${L}: legend swatch sw-${name} missing`);
+      if (sw[name] && px[name]) check(dist(sw[name], px[name]) <= 20, `${L}: legend swatch ${name} ${sw[name]} must equal the map pixel ${px[name]}`);
+    }
+    await p.close();
+  }
