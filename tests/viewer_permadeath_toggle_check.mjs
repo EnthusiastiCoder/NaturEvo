@@ -87,3 +87,12 @@ const key = (el, k) => el.fire('keydown', { key: k, code: k === ' ' ? 'Space' : 
   const thr = load({ protocol: 'http:', run: RUN, fetchImpl, storage: 'throw-ops' }); await tick();
   check(String(checked(thr)) === 'true', 'storage that throws must not break the default ON');
 }
+
+// ---- both themes keep the switch usable
+for (const theme of ['dark', 'light']) {
+  const v = load({ protocol: 'http:', run: RUN, fetchImpl, matchMedia: theme }); await tick();
+  v.root.dataset.theme = theme; v.win.dispatchEvent({ type: 'jv-themechange' }); await tick();
+  const t = v.$('permadeath-toggle');
+  check(t && String(checked(v)) === 'true', `${theme}: switch present and ON by default`);
+  if (t) { t.click(); await tick(); check(String(checked(v)) === 'false', `${theme}: click toggles`); }
+}
