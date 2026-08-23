@@ -419,7 +419,7 @@ fn stats_thread_independent_nondefault() {
 
 #[test]
 fn stats_body_has_new_keys() {
-    let b = stats_body(&batch(20, 2));
+    let b = stats_body(&batch_with(20, 2, &base()));
     for k in ["avg_events", "avg_first_win_event", "avg_post_kills", "avg_post_deaths", "stage_hist", "wins", "level_hist"] {
         assert!(b.contains(&format!("\"{}\":", k)), "missing {} in {}", k, b);
     }
