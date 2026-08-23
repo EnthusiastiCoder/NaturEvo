@@ -11,3 +11,13 @@
 //   Styling uses tokens: CSS rules for #permadeath-toggle / [role="switch"] use var(--...) and no hex literals,
 //   so both themes work through the existing theme tokens.
 import { html, load, tick, runner, jsonResp } from './_viewer_harness.mjs';
+
+const { check, done } = runner('viewer_permadeath_toggle_check');
+const markup = html.replace(/<script[\s\S]*?<\/script>/g, '');
+const tag = (markup.match(/<(\w+)[^>]*\bid\s*=\s*["']permadeath-toggle["'][^>]*>/) || [])[0] || '';
+check(tag, '#permadeath-toggle missing from the markup');
+check(/\brole\s*=\s*["']switch["']/.test(tag), '#permadeath-toggle must have role="switch", got ' + tag.slice(0, 120));
+const isButton = /^<button\b/i.test(tag);
+check(isButton || /\btabindex\s*=/.test(tag), '#permadeath-toggle must be focusable (button or tabindex)');
+const inRunControls = (() => { const i = markup.indexOf('id="run-controls"'), j = markup.indexOf('id="permadeath-toggle"'); const end = markup.indexOf('id="run-status"', i); return i >= 0 && j > i && (end < 0 || j < end + 40); })();
+check(inRunControls, '#permadeath-toggle must sit inside #run-controls');
