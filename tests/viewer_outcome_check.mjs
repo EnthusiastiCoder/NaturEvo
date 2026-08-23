@@ -35,3 +35,20 @@ for (const [outcome, word] of [['won', 'Victory'], ['died', 'Fallen'], ['capped'
   v.win.__jv.goto(0); await tick();
   check(!/victory|fallen|capped/i.test(badge(v)), `${outcome}: badge must not show an outcome before the final event, got ${JSON.stringify(badge(v))}`);
 }
+
+// ---- old data without outcome: fall back to the won flag, never throw
+{
+  let threw = null, v;
+  try {
+    const old = mk('won'); delete old.outcome; old.won = true;
+    v = await boot(old); v.win.__jv.goto(3); await tick();
+    check(badge(v) === 'Victory', `old won run: badge must read Victory, got ${JSON.stringify(badge(v))}`);
+    const lost = mk('died'); delete lost.outcome; lost.won = false;
+    v = await boot(lost); v.win.__jv.goto(3); await tick();
+    check(badge(v) === 'Fallen', `old lost run: badge must read Fallen, got ${JSON.stringify(badge(v))}`);
+    const cap = mk('capped'); delete cap.outcome; cap.won = false; cap.capped = true;
+    v = await boot(cap); v.win.__jv.goto(3); await tick();
+    check(badge(v) === 'Capped', `old capped run: badge must read Capped, got ${JSON.stringify(badge(v))}`);
+  } catch (e) { threw = e; }
+  check(!threw, 'old-format run threw: ' + (threw && threw.stack));
+}
