@@ -503,7 +503,7 @@ function render(){
  var ocn=run.outcome==="won"||run.outcome==="died"||run.outcome==="capped"?run.outcome:(run.won?"won":run.capped?"capped":"died");
  if(last)oc.textContent=ocn==="won"?"Victory":ocn==="capped"?"Capped":"Fallen";
  else{oc.textContent="In progress";var so=document.createElement("span");so.className="sr";so.textContent=" at event "+cur;oc.appendChild(so);}
- oc.className=last?(run.won?"badge badge-good":"badge badge-bad"):"badge";
+ oc.className=last?(ocn==="won"?"badge badge-good":ocn==="died"?"badge badge-bad":"badge"):"badge";
  mapSync();
  logCur(false);
  timeline();
