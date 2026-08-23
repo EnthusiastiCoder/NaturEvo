@@ -364,7 +364,7 @@ fn det_evolve_kills_changes_run() {
 #[test]
 fn summary_matches_lean_summary() {
     let cfgs = [
-        Config::default(),
+        base(),
         cfg(&[("event_cap", "3000")]),
         cfg(&[("event_cap", "100")]),
         cfg(&[("evolve_kills", "10"), ("boss_hp_mult", "2.5")]),
