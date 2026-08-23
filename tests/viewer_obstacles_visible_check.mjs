@@ -125,3 +125,33 @@ try {
   const refTile = (ch, zone) => { for (let y = 2; y < MW - 2; y++) for (let x = 2; x < MW - 2; x++) if (T(x, y) === ch && Z(x, y) === zone && !near(x, y, avoid, 4)) return { x, y }; return null; };
   const share = MAP.tiles.join('').split('').filter(c => KINDS[c]).length / (MW * MW);
   check(share >= 0.05 && share <= 0.25, `obstacle tiles must be 5-25% of the map, got ${(share * 100).toFixed(1)}%`);
+
+  const VIEWPORTS = [[1282, 642], [1282, 722], [1540, 890], [1920, 1080]];
+  for (const [w, h] of VIEWPORTS) for (const dpr of [1, 2]) for (const theme of ['dark', 'light']) {
+    const L = `${w}x${h} dpr ${dpr} ${theme}`;
+    const p = await open(BASE, { w, h, dpr }); await sleep(900);
+    for (let i = 0; i < 2 && await p.ev('__t.theme()') !== theme; i++) { await p.ev(`document.getElementById('theme-toggle').click()`); await sleep(300); }
+    check(await p.ev('__t.theme()') === theme, `${L}: real theme toggle did not reach ${theme}`);
+    await p.ev(`window.__jv.goto(${first.idx})`); await sleep(600);
+    const g = await p.ev('__t.geom()');
+    const ts = Math.floor(Math.min(g.W, g.H) / MW), ox = Math.floor((g.W - ts * MW) / 2), oy = Math.floor((g.H - ts * MW) / 2);
+    check(ts / dpr >= 5, `${L}: bird's-eye tile must be >= 5 css px, got ${(ts / dpr).toFixed(2)}`);
+    const centre = (x, y) => [ox + (x + 0.5) * ts, oy + (y + 0.5) * ts];
+    const at = async (x, y) => { const c = centre(x, y); return p.ev(`__t.px(${c[0]},${c[1]})`); };
+    const floorTok = await p.ev('__t.tok("--tile-floor")'), grassTok = await p.ev('__t.tok("--tile-grass")');
+    const px = {};
+    for (const [ch, name] of Object.entries(KINDS)) {
+      const k = picks[ch]; if (!k) continue;
+      px[name] = await at(k.x, k.y);
+      const floorPx = (refTile('.', Z(k.x, k.y)) && await at(...Object.values(refTile('.', Z(k.x, k.y))))) || null;
+      const grassPx = (refTile(',', Z(k.x, k.y)) && await at(...Object.values(refTile(',', Z(k.x, k.y))))) || null;
+      const nbPx = await at(k.nb[0], k.nb[1]);
+      check(dist(px[name], floorTok) >= 25, `${L}: ${name} centre pixel ${px[name]} must not be the floor colour ${floorTok}`);
+      for (const [lab, ref] of [['floor pixel', floorPx], ['grass pixel', grassPx], ['neighbouring tint pixel', nbPx], ['floor token', floorTok], ['grass token', grassTok]]) {
+        if (!ref) continue;
+        check(contrast(px[name], ref) >= 3, `${L}: ${name} ${px[name]} vs ${lab} ${ref} contrast ${contrast(px[name], ref).toFixed(2)} must be >= 3:1`);
+      }
+    }
+    const names = Object.keys(px);
+    for (let i = 0; i < names.length; i++) for (let j = i + 1; j < names.length; j++)
+      check(dist(px[names[i]], px[names[j]]) >= 25, `${L}: ${names[i]} ${px[names[i]]} and ${names[j]} ${px[names[j]]} differ by ${dist(px[names[i]], px[names[j]]).toFixed(1)} (< 25)`);
