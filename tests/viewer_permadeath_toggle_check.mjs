@@ -96,3 +96,5 @@ for (const theme of ['dark', 'light']) {
   check(t && String(checked(v)) === 'true', `${theme}: switch present and ON by default`);
   if (t) { t.click(); await tick(); check(String(checked(v)) === 'false', `${theme}: click toggles`); }
 }
+
+done();
