@@ -82,3 +82,5 @@ for (const [outcome, word] of [['won', 'Victory'], ['died', 'Fallen'], ['capped'
   check(String(v.$('sum-progress').textContent).trim() === `${last} / ${last}`, 'progress must not move past the final event');
   check(/end/.test(String(v.$('last') ? v.$('last').textContent : '')), 'final event text must be shown, got ' + JSON.stringify(v.$('last') && v.$('last').textContent));
 }
+
+done();
