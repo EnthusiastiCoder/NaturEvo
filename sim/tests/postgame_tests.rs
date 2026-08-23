@@ -482,7 +482,7 @@ fn report_level_series_bounded_and_sampled() {
 #[test]
 fn perf_batch_2000_under_15s() {
     let t = Instant::now();
-    let s = batch(2000, 4);
+    let s = batch_with(2000, 4, &base());
     let el = t.elapsed().as_secs_f64();
     assert_eq!(s.runs, 2000);
     assert!(el < 15.0, "batch(2000) took {:.1}s", el);
