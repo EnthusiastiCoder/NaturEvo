@@ -155,3 +155,17 @@ try {
     const names = Object.keys(px);
     for (let i = 0; i < names.length; i++) for (let j = i + 1; j < names.length; j++)
       check(dist(px[names[i]], px[names[j]]) >= 25, `${L}: ${names[i]} ${px[names[i]]} and ${names[j]} ${px[names[j]]} differ by ${dist(px[names[i]], px[names[j]]).toFixed(1)} (< 25)`);
+
+    // share of tiles whose centre pixel is neither the floor nor the grass look of its own zone
+    const zoneRef = {};
+    for (const z of new Set(MAP.zones.join('').split(''))) {
+      const f = refTile('.', z), gr = refTile(',', z);
+      zoneRef[z] = [f && await at(f.x, f.y), gr && await at(gr.x, gr.y)].filter(Boolean);
+    }
+    let other = 0, total = 0;
+    for (let y = 1; y < MW - 1; y += 1) for (let x = 1; x < MW - 1; x += 3) {
+      const ch = T(x, y); if (ch === 'C' || near(x, y, avoid, 3)) continue;
+      const c = await at(x, y); total++;
+      if (!(zoneRef[Z(x, y)] || []).some(r => dist(c, r) < 25)) other++;
+    }
+    check(other / total >= 0.05 && other / total <= 0.25, `${L}: non-floor/grass pixel share must be 5-25%, got ${(100 * other / total).toFixed(1)}%`);
