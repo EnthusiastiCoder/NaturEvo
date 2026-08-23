@@ -99,3 +99,10 @@ async function open(url, { w, h, dpr = 1 }) {
   await page.ev(HELP).catch(() => {});
   return page;
 }
+
+const lumC = c => { const [r, g, b] = c.map(x => { x /= 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+const contrast = (a, b) => (Math.max(lumC(a), lumC(b)) + 0.05) / (Math.min(lumC(a), lumC(b)) + 0.05);
+const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+const KINDS = { '#': 'wall', R: 'rock', F: 'fence', T: 'tree', W: 'water' };
+const first = EV[0];
+const near = (x, y, list, r) => list.some(n => Math.abs(n.x - x) + Math.abs(n.y - y) <= r);
