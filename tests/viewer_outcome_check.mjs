@@ -65,3 +65,20 @@ for (const [outcome, word] of [['won', 'Victory'], ['died', 'Fallen'], ['capped'
   check(/fallen|died|death/i.test(t), 'dashboard must show a death stat label, got ' + JSON.stringify(t));
   check(t.includes('62.5%'), 'dashboard must show the died percentage 62.5%, got ' + JSON.stringify(t));
 }
+
+// ---- replay stops at the final event of a died run
+{
+  const run = mk('died');
+  const v = await boot(run);
+  v.win.__jv.goto(1); await tick();
+  v.$('play').click();
+  const fire = () => v.intervals.forEach(f => f());
+  for (let i = 0; i < 12; i++) { await sleep(120); fire(); }
+  const last = run.events.length - 1;
+  check(String(v.$('sum-progress').textContent).trim() === `${last} / ${last}`, `replay must reach the final event, progress ${JSON.stringify(v.$('sum-progress').textContent)}`);
+  check(v.$('play').getAttribute('aria-label') === 'Play', `replay must stop at the final event (play button label ${JSON.stringify(v.$('play').getAttribute('aria-label'))})`);
+  check(badge(v) === 'Fallen', `after the replay ends the badge must read Fallen, got ${JSON.stringify(badge(v))}`);
+  for (let i = 0; i < 3; i++) { await sleep(120); fire(); }
+  check(String(v.$('sum-progress').textContent).trim() === `${last} / ${last}`, 'progress must not move past the final event');
+  check(/end/.test(String(v.$('last') ? v.$('last').textContent : '')), 'final event text must be shown, got ' + JSON.stringify(v.$('last') && v.$('last').textContent));
+}
