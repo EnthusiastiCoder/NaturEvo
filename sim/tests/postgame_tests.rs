@@ -471,7 +471,7 @@ fn report_window_slice_and_clamp() {
 
 #[test]
 fn report_level_series_bounded_and_sampled() {
-    let r = simulate(7);
+    let r = simulate_with(7, &base());
     let n = array_len(&run_window_body(&r, 0, 10), "level_series");
     assert!(n >= 1000 && n <= 2048, "level_series len {}", n);
     let small = simulate_with(7, &cfg(&[("event_cap", "300")]));
