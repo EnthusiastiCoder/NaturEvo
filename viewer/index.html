@@ -369,7 +369,7 @@ function inWin(g){return g>=base&&g<base+ev.length;}
 function fetchWin(g){
  if(loading||!/^https?:$/.test(location.protocol)||!run||!run.total){cur=Math.max(base,Math.min(base+ev.length-1,cur));return false;}
  loading=true;var C=2000,F=Math.max(0,Math.min(total()-C,g-C/2));
- fetch("/api/run?seed="+encodeURIComponent(seedStr())+"&from="+F+"&count="+C+(knobList.length?"&"+knobQuery():"")).then(function(r){return r.json();}).then(function(j){
+ fetch("/api/run?seed="+encodeURIComponent(seedStr())+"&from="+F+"&count="+C+"&"+knobQuery()).then(function(r){return r.json();}).then(function(j){
   loading=false;if(j&&j.events&&j.events.length){var sd=run.seedStr;run=j;run.seedStr=sd;ev=j.events;base=j.from||0;logDirty=true;}else cur=Math.max(base,Math.min(base+ev.length-1,cur));render();
  },function(){loading=false;cur=Math.max(base,Math.min(base+ev.length-1,cur));render();});
  return true;
