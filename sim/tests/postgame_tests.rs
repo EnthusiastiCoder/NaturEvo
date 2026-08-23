@@ -208,7 +208,7 @@ fn post_levels_past_40_up_to_postgame_cap() {
 #[test]
 fn post_hp_invariants() {
     for seed in [7u64, 3] {
-        for e in &simulate(seed).events {
+        for e in &simulate_with(seed, &base()).events {
             assert!(e.hero.hp >= 0 && e.hero.hp <= e.hero.max_hp, "seed {} idx {}", seed, e.idx);
             if let Some(m) = &e.mon {
                 assert!(m.hp <= m.max_hp, "seed {} idx {}", seed, e.idx);
