@@ -27,3 +27,13 @@ const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter(m => /permadeath
 check(rules.length > 0, 'CSS rules for the switch missing');
 check(rules.length > 0 && rules.some(m => /var\(--/.test(m[2])), 'switch CSS must use theme tokens (var(--...))');
 check(!rules.some(m => /#[0-9a-fA-F]{3,8}\b/.test(m[2])), 'switch CSS must not use hex literals, tokens only: ' + rules.map(m => m[2]).join(' | ').slice(0, 160));
+
+const config = { knobs: [
+  { key: 'monster_hp_mult', label: 'Monster HP multiplier', kind: 'number', min: 0.1, max: 5, default: 1 },
+  { key: 'permadeath', label: 'Permadeath', kind: 'bool', default: true },
+], max_runs: 20000, max_events: 1048576 };
+const RUN = { seed: 1, won: false, deaths: 0, final_level: 1, w: 0, h: 0, steps: 0, total: 1, events: [{ idx: 0, kind: 'travel', text: 'e', hero: { level: 1, hp: 10, max_hp: 10, xp: 0, gold: 0, potions: 0, zone: 0, weapon: 0, armor: 0, x: 1, y: 1 }, mon: null, npcs: [] }] };
+const fetchImpl = async url => url.startsWith('/api/config') ? jsonResp(config) : url.startsWith('/api/run') ? jsonResp(RUN) : url.startsWith('/api/batch') ? jsonResp({ runs: 1, wins: 0, avg_deaths: 0, avg_final_level: 1, level_hist: [0, 1] }) : jsonResp({ error: 'nf' }, 404);
+const boot = async (storage = {}) => { const v = load({ protocol: 'http:', run: RUN, fetchImpl, storage }); await tick(); return v; };
+const checked = v => v.$('permadeath-toggle') && v.$('permadeath-toggle').getAttribute('aria-checked');
+const key = (el, k) => el.fire('keydown', { key: k, code: k === ' ' ? 'Space' : k });
