@@ -23,3 +23,12 @@ import { runner } from './_viewer_harness.mjs';
 const { check, done } = runner('viewer_obstacles_visible_check');
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+const EDGE = ['C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', 'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
+  'C:/Program Files/Google/Chrome/Application/chrome.exe'].find(existsSync);
+const cargoEnv = { ...process.env, PATH: join(process.env.USERPROFILE || '', '.cargo', 'bin') + ';/c/Users/enthu/.cargo/bin;' + process.env.PATH };
+const exe = join(root, 'sim', 'target', 'release', 'jungle-sim.exe');
+if (!EDGE) { check(false, 'no Edge/Chrome found for the browser checks'); done(); }
+const build = spawnSync('cargo', ['build', '--release'], { cwd: join(root, 'sim'), env: cargoEnv, encoding: 'utf8', shell: true });
+if (build.status !== 0) console.error('warning: cargo build failed, using the existing binary if any: ' + (build.stderr || '').slice(-300));
+if (!existsSync(exe)) { check(false, 'sim binary missing: ' + exe); done(); }
