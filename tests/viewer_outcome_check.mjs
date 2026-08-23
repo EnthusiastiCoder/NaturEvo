@@ -52,3 +52,16 @@ for (const [outcome, word] of [['won', 'Victory'], ['died', 'Fallen'], ['capped'
   } catch (e) { threw = e; }
   check(!threw, 'old-format run threw: ' + (threw && threw.stack));
 }
+
+// ---- dashboard death stats
+{
+  const v = await boot(mk('won'));
+  v.win.STATS = { runs: 8, wins: 2, died: 5, capped: 1, died_pct: 62.5, avg_deaths: 0.6, avg_final_level: 20, level_hist: new Array(41).fill(0).map((_, i) => i === 12 ? 5 : i === 40 ? 3 : 0), died_level_hist: new Array(41).fill(0).map((_, i) => i === 12 ? 5 : 0), death_zones: [0, 1, 2, 2, 0, 0, 0, 0, 0] };
+  let threw = null;
+  try { v.win.dispatchEvent({ type: 'jv-themechange' }); v.win.__jv && v.win.__jv.setRun(mk('won')); const tab = v.$('tab-d') || v.$('tab-dash'); if (tab) tab.click(); v.win.dash && v.win.dash(); } catch (e) { threw = e; }
+  await tick();
+  const t = v.$('dstats') ? v.$('dstats').textContent : '';
+  check(!threw, 'rendering stats with died fields threw: ' + (threw && threw.message));
+  check(/fallen|died|death/i.test(t), 'dashboard must show a death stat label, got ' + JSON.stringify(t));
+  check(t.includes('62.5%'), 'dashboard must show the died percentage 62.5%, got ' + JSON.stringify(t));
+}
