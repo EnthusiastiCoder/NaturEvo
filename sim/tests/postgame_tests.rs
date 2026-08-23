@@ -436,8 +436,8 @@ fn report_run_body_new_top_level_keys() {
     assert_eq!(num_after(&b, "first_win_event"), Some(15436));
     assert_eq!(num_after(&b, "total"), Some(65536));
     assert!(b.contains("\"capped\":true"));
-    let lose = (0..200u64).find(|s| !simulate(*s).won).unwrap();
-    let lb = run_body(&simulate(lose));
+    let lose = (0..200u64).find(|s| !simulate_with(*s, &base()).won).unwrap();
+    let lb = run_body(&simulate_with(lose, &base()));
     assert!(lb.contains("\"first_win_event\":null"));
     assert!(lb.contains("\"capped\":false"));
 }
