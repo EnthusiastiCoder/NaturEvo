@@ -58,3 +58,32 @@ const key = (el, k) => el.fire('keydown', { key: k, code: k === ' ' ? 'Space' : 
     }
   }
 }
+
+// ---- request URLs carry permadeath, persisted state
+{
+  const v = await boot();
+  const t = v.$('permadeath-toggle');
+  if (t) {
+    v.$('run-btn').click(); await tick();
+    check(v.fetchCalls.some(u => u.startsWith('/api/run') && /[?&]permadeath=true(&|$)/.test(u)), 'default run URL must contain permadeath=true, got ' + JSON.stringify(v.fetchCalls.filter(u => u.startsWith('/api/run'))));
+    t.click(); await tick();
+    check(v.store.get('jv-permadeath') === 'false', 'localStorage jv-permadeath must be "false" after switching off, got ' + JSON.stringify(v.store.get('jv-permadeath')));
+    v.fetchCalls.length = 0;
+    v.$('run-btn').click(); await tick();
+    check(v.fetchCalls.some(u => u.startsWith('/api/run') && /[?&]permadeath=false(&|$)/.test(u)), 'run URL must contain permadeath=false, got ' + JSON.stringify(v.fetchCalls));
+    v.fetchCalls.length = 0;
+    v.$('batch-btn').click(); await tick();
+    check(v.fetchCalls.some(u => u.startsWith('/api/batch') && /[?&]permadeath=false(&|$)/.test(u)), 'batch URL must contain permadeath=false, got ' + JSON.stringify(v.fetchCalls));
+    t.click(); await tick();
+    check(v.store.get('jv-permadeath') === 'true', 'localStorage must be "true" after switching on');
+    v.fetchCalls.length = 0;
+    v.$('batch-btn').click(); await tick();
+    check(v.fetchCalls.some(u => u.startsWith('/api/batch') && /[?&]permadeath=true(&|$)/.test(u)), 'batch URL must contain permadeath=true, got ' + JSON.stringify(v.fetchCalls));
+  }
+  const w = await boot({ 'jv-permadeath': 'false' });
+  check(String(checked(w)) === 'false', 'stored "false" must restore the switch off, got ' + JSON.stringify(checked(w)));
+  const bad = await boot({ 'jv-permadeath': 'garbage' });
+  check(String(checked(bad)) === 'true', 'garbage stored value must fall back to ON, got ' + JSON.stringify(checked(bad)));
+  const thr = load({ protocol: 'http:', run: RUN, fetchImpl, storage: 'throw-ops' }); await tick();
+  check(String(checked(thr)) === 'true', 'storage that throws must not break the default ON');
+}
