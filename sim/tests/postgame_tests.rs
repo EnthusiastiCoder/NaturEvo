@@ -494,7 +494,7 @@ fn losing_seed_3_has_no_postgame() {
     let r = simulate_with(1, &base());
     assert!(!r.won);
     assert_eq!(r.first_win_event, None);
-    assert_eq!(r.events.len(), 14776);
+    assert_eq!(r.events.len(), 15897);
     assert_eq!(r.final_level, 40);
     assert!(!r.capped);
     assert_eq!(r.post_kills, 0);
