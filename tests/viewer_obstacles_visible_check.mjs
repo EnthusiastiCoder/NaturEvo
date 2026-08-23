@@ -179,3 +179,34 @@ try {
     }
     await p.close();
   }
+
+  // ---- zoom: every obstacle tile in the 16x16 window shows at least 2 colours, in both themes ----
+  for (const theme of ['dark', 'light']) for (const [w, h] of [[1282, 642], [1920, 1080]]) {
+    const L = `zoom ${w}x${h} ${theme}`;
+    const p = await open(BASE, { w, h, dpr: 1 }); await sleep(900);
+    for (let i = 0; i < 2 && await p.ev('__t.theme()') !== theme; i++) { await p.ev(`document.getElementById('theme-toggle').click()`); await sleep(300); }
+    await p.ev(`document.getElementById('mapzoom').click()`);
+    const clamp = v => Math.max(0, Math.min(MW - 16, v));
+    const ev = EV.find(e => { const x0 = clamp(e.hero.x - 8), y0 = clamp(e.hero.y - 8); let n = 0;
+      for (let y = y0; y < y0 + 16; y++) for (let x = x0; x < x0 + 16; x++) if (KINDS[T(x, y)]) n++; return n >= 6; });
+    check(ev, `${L}: no event with 6+ obstacle tiles in its zoom window`);
+    if (ev) {
+      await p.ev(`window.__jv.goto(${ev.idx})`); await sleep(600);
+      const g = await p.ev('__t.geom()'), ts = g.W / 16, x0 = clamp(ev.hero.x - 8), y0 = clamp(ev.hero.y - 8);
+      let seen = 0;
+      for (let y = y0; y < y0 + 16; y++) for (let x = x0; x < x0 + 16; x++) {
+        if (!KINDS[T(x, y)] || (x === ev.hero.x && y === ev.hero.y)) continue;
+        if ((ev.npcs || []).some(n => n.x === x && n.y === y)) continue;
+        seen++;
+        const n = await p.ev(`__t.tile(${(x - x0) * ts + 2}, ${(y - y0) * ts + 2}, ${ts - 4}, ${ts - 4})`);
+        check(n >= 2, `${L}: zoom tile (${x},${y}) '${T(x, y)}' shows only ${n} colour(s), needs a pattern or edge`);
+      }
+      check(seen >= 3, `${L}: only ${seen} obstacle tiles inspected`);
+    }
+    await p.close();
+  }
+} catch (e) {
+  check(false, 'unexpected error: ' + (e && e.stack || e));
+}
+cleanup();
+done();
