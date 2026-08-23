@@ -749,7 +749,7 @@ function viewPos(e){
 function showEmpty(msg){var el=$("mapempty");if(!el)return;if(msg){el.textContent=msg;el.classList.remove("hidden");}else el.classList.add("hidden");}
 function lastTrail(){for(var i=cur-base,n=0;i>=0&&n<200;i--,n++)if(ev[i].kind==="walk"&&ev[i].path&&ev[i].path.length>1)return ev[i].path;return null;}
 /* obstacle patterns drawn over the token fill: wall brick lines, rock blob, fence rails and posts, tree canopy, water wave stripes */
-function obstPattern(g,kc,tiles,x0,x1,y0,y1,ox,oy,s){
+function obstPattern(g,kc,tiles,x0,x1,y0,y1,ox,oy,s,dpr){
  var b=toRgb(tok(MAP_KIND[kc][1])),f=toRgb(tok("--fg")),k=toRgb(tok("--bg"));if(!b||!f||!k)return;
  var lo=toHex(mix(b,k,0.4)),hi=toHex(mix(b,f,0.35)),lw=Math.max(1,s/12),x,y,row,px,py;
  for(y=y0;y<=y1;y++){row=tiles[y]||"";for(x=x0;x<=x1;x++){if(row.charAt(x)!==kc)continue;px=ox+x*s;py=oy+y*s;
