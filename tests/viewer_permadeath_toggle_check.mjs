@@ -37,3 +37,24 @@ const fetchImpl = async url => url.startsWith('/api/config') ? jsonResp(config) 
 const boot = async (storage = {}) => { const v = load({ protocol: 'http:', run: RUN, fetchImpl, storage }); await tick(); return v; };
 const checked = v => v.$('permadeath-toggle') && v.$('permadeath-toggle').getAttribute('aria-checked');
 const key = (el, k) => el.fire('keydown', { key: k, code: k === ' ' ? 'Space' : k });
+
+// ---- default ON, bool knob not rendered as a slider
+{
+  const v = await boot();
+  const t = v.$('permadeath-toggle');
+  check(t, 'toggle element missing at runtime');
+  if (t) {
+    check(String(checked(v)) === 'true', 'default aria-checked must be "true", got ' + JSON.stringify(checked(v)));
+    check(!v.$('knob-permadeath'), 'bool knob must not render a range slider (#knob-permadeath)');
+    t.click(); await tick();
+    check(String(checked(v)) === 'false', 'click must switch off, got ' + JSON.stringify(checked(v)));
+    t.click(); await tick();
+    check(String(checked(v)) === 'true', 'second click must switch on, got ' + JSON.stringify(checked(v)));
+    if (!isButton) {
+      key(t, ' '); await tick();
+      check(String(checked(v)) === 'false', 'Space must toggle, got ' + JSON.stringify(checked(v)));
+      key(t, 'Enter'); await tick();
+      check(String(checked(v)) === 'true', 'Enter must toggle, got ' + JSON.stringify(checked(v)));
+    }
+  }
+}
