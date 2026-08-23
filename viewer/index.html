@@ -751,7 +751,7 @@ function lastTrail(){for(var i=cur-base,n=0;i>=0&&n<200;i--,n++)if(ev[i].kind===
 /* obstacle patterns drawn over the token fill: wall brick lines, rock blob, fence rails and posts, tree canopy, water wave stripes */
 function obstPattern(g,kc,tiles,x0,x1,y0,y1,ox,oy,s,dpr){
  var b=toRgb(tok(MAP_KIND[kc][1])),f=toRgb(tok("--fg")),k=toRgb(tok("--bg"));if(!b||!f||!k)return;
- var lo=toHex(mix(b,k,0.4)),hi=toHex(mix(b,f,0.35)),lw=Math.max(1,s/12),x,y,row,px,py;
+ var lo=toHex(mix(b,k,0.4)),hi=toHex(mix(b,f,0.35)),edge=toHex(mix(b,BLACK,0.5)),lw=Math.max(1,s/12),x,y,row,px,py,small=s/(dpr||1)<8,e=Math.max(1,Math.round(dpr||1));
  for(y=y0;y<=y1;y++){row=tiles[y]||"";for(x=x0;x<=x1;x++){if(row.charAt(x)!==kc)continue;px=ox+x*s;py=oy+y*s;
   if(kc==="#"){g.strokeStyle=lo;g.lineWidth=lw;g.beginPath();
    g.moveTo(px,py+s/3);g.lineTo(px+s-1,py+s/3);g.moveTo(px,py+2*s/3);g.lineTo(px+s-1,py+2*s/3);
