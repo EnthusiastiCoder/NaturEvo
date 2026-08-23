@@ -219,8 +219,8 @@ fn post_hp_invariants() {
 
 #[test]
 fn post_deaths_field_is_prewin_count() {
-    for seed in [7u64, 6, 1] {
-        let r = simulate(seed);
+    for seed in [7u64, 0, 5] {
+        let r = simulate_with(seed, &base());
         let f = fw(&r);
         let pre = r.events[..=f].iter().filter(|e| e.kind == "death").count() as u32;
         assert_eq!(r.deaths, pre, "seed {}", seed);
