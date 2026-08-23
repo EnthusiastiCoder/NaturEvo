@@ -453,7 +453,7 @@ fn report_stage_key_only_when_positive() {
 
 #[test]
 fn report_window_slice_and_clamp() {
-    let r = simulate(7);
+    let r = simulate_with(7, &base());
     let w = run_window_body(&r, 1000, 50);
     assert_eq!(num_after(&w, "from"), Some(1000));
     assert_eq!(num_after(&w, "total"), Some(65536));
