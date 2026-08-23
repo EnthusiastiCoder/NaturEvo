@@ -396,7 +396,7 @@ fn stats_stage_hist_sums_to_wins() {
 
 #[test]
 fn stats_default_averages() {
-    let s = batch(100, 2);
+    let s = batch_with(100, 2, &base());
     assert!(s.avg_events > 10000.0, "avg_events {}", s.avg_events);
     assert!(s.avg_first_win_event > 5000.0 && s.avg_first_win_event < 65536.0, "{}", s.avg_first_win_event);
     assert!(s.avg_post_kills > 0.0);
