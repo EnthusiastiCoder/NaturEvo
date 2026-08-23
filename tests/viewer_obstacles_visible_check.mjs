@@ -106,3 +106,22 @@ const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 const KINDS = { '#': 'wall', R: 'rock', F: 'fence', T: 'tree', W: 'water' };
 const first = EV[0];
 const near = (x, y, list, r) => list.some(n => Math.abs(n.x - x) + Math.abs(n.y - y) <= r);
+
+try {
+  const probe = await open(BASE, { w: 1282, h: 722 });
+  await sleep(900);
+  const MAP = await probe.ev(`fetch('/api/map?seed=1').then(r => r.json())`);
+  await probe.close();
+  check(MAP && MAP.tiles && MAP.tiles.length === MW, 'could not fetch /api/map?seed=1');
+  const T = (x, y) => MAP.tiles[y][x], Z = (x, y) => MAP.zones[y][x];
+  const avoid = [...(first.npcs || []), { x: first.hero.x, y: first.hero.y }];
+  // a tile of each kind with no entity nearby and with at least one plain (floor/grass) 4-neighbour
+  const pickKind = ch => { for (let y = 2; y < MW - 2; y++) for (let x = 2; x < MW - 2; x++) {
+    if (T(x, y) !== ch || near(x, y, avoid, 4)) continue;
+    const nb = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => [x + dx, y + dy]).find(([a, b]) => '.,'.includes(T(a, b)));
+    if (nb) return { x, y, nb }; } return null; };
+  const picks = {};
+  for (const ch of Object.keys(KINDS)) { picks[ch] = pickKind(ch); check(picks[ch], `seed-1 map has no usable '${ch}' (${KINDS[ch]}) tile`); }
+  const refTile = (ch, zone) => { for (let y = 2; y < MW - 2; y++) for (let x = 2; x < MW - 2; x++) if (T(x, y) === ch && Z(x, y) === zone && !near(x, y, avoid, 4)) return { x, y }; return null; };
+  const share = MAP.tiles.join('').split('').filter(c => KINDS[c]).length / (MW * MW);
+  check(share >= 0.05 && share <= 0.25, `obstacle tiles must be 5-25% of the map, got ${(share * 100).toFixed(1)}%`);
