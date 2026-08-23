@@ -82,3 +82,20 @@ const HELP = `(() => {
       return out; },
   };
   return true; })()`;
+
+async function open(url, { w, h, dpr = 1 }) {
+  const { browserContextId } = await send('Target.createBrowserContext');
+  const { targetId } = await send('Target.createTarget', { url: 'about:blank', browserContextId });
+  const { sessionId } = await send('Target.attachToTarget', { targetId, flatten: true });
+  const S = (m, p) => send(m, p, sessionId);
+  for (const m of ['Page.enable', 'Runtime.enable']) await S(m);
+  await S('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: dpr, mobile: false });
+  await S('Page.navigate', { url });
+  const page = {
+    ev: async expr => { const r = await S('Runtime.evaluate', { expression: expr, returnByValue: true, awaitPromise: true }); if (r.exceptionDetails) throw new Error(expr.slice(0, 80) + ' -> ' + (r.exceptionDetails.exception && r.exceptionDetails.exception.description)); return r.result.value; },
+    close: async () => { try { await send('Target.disposeBrowserContext', { browserContextId }); } catch { /* */ } },
+  };
+  for (let i = 0; i < 100; i++) { await sleep(50); if (await page.ev('!!document.getElementById("map") && document.readyState!=="loading"').catch(() => false)) break; }
+  await page.ev(HELP).catch(() => {});
+  return page;
+}
