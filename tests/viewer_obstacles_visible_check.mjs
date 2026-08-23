@@ -45,3 +45,21 @@ const freePort = () => new Promise(res => { const s = createServer(); s.listen(0
 const port = await freePort();
 const server = spawn(exe, ['serve', '--port', String(port), '--root', site], { stdio: 'ignore' });
 const BASE = `http://127.0.0.1:${port}/`;
+
+const udd = join(tmp, 'profile');
+const edge = spawn(EDGE, ['--headless=new', '--remote-debugging-port=0', '--user-data-dir=' + udd, '--no-first-run', '--disable-gpu', '--hide-scrollbars', 'about:blank'], { stdio: 'ignore' });
+function cleanup() { try { ws && ws.close(); } catch { /* */ } try { edge.kill(); } catch { /* */ } try { server.kill(); } catch { /* */ } try { rmSync(tmp, { recursive: true, force: true }); } catch { /* */ } }
+let wsUrl = null, ws = null;
+for (let i = 0; i < 100 && !wsUrl; i++) {
+  await sleep(100);
+  try { const [p, path] = readFileSync(join(udd, 'DevToolsActivePort'), 'utf8').trim().split('\n'); wsUrl = `ws://127.0.0.1:${p}${path}`; } catch { /* not yet */ }
+}
+if (!wsUrl) { check(false, 'could not start headless browser'); cleanup(); done(); }
+ws = new WebSocket(wsUrl);
+await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+let nid = 0; const pending = new Map();
+ws.onmessage = m => {
+  const d = JSON.parse(m.data);
+  if (d.id && pending.has(d.id)) { const { res, rej } = pending.get(d.id); pending.delete(d.id); d.error ? rej(new Error(d.error.message)) : res(d.result); }
+};
+const send = (method, params = {}, sessionId) => new Promise((res, rej) => { const id = ++nid; pending.set(id, { res, rej }); ws.send(JSON.stringify({ id, method, params, sessionId })); });
