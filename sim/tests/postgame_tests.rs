@@ -187,7 +187,7 @@ fn post_exactly_one_win_event_and_continues() {
 
 #[test]
 fn post_never_targets_boss_again() {
-    let r = simulate(7);
+    let r = simulate_with(7, &base());
     let f = fw(&r);
     assert!(r.events[f + 1..].iter().all(|e| e.kind != "boss"));
     assert!(r.events[f + 1..].iter().all(|e| e.hero.zone != 8), "zone 8 is the boss zone");
