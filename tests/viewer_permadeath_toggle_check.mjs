@@ -21,3 +21,9 @@ const isButton = /^<button\b/i.test(tag);
 check(isButton || /\btabindex\s*=/.test(tag), '#permadeath-toggle must be focusable (button or tabindex)');
 const inRunControls = (() => { const i = markup.indexOf('id="run-controls"'), j = markup.indexOf('id="permadeath-toggle"'); const end = markup.indexOf('id="run-status"', i); return i >= 0 && j > i && (end < 0 || j < end + 40); })();
 check(inRunControls, '#permadeath-toggle must sit inside #run-controls');
+
+const css = ((html.match(/<style[^>]*>([\s\S]*?)<\/style>/) || [, ''])[1]).replace(/\/\*[\s\S]*?\*\//g, '');
+const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter(m => /permadeath-toggle|\[role=["']?switch["']?\]|\.switch\b/.test(m[1]));
+check(rules.length > 0, 'CSS rules for the switch missing');
+check(rules.length > 0 && rules.some(m => /var\(--/.test(m[2])), 'switch CSS must use theme tokens (var(--...))');
+check(!rules.some(m => /#[0-9a-fA-F]{3,8}\b/.test(m[2])), 'switch CSS must not use hex literals, tokens only: ' + rules.map(m => m[2]).join(' | ').slice(0, 160));
