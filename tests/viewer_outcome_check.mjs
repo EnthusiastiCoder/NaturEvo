@@ -11,3 +11,17 @@
 //   Replay stop: the final event of a died run is kind "end" after kind "death"; play stops there (play button
 //   aria-label back to "Play", progress stays at the last index when the interval fires again).
 import { load, tick, runner } from './_viewer_harness.mjs';
+
+const { check, done } = runner('viewer_outcome_check');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const hero = (hp = 10) => ({ level: 5, hp, max_hp: 10, xp: 0, gold: 0, potions: 0, zone: 1, weapon: 0, armor: 0, x: 3, y: 3 });
+const ev = (i, kind, hp) => ({ idx: i, kind, text: kind + ' ' + i, hero: hero(hp), mon: null, npcs: [] });
+const mk = (outcome, extra = {}) => {
+  const kinds = outcome === 'died' ? ['travel', 'travel', 'death', 'end'] : ['travel', 'travel', 'travel', 'travel'];
+  const events = kinds.map((k, i) => ev(i, k, k === 'death' || k === 'end' ? 0 : 10));
+  const run = { seed: 1, won: outcome === 'won', deaths: outcome === 'died' ? 1 : 0, final_level: 5, steps: 0, total: events.length, events, ...extra };
+  if (outcome !== undefined) run.outcome = outcome;
+  return run;
+};
+const boot = async run => { const v = load({ protocol: 'file:', run }); await tick(); return v; };
+const badge = v => String(v.$('outcome') ? v.$('outcome').textContent : '').trim();
