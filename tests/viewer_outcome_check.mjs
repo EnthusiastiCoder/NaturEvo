@@ -25,3 +25,13 @@ const mk = (outcome, extra = {}) => {
 };
 const boot = async run => { const v = load({ protocol: 'file:', run }); await tick(); return v; };
 const badge = v => String(v.$('outcome') ? v.$('outcome').textContent : '').trim();
+
+// ---- badge text per outcome, at the last event
+for (const [outcome, word] of [['won', 'Victory'], ['died', 'Fallen'], ['capped', 'Capped']]) {
+  const run = mk(outcome, outcome === 'capped' ? { capped: true } : {});
+  const v = await boot(run);
+  v.win.__jv.goto(run.events.length - 1); await tick();
+  check(badge(v) === word, `${outcome}: summary badge at the last event must read "${word}", got ${JSON.stringify(badge(v))}`);
+  v.win.__jv.goto(0); await tick();
+  check(!/victory|fallen|capped/i.test(badge(v)), `${outcome}: badge must not show an outcome before the final event, got ${JSON.stringify(badge(v))}`);
+}
