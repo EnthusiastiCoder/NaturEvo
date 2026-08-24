@@ -864,7 +864,7 @@ function setMapZoom(z){mapZoom=!!z;sset("jv-mapzoom",mapZoom?"1":"0");var b=$("m
  window.addEventListener("jv-themechange",function(){drawMap();});
 })();
 window.drawMapNow=drawMap;
-window.__jv={setRun:function(r){run=r;ev=(r&&r.events)||[];base=(r&&r.from)||0;cur=base;sub=-1;mapSize=r&&r.w?r.w:0;if(r&&r.map&&r.map.tiles){mapData=r.map;mapKey=seedStr()+":"+mapSize;}loadMap();logDirty=true;$("scrub").max=Math.max(0,total()-1);render();},
+window.__jv={setRun:function(r){run=r;if(r&&typeof r.permadeath==="boolean")pdSet(r.permadeath,false);ev=(r&&r.events)||[];base=(r&&r.from)||0;cur=base;sub=-1;mapSize=r&&r.w?r.w:0;if(r&&r.map&&r.map.tiles){mapData=r.map;mapKey=seedStr()+":"+mapSize;}loadMap();logDirty=true;$("scrub").max=Math.max(0,total()-1);render();},
  goto:function(i){cur=i;sub=-1;render();},
  gotoStep:function(i,k){cur=+i;sub=+k;subFor=cur;render();},stepLog:stepLog,
  logIndices:function(){if(!$("log-modal").open){var w=[];for(var j=Math.max(base,cur-150);j<=cur;j++)w.push(j);return w;}var o=[],ch=$("log").children;for(var i=0;i<ch.length;i++)if(ch[i].dataset&&ch[i].dataset.i!==undefined)o.push(+ch[i].dataset.i);return o;},
