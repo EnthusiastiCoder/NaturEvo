@@ -347,6 +347,29 @@ impl Sim {
         }
     }
 
+    /// Whether the hero may back out of this fight. Backing out of the boss is allowed only while it
+    /// keeps improving (level, weapon, armor); after `boss_attempts` retreats with no gain it commits.
+    fn may_flee(&mut self, boss: bool) -> bool {
+        if !boss {
+            return true;
+        }
+        if self.hero.level < MAX_LEVEL {
+            // not yet at full strength: back out, then grind a level before trying again
+            self.boss_hold = self.hero.level + 1;
+            return true;
+        }
+        let state = (self.hero.level, self.hero.weapon, self.hero.armor);
+        if state != self.flee_state {
+            self.flee_state = state;
+            self.boss_flees = 0;
+        }
+        if self.boss_flees >= self.cfg.boss_attempts {
+            return false;
+        }
+        self.boss_flees += 1;
+        true
+    }
+
     /// Expected damage to finish this fight versus what the hero can absorb (hp plus potions).
     fn too_risky(&self, m: &Mon) -> bool {
         let h = &self.hero;
