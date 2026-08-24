@@ -987,7 +987,7 @@ $("run-btn").onclick=function(){
  api(q,"Running...").then(function(j){if(j){j.seedStr=sd;window.__jv.setRun(j);showTab("r");}});
 };
 $("batch-btn").onclick=function(){
- var q="/api/batch?runs="+encodeURIComponent($("batch-runs").value)+(knobList.length?"&"+knobQuery():"");
+ var q="/api/batch?runs="+encodeURIComponent($("batch-runs").value)+"&"+knobQuery();
  api(q,"Running batch...").then(function(j){if(j){window.STATS=j;showTab("d");}});
 };
 if(/^https?:$/.test(location.protocol)){
