@@ -1172,7 +1172,7 @@ impl Sim {
                     let sp = pick_weighted(&mut self.rng, zone.species);
                     let lv = self.rng.range(zone.min as i32, zone.max as i32) as u32;
                     let stage = self.stage;
-                    let o = self.fight(sp, lv, stage, loc, Some(i));
+                    let o = self.fight(sp, lv, stage, p, None);
                     return self.after_fight(o, false, check);
                 }
             }
