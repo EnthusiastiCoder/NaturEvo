@@ -1141,24 +1141,32 @@ impl Sim {
             }
         }
 
-        // contact fights
-        if !self.won && z == 8 && self.target_zone() == 8 && dist(self.boss, p) <= 1 && self.steps >= self.fight_cd {
-            return self.boss_fight(check);
-        }
-        if (1..=7).contains(&z) {
-            for i in 0..self.elites.len() {
-                let e = &self.elites[i];
-                // the hero picks its fights: it steers clear of elites far above its level or when hurt
-                let brave = self.hero.level + ELITE_LEVEL_MARGIN >= e.level
-                    && self.hero.hp * 2 >= self.hero.max_hp
-                    && !(self.cfg.permadeath && self.won && self.stage >= 1);
-                let (hit, sp, lv, loc) = (
-                    brave && self.steps >= self.fight_cd && e.zone == z && e.dead_until == 0 && e.cooldown <= self.steps && dist(e.pos, p) <= 1,
-                    e.species,
-                    e.level,
-                    e.pos,
-                );
-                if hit {
+        // contact fights (none while the post-fight cooldown runs)
+        if self.steps >= self.fight_cd {
+            if !self.won && z == 8 && self.target_zone() == 8 && dist(self.boss, p) <= 1 {
+                return self.boss_fight(check);
+            }
+            if (1..=7).contains(&z) {
+                for i in 0..self.elites.len() {
+                    let e = &self.elites[i];
+                    // the hero picks its fights: it steers clear of elites far above its level or when hurt
+                    let brave = self.hero.level + ELITE_LEVEL_MARGIN >= e.level
+                        && self.hero.hp * 2 >= self.hero.max_hp
+                        && !(self.cfg.permadeath && self.won && self.stage >= 1);
+                    let (hit, sp, lv, loc) = (
+                        brave && e.zone == z && e.dead_until == 0 && e.cooldown <= self.steps && dist(e.pos, p) <= 1,
+                        e.species,
+                        e.level,
+                        e.pos,
+                    );
+                    if hit {
+                        self.flush_walk();
+                        let stage = self.stage;
+                        let o = self.fight(sp, lv, stage, loc, Some(i));
+                        return self.after_fight(o, false, check);
+                    }
+                }
+                if self.steps >= self.fight_cd && self.map.tile(p.0, p.1) == Tile::Grass && self.rng.chance(self.cfg.encounter_rate) {
                     self.flush_walk();
                     let stage = self.stage;
                     let o = self.fight(sp, lv, stage, loc, Some(i));
