@@ -890,6 +890,7 @@ function dash(){
   var lb=document.createElement("div");lb.className="kpi-label";lb.textContent=p[1];
   var tp=document.createElement("span");tp.innerHTML=tipHtml("kpi-"+p[0],p[1],INFO[p[0]]);lb.appendChild(tp);
   var vl=document.createElement("div");vl.className="kpi-value";vl.textContent=String(p[2]);
+  if(p[0]==="died"){var bd=document.createElement("span");bd.className="badge";bd.textContent=s.died+" of "+s.runs;vl.appendChild(bd);}
   if(p[0]==="win-rate"){var bg=document.createElement("span");bg.className="badge";bg.textContent=s.wins+" of "+s.runs;vl.appendChild(bg);}
   d.appendChild(lb);d.appendChild(vl);D.appendChild(d);});
  var ps=$("post-stats");ps.textContent="";
