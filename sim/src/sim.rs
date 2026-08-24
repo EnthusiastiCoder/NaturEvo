@@ -677,7 +677,7 @@ impl Sim {
                     self.hero.potions -= 1;
                     self.hero.hp = (hp + max / 2).min(max);
                     ev!(self, "potion", Some(&m), "Hero drinks a potion and heals {}", self.hero.hp - hp);
-                } else {
+                } else if self.may_flee(boss) {
                     ev!(self, "rest", Some(&m), "Hero judges the {} too dangerous and backs away", s.name);
                     if let Some(i) = elite_idx {
                         self.elites[i].cooldown = self.steps + 25;
