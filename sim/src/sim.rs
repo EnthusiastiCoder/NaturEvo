@@ -1168,6 +1168,9 @@ impl Sim {
                 }
                 if self.steps >= self.fight_cd && self.map.tile(p.0, p.1) == Tile::Grass && self.rng.chance(self.cfg.encounter_rate) {
                     self.flush_walk();
+                    let zone = &ZONES[z];
+                    let sp = pick_weighted(&mut self.rng, zone.species);
+                    let lv = self.rng.range(zone.min as i32, zone.max as i32) as u32;
                     let stage = self.stage;
                     let o = self.fight(sp, lv, stage, loc, Some(i));
                     return self.after_fight(o, false, check);
