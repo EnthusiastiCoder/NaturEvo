@@ -983,7 +983,7 @@ $("random-seed").onclick=function(){$("seed").value=String(Math.floor(Math.rando
 $("run-btn").onclick=function(){
  var sd=String($("seed").value).trim();
  if(!/^[0-9]+$/.test(sd)){setStatus("Seed must be digits only (0-9)");return;}
- var q="/api/run?seed="+encodeURIComponent(sd)+"&from=0&count=2000"+(knobList.length?"&"+knobQuery():"");
+ var q="/api/run?seed="+encodeURIComponent(sd)+"&from=0&count=2000"+"&"+knobQuery();
  api(q,"Running...").then(function(j){if(j){j.seedStr=sd;window.__jv.setRun(j);showTab("r");}});
 };
 $("batch-btn").onclick=function(){
