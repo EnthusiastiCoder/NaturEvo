@@ -908,6 +908,7 @@ function dash(){
  $("htable").innerHTML=T2+'</tbody></table>';
  drawHist(s);
 }
+window.dash=dash;
 function niceTicks(max){
  var m=Math.max(1,max),e=Math.pow(10,Math.floor(Math.log10(m))),r=m/e,u=r<=1?1:r<=2?2:r<=5?5:10,top=u*e,st=u===5?top/5:top/2,o=[];
 for(var v=0;v<=top+st/2;v+=st)o.push(Math.round(v*1000)/1000);return o;
