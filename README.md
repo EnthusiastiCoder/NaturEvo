@@ -65,12 +65,16 @@ Knobs (all optional query params; defaults reproduce the stock sim):
 | elites_per_zone | 0-3 | 1 |
 | elite_mult | 1.0-3.0 | 1.4 |
 | max_steps | 1000-50000000 | 5000000 |
+| zone_margin | 0-6 | 2 |
+| permadeath | true/false (toggle) | true |
 
 API (GET only): `/api/config`, `/api/map?seed=N&map_size=S` (returns `w`, `h`, and `tiles` as rows of `.` floor, `,` grass, `#` wall, plus zone data; map_size 32..=128 else 400), `/api/run?seed=N&knob=v...`, `/api/batch?runs=N&knob=v...`, plus `/`, `/data/run.js`, `/data/stats.js`.
 `/api/run` also takes `from` and `count` (count 1..=5000) and returns that slice of events plus `total` and `level_series`; without them a run over 200,000 events is rejected with 400 (use a window).
 Caps: event_cap ceiling 1,048,576 (`max_events` in `/api/config`); batch rejected (400) if runs * event_cap > 200,000,000; binds 127.0.0.1 only; runs 1..=20000; request head max 8 KiB, 5 s read timeout; Host must be 127.0.0.1 or localhost (else 403); bad input gives 400 with `{"error":...}`.
 
 Event JSON: every event has `npcs` (visible roaming NPCs: `id`, `sp`, `lv`, `x`, `y`), hero `x`/`y` and monster `x`/`y`; `walk` events also carry `path`, a list of `[x,y]` turn-point waypoints. Run headers include `w`, `h` and `steps`.
+
+Permadeath: with `permadeath=true` (the default) the first hero death ends the run with outcome `died` (`won`, `died` or `capped`). In the viewer it is a switch in the run controls (role=switch, Space or Enter toggles it, default ON, stored in localStorage as `jv-permadeath`); its state is sent as `permadeath=true|false` on every run and batch request, and loading a run that carries a `permadeath` flag sets the switch. The summary badge reads Victory, Fallen or Capped, the replay stops at the final event, and the dashboard shows the died share and the average level at death. Obstacles (wall, rock, fence, tree, water) use high-contrast per-theme tokens with a dark 1 px edge and a pattern, so they stay visible on the 2D map and the zoom in both themes.
 
 ## Balance
 Target win rate is 30-90%; currently about 54%. See `research/jungle-sim-tuning.md`.
