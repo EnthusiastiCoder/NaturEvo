@@ -940,7 +940,11 @@ var knobList=[];
 (function(){var c=$("log-scale");if(c)c.addEventListener("change",dash);})();
 function setStatus(t){$("run-status").textContent=t||"";}
 function setBusy(b){$("run-btn").disabled=b;$("batch-btn").disabled=b;}
-function knobQuery(){return knobList.map(function(k){return k.key+"="+encodeURIComponent($("knob-"+k.key).value);}).join("&");}
+var pdOn=sget("jv-permadeath")!=="false";
+function pdPaint(){var t=$("permadeath-toggle");if(t)t.setAttribute("aria-checked",pdOn?"true":"false");}
+function pdSet(v,persist){pdOn=!!v;pdPaint();if(persist)sset("jv-permadeath",pdOn?"true":"false");}
+(function(){var t=$("permadeath-toggle");pdPaint();if(t)t.addEventListener("click",function(){pdSet(!pdOn,true);});})();
+function knobQuery(){return knobList.map(function(k){return k.key+"="+encodeURIComponent($("knob-"+k.key).value);}).concat(["permadeath="+(pdOn?"true":"false")]).join("&");}
 function api(url,label){
  setBusy(true);setStatus(label);
  return fetch(url).then(function(r){return r.json().then(function(j){
