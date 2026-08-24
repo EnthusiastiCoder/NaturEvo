@@ -883,6 +883,7 @@ function dash(){
  var srt=nz.slice().sort(function(a,b){return a-b;}),mdn=srt.length?srt[Math.floor(srt.length/2)]:0;
  if(!dash.init){dash.init=1;if(mdn>0&&Math.max.apply(null,srt)/mdn>20)$("log-scale").checked=true;}
  var cards=[["win-rate","Win rate",wr.toFixed(1)+"%"],["avg-deaths","Avg deaths",(+ad).toFixed(2)],["avg-level","Avg final level",(+al).toFixed(1)],["runs","Runs",s.runs]];
+ if(s.died!==undefined){var dp=s.died_pct!==undefined?+s.died_pct:(s.runs?100*s.died/s.runs:0),dh=s.died_level_hist||[],dn=0,ds=0;dh.forEach(function(v,l){dn+=v;ds+=v*l;});cards.splice(1,0,["died","Fallen (died)",dp.toFixed(1)+"%"]);if(dn)cards.push(["died-level","Avg level at death",(ds/dn).toFixed(1)]);}
  if(med!==null)cards.splice(3,0,["median","Median final level",med]);
  cards.forEach(function(p){
   var d=document.createElement("div");d.className="kpi";
