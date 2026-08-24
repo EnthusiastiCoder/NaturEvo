@@ -38,6 +38,7 @@ literals, no `px` font sizes, no inline `style=` in markup (JS may set dynamic w
 | `.kpi` | KPI card; `.kpi-label`, `.kpi-value` inside |
 | `.tabs` | segmented tab group; `.tab` is a tab button, `.on` marks the selected one |
 | `.badge` | small status pill; `.badge-good`, `.badge-bad` |
+| `.switch` | toggle switch button (`role="switch"`, `aria-checked`), used for Permadeath in the run controls; `.switch-track` and `.switch-thumb` inside, tokens only, on = `--accent` |
 | `.tipwrap` | wrapper of a trigger button and its `.tip` |
 | `.tip` | tooltip (`role="tooltip"`), shown on hover and focus of the trigger, Escape hides |
 | `.info` | info button, `class="btn-icon info"`, `aria-label="About X"`, `aria-describedby="tip-x"` |
@@ -161,6 +162,6 @@ scale uses 0, 1, 10, 100, ... Histogram x labels are every Nth bin, anchored so 
 - Log rows for walk, encounter, elite and boss events end with "(x,y)".
 
 ## Obstacles and one-step replay (map)
-- Obstacle tiles (`#` wall, `R` rock, `F` fence, `T` tree, `W` water) are filled with their `--tile-*` token, then a pattern is drawn over it when a tile is at least 5 px: brick lines, rock blob, fence rails and posts, tree canopy, water wave stripes. The tooltip names the kind.
+- Obstacle tiles (`#` wall, `R` rock, `F` fence, `T` tree, `W` water) are filled with their `--tile-*` token (each at least 3:1 against floor and grass in both themes, pairwise RGB distance at least 25), then a pattern is drawn over it. Below 8 css px per tile it is a solid fill plus a darker inner mark, from 8 css px the full pattern; a darker 1 device px edge is always drawn last and the tile centre stays the token colour so legend swatches match. Pattern: brick lines, rock blob, fence rails and posts, tree canopy, water wave stripes. The tooltip names the kind.
 - One tick is one tile. A walk event with `steps` (and `nsteps` for roaming NPCs) is replayed through a sub-cursor: each tick moves the hero and the NPCs exactly one tile, with a linear one-tile glide lasting 100 ms divided by the speed. Above 8x the glide is skipped but steps still advance one per tick. Scrubbing to an event shows its end tile; `__jv.gotoStep(event, step)` seeks into a walk. Data without `steps` falls back to the `path` animation.
 - Test hooks: `__jv.stepLog` (one `[event, step]` per tick), `__mapAnim.tile`, `.step`, `.ntile`, `.npcs`, `.pos`.
