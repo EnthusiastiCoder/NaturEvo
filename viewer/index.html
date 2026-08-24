@@ -963,7 +963,7 @@ function snap(k,st,v){
  return Number(v.toFixed(4));
 }
 function initControls(cfg){
- knobList=cfg.knobs||[];var K=$("knobs");K.innerHTML="";
+ knobList=(cfg.knobs||[]).filter(function(k){return k.kind!=="bool";});var K=$("knobs");K.innerHTML="";
  K.innerHTML=knobList.map(function(k){
   var text=(k.description||k.desc||INFO[k.key]||k.label)+". Range "+k.min+" to "+k.max+", default "+k.default+".";
   return '<div class="knob"><div class="knob-head"><label class="label" for="knob-'+esc(k.key)+'">'+esc(k.label)+'</label>'+tipHtml("knob-"+k.key,k.label,text)+'</div><input class="range" id="knob-'+esc(k.key)+'" type="range"><input class="input" id="knob-'+esc(k.key)+'-num" type="number" aria-label="'+esc(k.label)+' value"></div>';
