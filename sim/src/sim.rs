@@ -738,7 +738,7 @@ impl Sim {
                         } else {
                             self.too_risky(&m)
                         };
-                        if flee {
+                        if flee && self.may_flee(boss) {
                             ev!(self, "rest", Some(&m), "Hero judges the {} too dangerous and backs away", s.name);
                             if let Some(i) = elite_idx {
                                 self.elites[i].cooldown = self.steps + 25;
