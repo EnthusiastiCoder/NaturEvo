@@ -1259,11 +1259,10 @@ impl Sim {
     fn pick_wander(&mut self, target: usize) -> (usize, usize) {
         let me = self.pos();
         let r = self.cfg.wander_radius as usize;
-        let mut cands: Vec<(usize, usize)> = self.zone_grass[target].iter().copied().filter(|&p| p != me && dist(p, me) <= r).collect();
-        if cands.is_empty() {
-            cands = self.zone_grass[target].iter().copied().filter(|&p| p != me).collect();
-        }
-        if cands.is_empty() {
+        let grass = &self.zone_grass[target];
+        let near = grass.iter().filter(|&&p| p != me && dist(p, me) <= r).count();
+        let (n, near_only) = if near > 0 { (near, true) } else { (grass.iter().filter(|&&p| p != me).count(), false) };
+        if n == 0 {
             return me;
         }
         cands[self.rng.range(0, cands.len() as i32 - 1) as usize]
