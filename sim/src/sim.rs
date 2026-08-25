@@ -214,6 +214,10 @@ const OLD_RETREAT_PCT: i32 = 50;
 /// the hero backs out when the expected damage of finishing a fight exceeds this share of what it can absorb
 const RISK_SHARE: f32 = 0.85;
 const POST_RISK_SHARE: f32 = 0.6;
+/// the hero enters the boss fight only when the expected damage is within this share of its budget
+const BOSS_ENTER_SHARE: f32 = 0.75;
+/// ...or after this many steps of waiting for that, so a run always ends
+const BOSS_WAIT_STEPS: u32 = 40_000;
 
 struct Sim {
     cfg: Config,
