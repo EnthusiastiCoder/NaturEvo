@@ -236,6 +236,7 @@ struct Sim {
     death_zone: Option<usize>,
     ended: bool,
     boss_flees: u32,
+    boss_wait: Option<u32>,
     boss_hold: u32,
     flee_state: (u32, usize, usize),
     outcome: &'static str,
