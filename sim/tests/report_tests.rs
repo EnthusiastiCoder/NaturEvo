@@ -70,7 +70,10 @@ fn stats_json_has_wins() {
 
 #[test]
 fn win_rate_sane() {
-    let s = batch(500, 4);
+    // permadeath off keeps the original respawn-loop balance this sanity band was written for
+    let mut off = jungle_sim::config::Config::default();
+    off.set("permadeath", "false").unwrap();
+    let s = jungle_sim::report::batch_with(500, 4, &off);
     let r = s.wins as f64 / s.runs as f64;
     assert!((0.30..=0.90).contains(&r), "win rate {}", r);
 }
