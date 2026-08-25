@@ -256,6 +256,8 @@ struct Sim {
     leg_nsteps: Vec<Vec<(u16, u16, u16)>>,
     /// grass tiles per zone, row-major
     zone_grass: Vec<Vec<(usize, usize)>>,
+    /// per zone, the index into `zone_grass` where each map row starts (n + 1 entries)
+    zone_rows: Vec<Vec<usize>>,
     /// cached camp -> zone entry tile and route, per zone
     outbound: Vec<Option<((usize, usize), Vec<(usize, usize)>)>>,
 }
@@ -1260,14 +1262,21 @@ impl Sim {
         let me = self.pos();
         let r = self.cfg.wander_radius as usize;
         let grass = &self.zone_grass[target];
-        let near = grass.iter().filter(|&&p| p != me && dist(p, me) <= r).count();
-        let (n, near_only) = if near > 0 { (near, true) } else { (grass.iter().filter(|&&p| p != me).count(), false) };
+        let rows = &self.zone_rows[target];
+        // grass is row-major, so only the rows within the radius can hold a near tile
+        let lo = rows[me.1.saturating_sub(r)];
+        let hi = rows[(me.1 + r + 1).min(rows.len() - 1)];
+        let near = grass[lo..hi].iter().filter(|&&p| p != me && dist(p, me) <= r).count();
+        if near > 0 {
+            let k = self.rng.range(0, near as i32 - 1) as usize;
+            return self.zone_grass[target][lo..hi].iter().copied().filter(|&p| p != me && dist(p, me) <= r).nth(k).unwrap();
+        }
+        let n = grass.iter().filter(|&&p| p != me).count();
         if n == 0 {
             return me;
         }
         let k = self.rng.range(0, n as i32 - 1) as usize;
-        let grass = &self.zone_grass[target];
-        grass.iter().copied().filter(|&p| p != me && (!near_only || dist(p, me) <= r)).nth(k).unwrap()
+        self.zone_grass[target].iter().copied().filter(|&p| p != me).nth(k).unwrap()
     }
 
     fn chase_boss_step(&mut self) -> Walk {
@@ -1414,6 +1423,7 @@ fn run_sim(seed: u64, cfg: &Config, lean: bool) -> Sim {
         leg_steps: Vec::new(),
         leg_nsteps: Vec::new(),
         zone_grass: vec![Vec::new(); 9],
+        zone_rows: vec![Vec::new(); 9],
         outbound: vec![None; 9],
     };
     let n = sim.map.size();
@@ -1424,6 +1434,16 @@ fn run_sim(seed: u64, cfg: &Config, lean: bool) -> Sim {
                 sim.zone_grass[z].push((x, y));
             }
         }
+    }
+    for z in 0..9 {
+        let mut rows = vec![0usize; n + 1];
+        for &(_, y) in &sim.zone_grass[z] {
+            rows[y + 1] += 1;
+        }
+        for y in 0..n {
+            rows[y + 1] += rows[y];
+        }
+        sim.zone_rows[z] = rows;
     }
     // roaming elites: species from the zone table, spaced home tiles inside the zone
     let homes = sim.map.elite_homes(seed, sim.cfg.elites_per_zone);
