@@ -1,9 +1,9 @@
 //! NPC and hero spacing, roaming limits and encounter pacing (plan Addendum 4 part 2). Written before any implementation.
-//! Homes are read as each NPC's position in the first event (events[0].npcs); hero start is events[0].hero.
+//! Homes come from Map::elite_homes and the boss anchor; hero start is events[0].hero.
 //! Positions over time are rebuilt from the event npcs list plus the per-step nsteps moves.
 //! Scaled minimum = max(6, base * size / 64). Zone anchors pairwise >= scaled 14.
 mod common;
-use common::{parse, J};
+use common::parse;
 use jungle_sim::config::Config;
 use jungle_sim::map::Map;
 use jungle_sim::report::run_body;
@@ -24,9 +24,11 @@ fn cfg(k: &[(&str, &str)]) -> Config {
     }
     c
 }
-fn homes(j: &J) -> Vec<(String, P)> {
-    let ev = j.get("events").unwrap().arr();
-    ev[0].get("npcs").unwrap().arr().iter().map(|n| (n.get("id").unwrap().str().to_string(), (n.u("x"), n.u("y")))).collect()
+/// Homes come from the map: Map::elite_homes (ids e0.., one per zone by default) plus the boss at anchor 8.
+fn homes(m: &Map, seed: u64) -> Vec<(String, P)> {
+    let mut v: Vec<(String, P)> = m.elite_homes(seed, 1).into_iter().enumerate().map(|(i, p)| (format!("e{}", i), p)).collect();
+    v.push(("boss".to_string(), m.anchors()[8]));
+    v
 }
 
 #[test]
@@ -36,7 +38,7 @@ fn home_minimums_hold_at_sizes_32_64_128() {
             let c = cfg(&[("map_size", &size.to_string()), ("event_cap", "100")]);
             let m = Map::generate(seed, size);
             let j = parse(&run_body(&simulate_with(seed, &c))).unwrap();
-            let h = homes(&j);
+            let h = homes(&m, seed);
             assert!(h.len() >= 2, "seed {} size {}: npcs {}", seed, size, h.len());
             let hero = j.get("events").unwrap().arr()[0].get("hero").unwrap();
             assert_eq!((hero.u("x"), hero.u("y")), m.camp(), "seed {} size {}: hero must start on camp", seed, size);
@@ -75,7 +77,7 @@ fn npcs_stay_in_radius_zone_open_tiles_and_apart() {
         let c = cfg(&[("event_cap", "4000"), ("permadeath", "false")]);
         let m = Map::generate(seed, c.map_size as usize);
         let j = parse(&run_body(&simulate_with(seed, &c))).unwrap();
-        let home: HashMap<String, P> = homes(&j).into_iter().collect();
+        let home: HashMap<String, P> = homes(&m, seed).into_iter().collect();
         let mut cur: HashMap<String, P> = home.clone();
         let check = |cur: &HashMap<String, P>, ctx: &str| {
             let ids: Vec<&String> = cur.keys().collect();
