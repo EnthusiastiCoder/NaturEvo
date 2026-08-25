@@ -1265,7 +1265,9 @@ impl Sim {
         if n == 0 {
             return me;
         }
-        cands[self.rng.range(0, cands.len() as i32 - 1) as usize]
+        let k = self.rng.range(0, n as i32 - 1) as usize;
+        let grass = &self.zone_grass[target];
+        grass.iter().copied().filter(|&p| p != me && (!near_only || dist(p, me) <= r)).nth(k).unwrap()
     }
 
     fn chase_boss_step(&mut self) -> Walk {
