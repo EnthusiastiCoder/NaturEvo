@@ -1373,7 +1373,16 @@ impl Sim {
                 break;
             }
             let h = &self.hero;
-            self.boss_go = !self.cfg.permadeath || (h.hp * 10 >= h.max_hp * 8 && h.potions >= 5 && h.level >= self.boss_hold);
+            let ready = h.hp * 10 >= h.max_hp * 8 && h.potions >= 5 && h.level >= self.boss_hold;
+            self.boss_go = if !self.cfg.permadeath {
+                true
+            } else if !ready || self.won || self.hero.level < self.cfg.boss_level {
+                false
+            } else {
+                // keep farming and shopping until the fight looks winnable, but never wait forever
+                let since = *self.boss_wait.get_or_insert(self.steps);
+                self.boss_favourable() || self.steps - since > BOSS_WAIT_STEPS
+            };
             // outbound: re-aim in place when the target zone changes on the way
             let (target, outcome) = loop {
                 let target = self.target_zone();
