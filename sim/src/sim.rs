@@ -599,6 +599,9 @@ impl Sim {
             }
         }
         self.buy_potions(5);
+        if self.cfg.permadeath {
+            self.buy_potions(9);
+        }
     }
 
     fn gain_xp(&mut self, amount: u32) {
