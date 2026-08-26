@@ -1432,6 +1432,7 @@ fn run_sim(seed: u64, cfg: &Config, lean: bool) -> Sim {
         death_zone: None,
         ended: false,
         boss_flees: 0,
+        boss_wait: None,
         boss_hold: 0,
         flee_state: (0, 0, 0),
         outcome: "capped",
