@@ -97,4 +97,12 @@ for (const theme of ['dark', 'light']) {
   if (t) { t.click(); await tick(); check(String(checked(v)) === 'false', `${theme}: click toggles`); }
 }
 
+// ---- the batch popover closes when the batch finishes, so it never covers the dashboard cards
+{
+  const v = await boot();
+  v.$('batch-box').open = true;
+  v.$('batch-btn').click(); await tick(); await tick();
+  check(!v.$('batch-box').open, 'batch popover must close after the batch finishes');
+}
+
 done();
