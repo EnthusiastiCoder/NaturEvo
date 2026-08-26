@@ -377,6 +377,7 @@ try {
   }
   {
     // the zone name in the summary is never truncated, at any viewport, theme or zone
+    for (const [w, h] of [[1282, 642], [1282, 722], [1540, 890], [1920, 1080]]) for (const theme of ['dark', 'light']) {
     // timeline ticks: spacing between y labels >= 1.4 x font size
     const p = await open(BASE, { w: 1282, h: 642, dpr: 1 }); await sleep(1000);
     const tk = await p.ev('window.__timelineTicks || null');
