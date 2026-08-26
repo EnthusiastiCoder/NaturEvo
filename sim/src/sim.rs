@@ -379,6 +379,13 @@ impl Sim {
 
     /// Expected damage to finish this fight versus what the hero can absorb (hp plus potions).
     fn too_risky(&self, m: &Mon) -> bool {
+        let share = if self.won { POST_RISK_SHARE } else { RISK_SHARE };
+        self.risk_ratio(m, self.hero.hp, self.hero.potions) > share
+    }
+
+    /// Expected damage taken to finish `m` divided by what the hero can absorb at `hp` with `potions`.
+    /// A potion heals half the max hp but costs a turn, so each one is worth heal minus one monster round.
+    fn risk_ratio(&self, m: &Mon, hp: i32, potions: u32) -> f32 {
         let h = &self.hero;
         let atk = h.atk(&self.cfg) * 1.25;
         let hit = (atk - m.def * 0.5).max(atk * 0.1).max(1.0);
