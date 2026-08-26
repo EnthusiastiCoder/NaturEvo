@@ -86,7 +86,12 @@ fn off_keeps_the_respawn_loop() {
         if r.deaths > 1 {
             many = true;
         }
-        assert!(!r.events.iter().any(|e| e.kind == "end"), "seed {}: end event with permadeath off", seed);
+        let ends = r.events.iter().filter(|e| e.kind == "end").count();
+        // with permadeath off an end event exists only when the boss attempts ran out: one, last, outcome died
+        assert_eq!(ends, usize::from(r.outcome == "died"), "seed {}: end events with permadeath off", seed);
+        if ends == 1 {
+            assert_eq!(r.events.last().unwrap().kind, "end", "seed {}", seed);
+        }
     }
     assert!(respawns > 0, "no respawn events with permadeath off");
     assert!(many, "no run exceeded one death with permadeath off and monster_atk_mult 3.0");
