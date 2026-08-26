@@ -399,9 +399,8 @@ impl Sim {
         let matk = m.atk * factor;
         let per_round = (matk - h.def(&self.cfg) * 0.5).max(matk * 0.1).max(1.0);
         let expected = rounds * per_round * 1.15;
-        let budget = h.hp as f32 + h.potions as f32 * (h.max_hp / 2) as f32 * 0.9;
-        let share = if self.won { POST_RISK_SHARE } else { RISK_SHARE };
-        expected > budget * share
+        let budget = hp as f32 + potions as f32 * ((h.max_hp / 2) as f32 * 0.9 - per_round).max(0.0);
+        expected / budget.max(1.0)
     }
 
     /// The hardest single hit this monster can land next round (best move, burst behaviour, high roll).
