@@ -83,4 +83,16 @@ for (const [outcome, word] of [['won', 'Victory'], ['died', 'Fallen'], ['capped'
   check(/end/.test(String(v.$('last') ? v.$('last').textContent : '')), 'final event text must be shown, got ' + JSON.stringify(v.$('last') && v.$('last').textContent));
 }
 
+// ---- counters chips add the server prefix counts of the events before the loaded window
+{
+  const run = mk('won', { from: 4000, prefix: { fights: 1100, deaths: 25, skills: 2000 } });
+  run.total = 4004;
+  const v = await boot(run);
+  v.win.__jv.goto(4003); await tick();
+  const t = String(v.$('hero-details').textContent).split('').map(c => (c.trim() ? c : ' ')).join('');
+  check(/Fights won 1,?100/.test(t), 'Fights won chip must include the prefix (1100), got ' + JSON.stringify(t));
+  check(/Deaths 25/.test(t), 'Deaths chip must include the prefix (25), got ' + JSON.stringify(t));
+  check(/Skills used 2,?000/.test(t), 'Skills used chip must include the prefix (2000), got ' + JSON.stringify(t));
+}
+
 done();
