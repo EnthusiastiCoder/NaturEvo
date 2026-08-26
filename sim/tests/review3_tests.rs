@@ -22,3 +22,17 @@ fn permadeath_off_died_run_ends_with_an_end_event() {
     }
     assert!(died > 0, "expected at least one died run in 40 seeds with permadeath off");
 }
+
+#[test]
+fn window_carries_prefix_counters() {
+    let mut c = Config::default();
+    c.set("permadeath", "false").unwrap();
+    let r = simulate_with(1, &c);
+    let from = r.events.len() / 2;
+    let v = parse(&run_window_body(&r, from, 100)).unwrap();
+    let n = |k: &str| r.events[..from].iter().filter(|e| e.kind == k).count() as u64;
+    assert_eq!(v.get("prefix").unwrap().get("fights").unwrap().num() as u64, n("victory_fight"));
+    assert_eq!(v.get("prefix").unwrap().get("deaths").unwrap().num() as u64, n("death"));
+    assert_eq!(v.get("prefix").unwrap().get("skills").unwrap().num() as u64, n("skill"));
+    assert!(n("victory_fight") > 0);
+}
