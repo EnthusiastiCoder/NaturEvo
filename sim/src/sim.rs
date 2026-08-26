@@ -403,6 +403,15 @@ impl Sim {
         expected / budget.max(1.0)
     }
 
+    /// Is the boss fight worth starting now? Judged for a full-hp hero with its current potions.
+    fn boss_favourable(&mut self) -> bool {
+        let lvl = (ZONES[8].min + ZONES[8].max) / 2;
+        let boss = self.map.anchors()[8];
+        let m = self.spawn(BOSS, lvl, 0, false, boss);
+        self.risk_ratio(&m, self.hero.max_hp, self.hero.potions) <= BOSS_ENTER_SHARE
+    }
+
+
     /// The hardest single hit this monster can land next round (best move, burst behaviour, high roll).
     fn worst_hit(&self, m: &Mon) -> i32 {
         let best = MOVES[m.species].iter().map(|mv| mv.power).fold(0.0f32, f32::max);
