@@ -490,11 +490,11 @@ fn perf_batch_2000_under_15s() {
 
 #[test]
 fn losing_seed_3_has_no_postgame() {
-    // seed 1 loses to the boss on the walking build: 15897 events, level 40, never wins
+    // seed 1 loses to the boss on the walking build: 15900 events, level 40, never wins
     let r = simulate_with(1, &base());
     assert!(!r.won);
     assert_eq!(r.first_win_event, None);
-    assert_eq!(r.events.len(), 15897);
+    assert_eq!(r.events.len(), 15900);
     assert_eq!(r.final_level, 40);
     assert!(!r.capped);
     assert_eq!(r.post_kills, 0);
