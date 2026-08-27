@@ -78,3 +78,7 @@ Acceptance: curves update during a smoke run; user can understand "are they lear
 
 ### WS9 v2-integration-and-docs (sonnet, last)
 Wire everything: single `v2/README.md` (how to train, watch, tune), `v2/assets/CREDITS.md`, root README. How the v1 jungle map fits: depends on Q5. Recommended: hero still walks the v1-style jungle map with zones; touching a monster triggers an arena duel using the trained champions of that monster tier; this is a later phase (v2.1) and only after WS2-WS8 are proven. v2.0 ships the arena, training and viewer standalone, reusing the v1 jungle zone names as arena themes (Q5).
+
+## Test cases (per workstream, written before code)
+WS1: existing v1 suites are the tests (baseline equals post-move). No new tests needed.
+WS2-WS9: cases listed inside each workstream above. To be written as failing tests by cto-orchestrator:test-writer AFTER the user answers Q1 (crate/viewer layout and API shape), because file paths and the log/API formats in the tests depend on that answer. Index of test files: v2/sim/tests/{physics,combat,determinism,sense,net,evolution,train_smoke,map}_tests.rs and v2/tests/{viewer_*,dashboard_*}_check.mjs. Not yet written (deliberate, not an omission).
