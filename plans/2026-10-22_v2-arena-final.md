@@ -38,3 +38,6 @@ Order: WS1 -> WS2 -> (WS3 || WS4 || WS6-start) -> WS5 -> WS6-finish -> WS7 (fixt
 ## Test cases (written before code; files by workstream)
 - WS1: existing v1 cargo and node suites (baseline equals post-move).
 - WS2 v2/sim/tests/{physics,combat,determinism}_tests.rs; WS3 sense_tests.rs; WS4 net_tests.rs; WS5 evolution_tests.rs, train_smoke_tests.rs; WS6 jungle_tests.rs, campaign_tests.rs; WS7/WS8 v2/viewer/tests/*.test.ts (vitest) and v2/tests/*.mjs; cases as in the earlier plan, plus: campaign: permadeath=true ends on first hero loss with exactly one final end, false respawns, deterministic by seed, each encounter has a valid arena seed and replayable log, map connectivity and A* route exist, zone tiers raise monster stats; record mode: chrome hidden, frame N pixel-identical across runs, fixed fps stepping not tied to real time, PNG export count equals frame count, split-screen shows two captions.
+
+## Acceptance criteria
+v1 green at v1/; cargo test green in v2/sim; training deterministic (byte-identical for a seed); trained champions beat gen-0 and random in at least 80 percent of 50 matches; trained fighters block/dodge more when a windup is visible; full campaign run produces replayable logs; viewer replays map walk plus duels smoothly; record mode produces deterministic frames; training page shows curves from logs; CREDITS has CC0 provenance.
