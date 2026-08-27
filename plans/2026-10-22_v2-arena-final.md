@@ -41,3 +41,6 @@ Order: WS1 -> WS2 -> (WS3 || WS4 || WS6-start) -> WS5 -> WS6-finish -> WS7 (fixt
 
 ## Acceptance criteria
 v1 green at v1/; cargo test green in v2/sim; training deterministic (byte-identical for a seed); trained champions beat gen-0 and random in at least 80 percent of 50 matches; trained fighters block/dodge more when a windup is visible; full campaign run produces replayable logs; viewer replays map walk plus duels smoothly; record mode produces deterministic frames; training page shows curves from logs; CREDITS has CC0 provenance.
+
+## Open questions
+None blocking. Residual: size of committed atlases (Git LFS if over 25 MB); optional later bake of Adventurer hero art (needs Blender); future work: live dashboard training, 2v2.
