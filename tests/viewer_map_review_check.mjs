@@ -426,6 +426,32 @@ try {
     await p.close();
   }
   {
+    // attack frames never draw a long trail bar (at most ~1.5 tiles), in the default and the zoomed view
+    for (const zoom of [false, true]) {
+      const p = await open(BASE, { w: 1282, h: 722, dpr: 1 }); await sleep(800);
+      if (zoom) await p.ev("document.getElementById('mapzoom').click()");
+      let wi = -1; let lastW = -1; for (let i = 0; i < EV.length && wi < 0; i++) { if (EV[i].kind === 'walk' && EV[i].path && EV[i].path.length > 3) lastW = i; else if (lastW >= 0 && EV[i].kind === 'attack' && EV[i].mon) wi = i; }
+      check(wi >= 0, 'no attack right after a walk with a path');
+      if (wi >= 0) {
+        await p.ev(`window.__jv.goto(${wi})`); await sleep(500);
+        await p.ev('window.__mapAnimStep(0.3)');
+        const len = await p.ev('window.__trailTiles === undefined ? -1 : window.__trailTiles');
+        check(len >= 0 && len <= 1.5, `${zoom ? 'zoom' : 'default'}: trail drawn during an attack must be <= 1.5 tiles, got ${len}`);
+      }
+      await p.close();
+    }
+  }
+  {
+    // the boss card HP line ("HP 2069/2069 · Lv 32") stays on one line
+    const p = await open(BASE, { w: 1282, h: 722, dpr: 1 }); await sleep(800);
+    let best = EV.find(e => e.mon);
+    for (const e of EV) if (e.mon && e.mon.max_hp > best.mon.max_hp) best = e;
+    await p.ev(`window.__jv.goto(${best.idx})`); await sleep(500);
+    const r = await p.ev(`(() => { const e = document.getElementById('mhp'), c = getComputedStyle(e); return [e.getBoundingClientRect().height, parseFloat(c.lineHeight) || parseFloat(c.fontSize) * 1.3, e.textContent]; })()`);
+    check(r[0] <= r[1] * 1.3, `boss HP line must stay on one line: height ${r[0]} for line ${r[1]} (${r[2]})`);
+    await p.close();
+  }
+  {
     // timeline ticks: spacing between y labels >= 1.4 x font size
     const p = await open(BASE, { w: 1282, h: 642, dpr: 1 }); await sleep(1000);
     const tk = await p.ev('window.__timelineTicks || null');
