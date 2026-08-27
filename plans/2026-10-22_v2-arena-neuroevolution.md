@@ -82,3 +82,10 @@ Wire everything: single `v2/README.md` (how to train, watch, tune), `v2/assets/C
 ## Test cases (per workstream, written before code)
 WS1: existing v1 suites are the tests (baseline equals post-move). No new tests needed.
 WS2-WS9: cases listed inside each workstream above. To be written as failing tests by cto-orchestrator:test-writer AFTER the user answers Q1 (crate/viewer layout and API shape), because file paths and the log/API formats in the tests depend on that answer. Index of test files: v2/sim/tests/{physics,combat,determinism,sense,net,evolution,train_smoke,map}_tests.rs and v2/tests/{viewer_*,dashboard_*}_check.mjs. Not yet written (deliberate, not an omission).
+
+## Acceptance criteria (overall)
+1. v1 fully green at v1/, history preserved, root clean.
+2. `cargo test` green in v2/sim; deterministic training (byte-identical genomes for a seed).
+3. After training, hero and monster champions measurably beat gen-0 and random opponents, and replay shows learned block/dodge on seen windups.
+4. Viewer shows smooth real-time fights with vision overlay; dashboard shows curves; both themes, accent, no scroll, tooltips, Lucide icons.
+5. Every third-party asset documented with CC0 provenance.
