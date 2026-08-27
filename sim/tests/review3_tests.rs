@@ -15,7 +15,8 @@ fn permadeath_off_died_run_ends_with_an_end_event() {
         if r.outcome == "died" {
             died += 1;
             assert_eq!(r.events.last().unwrap().kind, "end", "seed {seed}: died run must end with an end event");
-            assert_eq!(r.events[r.events.len() - 2].kind, "respawn", "seed {seed}: death and respawn precede the end");
+            assert_eq!(r.events[r.events.len() - 2].kind, "death", "seed {seed}: the death precedes the end, no respawn");
+            assert_eq!(r.events.last().unwrap().hero.hp, 0, "seed {seed}: the end state is the death state");
         } else {
             assert_ne!(r.events.last().unwrap().kind, "end", "seed {seed}");
         }
