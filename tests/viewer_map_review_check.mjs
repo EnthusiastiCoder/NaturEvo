@@ -422,6 +422,7 @@ try {
       const d = ts.slice(1).map((v, i) => v - ts[i]).slice(2);
       check(d.length >= 5, 'too few walk steps observed: ' + d.length);
       check(d.every(x => x >= 380 && x <= 425), 'walk step gaps must be 400 ms +-20, got ' + d.map(x => Math.round(x)).join(','));
+    }
     // timeline ticks: spacing between y labels >= 1.4 x font size
     const p = await open(BASE, { w: 1282, h: 642, dpr: 1 }); await sleep(1000);
     const tk = await p.ev('window.__timelineTicks || null');
