@@ -397,6 +397,7 @@ try {
         await p.ev(`window.__jv.goto(${e.idx})`); await sleep(500);
         await p.ev('window.__mapAnimStep(0.3)');
         const g = await p.ev('__t.geom()');
+        const ts = Math.floor(Math.min(g.W, g.H) / MW);
     // timeline ticks: spacing between y labels >= 1.4 x font size
     const p = await open(BASE, { w: 1282, h: 642, dpr: 1 }); await sleep(1000);
     const tk = await p.ev('window.__timelineTicks || null');
