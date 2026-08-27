@@ -17,3 +17,10 @@ Move the current jungle game into `v1/` unchanged and green, then build `v2/`: a
 - v2 sim: deterministic, seeded, Rust, zero third-party crates (own RNG, own matrix math, own JSON writer). Same seed + same config gives byte-identical genomes and fight logs. No wall-clock or HashMap-order dependence (use Vec/BTreeMap).
 - UX standing requests (v2 viewer and dashboard): cognitive load first (one primary view, details on demand); fits the screen without scrolling at 1282x642 up to 1920x1080; info buttons and tooltips; Lucide icons (inlined SVG); one style system (CSS tokens in one file); light and dark themes with a toggle; customisable accent, default jungle green; keyboard operable, aria labels.
 - v1 must stay fully green after the move; v1 behaviour untouched.
+
+## Commit plan (branch feat/v2-arena; one file per commit, tests first)
+0. `git switch -c feat/v2-arena` from feat/jungle-sim.
+1. docs: commit plans/2026-10-21_hero-map-walking.md (Addendum 4) alone. `rm -r sim/viewer` (untracked, not committed).
+2. docs: this plan file.
+3. v1 move (WS1): see below. History-preserving `git mv`, grouped by directory only where inseparable: one commit per moved top-level item (sim, viewer, tests, README.md), then one commit per path fix file.
+4. v2 tests (written before code, one commit per test file), then one commit per implementation file as listed per workstream.
