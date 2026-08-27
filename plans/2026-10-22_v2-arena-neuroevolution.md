@@ -26,3 +26,11 @@ Move the current jungle game into `v1/` unchanged and green, then build `v2/`: a
 4. v2 tests (written before code, one commit per test file), then one commit per implementation file as listed per workstream.
 
 ## Workstreams
+
+### WS1 v1-move (sonnet, MUST come first, leaves v1 green)
+Task: `git mv sim v1/sim`, `viewer v1/viewer`, `tests v1/tests`, `README.md v1/README.md`. Stay at root: CLAUDE.md, .claude, prompts, plans, mistakes, research, .gitignore, .mcp.json, and a new short root README.md pointing to v1 and v2. Do not move `sim/target/` (ignored build output; delete or let cargo rebuild); update .gitignore `sim/target/` to `v1/sim/target/` and `v2/**/target/`.
+Because sim/, viewer/ and tests/ move together, relative paths (`../viewer` via CARGO_MANIFEST_DIR in main.rs, `join(root,'viewer')` in tests/_viewer_harness.mjs, `cargo` working dirs inside tests) should keep working; the implementer greps every test and src file for "sim/", "viewer/", "../" and fixes only what breaks. Also check .claude/settings.json and .claude/hooks/check-allowlist.py for path-specific allowlist entries (`sim/`, `cargo test`) and update them via a separate commit (flag to user: that file is a permission config, ask before editing; do not weaken the hook). Update README paths and internal docs.
+Files: moves above; v1/README.md; .gitignore; root README.md; possibly tests/_viewer_harness.mjs path.
+Tests that must pass: in v1/sim `cargo test` (all files under v1/sim/tests: config, map, map_server, obstacle, permadeath, postgame*, report*, review3, server, sim, spacing, steps, walk); every `node v1/tests/*.mjs` check (viewer_*_check.mjs, readme_check.mjs). Record baseline pass/fail BEFORE the move (run once on current branch) and require the identical result after.
+Acceptance: `git log --follow` works on moved files (renames detected, similarity 100 percent); baseline equals post-move results; `cargo run --release -- serve` from v1/sim still serves v1/viewer; nothing left at root except the allowed files; no stray artefacts.
+Verify: run baseline, move, rerun, diff results; `git status` clean; `git diff -M --stat main..` shows renames only.
