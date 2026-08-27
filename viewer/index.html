@@ -184,6 +184,7 @@ input[type=checkbox]{accent-color:var(--accent-text)}
 #battle{flex:none;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr);gap:var(--s4);align-items:center}
 .fighter{min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:var(--s3);align-items:center}
 .fighter .emo{grid-row:1/4}
+.fighter .fhp{white-space:nowrap}
 .fname{font-size:var(--fs-sm);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fighter.mon{text-align:right;grid-template-columns:minmax(0,1fr) auto}
 .fighter.mon .emo{grid-column:2}.fighter.mon .fname,.fighter.mon .bar,.fighter.mon .fhp{grid-column:1}
@@ -306,7 +307,7 @@ input[type=checkbox]{accent-color:var(--accent-text)}
  <div class="side">
  <div class="card playback">
   <span class="tipwrap"><button type="button" id="play" class="btn-icon" aria-label="Play" aria-describedby="tip-play"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></button><span role="tooltip" id="tip-play" class="tip">Play or pause the replay.</span></span>
-  <span class="field"><label class="label" for="speed">Speed</label><input id="speed" class="range" type="range" min="0" max="1000" step="1" value="143" aria-label="Playback speed (logarithmic)"><input id="speed-num" class="input" type="number" step="any" min="0.25" max="4096" value="1" aria-label="Playback speed multiplier"><span class="tipwrap"><button type="button" id="speed-info" class="btn-icon info" aria-label="About speed" aria-describedby="tip-speed"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-speed" class="tip">Speed is an events per second multiplier on a base of 10 events per second. Range 0.25 to 4096. Type any value or drag the logarithmic slider.</span></span></span>
+  <span class="field"><label class="label" for="speed">Speed</label><input id="speed" class="range" type="range" min="0" max="1000" step="1" value="143" aria-label="Playback speed (logarithmic)"><input id="speed-num" class="input" type="text" inputmode="decimal" min="0.25" max="4096" value="1" aria-label="Playback speed multiplier"><span class="tipwrap"><button type="button" id="speed-info" class="btn-icon info" aria-label="About speed" aria-describedby="tip-speed"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-speed" class="tip">Speed is an events per second multiplier on a base of 10 events per second. Range 0.25 to 4096. Type any value or drag the logarithmic slider.</span></span></span>
   <span id="info"></span>
   <span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About scrub bar" aria-describedby="tip-scrub"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-scrub" class="tip">Drag to jump to any event of the run.</span></span>
   <input id="scrub" class="range" type="range" min="0" max="0" value="0" aria-label="Scrub through events">
@@ -367,6 +368,7 @@ var $=function(i){return document.getElementById(i)};
 var root=document.documentElement;
 var run=window.RUN||null, ev=(run&&run.events)||[], cur=0, timer=null, base=(run&&run.from)||0, loading=false;
 function total(){return (run&&run.total)||ev.length;}
+function syncSeed(){var f=$("seed");if(f&&run&&run.seed!==undefined&&run.seed!==null)f.value=String(run.seedStr||run.seed);}
 function seedStr(){return run?String(run.seedStr||run.seed):"";}
 function inWin(g){return g>=base&&g<base+ev.length;}
 function fetchWin(g){
@@ -554,8 +556,8 @@ function sClamp(v){return Math.max(SMIN,Math.min(SMAX,v));}
 function setSpeed(v,fromSlider){speedVal=v;if(fromSlider)$("speed-num").value=String(v);else $("speed").value=String(sPos(v));}
 $("speed").value=String(sPos(1));$("speed-num").value="1";
 $("speed").oninput=$("speed").onchange=function(){var v=sClamp(SMIN*Math.pow(SMAX/SMIN,(+this.value)/1000));v=sClamp(sSnap(v));setSpeed(v,true);};
-$("speed-num").oninput=function(){var v=parseFloat(this.value);if(isFinite(v)){speedVal=sClamp(v);$("speed").value=String(sPos(speedVal));}};
-$("speed-num").onchange=function(){var v=parseFloat(this.value);if(!isFinite(v)){this.value=String(speedVal);return;}v=sClamp(v);this.value=String(v);setSpeed(v,false);};
+$("speed-num").oninput=function(){var v=parseFloat(String(this.value).replace(",","."));if(isFinite(v)){speedVal=sClamp(v);$("speed").value=String(sPos(speedVal));}};
+$("speed-num").onchange=function(){var v=parseFloat(String(this.value).replace(",","."));if(!isFinite(v)){this.value=String(speedVal);return;}v=sClamp(v);this.value=String(v);setSpeed(v,false);};
 /* one tick = one tile step of a walk (sub-cursor sub inside the walk event) or one event; see viewer/STYLE.md */
 var sub=-1,subFor=-1,keepAnim=false,lastSub=-2,stepLog=[];
 function stepEv(){var e=inWin(cur)?ev[cur-base]:null;return e&&e.kind==="walk"&&e.steps&&e.steps.length?e:null;}
@@ -803,7 +805,8 @@ function drawMap(){
  g.globalAlpha=1;
  if(tsd>=3)for(kc in OBST)obstPattern(g,kc,tiles,x0,x1,y0,y1,ox,oy,tsd,dpr);
  g.globalAlpha=1;
- var tr=e.kind==="walk"&&e.path&&e.path.length>1?e.path:lastTrail();
+ var tr=e.kind==="walk"&&e.path&&e.path.length>1?e.path:(ATK_KINDS[e.kind]?null:lastTrail());
+ window.__trailTiles=0;if(tr)for(var tq=1;tq<tr.length;tq++)window.__trailTiles+=Math.abs(tr[tq][0]-tr[tq-1][0])+Math.abs(tr[tq][1]-tr[tq-1][1]);
  if(tr){var tw=Math.max(2,Math.round(tsd/4)),pts=tr.map(function(p){return ctr(p[0],p[1]);});g.globalAlpha=0.7;g.fillStyle=tok("--muted");
   for(var q=1;q<pts.length;q++){var pa=pts[q-1],pb=pts[q],lx=Math.round(Math.min(pa[0],pb[0])-tw/2),ly=Math.round(Math.min(pa[1],pb[1])-tw/2);g.fillRect(lx,ly,Math.round(Math.abs(pb[0]-pa[0]))+tw,Math.round(Math.abs(pb[1]-pa[1]))+tw);}
   g.globalAlpha=1;g.strokeStyle=fg;}
@@ -868,7 +871,7 @@ function setMapZoom(z){mapZoom=!!z;sset("jv-mapzoom",mapZoom?"1":"0");var b=$("m
  window.addEventListener("jv-themechange",function(){drawMap();});
 })();
 window.drawMapNow=drawMap;
-window.__jv={setRun:function(r){run=r;if(r&&typeof r.permadeath==="boolean")pdSet(r.permadeath,false);ev=(r&&r.events)||[];base=(r&&r.from)||0;cur=base;sub=-1;mapSize=r&&r.w?r.w:0;if(r&&r.map&&r.map.tiles){mapData=r.map;mapKey=seedStr()+":"+mapSize;}loadMap();logDirty=true;$("scrub").max=Math.max(0,total()-1);render();},
+window.__jv={setRun:function(r){run=r;if(r&&typeof r.permadeath==="boolean")pdSet(r.permadeath,false);ev=(r&&r.events)||[];base=(r&&r.from)||0;cur=base;sub=-1;mapSize=r&&r.w?r.w:0;if(r&&r.map&&r.map.tiles){mapData=r.map;mapKey=seedStr()+":"+mapSize;}syncSeed();loadMap();logDirty=true;$("scrub").max=Math.max(0,total()-1);render();},
  goto:function(i){cur=i;sub=-1;render();},
  gotoStep:function(i,k){cur=+i;sub=+k;subFor=cur;render();},stepLog:stepLog,
  logIndices:function(){if(!$("log-modal").open){var w=[];for(var j=Math.max(base,cur-150);j<=cur;j++)w.push(j);return w;}var o=[],ch=$("log").children;for(var i=0;i<ch.length;i++)if(ch[i].dataset&&ch[i].dataset.i!==undefined)o.push(+ch[i].dataset.i);return o;},
@@ -998,7 +1001,7 @@ if(/^https?:$/.test(location.protocol)){
  fetch("/api/config").then(function(r){return r.ok?r.json():null;}).then(function(c){if(c)initControls(c);},function(){});
 }
 loadMap();
-playIcon(false);
+syncSeed();playIcon(false);
 render();
 })();
 </script></body></html>
