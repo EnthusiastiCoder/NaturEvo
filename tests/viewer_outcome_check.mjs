@@ -95,4 +95,12 @@ for (const [outcome, word] of [['won', 'Victory'], ['died', 'Fallen'], ['capped'
   check(/Skills used 2,?000/.test(t), 'Skills used chip must include the prefix (2000), got ' + JSON.stringify(t));
 }
 
+// ---- the seed field reflects the loaded run's seed
+{
+  const v = await boot(mk('won', { seed: 11 }));
+  check(String(v.$('seed').value) === '11', 'seed field must show the loaded run seed 11, got ' + JSON.stringify(v.$('seed').value));
+  const n = v.$('speed-num'); n.value = '0,25'; n.fire('change'); await tick();
+  check(!String(n.value).includes(','), 'speed field must never show a comma, got ' + JSON.stringify(n.value));
+}
+
 done();
