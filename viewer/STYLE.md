@@ -38,6 +38,7 @@ literals, no `px` font sizes, no inline `style=` in markup (JS may set dynamic w
 | `.kpi` | KPI card; `.kpi-label`, `.kpi-value` inside |
 | `.tabs` | segmented tab group; `.tab` is a tab button, `.on` marks the selected one |
 | `.badge` | small status pill; `.badge-good`, `.badge-bad` |
+| `.lbl` | text label of a summary item; becomes visually hidden (still read by screen readers) when the summary is narrower than 600 px |
 | `.switch` | toggle switch button (`role="switch"`, `aria-checked`), used for Permadeath in the run controls; `.switch-track` and `.switch-thumb` inside, tokens only, on = `--accent` |
 | `.tipwrap` | wrapper of a trigger button and its `.tip` |
 | `.tip` | tooltip (`role="tooltip"`), shown on hover and focus of the trigger, Escape hides |
