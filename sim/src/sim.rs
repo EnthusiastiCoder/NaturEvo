@@ -928,7 +928,7 @@ impl Sim {
                     self.died_level = Some(self.hero.level);
                     self.death_zone = Some(self.hero.zone);
                 }
-                if self.cfg.permadeath {
+                if self.cfg.permadeath || exhausted {
                     ev!(self, "end", None, "The hero has fallen. The journey ends here");
                     self.ended = true;
                     self.done = true;
@@ -944,11 +944,6 @@ impl Sim {
                 self.hero.hp = self.hero.max_hp;
                 self.hero.potions = self.hero.potions.min(5);
                 ev!(self, "respawn", None, "Hero wakes at Base Camp, having lost {} gold", lost);
-                if exhausted {
-                    ev!(self, "end", None, "The hero has fallen. The journey ends here");
-                    self.ended = true;
-                    self.done = true;
-                }
                 return Outcome::Died;
             }
             if m.hp <= 0 {
