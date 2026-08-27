@@ -1,0 +1,2 @@
+## Goal
+Supersedes plans/2026-10-22_v2-arena-neuroevolution.md (keep it for the InfiniClash inventory and the per-workstream design text; where this file differs, this file wins). Move v1 into v1/, build v2/: a jungle map the hero walks (ported from v1: map, A*, zones, permadeath toggle) where EVERY encounter (grass, elite, boss) is a real-time continuous 2D arena duel between evolved neural nets (hero nets vs monster nets, co-evolving, neuroevolution). Output suitable for a showcase video of the AI learning. Branch feat/v2-arena from feat/jungle-sim.
