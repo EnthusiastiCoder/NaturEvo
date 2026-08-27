@@ -385,6 +385,7 @@ try {
         const zz = await p.ev(`(() => { const z = document.getElementById('sum-zone'); return [z.scrollWidth, z.clientWidth, z.textContent]; })()`);
         check(zz[0] <= zz[1], `${w}x${h} ${theme}: zone name truncated at event ${e.idx} (${zz[2]}: scroll ${zz[0]} > client ${zz[1]})`); }
       await p.close();
+    }
     // timeline ticks: spacing between y labels >= 1.4 x font size
     const p = await open(BASE, { w: 1282, h: 642, dpr: 1 }); await sleep(1000);
     const tk = await p.ev('window.__timelineTicks || null');
