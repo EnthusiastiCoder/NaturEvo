@@ -916,10 +916,11 @@ impl Sim {
                 } else {
                     self.deaths += 1;
                 }
+                let mut exhausted = false;
                 if boss {
                     self.boss_deaths += 1;
                     if self.boss_deaths >= self.cfg.boss_attempts {
-                        self.done = true;
+                        exhausted = true;
                     }
                 }
                 ev!(self, "death", Some(&m), "Hero is slain by the {}", s.name);
@@ -943,6 +944,11 @@ impl Sim {
                 self.hero.hp = self.hero.max_hp;
                 self.hero.potions = self.hero.potions.min(5);
                 ev!(self, "respawn", None, "Hero wakes at Base Camp, having lost {} gold", lost);
+                if exhausted {
+                    ev!(self, "end", None, "The hero has fallen. The journey ends here");
+                    self.ended = true;
+                    self.done = true;
+                }
                 return Outcome::Died;
             }
             if m.hp <= 0 {
