@@ -416,6 +416,7 @@ try {
     if (e) {
       await p.ev(`window.__jv.goto(${e.idx - 1})`); await sleep(300);
       await p.ev(`(() => { window.__ts = []; let n = window.__jv.stepLog.length; const f = () => { const m = window.__jv.stepLog.length; if (m !== n) { for (let i = n; i < m; i++) window.__ts.push(performance.now()); n = m; } requestAnimationFrame(f); }; requestAnimationFrame(f); document.getElementById('play').click(); })()`);
+      await sleep(4200);
     // timeline ticks: spacing between y labels >= 1.4 x font size
     const p = await open(BASE, { w: 1282, h: 642, dpr: 1 }); await sleep(1000);
     const tk = await p.ev('window.__timelineTicks || null');
