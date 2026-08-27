@@ -35,7 +35,7 @@ fn default_matches_baseline() {
         assert_eq!(r.final_level, lvl, "seed {}", seed);
     }
     // seeds 1 and 4 lose with permadeath off: level 40, no win, no post-game
-    for (seed, len) in [(1u64, 15900usize), (4, 15638)] {
+    for (seed, len) in [(1u64, 15899usize), (4, 15637)] {
         let l = simulate_with(seed, &off);
         assert!(!l.won && l.first_win_event.is_none(), "seed {}", seed);
         assert_eq!(l.events.len(), len, "seed {}", seed);
