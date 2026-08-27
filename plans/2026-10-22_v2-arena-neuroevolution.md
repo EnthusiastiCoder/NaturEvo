@@ -46,3 +46,8 @@ Files: v2/sim/src/sense.rs, tests/sense_tests.rs.
 Design: vision cone (default 120 degrees, range 12 units) with 9 rays across the cone; each ray returns normalised distance and a hit class one-hot (wall, enemy, nothing); occlusion by obstacles (enemy behind a wall is not seen); plus proprioception inputs: own hp, stamina, attack/dodge cooldowns, own velocity in body frame, enemy relative bearing and distance only if in cone (else zeros plus a short-term "last seen" memory decayed over time), enemy attack-state (windup visible: the cue that makes blocking learnable), recurrent memory slot (net hidden state, see WS4). Input vector fixed size N_IN (about 40) documented in config.
 Tests: ray hits wall at correct distance; enemy outside cone invisible; occluded enemy invisible; enemy windup flag visible only in cone; input vector length constant; normalised in [-1,1]; deterministic.
 Acceptance: green; sensing cost is under 20 percent of tick time.
+
+### WS4 v2-neuro (sonnet): net and genome
+Files: v2/sim/src/net.rs, genome.rs, tests/net_tests.rs.
+Design: feed-forward MLP N_IN to 16 hidden (tanh) to 12 hidden (tanh) to N_OUT (about 7), with a small recurrent context (previous hidden layer 1 fed back, Elman) for short-term memory; flat `Vec<f32>` genome (about 1k weights); output decoding: continuous axes in [-1,1], buttons by threshold. Genome serialise to/from JSON text with a header (version, shape, role, generation, fitness). No dependencies.
+Tests: forward pass shape and known fixed weights give known outputs; NaN-free for extreme inputs; serialise round trip identical; identical genome gives identical actions; recurrent state resets per match.
