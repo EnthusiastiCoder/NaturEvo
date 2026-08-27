@@ -287,3 +287,6 @@ Tests first (failing):
 7. docs (sonnet, last): README.md (obstacle table, legend, steps/nsteps, "one step = one tick", byte budget) and STYLE.md.
 Commits (one file each, tests first): the four test files; feat obstacle palette (data.rs); feat obstacle placement and legend (map.rs); feat per-step path and npc steps (sim.rs, report.rs); feat window byte budget and legend (server.rs); update superseded tests (one per file); viewer index.html obstacles; index.html steps and glide; STYLE.md; README.md.
 Acceptance: new tests pass; A* routes always exist; no entity on a blocked tile; replay advances exactly one tile per tick at 1x with a smooth glide and speed scales ticks; event cap and windowing hold; distinct obstacles in both themes.
+
+## Addendum 4: permadeath, spacing, visible obstacles
+User, verbatim: "let's make death the end of the game for him, just like in real world. and the hero and npcs gotta be farther apart from each other, make the obstacles be visible on the 2D map too bro". Later: "permadeath should be toggle in the config".
