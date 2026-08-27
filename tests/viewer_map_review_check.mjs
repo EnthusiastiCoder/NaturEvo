@@ -402,6 +402,7 @@ try {
         const box = JSON.stringify([cx - 5 * ts, cy - 5 * ts, cx + 5 * ts, cy + 5 * ts]);
         await p.ev("window.__mapAnimStep(1)"); await p.ev("__t.save('base')");
         await p.ev("window.__mapAnimStep(0.3)");
+        const n = await p.ev(`__t.diff('base', ${box})`);
     // timeline ticks: spacing between y labels >= 1.4 x font size
     const p = await open(BASE, { w: 1282, h: 642, dpr: 1 }); await sleep(1000);
     const tk = await p.ev('window.__timelineTicks || null');
