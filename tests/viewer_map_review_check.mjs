@@ -392,6 +392,7 @@ try {
     for (const [w, h] of [[1282, 722], [1920, 1080]]) {
       const p = await open(BASE, { w, h, dpr: 1 }); await sleep(800);
       const e = EV.find(x => x.kind === 'attack' && x.mon && typeof x.mon.x === 'number');
+      check(e, 'no attack event with monster coordinates');
     // timeline ticks: spacing between y labels >= 1.4 x font size
     const p = await open(BASE, { w: 1282, h: 642, dpr: 1 }); await sleep(1000);
     const tk = await p.ev('window.__timelineTicks || null');
