@@ -414,6 +414,7 @@ try {
     const e = EV.find(x => x.kind === 'walk' && x.steps && x.steps.length >= 8);
     check(e, 'no walk event with 8+ steps');
     if (e) {
+      await p.ev(`window.__jv.goto(${e.idx - 1})`); await sleep(300);
     // timeline ticks: spacing between y labels >= 1.4 x font size
     const p = await open(BASE, { w: 1282, h: 642, dpr: 1 }); await sleep(1000);
     const tk = await p.ev('window.__timelineTicks || null');
