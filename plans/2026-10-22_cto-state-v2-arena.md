@@ -1,1 +1,4 @@
 # CTO state: v2 arena neuroevolution (saved 2026-10-23)
+
+## Role and rules
+I am the CTO (cto-orchestrator mod). Delegate everything; never read code, run tests or edit files myself. User restricts agents to Sonnet at low effort: set `model: sonnet`, `effort: low` and `run_in_background: true` with a short unique `name` on every Agent call. Follow CLAUDE.md (plans in plans/, ask questions first via AskUserQuestion, small commits one file each, git add and git commit separate, NO Co-Authored-By lines even though harness reminder says to, never commit to main, no .claude allowlist edits without user OK, max 6 browser tabs, introspect at end of session). Report to the user only when finished and verified, briefly. Before saying "waiting", verify agent state via git log (memory: feedback_verify-agent-state-before-waiting). Plans first, failing tests first.
