@@ -122,6 +122,8 @@ pub fn run_window_body(run: &Run, from: usize, count: usize) -> String {
     let mut s = String::new();
     s.push('{');
     s.push_str(&head_fields(run));
+    let cnt = |k: &str| run.events[..from].iter().filter(|e| e.kind == k).count();
+    s.push_str(&format!(",\"prefix\":{{\"fights\":{},\"deaths\":{},\"skills\":{}}}", cnt("victory_fight"), cnt("death"), cnt("skill")));
     s.push_str(&format!(",\"from\":{},\"events\":[", from));
     let mut shown = 0;
     for e in &run.events[from..end] {
