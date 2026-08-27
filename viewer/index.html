@@ -169,8 +169,11 @@ input[type=checkbox]{accent-color:var(--accent-text)}
 /* replay */
 .summary{display:flex;flex-wrap:nowrap;align-items:center;gap:var(--s2) var(--s3)}
 .summary>*{flex:none}
-.summary .sitem:has(#sum-zone){flex:0 1 auto;min-width:0}
-#sum-zone{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.summary{container-type:inline-size}
+.summary .sitem:has(#sum-zone){flex:none}
+#sum-zone{white-space:nowrap}
+@container (max-width:760px){.summary .bar{display:none}.summary{gap:var(--s2)}}
+@container (max-width:600px){.summary .lbl{position:absolute;width:1px;height:1px;clip:rect(0 0 0 0);white-space:nowrap}}
 .sitem{display:inline-flex;align-items:center;gap:var(--s1);font-size:var(--fs-sm);min-width:0;white-space:nowrap}
 .sitem .icon{color:var(--muted)}
 .sitem .bar{width:48px}
@@ -310,12 +313,12 @@ input[type=checkbox]{accent-color:var(--accent-text)}
  </div>
  <div id="summary" class="card summary">
   <span id="outcome" class="badge">No run</span>
-  <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-trophy"/></svg>Level <span id="sum-level" class="sval"></span></span>
-  <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg>HP <span id="sum-hp" class="sval"></span><span class="bar"><div id="sum-hpbar"></div></span></span>
+  <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-trophy"/></svg><span class="lbl">Level </span><span id="sum-level" class="sval"></span></span>
+  <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg><span class="lbl">HP </span><span id="sum-hp" class="sval"></span><span class="bar"><div id="sum-hpbar"></div></span></span>
   <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-map-pin"/></svg><span id="sum-zone" class="sval"></span></span>
   <span id="sum-progress" class="sr"></span>
-  <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-coins"/></svg>Gold <span id="sum-gold" class="sval"></span></span>
-  <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-flask-round"/></svg>Potions <span id="sum-potions" class="sval"></span></span>
+  <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-coins"/></svg><span class="lbl">Gold </span><span id="sum-gold" class="sval"></span></span>
+  <span class="sitem"><svg class="icon" aria-hidden="true"><use href="#i-flask-round"/></svg><span class="lbl">Potions </span><span id="sum-potions" class="sval"></span></span>
   <span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About run summary" aria-describedby="tip-summary"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-summary" class="tip">State of the hero at the current event. Outcome is only final at the last event.</span></span>
  </div>
  <div class="card map-head"><span class="card-title">Map<span class="tipwrap"><button type="button" class="btn-icon info" aria-label="About map" aria-describedby="tip-map"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></button><span role="tooltip" id="tip-map" class="tip">Bird's-eye map of the run. Hover a tile for details. Zoom (or double-click) follows the hero in a 16 by 16 tile window.</span></span></span><div id="maplegend" class="maplegend" aria-label="Map legend"><span class="lg"><span class="sw sw-hero"></span>Hero</span><span class="lg"><span class="sw sw-elite"></span>Elite</span><span class="lg"><span class="sw sw-boss"></span>Boss</span><span class="lg"><span class="sw sw-floor"></span>Floor</span><span class="lg"><span class="sw sw-grass"></span>Grass</span><span class="lg"><span class="sw sw-camp"></span>Camp</span><span class="lg"><span class="sw sw-wall"></span>Wall</span><span class="lg"><span class="sw sw-rock"></span>Rock</span><span class="lg"><span class="sw sw-fence"></span>Fence</span><span class="lg"><span class="sw sw-tree"></span>Tree</span><span class="lg"><span class="sw sw-water"></span>Water</span></div><button type="button" id="mapzoom" class="btn btn-outline" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-zoom-in"/></svg>Zoom</button></div>
@@ -357,9 +360,9 @@ var WP=[["Wooden Stick",0],["Stone Axe",4],["Iron Machete",9],["Steel Blade",16]
 var AR=[["Rags",0],["Leaf Wrap",3],["Hide Vest",7],["Bone Mail",12],["Scale Armor",19],["Stoneplate",28],["Ancient Aegis",40]];
 try{var fl=document.createElement("link");fl.rel="icon";fl.href="data:,";document.head.appendChild(fl);}catch(e){}
 var cnt=null;
-function counts(){if(cnt&&cnt.ev===ev)return cnt;var k=[],d=[],sk=[],a=0,b=0,c=0;
+function counts(){if(cnt&&cnt.ev===ev&&cnt.p===((run&&run.prefix)||cnt.p))return cnt;var k=[],d=[],sk=[],pf=(run&&run.prefix)||{},a=+pf.fights||0,b=+pf.deaths||0,c=+pf.skills||0;
  for(var i=0;i<ev.length;i++){var t=ev[i].kind;if(t==="victory_fight")a++;else if(t==="death")b++;else if(t==="skill")c++;k.push(a);d.push(b);sk.push(c);}
- cnt={ev:ev,k:k,d:d,s:sk};return cnt;}
+ cnt={ev:ev,k:k,d:d,s:sk,p:pf};return cnt;}
 var $=function(i){return document.getElementById(i)};
 var root=document.documentElement;
 var run=window.RUN||null, ev=(run&&run.events)||[], cur=0, timer=null, base=(run&&run.from)||0, loading=false;
@@ -580,7 +583,8 @@ function step(){if(!timer)return;var now=Date.now(),dt=Math.max(0,now-lastTick);
  if(!go)stop();}
 function playIcon(p){var b=$("play");b.innerHTML='<svg class="icon" aria-hidden="true"><use href="#i-'+(p?"pause":"play")+'"/></svg>';b.setAttribute("aria-label",p?"Pause":"Play");}
 function stop(){clearInterval(timer);timer=null;playIcon(false);}
-$("play").onclick=function(){if(timer)return stop();if(cur>=total()-1){cur=0;sub=-1;}playIcon(true);lastTick=Date.now();acc=EVT_MS;timer=setInterval(step,50);};
+/* steps are timed from real elapsed time (Date.now deltas) at a 16 ms cadence, so a 400 ms walk step lands within about one frame of its time */
+$("play").onclick=function(){if(timer)return stop();if(cur>=total()-1){cur=0;sub=-1;}playIcon(true);lastTick=Date.now();acc=EVT_MS;timer=setInterval(step,16);};
 $("scrub").oninput=function(){cur=+this.value;sub=-1;render();};
 $("scrub").max=Math.max(0,total()-1);
 
@@ -805,7 +809,7 @@ function drawMap(){
   g.globalAlpha=1;g.strokeStyle=fg;}
  /* marker sizes: at least 1.5 tiles and 8 css px in the bird's-eye view, tile-relative in the zoom */
  var lw=Math.max(1,Math.round(dpr*1.5)),emo=mapZoom,
-  rH=mapZoom?tsd*0.42:Math.max(tsd,5*dpr),rE=mapZoom?tsd*0.42:Math.max(tsd,5*dpr),rB=mapZoom?tsd*0.48:Math.max(tsd*1.5,7*dpr),rM=mapZoom?tsd*0.3:Math.max(tsd*0.7,3.5*dpr),
+  rH=mapZoom?tsd*0.42:Math.max(tsd,5*dpr),rE=mapZoom?tsd*0.42:Math.max(tsd,5*dpr),rB=mapZoom?tsd*0.48:Math.max(tsd*1.5,7*dpr),rM=mapZoom?tsd*0.3:Math.max(tsd*1.1,6*dpr),
   cBad=tok("--bad"),cWarn=tok("--warn"),cAcc=tok("--accent"),cBg=tok("--bg");
  if(emo){g.font=Math.floor(tsd*0.55)+"px system-ui,sans-serif";g.textAlign="center";g.textBaseline="middle";}
  var glyph=function(c,t){if(emo&&t){g.fillStyle=fg;g.fillText(t,c[0],c[1]+1);}};
@@ -821,7 +825,7 @@ function drawMap(){
  g.fillStyle=fg;g.beginPath();g.arc(hc[0],hc[1],rH+lw,0,Math.PI*2);g.fill();
  g.fillStyle=cAcc;g.beginPath();g.arc(hc[0],hc[1],rH,0,Math.PI*2);g.fill();
  g.fillStyle=cBg;g.beginPath();g.arc(hc[0],hc[1],rH*0.4,0,Math.PI*2);g.fill();
- if(anim.active&&anim.kind==="strike"){var tg=animAtk==="hero"?viewHero.mp:hp,c=ctr(tg[0],tg[1]),rr=Math.max(rH,rM)*1.3;
+ if(anim.active&&anim.kind==="strike"){var tg=animAtk==="hero"?viewHero.mp:hp,c=ctr(tg[0],tg[1]),rr=mapZoom?Math.max(rH,rM)*1.3:Math.max(tsd*2.5,12*dpr);
   g.globalAlpha=0.7*(1-anim.t);g.fillStyle=cWarn;g.beginPath();g.arc(c[0],c[1],rr,0,Math.PI*2);g.fill();
   g.globalAlpha=1-anim.t;g.strokeStyle=cWarn;g.lineWidth=lw*1.5;g.beginPath();g.arc(c[0],c[1],rr*(1+anim.t),0,Math.PI*2);g.stroke();g.globalAlpha=1;}
  }
@@ -988,7 +992,7 @@ $("run-btn").onclick=function(){
 };
 $("batch-btn").onclick=function(){
  var q="/api/batch?runs="+encodeURIComponent($("batch-runs").value)+"&"+knobQuery();
- api(q,"Running batch...").then(function(j){if(j){window.STATS=j;showTab("d");}});
+ api(q,"Running batch...").then(function(j){$("batch-box").open=false;if(j){window.STATS=j;showTab("d");}});
 };
 if(/^https?:$/.test(location.protocol)){
  fetch("/api/config").then(function(r){return r.ok?r.json():null;}).then(function(c){if(c)initControls(c);},function(){});
