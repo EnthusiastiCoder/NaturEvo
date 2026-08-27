@@ -6,3 +6,8 @@ prompts/
 plans/reports/
 plans/handoffs/
 sim/target/
+**/target/
+**/viewer/data/
+v2/runs/
+node_modules/
+dist/
