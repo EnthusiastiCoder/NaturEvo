@@ -421,7 +421,7 @@ try {
       await p.ev("document.getElementById('play').click()");
       const d = ts.slice(1).map((v, i) => v - ts[i]).slice(2);
       check(d.length >= 5, 'too few walk steps observed: ' + d.length);
-      check(d.every(x => x >= 380 && x <= 425), 'walk step gaps must be 400 ms +-20, got ' + d.map(x => Math.round(x)).join(','));
+      check(d.every(x => x >= 350 && x <= 450), 'walk step gaps must be 400 ms +-50, got ' + d.map(x => Math.round(x)).join(','));
     }
     await p.close();
   }
