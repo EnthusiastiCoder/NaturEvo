@@ -405,6 +405,7 @@ try {
         const n = await p.ev(`__t.diff('base', ${box})`);
         check(n >= 0.6 * Math.PI * (2.5 * ts) ** 2, `${w}x${h}: attack flash must cover a radius of about 2.5 tiles at default zoom, changed ${n}px, need ${Math.round(0.6 * Math.PI * (2.5 * ts) ** 2)}`);
       }
+      await p.close();
     // timeline ticks: spacing between y labels >= 1.4 x font size
     const p = await open(BASE, { w: 1282, h: 642, dpr: 1 }); await sleep(1000);
     const tk = await p.ev('window.__timelineTicks || null');
