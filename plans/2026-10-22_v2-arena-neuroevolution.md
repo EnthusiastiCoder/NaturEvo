@@ -24,3 +24,5 @@ Move the current jungle game into `v1/` unchanged and green, then build `v2/`: a
 2. docs: this plan file.
 3. v1 move (WS1): see below. History-preserving `git mv`, grouped by directory only where inseparable: one commit per moved top-level item (sim, viewer, tests, README.md), then one commit per path fix file.
 4. v2 tests (written before code, one commit per test file), then one commit per implementation file as listed per workstream.
+
+## Workstreams
