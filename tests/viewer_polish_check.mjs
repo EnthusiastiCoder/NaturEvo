@@ -251,7 +251,7 @@ modal: {
   check(!/<select\b[^>]*\bid\s*=\s*["']speed["']/.test(markup), 'no select#speed may remain (speed is a range slider)');
   const sp = tagOf('speed'), nm = tagOf('speed-num');
   check(!!sp && /^input$/i.test(sp[1]) && attr(sp, 'type') === 'range', '#speed must be <input type=range>, got ' + (sp && sp[1] + ' type=' + attr(sp, 'type')));
-  check(!!nm && /^input$/i.test(nm[1]) && attr(nm, 'type') === 'number' && attr(nm, 'step') === 'any', '#speed-num must be <input type=number step=any>');
+  check(!!nm && /^input$/i.test(nm[1]) && attr(nm, 'type') === 'text' && attr(nm, 'inputmode') === 'decimal', '#speed-num must be <input type=text inputmode=decimal> so the browser never shows a locale comma');
   const info = tagOf('speed-info');
   check(!!info && /^button$/i.test(info[1]) && !!attr(info, 'aria-label'), '#speed-info must be a <button> with aria-label');
   const did = info && attr(info, 'aria-describedby');
