@@ -399,6 +399,7 @@ try {
         const g = await p.ev('__t.geom()');
         const ts = Math.floor(Math.min(g.W, g.H) / MW);
         const ox = Math.floor((g.W - ts * MW) / 2), oy = Math.floor((g.H - ts * MW) / 2), cx = ox + (e.mon.x + 0.5) * ts, cy = oy + (e.mon.y + 0.5) * ts;
+        const box = JSON.stringify([cx - 5 * ts, cy - 5 * ts, cx + 5 * ts, cy + 5 * ts]);
     // timeline ticks: spacing between y labels >= 1.4 x font size
     const p = await open(BASE, { w: 1282, h: 642, dpr: 1 }); await sleep(1000);
     const tk = await p.ev('window.__timelineTicks || null');
