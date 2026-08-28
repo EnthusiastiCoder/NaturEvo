@@ -55,3 +55,10 @@ fn attack_out_of_range_or_outside_arc_misses() {
     for _ in 0..30 { m.step_with(atk(), idle()); }
     assert_eq!(m.hp(Role::Monster), 100.0);
 }
+
+#[test]
+fn swing_cycle_is_18_ticks_no_acting_in_recovery() {
+    let mut m = duel(1);
+    for _ in 0..36 { m.step_with(atk(), idle()); }
+    assert_eq!(m.hp(Role::Monster), 100.0 - 2.0 * 12.0);
+}
