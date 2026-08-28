@@ -91,3 +91,13 @@ fn full_forward_speed_is_capped_at_max_speed() {
     assert!(d <= cap + 1e-4, "moved {d} > {cap}");
     assert!(d > 0.0);
 }
+
+#[test]
+fn diagonal_move_not_faster_than_forward() {
+    let (mut m, cfg) = mk(3);
+    let p0 = m.pos(Role::Hero);
+    m.step_with(Action { fwd: 1.0, strafe: 1.0, ..idle() }, idle());
+    let p1 = m.pos(Role::Hero);
+    let d = ((p1.0 - p0.0).powi(2) + (p1.1 - p0.1).powi(2)).sqrt();
+    assert!(d <= cfg.max_speed / cfg.tick_hz as f32 + 1e-4);
+}
