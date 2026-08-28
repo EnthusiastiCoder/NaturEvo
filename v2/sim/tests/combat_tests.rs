@@ -62,3 +62,13 @@ fn swing_cycle_is_18_ticks_no_acting_in_recovery() {
     for _ in 0..36 { m.step_with(atk(), idle()); }
     assert_eq!(m.hp(Role::Monster), 100.0 - 2.0 * 12.0);
 }
+
+#[test]
+fn block_cuts_damage_80_percent_and_costs_15_stamina() {
+    let mut m = duel(1);
+    for _ in 0..3 { m.step_with(idle(), blk()); }
+    for _ in 0..20 { m.step_with(atk(), blk()); }
+    let lost = 100.0 - m.hp(Role::Monster);
+    assert!((lost - 2.4).abs() < 1e-3, "12 * 0.2, got {lost}");
+    assert!((m.stamina(Role::Monster) - 85.0).abs() < 2.0);
+}
