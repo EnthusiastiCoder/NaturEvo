@@ -79,3 +79,15 @@ fn arena_generation_deterministic_per_seed() {
         }
     }
 }
+
+#[test]
+fn full_forward_speed_is_capped_at_max_speed() {
+    let (mut m, cfg) = mk(3);
+    let p0 = m.pos(Role::Hero);
+    m.step_with(Action { fwd: 1.0, ..idle() }, idle());
+    let p1 = m.pos(Role::Hero);
+    let d = ((p1.0 - p0.0).powi(2) + (p1.1 - p0.1).powi(2)).sqrt();
+    let cap = cfg.max_speed / cfg.tick_hz as f32;
+    assert!(d <= cap + 1e-4, "moved {d} > {cap}");
+    assert!(d > 0.0);
+}
