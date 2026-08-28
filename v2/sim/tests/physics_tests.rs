@@ -101,3 +101,17 @@ fn diagonal_move_not_faster_than_forward() {
     let d = ((p1.0 - p0.0).powi(2) + (p1.1 - p0.1).powi(2)).sqrt();
     assert!(d <= cfg.max_speed / cfg.tick_hz as f32 + 1e-4);
 }
+
+#[test]
+fn fighters_never_leave_arena() {
+    let (mut m, cfg) = mk(11);
+    for i in 0..600 {
+        let a = Action { fwd: 1.0, turn: if i % 50 < 10 { 1.0 } else { 0.0 }, ..idle() };
+        m.step_with(a, a);
+        for r in [Role::Hero, Role::Monster] {
+            let (x, y) = m.pos(r);
+            assert!(x >= 0.0 && x <= cfg.arena_w && y >= 0.0 && y <= cfg.arena_h);
+            assert!(!m.arena().is_blocked(x, y));
+        }
+    }
+}
