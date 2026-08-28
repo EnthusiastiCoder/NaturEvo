@@ -7,3 +7,8 @@ use arena_sim::genome::Genome;
 use arena_sim::matchup::{play, Match, Outcome};
 use arena_sim::rng::Rng;
 use arena_sim::world::Arena;
+
+fn idle() -> Action { Action { fwd: 0.0, strafe: 0.0, turn: 0.0, attack: false, block: false, dodge: false } }
+fn atk() -> Action { Action { attack: true, ..idle() } }
+fn blk() -> Action { Action { block: true, ..idle() } }
+fn dge() -> Action { Action { dodge: true, ..idle() } }
