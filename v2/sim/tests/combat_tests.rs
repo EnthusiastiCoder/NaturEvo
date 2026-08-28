@@ -23,3 +23,11 @@ fn duel(seed: u64) -> Match {
     mt.place_for_duel(1.0);
     mt
 }
+
+#[test]
+fn start_state_full_hp_and_stamina() {
+    let m = duel(1);
+    assert_eq!(m.hp(Role::Hero), 100.0);
+    assert_eq!(m.hp(Role::Monster), 100.0);
+    assert_eq!(m.stamina(Role::Hero), 100.0);
+}
