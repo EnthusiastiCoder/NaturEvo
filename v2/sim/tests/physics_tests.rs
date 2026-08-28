@@ -126,3 +126,18 @@ fn fighters_cannot_overlap() {
         assert!(d >= 2.0 * cfg.fighter_radius - 1e-3, "overlap d={d}");
     }
 }
+
+#[test]
+fn tick_counts_and_match_ends_at_max_ticks() {
+    let (mut m, cfg) = mk(4);
+    assert_eq!(m.tick(), 0);
+    assert!(!m.finished());
+    m.step_with(idle(), idle());
+    assert_eq!(m.tick(), 1);
+    for _ in 0..cfg.max_ticks {
+        if m.finished() { break; }
+        m.step_with(idle(), idle());
+    }
+    assert!(m.finished());
+    assert_eq!(m.tick(), cfg.max_ticks);
+}
