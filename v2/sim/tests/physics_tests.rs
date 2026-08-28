@@ -49,3 +49,19 @@ fn config_defaults() {
     assert_eq!(c.max_stamina, 100.0);
     assert_eq!(c.max_hp, 100.0);
 }
+
+#[test]
+fn arena_spawns_open_reachable_and_inside() {
+    let cfg = ArenaConfig::default();
+    for seed in 0..20u64 {
+        let a = Arena::generate(seed, &cfg);
+        let s = a.spawns();
+        for (x, y) in s {
+            assert!(x > 0.0 && x < cfg.arena_w && y > 0.0 && y < cfg.arena_h);
+            assert!(!a.is_blocked(x, y));
+        }
+        assert!(a.reachable(s[0], s[1]), "seed {seed}");
+        assert!(a.is_blocked(-1.0, 5.0));
+        assert!(a.is_blocked(5.0, cfg.arena_h + 1.0));
+    }
+}
