@@ -12,3 +12,14 @@ fn idle() -> Action { Action { fwd: 0.0, strafe: 0.0, turn: 0.0, attack: false, 
 fn atk() -> Action { Action { attack: true, ..idle() } }
 fn blk() -> Action { Action { block: true, ..idle() } }
 fn dge() -> Action { Action { dodge: true, ..idle() } }
+
+fn duel(seed: u64) -> Match {
+    let cfg = ArenaConfig::default();
+    let arena = Arena::generate(seed, &cfg);
+    let mut r = Rng::new(seed);
+    let h = Genome::random(Role::Hero, &mut r);
+    let m = Genome::random(Role::Monster, &mut r);
+    let mut mt = Match::new(arena, h, m, seed, &cfg);
+    mt.place_for_duel(1.0);
+    mt
+}
