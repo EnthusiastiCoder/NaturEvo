@@ -43,3 +43,15 @@ fn attack_windup_6_then_active_4_damage_once() {
     for _ in 0..10 { m.step_with(idle(), idle()); }
     assert_eq!(m.hp(Role::Monster), 88.0, "damage 12 once per swing");
 }
+
+#[test]
+fn attack_out_of_range_or_outside_arc_misses() {
+    let mut m = duel(2);
+    m.place_for_duel(2.0);
+    for _ in 0..30 { m.step_with(atk(), idle()); }
+    assert_eq!(m.hp(Role::Monster), 100.0);
+    let mut m = duel(2);
+    m.face_away(Role::Hero);
+    for _ in 0..30 { m.step_with(atk(), idle()); }
+    assert_eq!(m.hp(Role::Monster), 100.0);
+}
