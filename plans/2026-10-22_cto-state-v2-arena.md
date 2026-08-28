@@ -23,3 +23,9 @@ Spawn a verifier (cto-orchestrator:verifier, sonnet, low) as soon as each implem
 ## In flight
 - impl-ws1-v1-move (agentId aca2a36280a36ffaa), started 2026-10-23, background: branch feat/v2-arena from feat/jungle-sim, record baseline tests, git mv sim/viewer/tests/README into v1/, fix paths, rerun and require identical results, delete stray sim/viewer, commit Addendum 4 plan change alone, commit plan files, keep untracked v2/ tests uncommitted, list (not apply) .claude allowlist edits. No report yet. Check git log and agent state before assuming anything.
 - Planner ac43d1e8ec1f61801 finished (can be resumed via SendMessage).
+
+## Next steps
+1. When impl-ws1-v1-move reports: spawn verifier; relay .claude allowlist edits to the user (needs explicit OK).
+2. Then WS2 implementer, etc., per order above; commit v2 tests per plan commit plan.
+3. At the end: restart server if needed, report briefly, run /introspect (mistakes: two false "waiting" claims, rebalancing instead of smarter AI, late visual checks).
+4. Optional: tell user v1 permadeath-on win rate 29.3%; offer loosening the two timing flakes.
