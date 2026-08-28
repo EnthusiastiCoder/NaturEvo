@@ -65,3 +65,17 @@ fn arena_spawns_open_reachable_and_inside() {
         assert!(a.is_blocked(5.0, cfg.arena_h + 1.0));
     }
 }
+
+#[test]
+fn arena_generation_deterministic_per_seed() {
+    let cfg = ArenaConfig::default();
+    let a = Arena::generate(5, &cfg);
+    let b = Arena::generate(5, &cfg);
+    assert_eq!(a.spawns(), b.spawns());
+    for y in 0..32 {
+        for x in 0..48 {
+            let (fx, fy) = (x as f32 + 0.5, y as f32 + 0.5);
+            assert_eq!(a.is_blocked(fx, fy), b.is_blocked(fx, fy));
+        }
+    }
+}
