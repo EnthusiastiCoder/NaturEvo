@@ -19,3 +19,7 @@ Follow-up answers: viewer stack = best performance (user wants to film a video o
 WS1 v1-move first (v1 stays green), then WS2 sim-core, then WS3 sensors, then WS4 neuro and WS6 jungle/campaign start in parallel, then WS5 evolution, then WS6 finish, WS7 viewer, WS8 record-mode (60 fps, PNG/WebM, early vs late split-screen), WS9 training page and docs.
 Dependencies: WS3, WS4 need WS2; WS5 needs WS3 and WS4; WS6 needs WS2, WS4, finishes after WS5; WS7 needs WS2 and WS6 formats; WS8 needs WS7; WS9 needs WS5 and WS7.
 Spawn a verifier (cto-orchestrator:verifier, sonnet, low) as soon as each implementer reports, giving plan path, workstream and implementer's exact name.
+
+## In flight
+- impl-ws1-v1-move (agentId aca2a36280a36ffaa), started 2026-10-23, background: branch feat/v2-arena from feat/jungle-sim, record baseline tests, git mv sim/viewer/tests/README into v1/, fix paths, rerun and require identical results, delete stray sim/viewer, commit Addendum 4 plan change alone, commit plan files, keep untracked v2/ tests uncommitted, list (not apply) .claude allowlist edits. No report yet. Check git log and agent state before assuming anything.
+- Planner ac43d1e8ec1f61801 finished (can be resumed via SendMessage).
