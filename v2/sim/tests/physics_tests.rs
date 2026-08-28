@@ -115,3 +115,14 @@ fn fighters_never_leave_arena() {
         }
     }
 }
+
+#[test]
+fn fighters_cannot_overlap() {
+    let (mut m, cfg) = mk(2);
+    for _ in 0..900 {
+        m.step_with(Action { fwd: 1.0, ..idle() }, Action { fwd: 1.0, ..idle() });
+        let (a, b) = (m.pos(Role::Hero), m.pos(Role::Monster));
+        let d = ((a.0 - b.0).powi(2) + (a.1 - b.1).powi(2)).sqrt();
+        assert!(d >= 2.0 * cfg.fighter_radius - 1e-3, "overlap d={d}");
+    }
+}
