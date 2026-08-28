@@ -16,3 +16,19 @@ fn mk(seed: u64) -> (Match, ArenaConfig) {
     (Match::new(arena, h, m, seed, &cfg), cfg)
 }
 fn idle() -> Action { Action { fwd: 0.0, strafe: 0.0, turn: 0.0, attack: false, block: false, dodge: false } }
+
+#[test]
+fn rng_is_seeded_and_in_range() {
+    let mut a = Rng::new(7);
+    let mut b = Rng::new(7);
+    for _ in 0..100 { assert_eq!(a.next_u64(), b.next_u64()); }
+    let mut c = Rng::new(8);
+    assert_ne!(Rng::new(7).next_u64(), c.next_u64());
+    let mut r = Rng::new(1);
+    for _ in 0..1000 {
+        let f = r.f32();
+        assert!((0.0..1.0).contains(&f));
+        let x = r.range(-2.0, 3.0);
+        assert!((-2.0..3.0).contains(&x));
+    }
+}
