@@ -14,3 +14,8 @@ Follow-up answers: viewer stack = best performance (user wants to film a video o
 - plans/2026-10-22_v2-arena-final.md (final; supersedes plans/2026-10-22_v2-arena-neuroevolution.md where they differ)
 - Test index: plans/reports/2026-10-22T22-55-38_tests-v2-arena/index.md (read its "Assumed API" section: implementers must follow the tests where the contract lacks names)
 - Tests written, untracked in v2/: Rust 9 files / 63 cases failing at compile as intended; Vitest 4 files / 31 cases (no package.json yet); train_smoke is slow.
+
+## Workstreams (all sonnet) and order
+WS1 v1-move first (v1 stays green), then WS2 sim-core, then WS3 sensors, then WS4 neuro and WS6 jungle/campaign start in parallel, then WS5 evolution, then WS6 finish, WS7 viewer, WS8 record-mode (60 fps, PNG/WebM, early vs late split-screen), WS9 training page and docs.
+Dependencies: WS3, WS4 need WS2; WS5 needs WS3 and WS4; WS6 needs WS2, WS4, finishes after WS5; WS7 needs WS2 and WS6 formats; WS8 needs WS7; WS9 needs WS5 and WS7.
+Spawn a verifier (cto-orchestrator:verifier, sonnet, low) as soon as each implementer reports, giving plan path, workstream and implementer's exact name.
