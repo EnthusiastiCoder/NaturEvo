@@ -32,3 +32,20 @@ fn rng_is_seeded_and_in_range() {
         assert!((-2.0..3.0).contains(&x));
     }
 }
+
+#[test]
+fn config_defaults() {
+    let c = ArenaConfig::default();
+    assert_eq!(c.tick_hz, 30);
+    assert_eq!(c.arena_w, 48.0);
+    assert_eq!(c.arena_h, 32.0);
+    assert_eq!(c.fighter_radius, 0.4);
+    assert_eq!(c.max_speed, 4.0);
+    assert_eq!(c.max_turn, 6.0);
+    assert_eq!(c.max_ticks, 1800);
+    assert_eq!(c.n_rays, 9);
+    assert_eq!(c.vision_fov, 2.094);
+    assert_eq!(c.vision_range, 12.0);
+    assert_eq!(c.max_stamina, 100.0);
+    assert_eq!(c.max_hp, 100.0);
+}
