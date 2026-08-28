@@ -31,3 +31,15 @@ fn start_state_full_hp_and_stamina() {
     assert_eq!(m.hp(Role::Monster), 100.0);
     assert_eq!(m.stamina(Role::Hero), 100.0);
 }
+
+#[test]
+fn attack_windup_6_then_active_4_damage_once() {
+    let mut m = duel(1);
+    m.step_with(atk(), idle());
+    for _ in 0..5 {
+        assert_eq!(m.hp(Role::Monster), 100.0, "no damage during windup");
+        m.step_with(idle(), idle());
+    }
+    for _ in 0..10 { m.step_with(idle(), idle()); }
+    assert_eq!(m.hp(Role::Monster), 88.0, "damage 12 once per swing");
+}
