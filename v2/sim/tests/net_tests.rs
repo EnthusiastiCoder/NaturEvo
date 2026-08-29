@@ -32,3 +32,9 @@ fn json_roundtrip_exact() {
     assert_eq!(back.role, Role::Monster);
     assert_eq!(back.to_json(), g.to_json());
 }
+
+#[test]
+fn from_json_rejects_garbage() {
+    assert!(Genome::from_json("not json").is_err());
+    assert!(Genome::from_json("{}").is_err());
+}
