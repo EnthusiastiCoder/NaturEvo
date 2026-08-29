@@ -20,3 +20,8 @@ fn same_seed_gives_byte_identical_log() {
         assert_eq!(run(seed), run(seed));
     }
 }
+
+#[test]
+fn different_seeds_differ() {
+    assert_ne!(run(1).0, run(2).0);
+}
