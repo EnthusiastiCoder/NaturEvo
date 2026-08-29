@@ -65,3 +65,12 @@ fn facing_away_changes_observation() {
     b.face_away(Role::Hero);
     assert_ne!(observe(&a, Role::Hero), observe(&b, Role::Hero));
 }
+
+#[test]
+fn enemy_windup_visible_in_observation() {
+    let mut a = mk(6);
+    a.place_for_duel(1.0);
+    let before = observe(&a, Role::Monster);
+    a.step_with(Action { attack: true, ..idle() }, idle());
+    assert_ne!(before, observe(&a, Role::Monster));
+}
