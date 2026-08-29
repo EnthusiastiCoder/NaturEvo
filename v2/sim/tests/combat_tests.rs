@@ -89,3 +89,10 @@ fn guard_break_at_zero_stamina_takes_full_damage() {
     for _ in 0..20 { m.step_with(atk(), blk()); }
     assert_eq!(m.hp(Role::Monster), 88.0);
 }
+
+#[test]
+fn dodge_costs_30_stamina() {
+    let mut m = duel(1);
+    m.step_with(idle(), dge());
+    assert!((m.stamina(Role::Monster) - 70.0).abs() < 1.5);
+}
