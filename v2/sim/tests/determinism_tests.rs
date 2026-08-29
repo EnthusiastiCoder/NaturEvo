@@ -25,3 +25,11 @@ fn same_seed_gives_byte_identical_log() {
 fn different_seeds_differ() {
     assert_ne!(run(1).0, run(2).0);
 }
+
+#[test]
+fn log_has_a_frame_per_tick_and_tick_hz() {
+    let (j, ticks) = run(5);
+    let n = j.matches("\"hp\"").count();
+    assert!(n as u32 >= ticks, "frames {n} ticks {ticks}");
+    assert!(j.contains("\"tick_hz\":30") || j.contains("\"tick_hz\": 30"));
+}
