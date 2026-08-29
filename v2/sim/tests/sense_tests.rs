@@ -55,3 +55,13 @@ fn enemy_distance_changes_observation() {
     b.place_for_duel(10.0);
     assert_ne!(observe(&a, Role::Hero), observe(&b, Role::Hero));
 }
+
+#[test]
+fn facing_away_changes_observation() {
+    let mut a = mk(4);
+    let mut b = mk(4);
+    a.place_for_duel(5.0);
+    b.place_for_duel(5.0);
+    b.face_away(Role::Hero);
+    assert_ne!(observe(&a, Role::Hero), observe(&b, Role::Hero));
+}
