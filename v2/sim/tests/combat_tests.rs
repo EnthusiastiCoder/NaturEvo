@@ -96,3 +96,11 @@ fn dodge_costs_30_stamina() {
     m.step_with(idle(), dge());
     assert!((m.stamina(Role::Monster) - 70.0).abs() < 1.5);
 }
+
+#[test]
+fn dodge_iframes_avoid_hit() {
+    let mut m = duel(1);
+    for _ in 0..4 { m.step_with(atk(), idle()); }
+    for _ in 0..10 { m.step_with(atk(), dge()); }
+    assert_eq!(m.hp(Role::Monster), 100.0);
+}
