@@ -40,3 +40,9 @@ fn observation_within_unit_range_for_both_roles() {
 fn observation_deterministic() {
     assert_eq!(observe(&mk(3), Role::Hero), observe(&mk(3), Role::Hero));
 }
+
+#[test]
+fn hero_and_monster_views_differ() {
+    let m = mk(3);
+    assert_ne!(observe(&m, Role::Hero), observe(&m, Role::Monster));
+}
