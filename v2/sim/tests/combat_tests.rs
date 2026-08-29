@@ -104,3 +104,13 @@ fn dodge_iframes_avoid_hit() {
     for _ in 0..10 { m.step_with(atk(), dge()); }
     assert_eq!(m.hp(Role::Monster), 100.0);
 }
+
+#[test]
+fn dodge_cooldown_45_ticks_blocks_second_dodge() {
+    let mut m = duel(1);
+    m.step_with(idle(), dge());
+    for _ in 0..10 { m.step_with(idle(), idle()); }
+    let s = m.stamina(Role::Monster);
+    m.step_with(idle(), dge());
+    assert!(m.stamina(Role::Monster) >= s, "second dodge inside cooldown must not cost stamina");
+}
