@@ -80,3 +80,12 @@ fn block_does_not_cover_attacks_from_behind() {
     for _ in 0..20 { m.step_with(atk(), blk()); }
     assert_eq!(m.hp(Role::Monster), 88.0);
 }
+
+#[test]
+fn guard_break_at_zero_stamina_takes_full_damage() {
+    let mut m = duel(1);
+    m.set_stamina(Role::Monster, 0.0);
+    for _ in 0..3 { m.step_with(idle(), blk()); }
+    for _ in 0..20 { m.step_with(atk(), blk()); }
+    assert_eq!(m.hp(Role::Monster), 88.0);
+}
