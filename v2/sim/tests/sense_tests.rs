@@ -35,3 +35,8 @@ fn observation_within_unit_range_for_both_roles() {
         }
     }
 }
+
+#[test]
+fn observation_deterministic() {
+    assert_eq!(observe(&mk(3), Role::Hero), observe(&mk(3), Role::Hero));
+}
