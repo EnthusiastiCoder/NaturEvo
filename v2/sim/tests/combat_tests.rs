@@ -72,3 +72,11 @@ fn block_cuts_damage_80_percent_and_costs_15_stamina() {
     assert!((lost - 2.4).abs() < 1e-3, "12 * 0.2, got {lost}");
     assert!((m.stamina(Role::Monster) - 85.0).abs() < 2.0);
 }
+
+#[test]
+fn block_does_not_cover_attacks_from_behind() {
+    let mut m = duel(1);
+    m.face_away(Role::Monster);
+    for _ in 0..20 { m.step_with(atk(), blk()); }
+    assert_eq!(m.hp(Role::Monster), 88.0);
+}
