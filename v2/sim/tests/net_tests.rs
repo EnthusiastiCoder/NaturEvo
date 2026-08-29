@@ -59,3 +59,13 @@ fn forward_is_deterministic_and_bounded() {
         }
     }
 }
+
+#[test]
+fn different_weights_give_different_actions() {
+    let a = Genome::random(Role::Hero, &mut Rng::new(1));
+    let b = Genome::random(Role::Hero, &mut Rng::new(2));
+    let x = [0.5f32; N_IN];
+    let (mut na, mut nb) = (Net::from_genome(&a), Net::from_genome(&b));
+    let (oa, ob) = (na.forward(&x), nb.forward(&x));
+    assert!(oa.fwd != ob.fwd || oa.strafe != ob.strafe || oa.turn != ob.turn);
+}
