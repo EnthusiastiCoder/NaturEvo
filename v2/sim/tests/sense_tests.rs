@@ -20,3 +20,18 @@ fn idle() -> Action { Action { fwd: 0.0, strafe: 0.0, turn: 0.0, attack: false, 
 fn n_in_is_40() {
     assert_eq!(N_IN, 40);
 }
+
+#[test]
+fn observation_within_unit_range_for_both_roles() {
+    let mut m = mk(1);
+    for _ in 0..200 {
+        m.step();
+        for r in [Role::Hero, Role::Monster] {
+            let o = observe(&m, r);
+            assert_eq!(o.len(), 40);
+            for v in o {
+                assert!(v.is_finite() && (-1.0..=1.0).contains(&v), "{v}");
+            }
+        }
+    }
+}
