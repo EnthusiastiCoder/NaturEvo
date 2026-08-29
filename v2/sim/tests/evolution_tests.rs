@@ -31,3 +31,15 @@ fn stats_fields_sane() {
     }
     assert!(s.avg_ticks > 0.0 && s.avg_ticks <= 1800.0);
 }
+
+#[test]
+fn champions_have_correct_roles_and_hof_grows() {
+    let mut t = Trainer::new(cfg(2));
+    t.run_generation();
+    t.run_generation();
+    assert_eq!(t.hero_champion().role, Role::Hero);
+    assert_eq!(t.monster_champion().role, Role::Monster);
+    assert!(t.hall_of_fame(Role::Hero).len() >= 2);
+    assert!(t.hall_of_fame(Role::Monster).len() >= 2);
+    assert!(t.hall_of_fame(Role::Hero).iter().all(|g| g.role == Role::Hero));
+}
