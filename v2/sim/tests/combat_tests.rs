@@ -114,3 +114,13 @@ fn dodge_cooldown_45_ticks_blocks_second_dodge() {
     m.step_with(idle(), dge());
     assert!(m.stamina(Role::Monster) >= s, "second dodge inside cooldown must not cost stamina");
 }
+
+#[test]
+fn stamina_regens_12_per_second_idle_and_caps() {
+    let mut m = duel(1);
+    m.set_stamina(Role::Hero, 10.0);
+    for _ in 0..30 { m.step_with(idle(), idle()); }
+    assert!((m.stamina(Role::Hero) - 22.0).abs() < 0.2);
+    for _ in 0..600 { m.step_with(idle(), idle()); }
+    assert_eq!(m.stamina(Role::Hero), 100.0);
+}
