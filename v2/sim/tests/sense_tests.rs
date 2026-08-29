@@ -46,3 +46,12 @@ fn hero_and_monster_views_differ() {
     let m = mk(3);
     assert_ne!(observe(&m, Role::Hero), observe(&m, Role::Monster));
 }
+
+#[test]
+fn enemy_distance_changes_observation() {
+    let mut a = mk(4);
+    let mut b = mk(4);
+    a.place_for_duel(1.0);
+    b.place_for_duel(10.0);
+    assert_ne!(observe(&a, Role::Hero), observe(&b, Role::Hero));
+}
