@@ -124,3 +124,16 @@ fn stamina_regens_12_per_second_idle_and_caps() {
     for _ in 0..600 { m.step_with(idle(), idle()); }
     assert_eq!(m.stamina(Role::Hero), 100.0);
 }
+
+#[test]
+fn death_ends_match_with_hero_win() {
+    let mut m = duel(1);
+    for _ in 0..1800 {
+        if m.finished() { break; }
+        m.step_with(atk(), idle());
+    }
+    assert!(m.finished());
+    assert_eq!(m.outcome(), Outcome::HeroWin);
+    assert_eq!(m.hp(Role::Monster), 0.0);
+    assert!(m.tick() < 1800);
+}
