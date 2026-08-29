@@ -15,3 +15,8 @@ fn mk(seed: u64) -> Match {
     Match::new(Arena::generate(seed, &cfg), h, m, seed, &cfg)
 }
 fn idle() -> Action { Action { fwd: 0.0, strafe: 0.0, turn: 0.0, attack: false, block: false, dodge: false } }
+
+#[test]
+fn n_in_is_40() {
+    assert_eq!(N_IN, 40);
+}
