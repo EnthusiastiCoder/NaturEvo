@@ -69,3 +69,15 @@ fn different_weights_give_different_actions() {
     let (oa, ob) = (na.forward(&x), nb.forward(&x));
     assert!(oa.fwd != ob.fwd || oa.strafe != ob.strafe || oa.turn != ob.turn);
 }
+
+#[test]
+fn reset_restores_initial_behaviour() {
+    let g = Genome::random(Role::Hero, &mut Rng::new(4));
+    let mut n = Net::from_genome(&g);
+    let x = [0.3f32; N_IN];
+    let first = n.forward(&x);
+    for _ in 0..20 { n.forward(&[-0.7f32; N_IN]); }
+    n.reset();
+    let again = n.forward(&x);
+    assert_eq!((first.fwd, first.turn), (again.fwd, again.turn));
+}
