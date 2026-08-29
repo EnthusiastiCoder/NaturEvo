@@ -38,3 +38,24 @@ fn from_json_rejects_garbage() {
     assert!(Genome::from_json("not json").is_err());
     assert!(Genome::from_json("{}").is_err());
 }
+
+#[test]
+fn forward_is_deterministic_and_bounded() {
+    let g = Genome::random(Role::Hero, &mut Rng::new(3));
+    let mut n1 = Net::from_genome(&g);
+    let mut n2 = Net::from_genome(&g);
+    let mut r = Rng::new(10);
+    for _ in 0..100 {
+        let mut x = [0.0f32; N_IN];
+        for v in x.iter_mut() { *v = r.range(-1.0, 1.0); }
+        let a = n1.forward(&x);
+        let b = n2.forward(&x);
+        assert_eq!(
+            (a.fwd, a.strafe, a.turn, a.attack, a.block, a.dodge),
+            (b.fwd, b.strafe, b.turn, b.attack, b.block, b.dodge)
+        );
+        for v in [a.fwd, a.strafe, a.turn] {
+            assert!((-1.0..=1.0).contains(&v));
+        }
+    }
+}
