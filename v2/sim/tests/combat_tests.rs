@@ -137,3 +137,12 @@ fn death_ends_match_with_hero_win() {
     assert_eq!(m.hp(Role::Monster), 0.0);
     assert!(m.tick() < 1800);
 }
+
+#[test]
+fn timeout_is_draw() {
+    let mut m = duel(1);
+    m.place_for_duel(8.0);
+    for _ in 0..1800 { m.step_with(idle(), idle()); }
+    assert!(m.finished());
+    assert_eq!(m.outcome(), Outcome::Draw);
+}
