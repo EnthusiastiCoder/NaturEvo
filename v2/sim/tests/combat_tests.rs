@@ -146,3 +146,22 @@ fn timeout_is_draw() {
     assert!(m.finished());
     assert_eq!(m.outcome(), Outcome::Draw);
 }
+
+#[test]
+fn play_result_and_log_consistent() {
+    let cfg = ArenaConfig::default();
+    let mut r = Rng::new(9);
+    let h = Genome::random(Role::Hero, &mut r);
+    let mo = Genome::random(Role::Monster, &mut r);
+    let res = play(Arena::generate(9, &cfg), h, mo, 9, &cfg);
+    assert!(res.ticks >= 1 && res.ticks <= 1800);
+    assert!(res.hero_hp >= 0.0 && res.hero_hp <= 100.0);
+    assert!(res.monster_hp >= 0.0 && res.monster_hp <= 100.0);
+    assert!((res.damage_dealt[0] - (100.0 - res.monster_hp)).abs() < 1e-3);
+    assert!((res.damage_dealt[1] - (100.0 - res.hero_hp)).abs() < 1e-3);
+    let j = res.log.to_json();
+    assert!(j.contains("\"frames\""));
+    for k in ["pos", "facing", "hp", "stamina", "action", "state"] {
+        assert!(j.contains(k), "log missing {k}");
+    }
+}
