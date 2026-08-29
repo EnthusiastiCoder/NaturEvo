@@ -19,3 +19,16 @@ fn random_genome_is_seeded() {
     assert!(!a.weights.is_empty());
     assert!(a.weights.iter().all(|w| w.is_finite()));
 }
+
+#[test]
+fn json_roundtrip_exact() {
+    let mut g = Genome::random(Role::Monster, &mut Rng::new(5));
+    g.generation = 17;
+    g.fitness = 3.5;
+    let back = Genome::from_json(&g.to_json()).unwrap();
+    assert_eq!(back.weights, g.weights);
+    assert_eq!(back.generation, 17);
+    assert_eq!(back.fitness, 3.5);
+    assert_eq!(back.role, Role::Monster);
+    assert_eq!(back.to_json(), g.to_json());
+}
