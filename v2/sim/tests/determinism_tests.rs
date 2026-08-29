@@ -13,3 +13,10 @@ fn run(seed: u64) -> (String, u32) {
     let res = play(Arena::generate(seed, &cfg), h, m, seed, &cfg);
     (res.log.to_json(), res.ticks)
 }
+
+#[test]
+fn same_seed_gives_byte_identical_log() {
+    for seed in [1u64, 2, 99] {
+        assert_eq!(run(seed), run(seed));
+    }
+}
