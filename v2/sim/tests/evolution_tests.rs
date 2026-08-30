@@ -43,3 +43,15 @@ fn champions_have_correct_roles_and_hof_grows() {
     assert!(t.hall_of_fame(Role::Monster).len() >= 2);
     assert!(t.hall_of_fame(Role::Hero).iter().all(|g| g.role == Role::Hero));
 }
+
+#[test]
+fn same_seed_is_deterministic() {
+    let run = |s| {
+        let mut t = Trainer::new(cfg(s));
+        t.run_generation();
+        t.run_generation();
+        (t.hero_champion().to_json(), t.monster_champion().to_json())
+    };
+    assert_eq!(run(5), run(5));
+    assert_ne!(run(5), run(6));
+}
