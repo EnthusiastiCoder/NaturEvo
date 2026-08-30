@@ -15,3 +15,21 @@ fn tmp(name: &str) -> std::path::PathBuf {
     p
 }
 fn args(v: &[&str]) -> Vec<String> { v.iter().map(|s| s.to_string()).collect() }
+
+#[test]
+fn cli_train_writes_jsonl_and_champions() {
+    let out = tmp("train");
+    cli::run(&args(&["train", "--seed", "1", "--gens", "3", "--out", out.to_str().unwrap()])).unwrap();
+    let log = fs::read_to_string(out.join("training.jsonl")).unwrap();
+    let lines: Vec<&str> = log.lines().collect();
+    assert_eq!(lines.len(), 3);
+    for (i, l) in lines.iter().enumerate() {
+        assert!(l.starts_with('{') && l.ends_with('}'));
+        assert!(l.contains(&format!("\"gen\":{i}")));
+        for k in ["win_rate_vs_hof", "best_fitness", "action_freq"] {
+            assert!(l.contains(k), "missing {k}");
+        }
+    }
+    assert!(out.join("champion_hero_gen_2.json").exists());
+    assert!(out.join("champion_monster_gen_2.json").exists());
+}
