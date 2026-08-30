@@ -51,3 +51,17 @@ fn cli_train_byte_identical_for_same_seed() {
 fn cli_rejects_unknown_command() {
     assert!(cli::run(&args(&["bogus"])).is_err());
 }
+
+#[test]
+fn cli_fight_writes_log() {
+    let out = tmp("fight");
+    fs::create_dir_all(&out).unwrap();
+    let mut r = Rng::new(1);
+    let h = out.join("h.json");
+    let m = out.join("m.json");
+    fs::write(&h, Genome::random(Role::Hero, &mut r).to_json()).unwrap();
+    fs::write(&m, Genome::random(Role::Monster, &mut r).to_json()).unwrap();
+    let f = out.join("fight.json");
+    cli::run(&args(&["fight", "--hero", h.to_str().unwrap(), "--monster", m.to_str().unwrap(), "--seed", "3", "--out", f.to_str().unwrap()])).unwrap();
+    assert!(fs::read_to_string(f).unwrap().contains("\"frames\""));
+}
