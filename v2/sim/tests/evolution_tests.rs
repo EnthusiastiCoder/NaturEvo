@@ -55,3 +55,19 @@ fn same_seed_is_deterministic() {
     assert_eq!(run(5), run(5));
     assert_ne!(run(5), run(6));
 }
+
+#[test]
+fn checkpoint_resume_matches_uninterrupted() {
+    let mut a = Trainer::new(cfg(7));
+    a.run_generation();
+    a.run_generation();
+    a.run_generation();
+    let mut b = Trainer::new(cfg(7));
+    b.run_generation();
+    let ck = b.checkpoint();
+    let mut c = Trainer::resume(&ck).unwrap();
+    c.run_generation();
+    c.run_generation();
+    assert_eq!(a.hero_champion().to_json(), c.hero_champion().to_json());
+    assert_eq!(a.stats().len(), c.stats().len());
+}
