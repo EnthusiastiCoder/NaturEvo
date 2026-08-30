@@ -65,3 +65,20 @@ fn cli_fight_writes_log() {
     cli::run(&args(&["fight", "--hero", h.to_str().unwrap(), "--monster", m.to_str().unwrap(), "--seed", "3", "--out", f.to_str().unwrap()])).unwrap();
     assert!(fs::read_to_string(f).unwrap().contains("\"frames\""));
 }
+
+#[test]
+fn trained_hero_beats_random_monsters_80_percent_of_50() {
+    let mut t = Trainer::new(TrainConfig { seed: 1, generations: 40, pop: 24, k_opponents: 4, hof_sample: 2 });
+    for _ in 0..40 { t.run_generation(); }
+    let champ = t.hero_champion().clone();
+    let cfg = ArenaConfig::default();
+    let mut rng = Rng::new(777);
+    let mut wins = 0;
+    for s in 0..50u64 {
+        let rnd = Genome::random(Role::Monster, &mut rng);
+        if play(Arena::generate(s, &cfg), champ.clone(), rnd, s, &cfg).outcome == Outcome::HeroWin {
+            wins += 1;
+        }
+    }
+    assert!(wins >= 40, "beat random {wins}/50");
+}
