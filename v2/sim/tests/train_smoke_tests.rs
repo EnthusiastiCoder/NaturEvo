@@ -33,3 +33,16 @@ fn cli_train_writes_jsonl_and_champions() {
     assert!(out.join("champion_hero_gen_2.json").exists());
     assert!(out.join("champion_monster_gen_2.json").exists());
 }
+
+#[test]
+fn cli_train_byte_identical_for_same_seed() {
+    let go = |n: &str| {
+        let out = tmp(n);
+        cli::run(&args(&["train", "--seed", "4", "--gens", "2", "--out", out.to_str().unwrap()])).unwrap();
+        (
+            fs::read(out.join("training.jsonl")).unwrap(),
+            fs::read(out.join("champion_hero_gen_1.json")).unwrap(),
+        )
+    };
+    assert_eq!(go("det_a"), go("det_b"));
+}
