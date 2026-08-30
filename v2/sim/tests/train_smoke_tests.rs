@@ -82,3 +82,21 @@ fn trained_hero_beats_random_monsters_80_percent_of_50() {
     }
     assert!(wins >= 40, "beat random {wins}/50");
 }
+
+#[test]
+fn trained_hero_beats_gen0_hero_80_percent_of_50() {
+    let tc = TrainConfig { seed: 1, generations: 40, pop: 24, k_opponents: 4, hof_sample: 2 };
+    let mut t = Trainer::new(tc);
+    t.run_generation();
+    let g0 = t.hero_champion().clone();
+    for _ in 0..39 { t.run_generation(); }
+    let champ = t.hero_champion().clone();
+    let mon = t.monster_champion().clone();
+    let cfg = ArenaConfig::default();
+    let (mut a, mut b) = (0, 0);
+    for s in 0..50u64 {
+        if play(Arena::generate(s, &cfg), champ.clone(), mon.clone(), s, &cfg).hero_hp
+            > play(Arena::generate(s, &cfg), g0.clone(), mon.clone(), s, &cfg).hero_hp { a += 1; } else { b += 1; }
+    }
+    assert!(a >= 40, "champion better than gen0 in {a}/50 (worse {b})");
+}
