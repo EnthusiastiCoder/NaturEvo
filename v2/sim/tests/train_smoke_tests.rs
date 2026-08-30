@@ -46,3 +46,8 @@ fn cli_train_byte_identical_for_same_seed() {
     };
     assert_eq!(go("det_a"), go("det_b"));
 }
+
+#[test]
+fn cli_rejects_unknown_command() {
+    assert!(cli::run(&args(&["bogus"])).is_err());
+}
