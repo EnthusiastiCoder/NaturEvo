@@ -71,3 +71,8 @@ fn checkpoint_resume_matches_uninterrupted() {
     assert_eq!(a.hero_champion().to_json(), c.hero_champion().to_json());
     assert_eq!(a.stats().len(), c.stats().len());
 }
+
+#[test]
+fn resume_rejects_garbage() {
+    assert!(Trainer::resume("nope").is_err());
+}
