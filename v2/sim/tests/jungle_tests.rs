@@ -24,3 +24,9 @@ fn camp_and_boss_reachable_over_many_seeds() {
         }
     }
 }
+
+#[test]
+fn boss_zone_tier_above_camp_zone() {
+    let m = Map::generate(3, 40);
+    assert!(m.zone_tier(m.boss()) > m.zone_tier(m.camp()));
+}
