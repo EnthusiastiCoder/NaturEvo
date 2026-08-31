@@ -46,3 +46,18 @@ fn permadeath_ends_on_first_hero_loss_with_exactly_one_end() {
         assert_eq!(r.end_count(), 1);
     }
 }
+
+#[test]
+fn without_permadeath_run_continues_after_a_loss() {
+    let (h, m) = libs(2);
+    let mut saw_continue = false;
+    for seed in 0..20u64 {
+        let r = run(seed, MapCfg::default(), &h, &m, false);
+        let first_loss = r.encounters.iter().position(|e| e.result.outcome != Outcome::HeroWin);
+        if let Some(i) = first_loss {
+            if i + 1 < r.encounters.len() { saw_continue = true; }
+        }
+        assert_eq!(r.end_count(), 1);
+    }
+    assert!(saw_continue);
+}
