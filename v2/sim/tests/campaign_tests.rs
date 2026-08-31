@@ -84,3 +84,10 @@ fn encounters_have_valid_kinds() {
     assert!(r.encounters.iter().filter(|e| e.kind == EncounterKind::Boss).count() <= 1);
     assert!(r.encounters.iter().any(|e| e.kind == EncounterKind::Grass));
 }
+
+#[test]
+fn zone_tier_raises_monster_stats() {
+    let (t0, t2, boss) = (tier_stats(0, false), tier_stats(2, false), tier_stats(2, true));
+    assert!(t2.hp > t0.hp || t2.damage > t0.damage);
+    assert!(boss.hp > t2.hp && boss.damage >= t2.damage);
+}
