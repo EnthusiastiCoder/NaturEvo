@@ -38,3 +38,10 @@ fn has_biomes_and_obstacles() {
     assert!(m.blocked_count() > 0);
     assert!(m.blocked_count() < 40 * 40 / 2);
 }
+
+#[test]
+fn astar_none_for_blocked_target() {
+    let m = Map::generate(3, 40);
+    let b = m.first_blocked().expect("some obstacle");
+    assert!(m.astar(m.camp(), b).is_none());
+}
