@@ -75,3 +75,12 @@ fn each_encounter_has_replayable_log() {
         assert_eq!(again.log.to_json(), e.result.log.to_json());
     }
 }
+
+#[test]
+fn encounters_have_valid_kinds() {
+    let (h, m) = libs(4);
+    let r = run(4, MapCfg::default(), &h, &m, false);
+    assert!(r.steps > 0);
+    assert!(r.encounters.iter().filter(|e| e.kind == EncounterKind::Boss).count() <= 1);
+    assert!(r.encounters.iter().any(|e| e.kind == EncounterKind::Grass));
+}
