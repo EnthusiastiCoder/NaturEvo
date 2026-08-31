@@ -9,3 +9,11 @@ use arena_sim::genome::Genome;
 use arena_sim::matchup::{play, Outcome};
 use arena_sim::rng::Rng;
 use arena_sim::world::Arena;
+
+fn libs(seed: u64) -> (Library, Library) {
+    let mut r = Rng::new(seed);
+    (
+        Library::new(vec![Genome::random(Role::Hero, &mut r)]),
+        Library::new(vec![Genome::random(Role::Monster, &mut r)]),
+    )
+}
