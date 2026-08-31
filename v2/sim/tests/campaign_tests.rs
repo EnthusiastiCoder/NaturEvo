@@ -61,3 +61,17 @@ fn without_permadeath_run_continues_after_a_loss() {
     }
     assert!(saw_continue);
 }
+
+#[test]
+fn each_encounter_has_replayable_log() {
+    let (h, m) = libs(3);
+    let r = run(3, MapCfg::default(), &h, &m, true);
+    assert!(!r.encounters.is_empty());
+    let cfg = ArenaConfig::default();
+    for e in &r.encounters {
+        assert!(e.result.ticks >= 1);
+        assert!(e.result.log.to_json().contains("\"frames\""));
+        let again = play(Arena::generate(e.arena_seed, &cfg), h.pick(0).clone(), m.pick(e.monster_index).clone(), e.match_seed, &cfg);
+        assert_eq!(again.log.to_json(), e.result.log.to_json());
+    }
+}
