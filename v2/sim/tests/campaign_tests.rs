@@ -30,3 +30,19 @@ fn deterministic_by_seed() {
         assert_eq!(x.result.log.to_json(), y.result.log.to_json());
     }
 }
+
+#[test]
+fn permadeath_ends_on_first_hero_loss_with_exactly_one_end() {
+    for seed in 0..10u64 {
+        let (h, m) = libs(seed);
+        let r = run(seed, MapCfg::default(), &h, &m, true);
+        let losses = r.encounters.iter().filter(|e| e.result.outcome != Outcome::HeroWin).count();
+        if r.outcome == CO::Died {
+            assert_eq!(losses, 1, "seed {seed}");
+            assert_ne!(r.encounters.last().unwrap().result.outcome, Outcome::HeroWin);
+        } else {
+            assert_eq!(losses, 0);
+        }
+        assert_eq!(r.end_count(), 1);
+    }
+}
