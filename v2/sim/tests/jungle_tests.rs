@@ -30,3 +30,11 @@ fn boss_zone_tier_above_camp_zone() {
     let m = Map::generate(3, 40);
     assert!(m.zone_tier(m.boss()) > m.zone_tier(m.camp()));
 }
+
+#[test]
+fn has_biomes_and_obstacles() {
+    let m = Map::generate(3, 40);
+    assert!(m.biome_count() >= 2);
+    assert!(m.blocked_count() > 0);
+    assert!(m.blocked_count() < 40 * 40 / 2);
+}
