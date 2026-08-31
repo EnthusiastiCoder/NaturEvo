@@ -17,3 +17,16 @@ fn libs(seed: u64) -> (Library, Library) {
         Library::new(vec![Genome::random(Role::Monster, &mut r)]),
     )
 }
+
+#[test]
+fn deterministic_by_seed() {
+    let (h, m) = libs(1);
+    let a = run(5, MapCfg::default(), &h, &m, true);
+    let b = run(5, MapCfg::default(), &h, &m, true);
+    assert_eq!(a.steps, b.steps);
+    assert_eq!(a.encounters.len(), b.encounters.len());
+    for (x, y) in a.encounters.iter().zip(b.encounters.iter()) {
+        assert_eq!(x.arena_seed, y.arena_seed);
+        assert_eq!(x.result.log.to_json(), y.result.log.to_json());
+    }
+}
