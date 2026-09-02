@@ -8,3 +8,36 @@ const f = (x: number, facing: number, hp: number, state = 'Idle') => ({
   monster: { pos: [10, 0], facing: 0, hp: 100, stamina: 100, action: 'none', state: 'Idle' },
 });
 const frames = [f(0, 0, 100), f(3, 1, 90), f(6, 2, 80, 'Windup')];
+
+describe('fight interpolation', () => {
+  it('returns frame 0 at t=0', () => {
+    expect(sampleFight(frames, 0, 30).hero.pos[0]).toBe(0);
+  });
+  it('lerps position halfway between ticks (tick 1/30 s)', () => {
+    const s = sampleFight(frames, 0.5 / 30, 30);
+    expect(s.hero.pos[0]).toBeCloseTo(1.5, 6);
+    expect(s.hero.hp).toBeCloseTo(95, 6);
+  });
+  it('is exact on a tick boundary', () => {
+    expect(sampleFight(frames, 1 / 30, 30).hero.pos[0]).toBeCloseTo(3, 6);
+  });
+  it('clamps beyond the end to the last frame', () => {
+    expect(sampleFight(frames, 99, 30).hero.pos[0]).toBe(6);
+  });
+  it('clamps negative time to frame 0', () => {
+    expect(sampleFight(frames, -1, 30).hero.pos[0]).toBe(0);
+  });
+  it('discrete state snaps to the earlier frame, not blended', () => {
+    expect(sampleFight(frames, 1.9 / 30, 30).hero.state).toBe('Idle');
+    expect(sampleFight(frames, 2 / 30, 30).hero.state).toBe('Windup');
+  });
+  it('lerpAngle takes the short way round across +-PI', () => {
+    const r = lerpAngle(Math.PI - 0.1, -Math.PI + 0.1, 0.5);
+    expect(Math.abs(Math.abs(r) - Math.PI)).toBeLessThan(1e-6);
+  });
+  it('is independent of display refresh rate (same t, same sample)', () => {
+    const a = sampleFight(frames, 0.017, 30);
+    const b = sampleFight(frames, 0.017, 30);
+    expect(a).toEqual(b);
+  });
+});
