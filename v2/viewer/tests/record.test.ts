@@ -45,3 +45,4 @@ describe('record mode', () => {
     await r.exportPng(5);
     const first = { ...out };
     await r.exportPng(5);
+    expect(out).toEqual(first);
