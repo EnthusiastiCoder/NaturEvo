@@ -39,3 +39,4 @@ describe('record mode', () => {
   });
   it('rendering frame N twice gives identical bytes (deterministic callback contract)', async () => {
     const calls: number[] = [];
+    const render = async (t: number, n: number) => { calls.push(n); return new Uint8Array([n & 255, Math.round(t * 1000) & 255]); };
