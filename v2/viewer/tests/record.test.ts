@@ -44,3 +44,4 @@ describe('record mode', () => {
     const r = new Recorder(render, (name, data) => { out[name] = data; });
     await r.exportPng(5);
     const first = { ...out };
+    await r.exportPng(5);
