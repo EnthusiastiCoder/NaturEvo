@@ -17,3 +17,4 @@ describe('record mode', () => {
     expect(isRecordMode('?record=0')).toBe(false);
   });
   it('default resolution 1920x1080 at 60 fps, options 720p and 4K', () => {
+    expect(RECORD_DEFAULT).toEqual({ w: 1920, h: 1080, fps: 60 });
