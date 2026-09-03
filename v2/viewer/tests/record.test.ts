@@ -41,3 +41,4 @@ describe('record mode', () => {
     const calls: number[] = [];
     const render = async (t: number, n: number) => { calls.push(n); return new Uint8Array([n & 255, Math.round(t * 1000) & 255]); };
     const out: Record<string, any> = {};
+    const r = new Recorder(render, (name, data) => { out[name] = data; });
