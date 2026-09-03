@@ -51,3 +51,4 @@ describe('record mode', () => {
     const names: string[] = [];
     const r = new Recorder(async () => new Uint8Array([1]), (n) => { names.push(n); });
     await r.exportPng(37);
+    expect(names.length).toBe(37);
