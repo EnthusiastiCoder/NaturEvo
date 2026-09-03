@@ -37,3 +37,4 @@ describe('record mode', () => {
     const t0 = Date.now(); while (Date.now() - t0 < 5) {}
     expect(frameTime(123)).toBe(a);
   });
+  it('rendering frame N twice gives identical bytes (deterministic callback contract)', async () => {
