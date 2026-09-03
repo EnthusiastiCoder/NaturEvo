@@ -14,3 +14,4 @@ describe('record mode', () => {
     expect(isRecordMode('?record=1')).toBe(true);
     expect(isRecordMode('?x=2&record=1')).toBe(true);
     expect(isRecordMode('')).toBe(false);
+    expect(isRecordMode('?record=0')).toBe(false);
