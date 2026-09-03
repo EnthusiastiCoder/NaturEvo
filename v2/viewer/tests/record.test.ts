@@ -34,3 +34,4 @@ describe('record mode', () => {
     expect(frameTime(90)).toBeCloseTo(1.5, 12);
     const a = frameTime(123);
     // burn real time, result unchanged
+    const t0 = Date.now(); while (Date.now() - t0 < 5) {}
