@@ -47,3 +47,4 @@ describe('record mode', () => {
     await r.exportPng(5);
     expect(out).toEqual(first);
   });
+  it('PNG export count equals frame count with sequential names', async () => {
