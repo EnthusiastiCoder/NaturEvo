@@ -21,3 +21,4 @@ describe('record mode', () => {
     expect(RECORD_SIZES).toContainEqual([1280, 720]);
     expect(RECORD_SIZES).toContainEqual([3840, 2160]);
   });
+  it('chrome is hidden in record mode and restored after', () => {
