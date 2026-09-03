@@ -26,3 +26,4 @@ describe('record mode', () => {
     applyRecordMode(root, true);
     expect(root.dataset.record).toBe('1');
     applyRecordMode(root, false);
+    expect(root.dataset.record).toBeUndefined();
