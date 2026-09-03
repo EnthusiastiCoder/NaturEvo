@@ -30,3 +30,4 @@ describe('record mode', () => {
   });
   it('frame N time is exactly N/60, independent of real time', () => {
     expect(frameTime(0)).toBe(0);
+    expect(frameTime(60)).toBe(1);
