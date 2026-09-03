@@ -6,3 +6,4 @@
 //                   async exportPng(frameCount:number): Promise<void> }  sink called once per frame, names frame_000000.png
 //  splitCaptions(a:{generation:number}, b:{generation:number}): [string,string]
 //  chromeHidden(doc): see app test below uses applyRecordMode(root, on) toggling data-record on root.
+import { describe, it, expect } from 'vitest';
