@@ -48,3 +48,4 @@ describe('record mode', () => {
     expect(out).toEqual(first);
   });
   it('PNG export count equals frame count with sequential names', async () => {
+    const names: string[] = [];
