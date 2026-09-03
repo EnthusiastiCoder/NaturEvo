@@ -13,3 +13,4 @@ describe('record mode', () => {
   it('?record=1 enables, other queries do not', () => {
     expect(isRecordMode('?record=1')).toBe(true);
     expect(isRecordMode('?x=2&record=1')).toBe(true);
+    expect(isRecordMode('')).toBe(false);
