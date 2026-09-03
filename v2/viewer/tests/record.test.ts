@@ -29,3 +29,4 @@ describe('record mode', () => {
     expect(root.dataset.record).toBeUndefined();
   });
   it('frame N time is exactly N/60, independent of real time', () => {
+    expect(frameTime(0)).toBe(0);
