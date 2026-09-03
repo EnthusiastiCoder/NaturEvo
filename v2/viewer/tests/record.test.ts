@@ -20,3 +20,4 @@ describe('record mode', () => {
     expect(RECORD_DEFAULT).toEqual({ w: 1920, h: 1080, fps: 60 });
     expect(RECORD_SIZES).toContainEqual([1280, 720]);
     expect(RECORD_SIZES).toContainEqual([3840, 2160]);
+  });
