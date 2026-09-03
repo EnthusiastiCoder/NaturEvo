@@ -54,3 +54,4 @@ describe('record mode', () => {
     expect(names.length).toBe(37);
     expect(names[0]).toBe('frame_000000.png');
     expect(names[36]).toBe('frame_000036.png');
+    expect(new Set(names).size).toBe(37);
