@@ -24,3 +24,4 @@ describe('record mode', () => {
   it('chrome is hidden in record mode and restored after', () => {
     const root = { dataset: {} as Record<string, string>, classList: { toggle() {} } } as any;
     applyRecordMode(root, true);
+    expect(root.dataset.record).toBe('1');
