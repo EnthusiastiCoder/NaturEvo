@@ -10,3 +10,4 @@ import { describe, it, expect } from 'vitest';
 import { isRecordMode, RECORD_DEFAULT, RECORD_SIZES, frameTime, Recorder, splitCaptions, applyRecordMode } from '../src/record';
 
 describe('record mode', () => {
+  it('?record=1 enables, other queries do not', () => {
