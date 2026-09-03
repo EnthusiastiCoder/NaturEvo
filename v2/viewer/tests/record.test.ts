@@ -22,3 +22,4 @@ describe('record mode', () => {
     expect(RECORD_SIZES).toContainEqual([3840, 2160]);
   });
   it('chrome is hidden in record mode and restored after', () => {
+    const root = { dataset: {} as Record<string, string>, classList: { toggle() {} } } as any;
