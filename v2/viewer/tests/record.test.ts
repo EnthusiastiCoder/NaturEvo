@@ -8,3 +8,5 @@
 //  chromeHidden(doc): see app test below uses applyRecordMode(root, on) toggling data-record on root.
 import { describe, it, expect } from 'vitest';
 import { isRecordMode, RECORD_DEFAULT, RECORD_SIZES, frameTime, Recorder, splitCaptions, applyRecordMode } from '../src/record';
+
+describe('record mode', () => {
