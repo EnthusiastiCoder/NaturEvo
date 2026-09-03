@@ -52,3 +52,4 @@ describe('record mode', () => {
     const r = new Recorder(async () => new Uint8Array([1]), (n) => { names.push(n); });
     await r.exportPng(37);
     expect(names.length).toBe(37);
+    expect(names[0]).toBe('frame_000000.png');
