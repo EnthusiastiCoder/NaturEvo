@@ -25,3 +25,4 @@ describe('record mode', () => {
     const root = { dataset: {} as Record<string, string>, classList: { toggle() {} } } as any;
     applyRecordMode(root, true);
     expect(root.dataset.record).toBe('1');
+    applyRecordMode(root, false);
