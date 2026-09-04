@@ -89,3 +89,30 @@ impl Arena {
     pub fn tiles(&self) -> &[bool] {
         &self.blocked
     }
+
+    pub fn reachable(&self, a: (f32, f32), b: (f32, f32)) -> bool {
+        if self.is_blocked(a.0, a.1) || self.is_blocked(b.0, b.1) {
+            return false;
+        }
+        let start = (a.0.floor() as i32, a.1.floor() as i32);
+        let goal = (b.0.floor() as i32, b.1.floor() as i32);
+        let mut seen = vec![false; self.w * self.h];
+        let mut stack = vec![start];
+        seen[start.1 as usize * self.w + start.0 as usize] = true;
+        while let Some((x, y)) = stack.pop() {
+            if (x, y) == goal {
+                return true;
+            }
+            for (nx, ny) in [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)] {
+                if !self.tile_blocked(nx, ny) {
+                    let i = ny as usize * self.w + nx as usize;
+                    if !seen[i] {
+                        seen[i] = true;
+                        stack.push((nx, ny));
+                    }
+                }
+            }
+        }
+        false
+    }
+}
