@@ -61,3 +61,11 @@ fn wrap_angle(a: f32) -> f32 {
     }
     a
 }
+
+fn clean(v: f32) -> f32 {
+    if v.is_finite() {
+        v.clamp(-1.0, 1.0)
+    } else {
+        0.0
+    }
+}
