@@ -149,3 +149,5 @@ impl Match {
     pub fn set_stamina(&mut self, r: Role, s: f32) {
         self.fighters[r.index()].stamina = s;
     }
+
+    // ---- simulation ----
