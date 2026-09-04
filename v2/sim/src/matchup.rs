@@ -69,3 +69,24 @@ fn clean(v: f32) -> f32 {
         0.0
     }
 }
+
+impl Match {
+    pub fn new(arena: Arena, hero: Genome, monster: Genome, seed: u64, cfg: &ArenaConfig) -> Match {
+        let s = arena.spawns();
+        let fighters = [
+            Fighter::new(s[0].0, s[0].1, 0.0, cfg.max_hp, cfg.max_stamina),
+            Fighter::new(s[1].0, s[1].1, PI, cfg.max_hp, cfg.max_stamina),
+        ];
+        Match {
+            cfg: cfg.clone(),
+            arena,
+            fighters,
+            nets: [Net::from_genome(&hero), Net::from_genome(&monster)],
+            tick: 0,
+            finished: false,
+            outcome: Outcome::Draw,
+            damage_dealt: [0.0; 2],
+            log: FightLog::new(cfg.tick_hz),
+            seed,
+        }
+    }
