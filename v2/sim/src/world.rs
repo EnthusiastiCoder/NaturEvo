@@ -81,3 +81,7 @@ impl Arena {
     pub fn spawns(&self) -> [(f32, f32); 2] {
         self.spawns
     }
+
+    pub fn size(&self) -> (usize, usize) {
+        (self.w, self.h)
+    }
