@@ -67,3 +67,16 @@ impl CombatState {
         }
     }
 }
+
+#[derive(Clone, Debug)]
+pub struct Fighter {
+    pub x: f32,
+    pub y: f32,
+    pub facing: f32,
+    pub hp: f32,
+    pub stamina: f32,
+    pub state: CombatState,
+    pub timer: u32,
+    pub dodge_cooldown: u32,
+    pub last_action: Action,
+}
