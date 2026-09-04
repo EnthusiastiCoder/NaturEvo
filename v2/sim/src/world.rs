@@ -85,3 +85,7 @@ impl Arena {
     pub fn size(&self) -> (usize, usize) {
         (self.w, self.h)
     }
+
+    pub fn tiles(&self) -> &[bool] {
+        &self.blocked
+    }
