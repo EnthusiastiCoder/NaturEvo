@@ -66,3 +66,4 @@ describe('record mode', () => {
     const [l, r] = splitCaptions({ generation: 0 }, { generation: 120 });
     expect(l).toContain('0');
     expect(r).toContain('120');
+    expect(l).not.toBe(r);
