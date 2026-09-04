@@ -56,3 +56,24 @@ impl Arena {
         }
         self.tile_blocked(x.floor() as i32, y.floor() as i32)
     }
+
+    /// Whether a circle of the given radius at (x, y) overlaps a blocked tile or the border.
+    pub fn circle_blocked(&self, x: f32, y: f32, r: f32) -> bool {
+        let x0 = (x - r).floor() as i32;
+        let x1 = (x + r).floor() as i32;
+        let y0 = (y - r).floor() as i32;
+        let y1 = (y + r).floor() as i32;
+        for ty in y0..=y1 {
+            for tx in x0..=x1 {
+                if self.tile_blocked(tx, ty) {
+                    let cx = x.clamp(tx as f32, tx as f32 + 1.0);
+                    let cy = y.clamp(ty as f32, ty as f32 + 1.0);
+                    let (dx, dy) = (x - cx, y - cy);
+                    if dx * dx + dy * dy < r * r {
+                        return true;
+                    }
+                }
+            }
+        }
+        false
+    }
