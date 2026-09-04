@@ -36,3 +36,9 @@ pub struct Action {
     pub block: bool,
     pub dodge: bool,
 }
+
+impl Action {
+    pub fn idle() -> Action {
+        Action { fwd: 0.0, strafe: 0.0, turn: 0.0, attack: false, block: false, dodge: false }
+    }
+}
