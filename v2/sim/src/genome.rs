@@ -30,3 +30,9 @@ impl Genome {
             w.join(",")
         )
     }
+
+    /// WS4 stub.
+    pub fn from_json(_s: &str) -> Result<Genome, String> {
+        Err("Genome::from_json not implemented (WS4)".to_string())
+    }
+}
