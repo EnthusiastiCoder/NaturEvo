@@ -139,3 +139,9 @@ impl Match {
         self.fighters[1].y = cy;
         self.fighters[1].facing = PI;
     }
+
+    pub fn face_away(&mut self, r: Role) {
+        let o = self.fighters[r.other().index()].clone();
+        let f = &mut self.fighters[r.index()];
+        f.facing = wrap_angle((o.y - f.y).atan2(o.x - f.x) + PI);
+    }
