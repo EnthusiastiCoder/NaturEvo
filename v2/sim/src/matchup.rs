@@ -346,3 +346,21 @@ impl Match {
             }
         }
     }
+
+    fn can_stand(&self, i: usize, x: f32, y: f32) -> bool {
+        let r = self.cfg.fighter_radius;
+        if self.arena.circle_blocked(x, y, r) {
+            return false;
+        }
+        let o = &self.fighters[1 - i];
+        if o.state != CombatState::Dead {
+            let me = &self.fighters[i];
+            let new_d2 = (x - o.x).powi(2) + (y - o.y).powi(2);
+            let old_d2 = (me.x - o.x).powi(2) + (me.y - o.y).powi(2);
+            if new_d2 < 4.0 * r * r && new_d2 < old_d2 {
+                return false;
+            }
+        }
+        true
+    }
+}
