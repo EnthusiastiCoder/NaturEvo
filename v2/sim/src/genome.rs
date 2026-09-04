@@ -13,3 +13,9 @@ pub struct Genome {
 }
 
 pub const N_WEIGHTS: usize = N_IN * N_OUT + N_OUT;
+
+impl Genome {
+    pub fn random(role: Role, rng: &mut Rng) -> Genome {
+        let weights = (0..N_WEIGHTS).map(|_| rng.range(-1.0, 1.0)).collect();
+        Genome { role, weights, generation: 0, fitness: 0.0 }
+    }
