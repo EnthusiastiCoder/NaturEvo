@@ -57,3 +57,4 @@ describe('record mode', () => {
     expect(new Set(names).size).toBe(37);
   });
   it('steps frames at fixed 1/60 s: render times are n/60', async () => {
+    const ts: number[] = [];
