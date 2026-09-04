@@ -54,3 +54,23 @@ describe('no scroll', () => {
     });
   }
 });
+
+describe('accessibility', () => {
+  it('every icon-only button has an aria-label', () => {
+    const buttons = html().match(/<button\b[^>]*>[\s\S]*?<\/button>/g) ?? [];
+    expect(buttons.length).toBeGreaterThan(0);
+    for (const b of buttons) {
+      const textOnly = b.replace(/<svg[\s\S]*?<\/svg>/g, '').replace(/<[^>]+>/g, '').trim();
+      if (b.includes('<svg') && textOnly === '') expect(b, b).toMatch(/aria-label="[^"]+"/);
+    }
+  });
+  it('has a theme toggle and info buttons with tooltips', () => {
+    const h = html();
+    expect(h).toMatch(/id="theme-toggle"/);
+    expect(h).toMatch(/title="[^"]+"|data-tooltip="[^"]+"/);
+  });
+  it('uses inline SVG icons, no icon fonts', () => {
+    expect(html()).toContain('<svg');
+    expect(html()).not.toMatch(/font-?awesome|material-icons/i);
+  });
+});
