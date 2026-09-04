@@ -15,3 +15,22 @@ pub struct ArenaConfig {
     pub max_stamina: f32,
     pub max_hp: f32,
 }
+
+impl Default for ArenaConfig {
+    fn default() -> Self {
+        ArenaConfig {
+            tick_hz: 30,
+            arena_w: 48.0,
+            arena_h: 32.0,
+            fighter_radius: 0.4,
+            max_speed: 4.0,
+            max_turn: 6.0,
+            max_ticks: 1800,
+            n_rays: 9,
+            vision_fov: 2.094,
+            vision_range: 12.0,
+            max_stamina: 100.0,
+            max_hp: 100.0,
+        }
+    }
+}
