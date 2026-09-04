@@ -364,3 +364,19 @@ impl Match {
         true
     }
 }
+
+/// Play a full match with the nets and return the result and log.
+pub fn play(arena: Arena, hero: Genome, monster: Genome, seed: u64, cfg: &ArenaConfig) -> MatchResult {
+    let mut m = Match::new(arena, hero, monster, seed, cfg);
+    while !m.finished() {
+        m.step();
+    }
+    MatchResult {
+        outcome: m.outcome,
+        ticks: m.tick,
+        hero_hp: m.fighters[0].hp,
+        monster_hp: m.fighters[1].hp,
+        damage_dealt: m.damage_dealt,
+        log: m.log,
+    }
+}
