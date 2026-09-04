@@ -11,3 +11,5 @@ pub struct Genome {
     pub generation: u32,
     pub fitness: f32,
 }
+
+pub const N_WEIGHTS: usize = N_IN * N_OUT + N_OUT;
