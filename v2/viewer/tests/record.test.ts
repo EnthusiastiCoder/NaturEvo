@@ -58,3 +58,4 @@ describe('record mode', () => {
   });
   it('steps frames at fixed 1/60 s: render times are n/60', async () => {
     const ts: number[] = [];
+    const r = new Recorder(async (t) => { ts.push(t); return new Uint8Array(1); }, () => {});
