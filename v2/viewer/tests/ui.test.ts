@@ -6,3 +6,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { DEFAULT_ACCENT, nextTheme, applyTheme, setAccent } from '../src/theme';
 import { fitStage } from '../src/layout';
+
+const root = resolve(__dirname, '..');
+const html = () => readFileSync(resolve(root, 'index.html'), 'utf8');
+const css = () => readFileSync(resolve(root, 'src/style.css'), 'utf8');
