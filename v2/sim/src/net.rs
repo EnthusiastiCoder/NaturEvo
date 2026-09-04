@@ -14,3 +14,5 @@ impl Net {
     pub fn from_genome(g: &Genome) -> Net {
         Net { w: g.weights.clone() }
     }
+
+    pub fn reset(&mut self) {}
