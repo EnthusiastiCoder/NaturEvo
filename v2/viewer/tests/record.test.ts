@@ -62,3 +62,4 @@ describe('record mode', () => {
     await r.exportPng(4);
     expect(ts).toEqual([0, 1 / 60, 2 / 60, 3 / 60]);
   });
+  it('split-screen shows two captions with generations', () => {
