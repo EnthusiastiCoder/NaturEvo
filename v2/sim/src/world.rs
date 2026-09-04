@@ -49,3 +49,10 @@ impl Arena {
         }
         self.blocked[ty as usize * self.w + tx as usize]
     }
+
+    pub fn is_blocked(&self, x: f32, y: f32) -> bool {
+        if !(x >= 0.0 && y >= 0.0) {
+            return true;
+        }
+        self.tile_blocked(x.floor() as i32, y.floor() as i32)
+    }
