@@ -90,3 +90,38 @@ impl Match {
             seed,
         }
     }
+
+    pub fn cfg(&self) -> &ArenaConfig {
+        &self.cfg
+    }
+    pub fn arena(&self) -> &Arena {
+        &self.arena
+    }
+    pub fn fighter(&self, r: Role) -> &Fighter {
+        &self.fighters[r.index()]
+    }
+    pub fn tick(&self) -> u32 {
+        self.tick
+    }
+    pub fn finished(&self) -> bool {
+        self.finished
+    }
+    pub fn outcome(&self) -> Outcome {
+        self.outcome
+    }
+    pub fn hp(&self, r: Role) -> f32 {
+        self.fighters[r.index()].hp
+    }
+    pub fn stamina(&self, r: Role) -> f32 {
+        self.fighters[r.index()].stamina
+    }
+    pub fn pos(&self, r: Role) -> (f32, f32) {
+        let f = &self.fighters[r.index()];
+        (f.x, f.y)
+    }
+    pub fn damage_dealt(&self) -> [f32; 2] {
+        self.damage_dealt
+    }
+    pub fn log(&self) -> &FightLog {
+        &self.log
+    }
