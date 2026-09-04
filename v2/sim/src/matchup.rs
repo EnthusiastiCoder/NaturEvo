@@ -127,3 +127,15 @@ impl Match {
     }
 
     // ---- test hooks ----
+
+    /// Face each other, `dist` apart, on open ground in the arena centre.
+    pub fn place_for_duel(&mut self, dist: f32) {
+        let cx = self.cfg.arena_w / 2.0;
+        let cy = self.cfg.arena_h / 2.0 + 0.5;
+        self.fighters[0].x = cx - dist / 2.0;
+        self.fighters[0].y = cy;
+        self.fighters[0].facing = 0.0;
+        self.fighters[1].x = cx + dist / 2.0;
+        self.fighters[1].y = cy;
+        self.fighters[1].facing = PI;
+    }
