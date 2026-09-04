@@ -61,3 +61,4 @@ describe('record mode', () => {
     const r = new Recorder(async (t) => { ts.push(t); return new Uint8Array(1); }, () => {});
     await r.exportPng(4);
     expect(ts).toEqual([0, 1 / 60, 2 / 60, 3 / 60]);
+  });
