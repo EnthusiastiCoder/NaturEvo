@@ -145,3 +145,7 @@ impl Match {
         let f = &mut self.fighters[r.index()];
         f.facing = wrap_angle((o.y - f.y).atan2(o.x - f.x) + PI);
     }
+
+    pub fn set_stamina(&mut self, r: Role, s: f32) {
+        self.fighters[r.index()].stamina = s;
+    }
