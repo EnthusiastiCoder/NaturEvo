@@ -163,3 +163,153 @@ impl Match {
         let am = self.nets[1].forward(&om);
         self.step_with(ah, am);
     }
+
+    /// Advance one tick with scripted actions (bypasses the nets).
+    pub fn step_with(&mut self, hero: Action, monster: Action) {
+        if self.finished {
+            return;
+        }
+        let mut acts = [hero, monster];
+        for a in acts.iter_mut() {
+            a.fwd = clean(a.fwd);
+            a.strafe = clean(a.strafe);
+            a.turn = clean(a.turn);
+        }
+        // 1. advance timers; swings that become active this tick land a hit
+        let mut hit = [false; 2];
+        for i in 0..2 {
+            let f = &mut self.fighters[i];
+            if f.dodge_cooldown > 0 {
+                f.dodge_cooldown -= 1;
+            }
+            match f.state {
+                CombatState::Windup => {
+                    f.timer -= 1;
+                    if f.timer == 0 {
+                        f.state = CombatState::Active;
+                        f.timer = ACTIVE_TICKS;
+                        hit[i] = true;
+                    }
+                }
+                CombatState::Active => {
+                    f.timer -= 1;
+                    if f.timer == 0 {
+                        f.state = CombatState::Recovery;
+                        f.timer = RECOVERY_TICKS;
+                    }
+                }
+                CombatState::Recovery => {
+                    f.timer -= 1;
+                    if f.timer == 0 {
+                        f.state = CombatState::Idle;
+                    }
+                }
+                CombatState::Dodging => {
+                    f.timer -= 1;
+                    if f.timer == 0 {
+                        f.state = CombatState::Idle;
+                    }
+                }
+                _ => {}
+            }
+        }
+        // 2. decisions
+        for i in 0..2 {
+            let a = acts[i];
+            let f = &mut self.fighters[i];
+            if matches!(f.state, CombatState::Idle | CombatState::Blocking) {
+                if a.dodge && f.dodge_cooldown == 0 && f.stamina >= DODGE_STAMINA_COST {
+                    f.state = CombatState::Dodging;
+                    f.timer = DODGE_TICKS;
+                    f.stamina -= DODGE_STAMINA_COST;
+                    f.dodge_cooldown = DODGE_COOLDOWN;
+                } else if a.attack {
+                    f.state = CombatState::Windup;
+                    f.timer = WINDUP_TICKS;
+                } else if a.block {
+                    f.state = CombatState::Blocking;
+                } else {
+                    f.state = CombatState::Idle;
+                }
+            }
+            f.last_action = a;
+        }
+        // 3. movement
+        for i in 0..2 {
+            self.move_fighter(i, acts[i]);
+        }
+        // 4. hits (resolved against pre-hit states, so trades are simultaneous)
+        let mut dmg = [0.0f32; 2];
+        let mut stam_cost = [0.0f32; 2];
+        for i in 0..2 {
+            if !hit[i] {
+                continue;
+            }
+            let j = 1 - i;
+            let (a, t) = (&self.fighters[i], &self.fighters[j]);
+            if t.state == CombatState::Dead || t.state == CombatState::Dodging {
+                continue;
+            }
+            let (dx, dy) = (t.x - a.x, t.y - a.y);
+            if (dx * dx + dy * dy).sqrt() > ATTACK_RANGE {
+                continue;
+            }
+            if wrap_angle(dy.atan2(dx) - a.facing).abs() > ATTACK_HALF_ARC {
+                continue;
+            }
+            let mut d = DAMAGE;
+            if t.state == CombatState::Blocking && t.stamina > 0.0 {
+                let to_att = (-dy).atan2(-dx);
+                if wrap_angle(to_att - t.facing).abs() <= BLOCK_HALF_ARC {
+                    d *= 1.0 - BLOCK_REDUCTION;
+                    stam_cost[j] += BLOCK_STAMINA_COST;
+                }
+            }
+            dmg[j] += d;
+        }
+        for j in 0..2 {
+            let f = &mut self.fighters[j];
+            if stam_cost[j] > 0.0 {
+                f.stamina = (f.stamina - stam_cost[j]).max(0.0);
+            }
+            if dmg[j] > 0.0 {
+                let loss = dmg[j].min(f.hp);
+                f.hp -= loss;
+                self.damage_dealt[1 - j] += loss;
+                if f.hp <= 0.0 {
+                    f.hp = 0.0;
+                    f.state = CombatState::Dead;
+                }
+            }
+        }
+        // 5. stamina regen while idle
+        let regen = STAMINA_REGEN_PER_SEC / self.cfg.tick_hz as f32;
+        for f in self.fighters.iter_mut() {
+            if f.state == CombatState::Idle {
+                f.stamina = (f.stamina + regen).min(self.cfg.max_stamina);
+            }
+        }
+        // 6. bookkeeping
+        self.tick += 1;
+        self.log.frames.push(Frame {
+            pos: [(self.fighters[0].x, self.fighters[0].y), (self.fighters[1].x, self.fighters[1].y)],
+            facing: [self.fighters[0].facing, self.fighters[1].facing],
+            hp: [self.fighters[0].hp, self.fighters[1].hp],
+            stamina: [self.fighters[0].stamina, self.fighters[1].stamina],
+            action: [self.fighters[0].last_action, self.fighters[1].last_action],
+            state: [self.fighters[0].state, self.fighters[1].state],
+        });
+        let hero_dead = self.fighters[0].state == CombatState::Dead;
+        let mon_dead = self.fighters[1].state == CombatState::Dead;
+        if hero_dead || mon_dead {
+            self.finished = true;
+            self.outcome = match (hero_dead, mon_dead) {
+                (false, true) => Outcome::HeroWin,
+                (true, false) => Outcome::MonsterWin,
+                _ => Outcome::Draw,
+            };
+        } else if self.tick >= self.cfg.max_ticks {
+            self.finished = true;
+            self.outcome = Outcome::Draw;
+        }
+    }
