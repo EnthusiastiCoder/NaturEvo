@@ -26,3 +26,13 @@ impl Role {
         }
     }
 }
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Action {
+    pub fwd: f32,
+    pub strafe: f32,
+    pub turn: f32,
+    pub attack: bool,
+    pub block: bool,
+    pub dodge: bool,
+}
