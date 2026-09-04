@@ -53,3 +53,17 @@ pub enum CombatState {
     Dodging,
     Dead,
 }
+
+impl CombatState {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            CombatState::Idle => "Idle",
+            CombatState::Windup => "Windup",
+            CombatState::Active => "Active",
+            CombatState::Recovery => "Recovery",
+            CombatState::Blocking => "Blocking",
+            CombatState::Dodging => "Dodging",
+            CombatState::Dead => "Dead",
+        }
+    }
+}
