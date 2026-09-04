@@ -151,3 +151,15 @@ impl Match {
     }
 
     // ---- simulation ----
+
+    /// Advance one tick using the nets.
+    pub fn step(&mut self) {
+        if self.finished {
+            return;
+        }
+        let oh = observe(self, Role::Hero);
+        let om = observe(self, Role::Monster);
+        let ah = self.nets[0].forward(&oh);
+        let am = self.nets[1].forward(&om);
+        self.step_with(ah, am);
+    }
