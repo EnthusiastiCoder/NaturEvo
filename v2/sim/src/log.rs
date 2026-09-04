@@ -11,3 +11,9 @@ pub struct Frame {
     pub action: [Action; 2],
     pub state: [CombatState; 2],
 }
+
+#[derive(Clone, Debug)]
+pub struct FightLog {
+    pub tick_hz: u32,
+    pub frames: Vec<Frame>,
+}
