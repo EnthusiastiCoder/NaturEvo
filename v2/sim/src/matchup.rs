@@ -53,3 +53,11 @@ pub struct Match {
     #[allow(dead_code)]
     seed: u64,
 }
+
+fn wrap_angle(a: f32) -> f32 {
+    let mut a = (a + PI).rem_euclid(2.0 * PI) - PI;
+    if a <= -PI {
+        a += 2.0 * PI;
+    }
+    a
+}
