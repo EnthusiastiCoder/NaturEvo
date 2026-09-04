@@ -19,3 +19,14 @@ impl Genome {
         let weights = (0..N_WEIGHTS).map(|_| rng.range(-1.0, 1.0)).collect();
         Genome { role, weights, generation: 0, fitness: 0.0 }
     }
+
+    pub fn to_json(&self) -> String {
+        let w: Vec<String> = self.weights.iter().map(|v| format!("{}", v)).collect();
+        format!(
+            "{{\"role\":\"{}\",\"generation\":{},\"fitness\":{},\"weights\":[{}]}}",
+            self.role.as_str(),
+            self.generation,
+            self.fitness,
+            w.join(",")
+        )
+    }
