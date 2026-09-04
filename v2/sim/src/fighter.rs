@@ -80,3 +80,19 @@ pub struct Fighter {
     pub dodge_cooldown: u32,
     pub last_action: Action,
 }
+
+impl Fighter {
+    pub fn new(x: f32, y: f32, facing: f32, hp: f32, stamina: f32) -> Fighter {
+        Fighter {
+            x,
+            y,
+            facing,
+            hp,
+            stamina,
+            state: CombatState::Idle,
+            timer: 0,
+            dodge_cooldown: 0,
+            last_action: Action::idle(),
+        }
+    }
+}
