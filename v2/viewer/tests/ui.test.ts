@@ -38,3 +38,19 @@ describe('theme', () => {
     expect(html().match(/<link[^>]+stylesheet/g)?.length ?? 0).toBeLessThanOrEqual(1);
   });
 });
+
+describe('no scroll', () => {
+  it('page cannot scroll: body overflow hidden and viewport height units', () => {
+    const c = css();
+    expect(c).toMatch(/overflow\s*:\s*hidden/);
+    expect(c).toMatch(/100(d|s)?vh|100%/);
+  });
+  for (const [w, h] of [[1282, 642], [1920, 1080]] as const) {
+    it(`stage fits ${w}x${h} without exceeding the window`, () => {
+      const s = fitStage(w, h, 1536, 1024);
+      expect(s.w).toBeLessThanOrEqual(w);
+      expect(s.h).toBeLessThanOrEqual(h);
+      expect(s.scale).toBeGreaterThan(0);
+    });
+  }
+});
