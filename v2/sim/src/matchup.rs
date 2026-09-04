@@ -28,3 +28,13 @@ pub enum Outcome {
     MonsterWin,
     Draw,
 }
+
+#[derive(Clone, Debug)]
+pub struct MatchResult {
+    pub outcome: Outcome,
+    pub ticks: u32,
+    pub hero_hp: f32,
+    pub monster_hp: f32,
+    pub damage_dealt: [f32; 2],
+    pub log: FightLog,
+}
