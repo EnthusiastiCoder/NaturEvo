@@ -1,0 +1,4 @@
+//! Policy network (WS2 minimal single linear layer; WS4 owns the real design).
+use crate::fighter::Action;
+use crate::genome::Genome;
+use crate::sense::N_IN;
