@@ -77,3 +77,7 @@ impl Arena {
         }
         false
     }
+
+    pub fn spawns(&self) -> [(f32, f32); 2] {
+        self.spawns
+    }
