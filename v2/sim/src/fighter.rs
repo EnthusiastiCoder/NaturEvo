@@ -5,3 +5,24 @@ pub enum Role {
     Hero,
     Monster,
 }
+
+impl Role {
+    pub fn index(self) -> usize {
+        match self {
+            Role::Hero => 0,
+            Role::Monster => 1,
+        }
+    }
+    pub fn other(self) -> Role {
+        match self {
+            Role::Hero => Role::Monster,
+            Role::Monster => Role::Hero,
+        }
+    }
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Role::Hero => "hero",
+            Role::Monster => "monster",
+        }
+    }
+}
