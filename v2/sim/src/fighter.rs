@@ -42,3 +42,14 @@ impl Action {
         Action { fwd: 0.0, strafe: 0.0, turn: 0.0, attack: false, block: false, dodge: false }
     }
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum CombatState {
+    Idle,
+    Windup,
+    Active,
+    Recovery,
+    Blocking,
+    Dodging,
+    Dead,
+}
