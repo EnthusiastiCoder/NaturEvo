@@ -69,3 +69,4 @@ describe('record mode', () => {
     expect(l).not.toBe(r);
     expect(l.toLowerCase()).toContain('gen');
     expect(r.toLowerCase()).toContain('gen');
+  });
