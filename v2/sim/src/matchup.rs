@@ -125,3 +125,5 @@ impl Match {
     pub fn log(&self) -> &FightLog {
         &self.log
     }
+
+    // ---- test hooks ----
