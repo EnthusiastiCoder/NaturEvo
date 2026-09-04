@@ -38,3 +38,18 @@ pub struct MatchResult {
     pub damage_dealt: [f32; 2],
     pub log: FightLog,
 }
+
+#[derive(Clone, Debug)]
+pub struct Match {
+    cfg: ArenaConfig,
+    arena: Arena,
+    fighters: [Fighter; 2],
+    nets: [Net; 2],
+    tick: u32,
+    finished: bool,
+    outcome: Outcome,
+    damage_dealt: [f32; 2],
+    log: FightLog,
+    #[allow(dead_code)]
+    seed: u64,
+}
