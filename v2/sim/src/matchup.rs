@@ -313,3 +313,36 @@ impl Match {
             self.outcome = Outcome::Draw;
         }
     }
+
+    fn move_fighter(&mut self, i: usize, a: Action) {
+        let state = self.fighters[i].state;
+        if state == CombatState::Dead {
+            return;
+        }
+        let hz = self.cfg.tick_hz as f32;
+        let f = &mut self.fighters[i];
+        f.facing = wrap_angle(f.facing + a.turn * self.cfg.max_turn / hz);
+        let factor = match state {
+            CombatState::Windup | CombatState::Active | CombatState::Recovery => 0.3,
+            CombatState::Blocking => 0.5,
+            CombatState::Dodging => 1.5,
+            _ => 1.0,
+        };
+        let len = (a.fwd * a.fwd + a.strafe * a.strafe).sqrt();
+        if len <= 0.0 {
+            return;
+        }
+        let scale = if len > 1.0 { 1.0 / len } else { 1.0 };
+        let step = self.cfg.max_speed / hz * factor * scale;
+        let (sin, cos) = f.facing.sin_cos();
+        let dx = (cos * a.fwd - sin * a.strafe) * step;
+        let dy = (sin * a.fwd + cos * a.strafe) * step;
+        let (x, y) = (f.x, f.y);
+        for (mx, my) in [(dx, dy), (dx, 0.0), (0.0, dy)] {
+            if (mx != 0.0 || my != 0.0) && self.can_stand(i, x + mx, y + my) {
+                self.fighters[i].x = x + mx;
+                self.fighters[i].y = y + my;
+                return;
+            }
+        }
+    }
