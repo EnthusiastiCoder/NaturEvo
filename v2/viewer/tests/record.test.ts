@@ -64,3 +64,4 @@ describe('record mode', () => {
   });
   it('split-screen shows two captions with generations', () => {
     const [l, r] = splitCaptions({ generation: 0 }, { generation: 120 });
+    expect(l).toContain('0');
