@@ -56,3 +56,4 @@ describe('record mode', () => {
     expect(names[36]).toBe('frame_000036.png');
     expect(new Set(names).size).toBe(37);
   });
+  it('steps frames at fixed 1/60 s: render times are n/60', async () => {
