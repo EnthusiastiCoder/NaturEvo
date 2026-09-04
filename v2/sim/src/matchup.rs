@@ -21,3 +21,10 @@ pub const DODGE_STAMINA_COST: f32 = 30.0;
 pub const DODGE_TICKS: u32 = 8;
 pub const DODGE_COOLDOWN: u32 = 45;
 pub const STAMINA_REGEN_PER_SEC: f32 = 12.0;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Outcome {
+    HeroWin,
+    MonsterWin,
+    Draw,
+}
