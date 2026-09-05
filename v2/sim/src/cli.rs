@@ -11,3 +11,8 @@ fn opt<'a>(args: &'a [String], name: &str) -> Option<&'a str> {
 fn need<'a>(args: &'a [String], name: &str) -> Result<&'a str, String> {
     opt(args, name).ok_or_else(|| format!("missing {}", name))
 }
+
+fn load(path: &str) -> Result<Genome, String> {
+    let s = std::fs::read_to_string(path).map_err(|e| format!("{}: {}", path, e))?;
+    Genome::from_json(&s)
+}
