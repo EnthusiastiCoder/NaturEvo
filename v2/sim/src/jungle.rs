@@ -49,3 +49,18 @@ const GRASS_SHARE: f64 = 0.35;
 const OBSTACLE_SHARE: f64 = 0.095;
 const CAMP_RING: usize = 2;
 const GROVE_RING: usize = 4;
+
+/// Obstacle kinds allowed per zone (first kind is the default for pocket fills).
+const PALETTE: [&[Tile]; 9] = [
+    &[Tile::Fence],
+    &[Tile::Tree, Tile::Rock],
+    &[Tile::Tree, Tile::Rock],
+    &[Tile::Water, Tile::Rock],
+    &[Tile::Water, Tile::Tree],
+    &[Tile::Wall, Tile::Rock],
+    &[Tile::Rock, Tile::Wall],
+    &[Tile::Wall, Tile::Fence],
+    &[Tile::Fence, Tile::Tree],
+];
+/// Kind-noise below this picks the first palette kind.
+const FIRST_KIND: [f32; 9] = [1.0, 0.56, 0.56, 0.5, 0.5, 0.5, 0.56, 0.5, 0.4];
