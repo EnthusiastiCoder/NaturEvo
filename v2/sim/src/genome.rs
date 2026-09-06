@@ -31,8 +31,44 @@ impl Genome {
         )
     }
 
-    /// WS4 stub.
-    pub fn from_json(_s: &str) -> Result<Genome, String> {
-        Err("Genome::from_json not implemented (WS4)".to_string())
+    pub fn from_json(s: &str) -> Result<Genome, String> {
+        let s = s.trim();
+        if !s.starts_with('{') || !s.ends_with('}') {
+            return Err("not a JSON object".into());
+        }
+        let role = match field(s, "role")?.trim_matches('"') {
+            "hero" => Role::Hero,
+            "monster" => Role::Monster,
+            r => return Err(format!("bad role {r}")),
+        };
+        let generation = field(s, "generation")?.parse::<u32>().map_err(|e| e.to_string())?;
+        let fitness = field(s, "fitness")?.parse::<f32>().map_err(|e| e.to_string())?;
+        let w = field(s, "weights")?;
+        let inner = w.strip_prefix('[').and_then(|x| x.strip_suffix(']')).ok_or("bad weights")?;
+        let weights = if inner.trim().is_empty() {
+            Vec::new()
+        } else {
+            inner
+                .split(',')
+                .map(|v| v.trim().parse::<f32>().map_err(|e| e.to_string()))
+                .collect::<Result<Vec<_>, _>>()?
+        };
+        if weights.iter().any(|w| !w.is_finite()) {
+            return Err("non-finite weight".into());
+        }
+        Ok(Genome { role, weights, generation, fitness })
     }
+}
+
+/// Raw value text of a top-level key (flat object, array values contain no nesting).
+fn field<'a>(s: &'a str, key: &str) -> Result<&'a str, String> {
+    let pat = format!("\"{key}\":");
+    let start = s.find(&pat).ok_or_else(|| format!("missing {key}"))? + pat.len();
+    let rest = s[start..].trim_start();
+    let end = if rest.starts_with('[') {
+        rest.find(']').ok_or("unterminated array")? + 1
+    } else {
+        rest.find(|c| c == ',' || c == '}').unwrap_or(rest.len())
+    };
+    Ok(rest[..end].trim())
 }
