@@ -11,7 +11,8 @@ pub struct Genome {
     pub fitness: f32,
 }
 
-pub const N_WEIGHTS: usize = N_IN * N_OUT + N_OUT;
+pub const N_WEIGHTS: usize = N_PARAMS;
+pub const W_CLAMP: f32 = 8.0;
 
 impl Genome {
     pub fn random(role: Role, rng: &mut Rng) -> Genome {
