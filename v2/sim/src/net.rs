@@ -45,9 +45,9 @@ impl Net {
         self.h = nh;
         let mut out = [0.0f32; N_OUT];
         for (o, slot) in out.iter_mut().enumerate() {
-            let mut s = self.w[N_IN * N_OUT + o];
-            for (i, xi) in x.iter().enumerate() {
-                s += self.w[o * N_IN + i] * xi;
+            let mut s = w[b2 + o];
+            for (j, hj) in nh.iter().enumerate() {
+                s += w[w2 + o * N_HID + j] * hj;
             }
             *slot = s.tanh();
         }
