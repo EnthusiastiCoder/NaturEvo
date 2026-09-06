@@ -78,3 +78,26 @@ fn kind_of(zone: usize, v: f32) -> Tile {
 pub fn scaled_min(base: usize, n: usize) -> usize {
     (base * n / 64).max(6)
 }
+
+/// Smooth value noise: a coarse random lattice, smoothstep-interpolated.
+fn noise_field(rng: &mut Rng, n: usize, cell: usize) -> Vec<f32> {
+    let g = n / cell + 2;
+    let lat: Vec<f32> = (0..g * g).map(|_| rng.f()).collect();
+    let mut out = Vec::with_capacity(n * n);
+    for y in 0..n {
+        for x in 0..n {
+            let (fx, fy) = (x as f32 / cell as f32, y as f32 / cell as f32);
+            let (x0, y0) = (fx as usize, fy as usize);
+            let (tx, ty) = (fx - x0 as f32, fy - y0 as f32);
+            let (sx, sy) = (tx * tx * (3.0 - 2.0 * tx), ty * ty * (3.0 - 2.0 * ty));
+            let a = lat[y0 * g + x0];
+            let b = lat[y0 * g + x0 + 1];
+            let c = lat[(y0 + 1) * g + x0];
+            let d = lat[(y0 + 1) * g + x0 + 1];
+            let top = a + (b - a) * sx;
+            let bot = c + (d - c) * sx;
+            out.push(top + (bot - top) * sy);
+        }
+    }
+    out
+}
