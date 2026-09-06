@@ -158,3 +158,18 @@ impl Map {
         cells.sort_by_key(|&a| (d2(a, camp), a.1, a.0));
         let mut anchors = vec![camp];
         anchors.extend(cells);
+
+        // zones: nearest anchor (squared euclid, ties to the lower zone index)
+        let mut zones = vec![0u8; n * n];
+        for y in 0..n {
+            for x in 0..n {
+                let mut best = (i64::MAX, 0usize);
+                for (z, &a) in anchors.iter().enumerate() {
+                    let d = d2((x, y), a);
+                    if d < best.0 {
+                        best = (d, z);
+                    }
+                }
+                zones[y * n + x] = best.1 as u8;
+            }
+        }
