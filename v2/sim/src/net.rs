@@ -26,6 +26,23 @@ impl Net {
     }
 
     pub fn forward(&mut self, x: &[f32; N_IN]) -> Action {
+        let w = &self.w;
+        let r_off = N_HID * N_IN;
+        let b1 = r_off + N_HID * N_HID;
+        let w2 = b1 + N_HID;
+        let b2 = w2 + N_OUT * N_HID;
+        let mut nh = [0.0f32; N_HID];
+        for (j, slot) in nh.iter_mut().enumerate() {
+            let mut s = w[b1 + j];
+            for (i, xi) in x.iter().enumerate() {
+                s += w[j * N_IN + i] * xi;
+            }
+            for (k, hk) in self.h.iter().enumerate() {
+                s += w[r_off + j * N_HID + k] * hk;
+            }
+            *slot = s.tanh();
+        }
+        self.h = nh;
         let mut out = [0.0f32; N_OUT];
         for (o, slot) in out.iter_mut().enumerate() {
             let mut s = self.w[N_IN * N_OUT + o];
