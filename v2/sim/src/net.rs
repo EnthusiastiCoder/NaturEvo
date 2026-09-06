@@ -1,4 +1,5 @@
-//! Policy network (WS2 minimal single linear layer; WS4 owns the real design).
+//! Policy network: N_IN -> H (tanh, recurrent) -> N_OUT (tanh).
+//! Weight layout: W1[H*N_IN], R[H*H], b1[H], W2[N_OUT*H], b2[N_OUT].
 use crate::fighter::Action;
 use crate::genome::Genome;
 use crate::sense::N_IN;
