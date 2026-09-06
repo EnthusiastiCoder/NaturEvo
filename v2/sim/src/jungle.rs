@@ -15,3 +15,9 @@ pub enum Tile {
     Tree,
     Water,
 }
+
+impl Tile {
+    pub fn is_blocking(self) -> bool {
+        matches!(self, Tile::Wall | Tile::Rock | Tile::Fence | Tile::Tree | Tile::Water)
+    }
+}
