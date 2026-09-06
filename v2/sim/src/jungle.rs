@@ -118,3 +118,43 @@ fn top_share(noise: &[f32], eligible: &[bool], share: f64, groups: Option<&[u8]>
     }
     out
 }
+
+impl Map {
+    pub fn generate(seed: u64, size: usize) -> Map {
+        let n = size.max(8);
+        let mut rng = Rng::new(seed ^ MAP_SALT);
+        // anchors: camp in the corner, 8 zones on a jittered 3x3 grid, ordered by distance from camp
+        let camp = (2usize, 2usize);
+        let cell = n as f32 / 3.0;
+        let jit = (n as f32 / 10.0) as i32;
+        let mut cells: Vec<(usize, usize)> = Vec::new();
+        let min_gap = scaled_min(14, n);
+        let manh = |a: (usize, usize), b: (usize, usize)| a.0.abs_diff(b.0) + a.1.abs_diff(b.1);
+        for cy in 0..3usize {
+            for cx in 0..3usize {
+                if (cx, cy) == (0, 0) {
+                    continue;
+                }
+                // retry the jitter, narrowing it, until the anchor keeps its distance from the others
+                let mut pick = (0usize, 0usize);
+                for attempt in 0..40i32 {
+                    let j = if attempt >= 39 { 0 } else { jit * (40 - attempt) / 40 };
+                    let jx = rng.range(-j, j);
+                    let jy = rng.range(-j, j);
+                    let x = ((cx as f32 + 0.5) * cell) as i32 + jx;
+                    let y = ((cy as f32 + 0.5) * cell) as i32 + jy;
+                    pick = (x.clamp(3, n as i32 - 4) as usize, y.clamp(3, n as i32 - 4) as usize);
+                    if manh(pick, camp) >= min_gap && cells.iter().all(|&c| manh(c, pick) >= min_gap) {
+                        break;
+                    }
+                }
+                cells.push(pick);
+            }
+        }
+        let d2 = |a: (usize, usize), b: (usize, usize)| {
+            let (dx, dy) = (a.0 as i64 - b.0 as i64, a.1 as i64 - b.1 as i64);
+            dx * dx + dy * dy
+        };
+        cells.sort_by_key(|&a| (d2(a, camp), a.1, a.0));
+        let mut anchors = vec![camp];
+        anchors.extend(cells);
