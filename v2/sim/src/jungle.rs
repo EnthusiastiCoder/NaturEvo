@@ -35,3 +35,11 @@ impl Rng {
         lo + (self.0.next_u64() % ((hi - lo + 1) as u64)) as i32
     }
 }
+
+#[derive(Clone, Debug)]
+pub struct Map {
+    n: usize,
+    tiles: Vec<Tile>,
+    zones: Vec<u8>,
+    anchors: Vec<(usize, usize)>,
+}
