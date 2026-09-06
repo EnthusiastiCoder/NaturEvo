@@ -43,3 +43,9 @@ pub struct Map {
     zones: Vec<u8>,
     anchors: Vec<(usize, usize)>,
 }
+
+const MAP_SALT: u64 = 0x4D41_505F_5345_4544;
+const GRASS_SHARE: f64 = 0.35;
+const OBSTACLE_SHARE: f64 = 0.095;
+const CAMP_RING: usize = 2;
+const GROVE_RING: usize = 4;
