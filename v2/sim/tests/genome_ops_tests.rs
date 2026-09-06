@@ -25,3 +25,17 @@ fn mutate_deterministic_and_changes() {
     c.mutate(&mut Rng::new(9), 1.0, 1e9);
     assert!(c.weights.iter().all(|w| w.is_finite() && w.abs() <= 8.0));
 }
+
+#[test]
+fn crossover_from_parents_only() {
+    let (a, b) = (g(1), g(2));
+    let c = Genome::crossover(&a, &b, &mut Rng::new(3));
+    let d = Genome::crossover(&a, &b, &mut Rng::new(3));
+    assert_eq!(c.weights, d.weights);
+    assert_eq!(c.role, a.role);
+    assert!(c.generation >= 1);
+    for i in 0..c.weights.len() {
+        assert!(c.weights[i] == a.weights[i] || c.weights[i] == b.weights[i]);
+    }
+    assert!(c.weights != a.weights && c.weights != b.weights);
+}
