@@ -16,7 +16,7 @@ pub const W_CLAMP: f32 = 8.0;
 
 impl Genome {
     pub fn random(role: Role, rng: &mut Rng) -> Genome {
-        let weights = (0..N_WEIGHTS).map(|_| rng.range(-1.0, 1.0)).collect();
+        let weights = (0..N_WEIGHTS).map(|_| rng.range(-0.5, 0.5)).collect();
         Genome { role, weights, generation: 0, fitness: 0.0 }
     }
 
