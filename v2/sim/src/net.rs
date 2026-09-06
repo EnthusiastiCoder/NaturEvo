@@ -5,6 +5,8 @@ use crate::genome::Genome;
 use crate::sense::N_IN;
 
 pub const N_OUT: usize = 7;
+pub const N_HID: usize = 16;
+pub const N_PARAMS: usize = N_HID * N_IN + N_HID * N_HID + N_HID + N_OUT * N_HID + N_OUT;
 
 #[derive(Clone, Debug)]
 pub struct Net {
