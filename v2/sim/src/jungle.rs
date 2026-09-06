@@ -252,3 +252,7 @@ impl Map {
         m.tiles[camp.1 * n + camp.0] = Tile::Camp;
         m
     }
+
+    fn near(&self, x: usize, y: usize) -> bool {
+        self.anchors.iter().any(|&a| a.0.abs_diff(x) <= 2 && a.1.abs_diff(y) <= 2)
+    }
