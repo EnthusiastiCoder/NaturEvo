@@ -20,6 +20,30 @@ impl Genome {
         Genome { role, weights, generation: 0, fitness: 0.0 }
     }
 
+    /// Gaussian-ish (sum of uniforms) perturbation of each weight with probability `rate`.
+    pub fn mutate(&mut self, rng: &mut Rng, rate: f32, sigma: f32) {
+        for w in self.weights.iter_mut() {
+            if rng.f32() < rate {
+                let n = rng.f32() + rng.f32() + rng.f32() + rng.f32() - 2.0;
+                *w = (*w + n * 1.7320508 * sigma).clamp(-W_CLAMP, W_CLAMP);
+            }
+        }
+    }
+
+    /// Uniform crossover; child takes a's role and generation = max + 1.
+    pub fn crossover(a: &Genome, b: &Genome, rng: &mut Rng) -> Genome {
+        let n = a.weights.len().min(b.weights.len());
+        let weights = (0..n)
+            .map(|i| if rng.f32() < 0.5 { a.weights[i] } else { b.weights[i] })
+            .collect();
+        Genome {
+            role: a.role,
+            weights,
+            generation: a.generation.max(b.generation) + 1,
+            fitness: 0.0,
+        }
+    }
+
     pub fn to_json(&self) -> String {
         let w: Vec<String> = self.weights.iter().map(|v| format!("{}", v)).collect();
         format!(
