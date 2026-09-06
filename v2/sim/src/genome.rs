@@ -2,7 +2,6 @@
 use crate::fighter::Role;
 use crate::net::N_PARAMS;
 use crate::rng::Rng;
-use crate::sense::N_IN;
 
 #[derive(Clone, Debug)]
 pub struct Genome {
