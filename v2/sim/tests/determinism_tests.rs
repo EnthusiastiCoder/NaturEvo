@@ -16,7 +16,7 @@ fn run(seed: u64) -> (String, u32) {
 
 #[test]
 fn same_seed_gives_byte_identical_log() {
-    for seed in [1u64, 2, 99] {
+    for seed in 1u64..=100 {
         assert_eq!(run(seed), run(seed));
     }
 }
