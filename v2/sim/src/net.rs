@@ -16,7 +16,9 @@ pub struct Net {
 
 impl Net {
     pub fn from_genome(g: &Genome) -> Net {
-        Net { w: g.weights.clone() }
+        let mut w = g.weights.clone();
+        w.resize(N_PARAMS, 0.0);
+        Net { w, h: [0.0; N_HID] }
     }
 
     pub fn reset(&mut self) {}
