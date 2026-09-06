@@ -39,3 +39,14 @@ fn crossover_from_parents_only() {
     }
     assert!(c.weights != a.weights && c.weights != b.weights);
 }
+
+#[test]
+fn hidden_layer_influences_output() {
+    let base = g(4);
+    let x = [0.4f32; N_IN];
+    let mut z = base.clone();
+    let tail = z.weights.len() - 7 - 7 * 16; // start of W2
+    for w in z.weights[tail..tail + 7 * 16].iter_mut() { *w = 0.0; }
+    let (a, b) = (Net::from_genome(&base).forward(&x), Net::from_genome(&z).forward(&x));
+    assert!(a.fwd != b.fwd || a.turn != b.turn);
+}
