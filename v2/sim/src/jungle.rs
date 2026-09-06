@@ -73,3 +73,8 @@ fn kind_of(zone: usize, v: f32) -> Tile {
         pal[1]
     }
 }
+
+/// A spacing minimum defined for a 64-wide map, scaled to `n` (never below 6).
+pub fn scaled_min(base: usize, n: usize) -> usize {
+    (base * n / 64).max(6)
+}
