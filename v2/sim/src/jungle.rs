@@ -208,3 +208,47 @@ impl Map {
         let gate = [(g, 0), (-g, 0), (0, g), (0, -g)][gate_side as usize];
         ring(anchors[8], GROVE_RING, gate, 8, &mut tiles);
         tiles[camp.1 * n + camp.0] = Tile::Camp;
+
+        let mut m = Map { n, tiles, zones, anchors };
+        // reachability: carve an L corridor to any cut-off anchor, then fill unreachable open pockets
+        for _ in 0..16 {
+            let seen = m.flood();
+            let Some(z) = (1..9).find(|&z| {
+                let a = m.anchors[z];
+                !seen[a.1 * n + a.0]
+            }) else {
+                break;
+            };
+            let (a, b) = (m.anchors[z], m.anchors[z - 1]);
+            let (mut x, mut y) = a;
+            m.tiles[y * n + x] = Tile::Floor;
+            while (x, y) != b {
+                if x != b.0 {
+                    x = if x < b.0 { x + 1 } else { x - 1 };
+                } else {
+                    y = if y < b.1 { y + 1 } else { y - 1 };
+                }
+                if m.tiles[y * n + x].is_blocking() {
+                    m.tiles[y * n + x] = Tile::Floor;
+                }
+            }
+        }
+        let seen = m.flood();
+        for i in 0..n * n {
+            if !seen[i] && !m.tiles[i].is_blocking() {
+                m.tiles[i] = kind_of(m.zones[i] as usize, kind_noise[i]);
+            }
+        }
+        // grass on open tiles (never in camp or grove)
+        let elig_grass: Vec<bool> = (0..n * n)
+            .map(|i| !m.tiles[i].is_blocking() && m.zones[i] != 0 && m.zones[i] != 8 && !m.near(i % n, i / n))
+            .collect();
+        let grass = top_share(&grass_noise, &elig_grass, GRASS_SHARE, Some(&m.zones), 45);
+        for i in 0..n * n {
+            if grass[i] {
+                m.tiles[i] = Tile::Grass;
+            }
+        }
+        m.tiles[camp.1 * n + camp.0] = Tile::Camp;
+        m
+    }
