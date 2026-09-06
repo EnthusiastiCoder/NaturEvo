@@ -50,3 +50,9 @@ fn hidden_layer_influences_output() {
     let (a, b) = (Net::from_genome(&base).forward(&x), Net::from_genome(&z).forward(&x));
     assert!(a.fwd != b.fwd || a.turn != b.turn);
 }
+
+#[test]
+fn json_roundtrip_new_size() {
+    let a = g(6);
+    assert_eq!(Genome::from_json(&a.to_json()).unwrap().weights, a.weights);
+}
