@@ -11,6 +11,7 @@ pub const N_PARAMS: usize = N_HID * N_IN + N_HID * N_HID + N_HID + N_OUT * N_HID
 #[derive(Clone, Debug)]
 pub struct Net {
     w: Vec<f32>,
+    h: [f32; N_HID],
 }
 
 impl Net {
