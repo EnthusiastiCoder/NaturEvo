@@ -21,7 +21,9 @@ impl Net {
         Net { w, h: [0.0; N_HID] }
     }
 
-    pub fn reset(&mut self) {}
+    pub fn reset(&mut self) {
+        self.h = [0.0; N_HID];
+    }
 
     pub fn forward(&mut self, x: &[f32; N_IN]) -> Action {
         let mut out = [0.0f32; N_OUT];
