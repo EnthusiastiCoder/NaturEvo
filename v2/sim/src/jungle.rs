@@ -64,3 +64,12 @@ const PALETTE: [&[Tile]; 9] = [
 ];
 /// Kind-noise below this picks the first palette kind.
 const FIRST_KIND: [f32; 9] = [1.0, 0.56, 0.56, 0.5, 0.5, 0.5, 0.56, 0.5, 0.4];
+
+fn kind_of(zone: usize, v: f32) -> Tile {
+    let pal = PALETTE[zone];
+    if pal.len() == 1 || v < FIRST_KIND[zone] {
+        pal[0]
+    } else {
+        pal[1]
+    }
+}
