@@ -36,3 +36,21 @@ fn fuzz_random_and_extreme_actions_never_panic() {
         }
     }
 }
+
+#[test]
+fn thousand_random_policy_matches_under_two_seconds_in_release() {
+    let cfg = ArenaConfig::default();
+    let t = std::time::Instant::now();
+    for seed in 0..1000u64 {
+        let mut r = Rng::new(seed);
+        let h = Genome::random(Role::Hero, &mut r);
+        let m = Genome::random(Role::Monster, &mut r);
+        let res = play(Arena::generate(seed % 16, &cfg), h, m, seed, &cfg);
+        assert!(res.ticks <= cfg.max_ticks);
+    }
+    let el = t.elapsed().as_secs_f64();
+    eprintln!("1000 matches: {el:.3}s");
+    if !cfg!(debug_assertions) {
+        assert!(el < 2.0, "took {el}s");
+    }
+}
