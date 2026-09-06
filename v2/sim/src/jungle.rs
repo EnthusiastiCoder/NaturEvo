@@ -173,3 +173,38 @@ impl Map {
                 zones[y * n + x] = best.1 as u8;
             }
         }
+
+        // obstacles (never near an anchor), kind by biome palette
+        let near_anchor = |x: usize, y: usize| anchors.iter().any(|&a| a.0.abs_diff(x) <= 2 && a.1.abs_diff(y) <= 2);
+        let obst_noise = noise_field(&mut rng, n, 4);
+        let grass_noise = noise_field(&mut rng, n, 5);
+        let kind_noise = noise_field(&mut rng, n, 6);
+        let gate_side = rng.range(0, 3);
+        let elig_obst: Vec<bool> = (0..n * n).map(|i| zones[i] != 0 && !near_anchor(i % n, i / n)).collect();
+        let blocked = top_share(&obst_noise, &elig_obst, OBSTACLE_SHARE, Some(&zones), 0);
+        let mut tiles: Vec<Tile> =
+            (0..n * n).map(|i| if blocked[i] { kind_of(zones[i] as usize, kind_noise[i]) } else { Tile::Floor }).collect();
+        // fence rings with a one-tile gate: the camp (gate east) and the grove around the boss
+        let ring = |centre: (usize, usize), r: usize, gate: (i32, i32), zone: u8, tiles: &mut Vec<Tile>| {
+            let (cx, cy) = (centre.0 as i32, centre.1 as i32);
+            for dy in -(r as i32)..=r as i32 {
+                for dx in -(r as i32)..=r as i32 {
+                    if dx.abs().max(dy.abs()) != r as i32 || (dx, dy) == gate {
+                        continue;
+                    }
+                    let (x, y) = (cx + dx, cy + dy);
+                    if x < 0 || y < 0 || x >= n as i32 || y >= n as i32 {
+                        continue;
+                    }
+                    let (x, y) = (x as usize, y as usize);
+                    if zones[y * n + x] == zone && !anchors.contains(&(x, y)) {
+                        tiles[y * n + x] = Tile::Fence;
+                    }
+                }
+            }
+        };
+        ring(camp, CAMP_RING, (CAMP_RING as i32, 0), 0, &mut tiles);
+        let g = GROVE_RING as i32;
+        let gate = [(g, 0), (-g, 0), (0, g), (0, -g)][gate_side as usize];
+        ring(anchors[8], GROVE_RING, gate, 8, &mut tiles);
+        tiles[camp.1 * n + camp.0] = Tile::Camp;
