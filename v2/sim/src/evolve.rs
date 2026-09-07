@@ -383,3 +383,68 @@ impl Trainer {
             }
             fits[ri] = f;
         }
+
+        // Champions and win rates (champion vs HoF sample, and vs a fixed random baseline).
+        let pop_best = [
+            fits[0].iter().cloned().fold(f32::MIN, f32::max),
+            fits[1].iter().cloned().fold(f32::MIN, f32::max),
+        ];
+        let mut champs = self.champs.clone();
+        for ri in 0..2 {
+            // Re-rank the top few on fresh opponents so the champion is not just a lucky draw.
+            let role = if ri == 0 { Role::Hero } else { Role::Monster };
+            let oi = 1 - ri;
+            let mut order: Vec<usize> = (0..fits[ri].len()).collect();
+            order.sort_by(|a, b| fits[ri][*b].partial_cmp(&fits[ri][*a]).unwrap_or(std::cmp::Ordering::Equal).then(a.cmp(b)));
+            let cands: Vec<usize> = order.into_iter().take(3).collect();
+            let mut opps: Vec<(Genome, u64)> = (0..6).map(|_| (Genome::random(role.other(), &mut rng), rng.next_u64())).collect();
+            for _ in 0..2 {
+                if !self.hof[oi].is_empty() {
+                    let j = (rng.next_u64() % self.hof[oi].len() as u64) as usize;
+                    opps.push((self.hof[oi][j].clone(), rng.next_u64()));
+                }
+            }
+            let (pops_ref, cfg_ref, opps_ref, cands_ref) = (&self.pops[ri], &cfg, &opps, &cands);
+            let sc: Vec<f32> = par_map(cands.len(), |c| {
+                opps_ref.iter().map(|(o, s)| score_match(role, &pops_ref[cands_ref[c]], o, *s, cfg_ref, None).fitness).sum::<f32>()
+            });
+            let mut bi = 0;
+            for (i, v) in sc.iter().enumerate() {
+                if *v > sc[bi] {
+                    bi = i;
+                }
+            }
+            best[ri] = cands[bi];
+            let mut c = self.pops[ri][best[ri]].clone();
+            c.generation = gen;
+            c.fitness = fits[ri][best[ri]];
+            champs[ri] = c;
+        }
+        let mut wr_hof = [0.0f32; 2];
+        let mut wr_rnd = [0.0f32; 2];
+        for ri in 0..2 {
+            let role = if ri == 0 { Role::Hero } else { Role::Monster };
+            let oi = 1 - ri;
+            let opp_role = role.other();
+            let mut opps: Vec<(Genome, u64)> = Vec::new();
+            if self.hof[oi].is_empty() {
+                let mut rr = Rng::new(self.cfg.seed ^ 0xF00D);
+                for _ in 0..BASELINE_N {
+                    opps.push((Genome::random(opp_role, &mut rr), rr.next_u64()));
+                }
+            } else {
+                for _ in 0..BASELINE_N {
+                    let j = (rng.next_u64() % self.hof[oi].len() as u64) as usize;
+                    opps.push((self.hof[oi][j].clone(), rng.next_u64()));
+                }
+            }
+            let champ = &champs[ri];
+            let cfg_ref = &cfg;
+            let w: Vec<bool> = par_map(opps.len(), |i| score_match(role, champ, &opps[i].0, opps[i].1, cfg_ref, None).win);
+            wr_hof[ri] = w.iter().filter(|x| **x).count() as f32 / w.len() as f32;
+            // Fixed baseline: identical random opponents every generation.
+            let mut rr = Rng::new(0xBA5E ^ ri as u64);
+            let base: Vec<(Genome, u64)> = (0..BASELINE_N).map(|_| (Genome::random(opp_role, &mut rr), rr.next_u64())).collect();
+            let w: Vec<bool> = par_map(base.len(), |i| score_match(role, champ, &base[i].0, base[i].1, cfg_ref, None).win);
+            wr_rnd[ri] = w.iter().filter(|x| **x).count() as f32 / w.len() as f32;
+        }
