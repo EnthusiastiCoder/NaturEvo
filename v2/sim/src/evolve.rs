@@ -225,3 +225,28 @@ fn path_field(arena: &Arena, w: usize, h: usize, from: (f32, f32)) -> Vec<u16> {
     }
     d
 }
+
+/// Warm start: walk forward, steer toward a seen enemy; level 2 also swings when in range.
+fn prime(g: &mut Genome, level: u32) {
+    use crate::net::{N_HID, N_OUT};
+    use crate::sense::N_IN;
+    let w = &mut g.weights;
+    let b1 = N_HID * N_IN + N_HID * N_HID;
+    let w2 = b1 + N_HID;
+    let b2 = w2 + N_OUT * N_HID;
+    for x in w.iter_mut() {
+        *x *= 0.3;
+    }
+    for i in 0..N_OUT {
+        w[b2 + i] = 0.0;
+    }
+    w[b1] = 3.0;
+    w[1 * N_IN + 12] = 4.0;
+    w[2 * N_IN + 38] = 4.0;
+    w[w2] = 1.5;
+    w[w2 + 2 * N_HID + 1] = 1.2;
+    if level >= 2 {
+        w[w2 + 3 * N_HID] = -1.0;
+        w[w2 + 3 * N_HID + 2] = 2.5;
+    }
+}
