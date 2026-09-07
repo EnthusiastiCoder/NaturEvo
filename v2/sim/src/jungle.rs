@@ -256,3 +256,10 @@ impl Map {
     fn near(&self, x: usize, y: usize) -> bool {
         self.anchors.iter().any(|&a| a.0.abs_diff(x) <= 2 && a.1.abs_diff(y) <= 2)
     }
+
+    /// A copy of the map with one tile replaced.
+    pub fn with_tile(&self, x: usize, y: usize, t: Tile) -> Map {
+        let mut m = Map { n: self.n, tiles: self.tiles.clone(), zones: self.zones.clone(), anchors: self.anchors.clone() };
+        m.tiles[y * self.n + x] = t;
+        m
+    }
