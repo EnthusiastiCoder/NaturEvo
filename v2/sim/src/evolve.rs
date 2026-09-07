@@ -105,3 +105,7 @@ impl GenStats {
         })
     }
 }
+
+const HOF_CAP: usize = 64;
+const ELITES: usize = 2;
+const BASELINE_N: usize = 10;
