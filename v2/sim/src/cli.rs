@@ -28,7 +28,8 @@ pub fn run(args: &[String]) -> Result<(), String> {
             let res = play(Arena::generate(seed, &cfg), hero, monster, seed, &cfg);
             std::fs::write(out, res.log.to_json()).map_err(|e| format!("{}: {}", out, e))
         }
-        Some("train") | Some("campaign") => Err(format!("{} not implemented yet", args[0])),
+        Some("train") => crate::evolve::train_cli(args),
+        Some("campaign") => Err(format!("{} not implemented yet", args[0])),
         Some(other) => Err(format!("unknown command: {}", other)),
         None => Err("usage: arena-sim <train|fight|campaign> [options]".to_string()),
     }
