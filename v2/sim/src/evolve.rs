@@ -499,3 +499,25 @@ impl Trainer {
             self.pops[ri] = next;
         }
     }
+
+    pub fn checkpoint(&self) -> String {
+        let c = &self.cfg;
+        let mut s = String::from("arena-checkpoint-v1\n");
+        let _ = writeln!(s, "cfg {} {} {} {} {}", c.seed, c.generations, c.pop, c.k_opponents, c.hof_sample);
+        let _ = writeln!(s, "stats {}", self.stats.len());
+        for st in &self.stats {
+            let _ = writeln!(s, "{}", st.to_nums());
+        }
+        for g in &self.champs {
+            let _ = writeln!(s, "champ {}", g.to_json());
+        }
+        for (name, sets) in [("pop", &self.pops), ("hof", &self.hof)] {
+            for ri in 0..2 {
+                let _ = writeln!(s, "{} {} {}", name, ri, sets[ri].len());
+                for g in &sets[ri] {
+                    let _ = writeln!(s, "{}", g.to_json());
+                }
+            }
+        }
+        s
+    }
