@@ -575,3 +575,10 @@ impl Trainer {
         Ok(Trainer { cfg, arena_cfg: ArenaConfig::default(), pops, hof, champs: [c0, c1], stats })
     }
 }
+
+fn num<T: std::str::FromStr>(args: &[String], name: &str, default: T) -> Result<T, String> {
+    match args.iter().position(|a| a == name).and_then(|i| args.get(i + 1)) {
+        Some(v) => v.parse().map_err(|_| format!("bad {}", name)),
+        None => Ok(default),
+    }
+}
