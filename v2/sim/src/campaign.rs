@@ -96,3 +96,10 @@ pub struct CampaignResult {
     pub outcome: Outcome,
     ends: u32,
 }
+
+impl CampaignResult {
+    /// Number of run-end events recorded (exactly one for a finished run).
+    pub fn end_count(&self) -> u32 {
+        self.ends
+    }
+}
