@@ -42,3 +42,10 @@ impl Default for MapCfg {
         MapCfg { size: 40, grass_chance: 0.2, max_encounters: 12 }
     }
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum EncounterKind {
+    Grass,
+    Elite,
+    Boss,
+}
