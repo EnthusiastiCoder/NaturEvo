@@ -109,3 +109,12 @@ impl GenStats {
 const HOF_CAP: usize = 64;
 const ELITES: usize = 2;
 const BASELINE_N: usize = 10;
+
+/// Per-match outcome for the evaluated role.
+#[derive(Clone, Copy, Debug)]
+struct MatchScore {
+    fitness: f32,
+    win: bool,
+    ticks: u32,
+    freq: [f32; 3],
+}
