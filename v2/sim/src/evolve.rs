@@ -521,3 +521,57 @@ impl Trainer {
         }
         s
     }
+
+    pub fn resume(text: &str) -> Result<Trainer, String> {
+        let mut it = text.lines();
+        let mut next = || it.next().ok_or_else(|| "truncated checkpoint".to_string());
+        if next()? != "arena-checkpoint-v1" {
+            return Err("not a checkpoint".into());
+        }
+        let line = next()?;
+        let p: Vec<&str> = line.split_whitespace().collect();
+        if p.len() != 6 || p[0] != "cfg" {
+            return Err("bad cfg line".into());
+        }
+        let bad = |_| "bad cfg value".to_string();
+        let cfg = TrainConfig {
+            seed: p[1].parse().map_err(bad)?,
+            generations: p[2].parse().map_err(bad)?,
+            pop: p[3].parse().map_err(bad)?,
+            k_opponents: p[4].parse().map_err(bad)?,
+            hof_sample: p[5].parse().map_err(bad)?,
+        };
+        let line = next()?;
+        let n: usize = line.strip_prefix("stats ").ok_or("bad stats header")?.trim().parse().map_err(|_| "bad stats count")?;
+        let mut stats = Vec::new();
+        for _ in 0..n {
+            stats.push(GenStats::from_nums(next()?)?);
+        }
+        let mut champs = Vec::new();
+        for _ in 0..2 {
+            let l = next()?;
+            champs.push(Genome::from_json(l.strip_prefix("champ ").ok_or("bad champ line")?)?);
+        }
+        let mut sets: Vec<[Vec<Genome>; 2]> = Vec::new();
+        for name in ["pop", "hof"] {
+            let mut both: [Vec<Genome>; 2] = [Vec::new(), Vec::new()];
+            for ri in 0..2 {
+                let l = next()?;
+                let pre = format!("{} {} ", name, ri);
+                let cnt: usize = l.strip_prefix(&pre).ok_or("bad set header")?.trim().parse().map_err(|_| "bad set count")?;
+                for _ in 0..cnt {
+                    both[ri].push(Genome::from_json(next()?)?);
+                }
+            }
+            sets.push(both);
+        }
+        let hof = sets.pop().unwrap();
+        let pops = sets.pop().unwrap();
+        if pops[0].is_empty() || pops[1].is_empty() {
+            return Err("empty population".into());
+        }
+        let c1 = champs.pop().unwrap();
+        let c0 = champs.pop().unwrap();
+        Ok(Trainer { cfg, arena_cfg: ArenaConfig::default(), pops, hof, champs: [c0, c1], stats })
+    }
+}
