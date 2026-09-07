@@ -302,3 +302,14 @@ impl Trainer {
     pub fn hall_of_fame(&self, role: Role) -> &[Genome] {
         &self.hof[role.index()]
     }
+
+    /// Evaluate both populations, record stats and champions, then breed the next generation.
+    pub fn run_generation(&mut self) {
+        let gen = self.stats.len() as u32;
+        let cfg = self.arena_cfg.clone();
+        let mut rng = gen_rng(self.cfg.seed, gen, 0xE1);
+        let mut best = [0usize; 2];
+        let mut fits: [Vec<f32>; 2] = [Vec::new(), Vec::new()];
+        let mut mean = [0.0f32; 2];
+        let mut freq = [ActionFreq::default(); 2];
+        let (mut tick_sum, mut tick_n) = (0.0f64, 0usize);
