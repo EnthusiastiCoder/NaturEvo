@@ -24,3 +24,14 @@ pub struct ActionFreq {
     pub block: f32,
     pub dodge: f32,
 }
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct GenStats {
+    pub gen: u32,
+    pub best_fitness: [f32; 2],
+    pub mean_fitness: [f32; 2],
+    pub win_rate_vs_hof: [f32; 2],
+    pub win_rate_vs_random: [f32; 2],
+    pub action_freq: [ActionFreq; 2],
+    pub avg_ticks: f32,
+}
