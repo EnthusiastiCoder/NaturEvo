@@ -138,3 +138,63 @@ fn par_map<T: Send, F: Fn(usize) -> T + Sync>(n: usize, f: F) -> Vec<T> {
     });
     out.into_iter().map(|x| x.unwrap()).collect()
 }
+
+fn score_match(role: Role, me: &Genome, opp: &Genome, seed: u64, cfg: &ArenaConfig, near: Option<f32>) -> MatchScore {
+    let (h, m) = if role == Role::Hero { (me.clone(), opp.clone()) } else { (opp.clone(), me.clone()) };
+    // `near` starts the duel at close range (curriculum: combat skills get learned before navigation).
+    let mut mt = Match::new(Arena::generate(seed, cfg), h, m, seed, cfg);
+    if let Some(d) = near {
+        mt.place_for_duel(d);
+    }
+    while !mt.finished() {
+        mt.step();
+    }
+    let res = MatchResult {
+        outcome: mt.outcome(),
+        ticks: mt.tick(),
+        hero_hp: mt.hp(Role::Hero),
+        monster_hp: mt.hp(Role::Monster),
+        damage_dealt: mt.damage_dealt(),
+        log: mt.log().clone(),
+    };
+    let arena = mt.arena().clone();
+    let ri = role.index();
+    let dealt = res.damage_dealt[ri] / cfg.max_hp;
+    let taken = res.damage_dealt[1 - ri] / cfg.max_hp;
+    let win = matches!((res.outcome, role), (Outcome::HeroWin, Role::Hero) | (Outcome::MonsterWin, Role::Monster));
+    let mut fitness = 4.0 * dealt - 1.0 * taken;
+    if win {
+        fitness += 1.0 + 0.5 * (1.0 - res.ticks as f32 / cfg.max_ticks as f32);
+        let own = if role == Role::Hero { res.hero_hp } else { res.monster_hp };
+        fitness += 5.0 * own / cfg.max_hp;
+    }
+    let n = res.log.frames.len().max(1) as f32;
+    let mut c = [0.0f32; 3];
+    let mut shape = 0.0f32;
+    let (aw, ah) = arena.size();
+    let mut field: Vec<u16> = Vec::new();
+    for (fi, f) in res.log.frames.iter().enumerate() {
+        let (me, op) = (f.pos[ri], f.pos[1 - ri]);
+        let (dx, dy) = (op.0 - me.0, op.1 - me.1);
+        if fi % 10 == 0 {
+            field = path_field(&arena, aw, ah, op);
+        }
+        let (tx, ty) = ((me.0.floor().max(0.0) as usize).min(aw - 1), (me.1.floor().max(0.0) as usize).min(ah - 1));
+        let pd = field[ty * aw + tx];
+        let eu = (dx * dx + dy * dy).sqrt();
+        // Walking distance gives a gradient around obstacles; fall back to straight-line if unreachable.
+        let dist = if pd == u16::MAX { eu * 1.5 } else { (pd as f32).max(eu) };
+        let close = 0.5 / (1.0 + dist / 3.0) + 0.5 * (1.0 - dist / 40.0).max(0.0);
+        let align = (dy.atan2(dx) - f.facing[ri]).cos().max(0.0);
+        shape += close * (0.5 + 0.5 * align);
+        if f.action[ri].attack {
+            shape += 1.5 * close * close * align;
+        }
+        let a = &f.action[ri];
+        c[0] += a.attack as u8 as f32;
+        c[1] += a.block as u8 as f32;
+        c[2] += a.dodge as u8 as f32;
+    }
+    fitness += 0.5 * shape / n;
+    MatchScore { fitness, win, ticks: res.ticks, freq: [c[0] / n, c[1] / n, c[2] / n] }
+}
