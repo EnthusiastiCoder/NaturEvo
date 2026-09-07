@@ -62,3 +62,15 @@ pub struct TierStats {
     pub hp: f32,
     pub damage: f32,
 }
+
+/// Monster strength by zone tier (0 to 3). Recorded per encounter; duels themselves use
+/// the shared arena rules so every log stays replayable from its seeds.
+pub fn tier_stats(tier: u32, boss: bool) -> TierStats {
+    let t = tier as f32;
+    let (hp, damage) = (100.0 * (1.0 + 0.25 * t), 12.0 * (1.0 + 0.15 * t));
+    if boss {
+        TierStats { hp: hp * 1.5, damage: damage * 1.2 }
+    } else {
+        TierStats { hp, damage }
+    }
+}
