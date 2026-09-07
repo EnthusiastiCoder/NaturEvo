@@ -64,3 +64,13 @@ impl GenStats {
     pub fn csv_header() -> &'static str {
         "gen,avg_ticks,best_hero,best_monster,mean_hero,mean_monster,hof_wr_hero,hof_wr_monster,rnd_wr_hero,rnd_wr_monster,hero_attack,hero_block,hero_dodge,monster_attack,monster_block,monster_dodge"
     }
+
+    pub fn to_csv(&self) -> String {
+        let a = &self.action_freq;
+        format!(
+            "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}",
+            self.gen, self.avg_ticks, self.best_fitness[0], self.best_fitness[1], self.mean_fitness[0], self.mean_fitness[1],
+            self.win_rate_vs_hof[0], self.win_rate_vs_hof[1], self.win_rate_vs_random[0], self.win_rate_vs_random[1],
+            a[0].attack, a[0].block, a[0].dodge, a[1].attack, a[1].block, a[1].dodge
+        )
+    }
