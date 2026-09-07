@@ -36,3 +36,9 @@ pub struct MapCfg {
     pub grass_chance: f32,
     pub max_encounters: usize,
 }
+
+impl Default for MapCfg {
+    fn default() -> Self {
+        MapCfg { size: 40, grass_chance: 0.2, max_encounters: 12 }
+    }
+}
