@@ -7,3 +7,9 @@ use crate::rng::Rng;
 use crate::world::Arena;
 
 const CAMPAIGN_SALT: u64 = 0x4341_4D50_4149_474E;
+
+/// A set of genomes to draw fighters from.
+#[derive(Clone, Debug)]
+pub struct Library {
+    genomes: Vec<Genome>,
+}
