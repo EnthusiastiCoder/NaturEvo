@@ -388,3 +388,66 @@ fn ch(t: Tile) -> char {
         Tile::Water => 'W',
     }
 }
+
+/// Signed-coordinate API used by the campaign and tests.
+impl Map {
+    pub fn camp(&self) -> (i32, i32) {
+        (self.anchors[0].0 as i32, self.anchors[0].1 as i32)
+    }
+    pub fn boss(&self) -> (i32, i32) {
+        (self.anchors[8].0 as i32, self.anchors[8].1 as i32)
+    }
+    pub fn is_blocked(&self, p: (i32, i32)) -> bool {
+        p.0 < 0 || p.1 < 0 || !self.passable(p.0 as usize, p.1 as usize)
+    }
+    pub fn tile_at(&self, p: (i32, i32)) -> Option<Tile> {
+        if p.0 < 0 || p.1 < 0 || p.0 as usize >= self.n || p.1 as usize >= self.n {
+            None
+        } else {
+            Some(self.tile(p.0 as usize, p.1 as usize))
+        }
+    }
+    /// Path including `a` and `b` (4-connected A*); None if either end is blocked or unreachable.
+    pub fn astar(&self, a: (i32, i32), b: (i32, i32)) -> Option<Vec<(i32, i32)>> {
+        if self.is_blocked(a) || self.is_blocked(b) {
+            return None;
+        }
+        let rest = self.path((a.0 as usize, a.1 as usize), (b.0 as usize, b.1 as usize))?;
+        let mut out = vec![a];
+        out.extend(rest.into_iter().map(|p| (p.0 as i32, p.1 as i32)));
+        Some(out)
+    }
+    /// Zone tier 0 (camp) to 3 (boss grove): (zone + 2) / 3.
+    pub fn zone_tier(&self, p: (i32, i32)) -> u32 {
+        if p.0 < 0 || p.1 < 0 || p.0 as usize >= self.n || p.1 as usize >= self.n {
+            return 0;
+        }
+        (self.zone_of(p.0 as usize, p.1 as usize) as u32 + 2) / 3
+    }
+    pub fn biome_count(&self) -> usize {
+        let mut z = self.zones.clone();
+        z.sort_unstable();
+        z.dedup();
+        z.len()
+    }
+    pub fn blocked_count(&self) -> usize {
+        self.tiles.iter().filter(|t| t.is_blocking()).count()
+    }
+    pub fn first_blocked(&self) -> Option<(i32, i32)> {
+        let i = self.tiles.iter().position(|t| t.is_blocking())?;
+        Some(((i % self.n) as i32, (i / self.n) as i32))
+    }
+    pub fn to_json(&self) -> String {
+        let n = self.n;
+        let rows = |f: &dyn Fn(usize, usize) -> char| -> String {
+            (0..n).map(|y| format!("\"{}\"", (0..n).map(|x| f(x, y)).collect::<String>())).collect::<Vec<_>>().join(",")
+        };
+        let anchors: Vec<String> = self.anchors.iter().map(|a| format!("[{},{}]", a.0, a.1)).collect();
+        format!(
+            "{{\"w\":{n},\"h\":{n},\"tiles\":[{}],\"zones\":[{}],\"anchors\":[{}]}}",
+            rows(&|x, y| ch(self.tile(x, y))),
+            rows(&|x, y| (b'0' + self.zone_of(x, y) as u8) as char),
+            anchors.join(",")
+        )
+    }
+}
