@@ -8,3 +8,12 @@ use crate::matchup::{play, Match, MatchResult, Outcome};
 use crate::rng::Rng;
 use crate::world::Arena;
 use std::fmt::Write;
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct TrainConfig {
+    pub seed: u64,
+    pub generations: u32,
+    pub pop: usize,
+    pub k_opponents: usize,
+    pub hof_sample: usize,
+}
