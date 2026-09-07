@@ -318,3 +318,9 @@ impl Map {
     pub fn anchors(&self) -> &[(usize, usize)] {
         &self.anchors
     }
+
+    /// 4-connected A* (Manhattan heuristic). Ties: lower f, lower h, lower index.
+    /// The result excludes `from` and includes `to`; `from == to` gives an empty path.
+    pub fn path(&self, from: (usize, usize), to: (usize, usize)) -> Option<Vec<(usize, usize)>> {
+        self.path_in(from, to, None)
+    }
