@@ -313,3 +313,73 @@ impl Trainer {
         let mut mean = [0.0f32; 2];
         let mut freq = [ActionFreq::default(); 2];
         let (mut tick_sum, mut tick_n) = (0.0f64, 0usize);
+
+        for ri in 0..2 {
+            let role = if ri == 0 { Role::Hero } else { Role::Monster };
+            let oi = 1 - ri;
+            let pop = self.pops[ri].len();
+            // Opponent plan per individual: (opponent genome index kind, seed).
+            let mut plan: Vec<Vec<(Genome, u64)>> = Vec::with_capacity(pop);
+            {
+                // Common random numbers: every individual meets the same opponents and arenas this generation.
+                let mut v = Vec::new();
+                for _ in 0..4 {
+                    let j = (rng.next_u64() % self.pops[oi].len() as u64) as usize;
+                    v.push((self.pops[oi][j].clone(), rng.next_u64()));
+                }
+                // One fresh random opponent keeps a broad baseline in the mix.
+                for _ in 0..2 {
+                    v.push((Genome::random(if ri == 0 { Role::Monster } else { Role::Hero }, &mut rng), rng.next_u64()));
+                }
+                if !self.hof[oi].is_empty() {
+                    for _ in 0..self.cfg.hof_sample {
+                        let j = (rng.next_u64() % self.hof[oi].len() as u64) as usize;
+                        v.push((self.hof[oi][j].clone(), rng.next_u64()));
+                    }
+                }
+                for _ in 0..pop {
+                    plan.push(v.clone());
+                }
+            }
+            let pop_ref = &self.pops[ri];
+            let plan_ref = &plan;
+            let cfg_ref = &cfg;
+            let res: Vec<Vec<MatchScore>> = par_map(pop, |i| {
+                plan_ref[i]
+                    .iter()
+                    .enumerate()
+                    .map(|(_, (opp, s))| score_match(role, &pop_ref[i], opp, *s, cfg_ref, None))
+                    .collect()
+            });
+            let mut f = Vec::with_capacity(pop);
+            let (mut a, mut b, mut c, mut n) = (0.0f64, 0.0f64, 0.0f64, 0usize);
+            for r in &res {
+                let avg = r.iter().map(|x| x.fitness).sum::<f32>() / r.len().max(1) as f32;
+                let low = r.iter().map(|x| x.fitness).fold(f32::INFINITY, f32::min);
+                let mx = 0.5;
+                let m = if low.is_finite() { mx * avg + (1.0 - mx) * low } else { 0.0 };
+                f.push(m);
+                for x in r {
+                    a += x.freq[0] as f64;
+                    b += x.freq[1] as f64;
+                    c += x.freq[2] as f64;
+                    tick_sum += x.ticks as f64;
+                    tick_n += 1;
+                }
+                n += r.len();
+            }
+            let nn = n.max(1) as f64;
+            freq[ri] = ActionFreq { attack: (a / nn) as f32, block: (b / nn) as f32, dodge: (c / nn) as f32 };
+            let mut bi = 0;
+            for (i, v) in f.iter().enumerate() {
+                if *v > f[bi] {
+                    bi = i;
+                }
+            }
+            best[ri] = bi;
+            mean[ri] = (f.iter().map(|x| *x as f64).sum::<f64>() / f.len() as f64) as f32;
+            if mean[ri] > f[bi] {
+                mean[ri] = f[bi];
+            }
+            fits[ri] = f;
+        }
