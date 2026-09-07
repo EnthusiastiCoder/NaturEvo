@@ -448,3 +448,20 @@ impl Trainer {
             let w: Vec<bool> = par_map(base.len(), |i| score_match(role, champ, &base[i].0, base[i].1, cfg_ref, None).win);
             wr_rnd[ri] = w.iter().filter(|x| **x).count() as f32 / w.len() as f32;
         }
+
+        self.stats.push(GenStats {
+            gen,
+            best_fitness: [pop_best[0], pop_best[1]],
+            mean_fitness: mean,
+            win_rate_vs_hof: wr_hof,
+            win_rate_vs_random: wr_rnd,
+            action_freq: freq,
+            avg_ticks: (tick_sum / tick_n.max(1) as f64) as f32,
+        });
+        for ri in 0..2 {
+            self.hof[ri].push(champs[ri].clone());
+            if self.hof[ri].len() > HOF_CAP {
+                self.hof[ri].remove(0);
+            }
+        }
+        self.champs = champs;
