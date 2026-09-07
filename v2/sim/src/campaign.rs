@@ -49,3 +49,10 @@ pub enum EncounterKind {
     Elite,
     Boss,
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Outcome {
+    Won,
+    Died,
+    Capped,
+}
