@@ -582,3 +582,57 @@ fn num<T: std::str::FromStr>(args: &[String], name: &str, default: T) -> Result<
         None => Ok(default),
     }
 }
+
+/// `train --seed N --gens N --out DIR [--pop N] [--k N] [--hof N] [--resume FILE]`
+pub fn train_cli(args: &[String]) -> Result<(), String> {
+    use std::io::Write as _;
+    let out = args.iter().position(|a| a == "--out").and_then(|i| args.get(i + 1)).ok_or("missing --out")?;
+    let gens: u32 = num(args, "--gens", 200)?;
+    let cfg = TrainConfig {
+        seed: num(args, "--seed", 1)?,
+        generations: gens,
+        pop: num(args, "--pop", 64)?,
+        k_opponents: num(args, "--k", 4)?,
+        hof_sample: num(args, "--hof", 2)?,
+    };
+    let dir = std::path::Path::new(out);
+    std::fs::create_dir_all(dir).map_err(|e| format!("{}: {}", out, e))?;
+    let io = |e: std::io::Error| e.to_string();
+    let mut t = match args.iter().position(|a| a == "--resume").and_then(|i| args.get(i + 1)) {
+        Some(p) => Trainer::resume(&std::fs::read_to_string(p).map_err(|e| format!("{}: {}", p, e))?)?,
+        None => Trainer::new(cfg),
+    };
+    let done = t.stats().len();
+    let mut jsonl = std::fs::OpenOptions::new().create(true).write(true).truncate(done == 0).append(done > 0).open(dir.join("training.jsonl")).map_err(io)?;
+    let csv_path = dir.join("training.csv");
+    let mut csv = std::fs::OpenOptions::new().create(true).write(true).truncate(done == 0).append(done > 0).open(&csv_path).map_err(io)?;
+    if done == 0 {
+        writeln!(csv, "{}", GenStats::csv_header()).map_err(io)?;
+    }
+    let total = t.config().generations as usize;
+    let save = |t: &Trainer, g: u32| -> Result<(), String> {
+        let (h, m) = (t.hero_champion(), t.monster_champion());
+        let w = |name: String, body: String| std::fs::write(dir.join(&name), body).map_err(|e| format!("{}: {}", name, e));
+        w(format!("champion_hero_gen_{}.json", g), h.to_json())?;
+        w(format!("champion_monster_gen_{}.json", g), m.to_json())?;
+        let cfg = ArenaConfig::default();
+        let res = play(Arena::generate(g as u64, &cfg), h.clone(), m.clone(), g as u64, &cfg);
+        w(format!("fight_gen_{}.json", g), res.log.to_json())?;
+        w("checkpoint.txt".to_string(), t.checkpoint())
+    };
+    for g in done..total {
+        t.run_generation();
+        let s = t.stats().last().unwrap();
+        writeln!(jsonl, "{}", s.to_json()).map_err(io)?;
+        writeln!(csv, "{}", s.to_csv()).map_err(io)?;
+        eprintln!(
+            "gen {} fit h{:.2}/m{:.2} wr_rnd h{:.2}/m{:.2} ticks {:.0}",
+            s.gen, s.best_fitness[0], s.best_fitness[1], s.win_rate_vs_random[0], s.win_rate_vs_random[1], s.avg_ticks
+        );
+        if (g + 1) % 10 == 0 || g + 1 == total {
+            save(&t, g as u32)?;
+        }
+    }
+    Ok(())
+}
+
