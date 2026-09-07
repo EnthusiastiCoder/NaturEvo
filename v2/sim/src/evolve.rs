@@ -286,3 +286,19 @@ impl Trainer {
         let champs = [hero[0].clone(), mon[0].clone()];
         Trainer { cfg, arena_cfg: ArenaConfig::default(), pops: [hero, mon], hof: [Vec::new(), Vec::new()], champs, stats: Vec::new() }
     }
+
+    pub fn config(&self) -> &TrainConfig {
+        &self.cfg
+    }
+    pub fn stats(&self) -> &[GenStats] {
+        &self.stats
+    }
+    pub fn hero_champion(&self) -> &Genome {
+        &self.champs[0]
+    }
+    pub fn monster_champion(&self) -> &Genome {
+        &self.champs[1]
+    }
+    pub fn hall_of_fame(&self, role: Role) -> &[Genome] {
+        &self.hof[role.index()]
+    }
