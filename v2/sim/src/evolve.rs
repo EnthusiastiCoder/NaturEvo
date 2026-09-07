@@ -256,3 +256,14 @@ fn gen_rng(seed: u64, gen: u32, salt: u64) -> Rng {
     let base = r.next_u64();
     Rng::new(base.wrapping_add((gen as u64 + 1).wrapping_mul(0xD1B5_4A32_D192_ED03)))
 }
+
+fn tournament(fit: &[f32], r: &mut Rng) -> usize {
+    let mut best = (r.next_u64() % fit.len() as u64) as usize;
+    for _ in 0..2 {
+        let c = (r.next_u64() % fit.len() as u64) as usize;
+        if fit[c] > fit[best] {
+            best = c;
+        }
+    }
+    best
+}
