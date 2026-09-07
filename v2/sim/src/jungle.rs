@@ -375,3 +375,16 @@ impl Map {
     }
 
 }
+
+fn ch(t: Tile) -> char {
+    match t {
+        Tile::Floor => '.',
+        Tile::Grass => ',',
+        Tile::Wall => '#',
+        Tile::Camp => 'C',
+        Tile::Rock => 'R',
+        Tile::Fence => 'F',
+        Tile::Tree => 'T',
+        Tile::Water => 'W',
+    }
+}
