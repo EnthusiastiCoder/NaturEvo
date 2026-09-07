@@ -276,3 +276,13 @@ pub struct Trainer {
     champs: [Genome; 2],
     stats: Vec<GenStats>,
 }
+
+impl Trainer {
+    pub fn new(cfg: TrainConfig) -> Trainer {
+        let mut r = Rng::new(cfg.seed ^ 0x1217_1717);
+        let pop = cfg.pop.max(2);
+        let hero: Vec<Genome> = (0..pop).map(|_| Genome::random(Role::Hero, &mut r)).collect();
+        let mon: Vec<Genome> = (0..pop).map(|_| Genome::random(Role::Monster, &mut r)).collect();
+        let champs = [hero[0].clone(), mon[0].clone()];
+        Trainer { cfg, arena_cfg: ArenaConfig::default(), pops: [hero, mon], hof: [Vec::new(), Vec::new()], champs, stats: Vec::new() }
+    }
