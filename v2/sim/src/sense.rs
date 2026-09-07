@@ -8,7 +8,7 @@ use crate::matchup::{Match, DODGE_COOLDOWN};
 
 pub const N_IN: usize = 40;
 const MAX_RAYS: usize = 9; // slots 28-36; n_rays (default 9) fills them, rest stay 0
-const STEP: f32 = 0.5;
+const STEP: f32 = 1.0;
 
 fn wrap(a: f32) -> f32 {
     (a + std::f32::consts::PI).rem_euclid(2.0 * std::f32::consts::PI) - std::f32::consts::PI
