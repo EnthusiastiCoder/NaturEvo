@@ -60,3 +60,7 @@ impl GenStats {
         s.push_str("}}");
         s
     }
+
+    pub fn csv_header() -> &'static str {
+        "gen,avg_ticks,best_hero,best_monster,mean_hero,mean_monster,hof_wr_hero,hof_wr_monster,rnd_wr_hero,rnd_wr_monster,hero_attack,hero_block,hero_dodge,monster_attack,monster_block,monster_dodge"
+    }
