@@ -267,3 +267,12 @@ fn tournament(fit: &[f32], r: &mut Rng) -> usize {
     }
     best
 }
+
+pub struct Trainer {
+    cfg: TrainConfig,
+    arena_cfg: ArenaConfig,
+    pops: [Vec<Genome>; 2],
+    hof: [Vec<Genome>; 2],
+    champs: [Genome; 2],
+    stats: Vec<GenStats>,
+}
