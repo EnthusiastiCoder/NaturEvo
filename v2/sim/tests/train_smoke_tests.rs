@@ -93,10 +93,15 @@ fn trained_hero_beats_gen0_hero_80_percent_of_50() {
     let champ = t.hero_champion().clone();
     let mon = t.monster_champion().clone();
     let cfg = ArenaConfig::default();
+    // Metric is fight outcome (win > draw > loss), not hero_hp: a passive hero that never meets the
+    // monster keeps full hp, so hp rewards hiding and ties at 0 or 100 are common.
+    // A fight counts only if the champion strictly outranks gen0; ties count as worse.
+    let rank = |o: Outcome| match o { Outcome::HeroWin => 2, Outcome::Draw => 1, Outcome::MonsterWin => 0 };
     let (mut a, mut b) = (0, 0);
     for s in 0..50u64 {
-        if play(Arena::generate(s, &cfg), champ.clone(), mon.clone(), s, &cfg).hero_hp
-            > play(Arena::generate(s, &cfg), g0.clone(), mon.clone(), s, &cfg).hero_hp { a += 1; } else { b += 1; }
+        let rc = rank(play(Arena::generate(s, &cfg), champ.clone(), mon.clone(), s, &cfg).outcome);
+        let rg = rank(play(Arena::generate(s, &cfg), g0.clone(), mon.clone(), s, &cfg).outcome);
+        if rc > rg { a += 1; } else { b += 1; }
     }
     assert!(a >= 40, "champion better than gen0 in {a}/50 (worse {b})");
 }
