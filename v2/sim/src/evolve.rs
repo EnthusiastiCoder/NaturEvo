@@ -250,3 +250,9 @@ fn prime(g: &mut Genome, level: u32) {
         w[w2 + 3 * N_HID + 2] = 2.5;
     }
 }
+
+fn gen_rng(seed: u64, gen: u32, salt: u64) -> Rng {
+    let mut r = Rng::new(seed ^ salt);
+    let base = r.next_u64();
+    Rng::new(base.wrapping_add((gen as u64 + 1).wrapping_mul(0xD1B5_4A32_D192_ED03)))
+}
