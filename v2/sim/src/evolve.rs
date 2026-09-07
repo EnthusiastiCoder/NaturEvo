@@ -118,3 +118,23 @@ struct MatchScore {
     ticks: u32,
     freq: [f32; 3],
 }
+
+fn par_map<T: Send, F: Fn(usize) -> T + Sync>(n: usize, f: F) -> Vec<T> {
+    let threads = std::thread::available_parallelism().map(|x| x.get()).unwrap_or(1).min(n.max(1));
+    if threads <= 1 {
+        return (0..n).map(&f).collect();
+    }
+    let mut out: Vec<Option<T>> = (0..n).map(|_| None).collect();
+    let chunk = (n + threads - 1) / threads;
+    std::thread::scope(|sc| {
+        let f = &f;
+        for (ci, slot) in out.chunks_mut(chunk).enumerate() {
+            sc.spawn(move || {
+                for (k, s) in slot.iter_mut().enumerate() {
+                    *s = Some(f(ci * chunk + k));
+                }
+            });
+        }
+    });
+    out.into_iter().map(|x| x.unwrap()).collect()
+}
