@@ -74,3 +74,15 @@ pub fn tier_stats(tier: u32, boss: bool) -> TierStats {
         TierStats { hp, damage }
     }
 }
+
+#[derive(Clone, Debug)]
+pub struct Encounter {
+    pub kind: EncounterKind,
+    pub zone: u32,
+    pub tile: (i32, i32),
+    pub arena_seed: u64,
+    pub match_seed: u64,
+    pub monster_index: usize,
+    pub stats: TierStats,
+    pub result: MatchResult,
+}
