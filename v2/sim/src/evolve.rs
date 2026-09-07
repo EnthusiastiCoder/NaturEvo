@@ -74,3 +74,16 @@ impl GenStats {
             a[0].attack, a[0].block, a[0].dodge, a[1].attack, a[1].block, a[1].dodge
         )
     }
+
+    fn to_nums(&self) -> String {
+        let a = &self.action_freq;
+        let v: Vec<String> = [
+            self.gen as f32, self.avg_ticks, self.best_fitness[0], self.best_fitness[1], self.mean_fitness[0], self.mean_fitness[1],
+            self.win_rate_vs_hof[0], self.win_rate_vs_hof[1], self.win_rate_vs_random[0], self.win_rate_vs_random[1],
+            a[0].attack, a[0].block, a[0].dodge, a[1].attack, a[1].block, a[1].dodge,
+        ]
+        .iter()
+        .map(|x| format!("{}", x))
+        .collect();
+        v.join(" ")
+    }
