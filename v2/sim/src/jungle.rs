@@ -324,3 +324,52 @@ impl Map {
     pub fn path(&self, from: (usize, usize), to: (usize, usize)) -> Option<Vec<(usize, usize)>> {
         self.path_in(from, to, None)
     }
+
+    /// Like `path`, but every tile after `from` must lie in `zone`.
+    pub fn path_in(&self, from: (usize, usize), to: (usize, usize), zone: Option<usize>) -> Option<Vec<(usize, usize)>> {
+        if !self.passable(from.0, from.1) || !self.passable(to.0, to.1) {
+            return None;
+        }
+        if from == to {
+            return Some(vec![]);
+        }
+        let n = self.n;
+        let h = |p: (usize, usize)| (p.0.abs_diff(to.0) + p.1.abs_diff(to.1)) as u32;
+        let mut g = vec![u32::MAX; n * n];
+        let mut prev = vec![usize::MAX; n * n];
+        let mut closed = vec![false; n * n];
+        let mut heap = BinaryHeap::new();
+        let si = from.1 * n + from.0;
+        g[si] = 0;
+        heap.push(Reverse((h(from), h(from), si)));
+        while let Some(Reverse((_, _, i))) = heap.pop() {
+            if closed[i] {
+                continue;
+            }
+            closed[i] = true;
+            let p = (i % n, i / n);
+            if p == to {
+                let mut out = vec![];
+                let mut c = i;
+                while c != si {
+                    out.push((c % n, c / n));
+                    c = prev[c];
+                }
+                out.reverse();
+                return Some(out);
+            }
+            for nb in self.nbrs(p) {
+                let j = nb.1 * n + nb.0;
+                if self.tiles[j].is_blocking() || closed[j] || zone.map_or(false, |z| self.zones[j] as usize != z) {
+                    continue;
+                }
+                let ng = g[i] + 1;
+                if ng < g[j] {
+                    g[j] = ng;
+                    prev[j] = i;
+                    heap.push(Reverse((ng + h(nb), h(nb), j)));
+                }
+            }
+        }
+        None
+    }
