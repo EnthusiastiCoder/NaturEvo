@@ -86,3 +86,13 @@ pub struct Encounter {
     pub stats: TierStats,
     pub result: MatchResult,
 }
+
+#[derive(Clone, Debug)]
+pub struct CampaignResult {
+    pub map: Map,
+    pub path: Vec<(i32, i32)>,
+    pub steps: usize,
+    pub encounters: Vec<Encounter>,
+    pub outcome: Outcome,
+    ends: u32,
+}
