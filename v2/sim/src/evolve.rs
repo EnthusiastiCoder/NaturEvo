@@ -198,3 +198,30 @@ fn score_match(role: Role, me: &Genome, opp: &Genome, seed: u64, cfg: &ArenaConf
     fitness += 0.5 * shape / n;
     MatchScore { fitness, win, ticks: res.ticks, freq: [c[0] / n, c[1] / n, c[2] / n] }
 }
+
+fn path_field(arena: &Arena, w: usize, h: usize, from: (f32, f32)) -> Vec<u16> {
+    let mut d = vec![u16::MAX; w * h];
+    let sx = (from.0.floor().max(0.0) as usize).min(w - 1);
+    let sy = (from.1.floor().max(0.0) as usize).min(h - 1);
+    let tiles = arena.tiles();
+    let mut q = std::collections::VecDeque::new();
+    d[sy * w + sx] = 0;
+    q.push_back((sx, sy));
+    while let Some((x, y)) = q.pop_front() {
+        let cur = d[y * w + x];
+        let mut try_push = |nx: i64, ny: i64| {
+            if nx >= 0 && ny >= 0 && (nx as usize) < w && (ny as usize) < h {
+                let i = ny as usize * w + nx as usize;
+                if !tiles[i] && d[i] == u16::MAX {
+                    d[i] = cur + 1;
+                    q.push_back((nx as usize, ny as usize));
+                }
+            }
+        };
+        try_push(x as i64 + 1, y as i64);
+        try_push(x as i64 - 1, y as i64);
+        try_push(x as i64, y as i64 + 1);
+        try_push(x as i64, y as i64 - 1);
+    }
+    d
+}
