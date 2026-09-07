@@ -2,6 +2,7 @@
 pub mod cli;
 pub mod campaign;
 pub mod config;
+pub mod evolve;
 pub mod fighter;
 pub mod genome;
 pub mod jungle;
