@@ -56,3 +56,9 @@ pub enum Outcome {
     Died,
     Capped,
 }
+
+#[derive(Clone, Copy, Debug)]
+pub struct TierStats {
+    pub hp: f32,
+    pub damage: f32,
+}
