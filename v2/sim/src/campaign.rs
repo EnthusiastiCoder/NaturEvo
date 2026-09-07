@@ -103,3 +103,68 @@ impl CampaignResult {
         self.ends
     }
 }
+
+/// Walk the A* route from camp to boss. Grass tiles may trigger a duel, the first step into each
+/// new zone triggers an elite duel and the boss tile a boss duel. With `permadeath` the first
+/// hero loss ends the run; without it the hero keeps walking.
+pub fn run(seed: u64, cfg: MapCfg, heroes: &Library, monsters: &Library, permadeath: bool) -> CampaignResult {
+    let map = Map::generate(seed, cfg.size);
+    let path = map.astar(map.camp(), map.boss()).expect("camp reaches boss");
+    let acfg = ArenaConfig::default();
+    let mut rng = Rng::new(seed ^ CAMPAIGN_SALT);
+    let mut encounters: Vec<Encounter> = Vec::new();
+    let mut seen_zones = vec![false; 9];
+    let mut steps = 0usize;
+    let mut outcome = Outcome::Capped;
+    let boss = map.boss();
+    for &tile in path.iter().skip(1) {
+        steps += 1;
+        let zone = map.zone_of(tile.0 as usize, tile.1 as usize);
+        let first_visit = !seen_zones[zone];
+        seen_zones[zone] = true;
+        let kind = if tile == boss {
+            Some(EncounterKind::Boss)
+        } else if first_visit && zone != 0 {
+            Some(EncounterKind::Elite)
+        } else if map.tile_at(tile) == Some(Tile::Grass) && rng.f32() < cfg.grass_chance {
+            Some(EncounterKind::Grass)
+        } else {
+            None
+        };
+        let Some(kind) = kind else { continue };
+        if encounters.len() >= cfg.max_encounters && kind != EncounterKind::Boss {
+            break;
+        }
+        let arena_seed = rng.next_u64();
+        let match_seed = rng.next_u64();
+        let monster_index = (rng.next_u64() % monsters.len() as u64) as usize;
+        let tier = map.zone_tier(tile);
+        let result = play(
+            Arena::generate(arena_seed, &acfg),
+            heroes.pick(0).clone(),
+            monsters.pick(monster_index).clone(),
+            match_seed,
+            &acfg,
+        );
+        let lost = result.outcome != MOutcome::HeroWin;
+        encounters.push(Encounter {
+            kind,
+            zone: zone as u32,
+            tile,
+            arena_seed,
+            match_seed,
+            monster_index,
+            stats: tier_stats(tier, kind == EncounterKind::Boss),
+            result,
+        });
+        if lost && permadeath {
+            outcome = Outcome::Died;
+            break;
+        }
+        if kind == EncounterKind::Boss {
+            outcome = if lost { Outcome::Died } else { Outcome::Won };
+            break;
+        }
+    }
+    CampaignResult { map, path, steps, encounters, outcome, ends: 1 }
+}
