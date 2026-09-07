@@ -13,3 +13,19 @@ const CAMPAIGN_SALT: u64 = 0x4341_4D50_4149_474E;
 pub struct Library {
     genomes: Vec<Genome>,
 }
+
+impl Library {
+    pub fn new(genomes: Vec<Genome>) -> Library {
+        assert!(!genomes.is_empty(), "Library needs at least one genome");
+        Library { genomes }
+    }
+    pub fn len(&self) -> usize {
+        self.genomes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        false
+    }
+    pub fn pick(&self, i: usize) -> &Genome {
+        &self.genomes[i % self.genomes.len()]
+    }
+}
