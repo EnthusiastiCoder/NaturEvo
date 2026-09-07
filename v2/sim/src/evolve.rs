@@ -17,3 +17,10 @@ pub struct TrainConfig {
     pub k_opponents: usize,
     pub hof_sample: usize,
 }
+
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct ActionFreq {
+    pub attack: f32,
+    pub block: f32,
+    pub dodge: f32,
+}
