@@ -35,3 +35,28 @@ pub struct GenStats {
     pub action_freq: [ActionFreq; 2],
     pub avg_ticks: f32,
 }
+
+impl GenStats {
+    pub fn to_json(&self) -> String {
+        let r = ["hero", "monster"];
+        let mut s = format!("{{\"gen\":{}", self.gen);
+        let _ = write!(s, ",\"avg_ticks\":{}", self.avg_ticks);
+        for (key, v) in [
+            ("best_fitness", &self.best_fitness),
+            ("mean_fitness", &self.mean_fitness),
+            ("win_rate_vs_hof", &self.win_rate_vs_hof),
+            ("win_rate_vs_random", &self.win_rate_vs_random),
+        ] {
+            let _ = write!(s, ",\"{}\":{{\"hero\":{},\"monster\":{}}}", key, v[0], v[1]);
+        }
+        let _ = write!(s, ",\"action_freq\":{{");
+        for i in 0..2 {
+            let a = &self.action_freq[i];
+            if i > 0 {
+                s.push(',');
+            }
+            let _ = write!(s, "\"{}\":{{\"attack\":{},\"block\":{},\"dodge\":{}}}", r[i], a.attack, a.block, a.dodge);
+        }
+        s.push_str("}}");
+        s
+    }
