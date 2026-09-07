@@ -29,3 +29,10 @@ impl Library {
         &self.genomes[i % self.genomes.len()]
     }
 }
+
+#[derive(Clone, Debug)]
+pub struct MapCfg {
+    pub size: usize,
+    pub grass_chance: f32,
+    pub max_encounters: usize,
+}
