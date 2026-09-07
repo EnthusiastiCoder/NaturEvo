@@ -465,3 +465,37 @@ impl Trainer {
             }
         }
         self.champs = champs;
+
+        // Breed.
+        let mut br = gen_rng(self.cfg.seed, gen, 0xB7);
+        for ri in 0..2 {
+            let fit = &fits[ri];
+            let mut order: Vec<usize> = (0..fit.len()).collect();
+            order.sort_by(|a, b| fit[*b].partial_cmp(&fit[*a]).unwrap_or(std::cmp::Ordering::Equal).then(a.cmp(b)));
+            let old = &self.pops[ri];
+            let mut next: Vec<Genome> = Vec::with_capacity(old.len());
+            for &i in order.iter().take(ELITES.min(old.len())) {
+                let mut g = old[i].clone();
+                g.generation = gen + 1;
+                next.push(g);
+            }
+            while next.len() < old.len() {
+                let a = &old[tournament(fit, &mut br)];
+                let b = &old[tournament(fit, &mut br)];
+                let mut child = if br.f32() < 0.5 { Genome::crossover(a, b, &mut br) } else { a.clone() };
+                child.mutate(&mut br, 0.05, 0.25);
+                child.generation = gen + 1;
+                child.fitness = 0.0;
+                next.push(child);
+            }
+            if gen == 0 {
+                // Seeded immigrants: after the random generation, half the new population is primed.
+                for (k, g) in next.iter_mut().enumerate().skip(ELITES) {
+                    if k % 2 == 0 {
+                        prime(g, 2);
+                    }
+                }
+            }
+            self.pops[ri] = next;
+        }
+    }
