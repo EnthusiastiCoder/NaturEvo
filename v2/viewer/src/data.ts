@@ -23,3 +23,14 @@ export function parseFight(j: J): Fight {
     seed: j.seed ?? 1, monsterIndex: j.monster_index ?? 0,
   };
 }
+
+export function parseRun(j: J): Run {
+  return {
+    map: j.map, path: j.path, outcome: j.outcome ?? '',
+    encounters: (j.encounters ?? []).map((e: J): Encounter => ({
+      kind: String(e.kind ?? 'grass').toLowerCase(), zone: e.zone ?? 0, tile: e.tile, monsterIndex: e.monster_index ?? 0,
+      result: String(e.result ?? ''), fight: e.fight && typeof e.fight === 'object' ? parseFight(e.fight) : null,
+      fightUrl: typeof e.fight === 'string' ? e.fight : undefined,
+    })),
+  };
+}
