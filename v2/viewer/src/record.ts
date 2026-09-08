@@ -6,3 +6,8 @@ export function isRecordMode(search: string): boolean {
   return new URLSearchParams(search).get('record') === '1';
 }
 export function frameTime(n: number, fps = RECORD_DEFAULT.fps): number { return n / fps; }
+
+export function applyRecordMode(root: { dataset: Record<string, string | undefined> }, on: boolean): void {
+  if (on) root.dataset.record = '1';
+  else delete root.dataset.record;
+}
