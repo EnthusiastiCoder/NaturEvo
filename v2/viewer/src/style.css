@@ -7,3 +7,4 @@
 [data-theme="dark"] {
   --bg: #11170f; --panel: #1b241a; --text: #e6efe3; --muted: #93a38f; --line: #2d3a2b;
 }
+* { box-sizing: border-box; }
