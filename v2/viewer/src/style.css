@@ -20,3 +20,4 @@ button, select, input[type=color] { font: inherit; color: var(--text); backgroun
   display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
 input[type=color] { padding: 2px; width: 34px; }
 button:hover { border-color: var(--accent); }
+button[aria-pressed="true"], button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
