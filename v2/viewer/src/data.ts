@@ -34,3 +34,25 @@ export function parseRun(j: J): Run {
     })),
   };
 }
+
+/** Deterministic demo data so the viewer works before any run exists. */
+export function demoFight(seed: number): Fight {
+  const frames: Frame[] = [];
+  let hh = 100, mh = 100;
+  for (let t = 0; t < 600; t++) {
+    const ph = t % 90;
+    const gap = ph < 40 ? 9 - ph * 0.16 : 2.6 + Math.sin(t * 0.05) * 0.4;
+    const swing = ph >= 50 && ph < 56 ? 'Windup' : ph >= 56 && ph < 60 ? 'Active' : ph >= 60 && ph < 66 ? 'Recovery' : 'Idle';
+    const mswing = ph >= 70 && ph < 76 ? 'Windup' : ph >= 76 && ph < 80 ? 'Active' : 'Idle';
+    if (ph === 58) mh = Math.max(0, mh - 9);
+    if (ph === 78 && (Math.floor(t / 90) % 2)) hh = Math.max(0, hh - 7);
+    const orbit = Math.sin(t * 0.03) * 3;
+    const hx = 24 - gap / 2, mx = 24 + gap / 2;
+    frames.push({
+      hero: { pos: [hx, 16 + orbit], facing: Math.atan2(-orbit * 0.1, 1), hp: hh, stamina: 100 - (t % 90) * 0.6, action: 'none', state: swing },
+      monster: { pos: [mx, 16 - orbit * 0.5], facing: Math.PI, hp: mh, stamina: 100 - (t % 70) * 0.5, action: 'none',
+        state: ph >= 76 && ph < 84 ? 'Blocking' : mswing },
+    });
+  }
+  return { tickHz: 30, frames, arena: { w: 48, h: 32, blocked: null }, seed, monsterIndex: seed % 3 };
+}
