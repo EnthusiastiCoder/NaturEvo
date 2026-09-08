@@ -19,3 +19,4 @@ button, select, input[type=color] { font: inherit; color: var(--text); backgroun
   border-radius: var(--radius); height: 30px; min-width: 30px; padding: 0 8px; cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
 input[type=color] { padding: 2px; width: 34px; }
+button:hover { border-color: var(--accent); }
