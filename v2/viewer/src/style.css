@@ -25,3 +25,4 @@ button[aria-pressed="true"], button.primary { background: var(--accent); border-
 svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 #stage { position: relative; min-height: 0; display: grid; place-items: center; overflow: hidden;
   border: 1px solid var(--line); border-radius: var(--radius); background: #0c120b; }
+#stage canvas { display: block; }
