@@ -56,3 +56,29 @@ export function demoFight(seed: number): Fight {
   }
   return { tickHz: 30, frames, arena: { w: 48, h: 32, blocked: null }, seed, monsterIndex: seed % 3 };
 }
+
+export function demoRun(): Run {
+  const n = 40;
+  const tiles: string[] = [], zones: string[] = [];
+  for (let y = 0; y < n; y++) {
+    let tr = '', zr = '';
+    for (let x = 0; x < n; x++) {
+      const border = x === 0 || y === 0 || x === n - 1 || y === n - 1;
+      const h = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453; const r = h - Math.floor(h);
+      tr += border ? 'T' : r < 0.12 ? 'T' : r < 0.16 ? 'R' : (x > 14 && x < 19 && y > 6 && y < 30) ? 'W' : r < 0.45 ? ',' : '.';
+      zr += String(Math.min(3, Math.floor((x + y) / 20)));
+    }
+    tiles.push(tr); zones.push(zr);
+  }
+  const set = (x: number, y: number, c: string) => { tiles[y] = tiles[y].slice(0, x) + c + tiles[y].slice(x + 1); };
+  const path: [number, number][] = [];
+  for (let x = 3; x <= 36; x++) { path.push([x, 3]); set(x, 3, '.'); }
+  for (let y = 4; y <= 36; y++) { path.push([36, y]); set(36, y, '.'); }
+  set(3, 3, 'C'); set(36, 36, 'C');
+  const encs: Encounter[] = [
+    { kind: 'grass', zone: 0, tile: [10, 3], monsterIndex: 0, result: 'Won', fight: demoFight(1) },
+    { kind: 'elite', zone: 1, tile: [30, 3], monsterIndex: 1, result: 'Won', fight: demoFight(2) },
+    { kind: 'boss', zone: 3, tile: [36, 36], monsterIndex: 2, result: 'Won', fight: demoFight(3) },
+  ];
+  return { map: { w: n, h: n, tiles, zones, anchors: [[3, 3], [36, 36]] }, path, encounters: encs, outcome: 'Won' };
+}
