@@ -34,3 +34,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
   border-radius: var(--radius); padding: 10px 12px; box-shadow: 0 6px 24px #0006; }
 #info[hidden] { display: none; }
 #info h2 { font-size: 13px; margin: 0 0 4px; }
+#info ul { margin: 4px 0 0; padding-left: 16px; }
