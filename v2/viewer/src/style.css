@@ -28,3 +28,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 #stage canvas { display: block; }
 #scrub { flex: 1; accent-color: var(--accent); min-width: 80px; }
 #clock { font-variant-numeric: tabular-nums; color: var(--muted); min-width: 92px; text-align: right; }
+.hud { position: absolute; left: 8px; top: 8px; display: flex; gap: 6px; pointer-events: none; }
