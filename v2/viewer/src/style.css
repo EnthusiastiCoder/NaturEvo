@@ -29,3 +29,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 #scrub { flex: 1; accent-color: var(--accent); min-width: 80px; }
 #clock { font-variant-numeric: tabular-nums; color: var(--muted); min-width: 92px; text-align: right; }
 .hud { position: absolute; left: 8px; top: 8px; display: flex; gap: 6px; pointer-events: none; }
+.chip { background: color-mix(in srgb, var(--panel) 85%, transparent); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
