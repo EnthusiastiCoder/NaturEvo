@@ -12,3 +12,14 @@ const fighter = (f: J, i: number): FighterFrame => ({
   pos: [f.pos[i][0], f.pos[i][1]], facing: f.facing[i], hp: f.hp[i], stamina: f.stamina[i],
   action: f.action[i], state: f.state[i],
 });
+
+/** Convert the sim's FightLog JSON (per-fighter arrays, index 0 hero, 1 monster) into viewer frames. */
+export function parseFight(j: J): Fight {
+  const frames: Frame[] = j.frames.map((f: J) => ({ hero: fighter(f, 0), monster: fighter(f, 1) }));
+  const a = j.arena;
+  return {
+    tickHz: j.tick_hz ?? 30, frames,
+    arena: { w: a?.w ?? 48, h: a?.h ?? 32, blocked: a?.blocked ?? null },
+    seed: j.seed ?? 1, monsterIndex: j.monster_index ?? 0,
+  };
+}
