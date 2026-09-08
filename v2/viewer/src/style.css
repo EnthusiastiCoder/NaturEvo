@@ -27,3 +27,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
   border: 1px solid var(--line); border-radius: var(--radius); background: #0c120b; }
 #stage canvas { display: block; }
 #scrub { flex: 1; accent-color: var(--accent); min-width: 80px; }
+#clock { font-variant-numeric: tabular-nums; color: var(--muted); min-width: 92px; text-align: right; }
