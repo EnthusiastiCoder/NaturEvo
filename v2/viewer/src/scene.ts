@@ -49,3 +49,10 @@ export class Scene {
     this.app.canvas.style.width = `${f.w}px`;
     this.app.canvas.style.height = `${f.h}px`;
   }
+
+  private reset(mode: 'fight' | 'map', ts: number): void {
+    this.layer.removeChildren().forEach((c) => c.destroy({ children: true }));
+    this.rigs = [];
+    this.mode = mode; this.ts = ts;
+    this.ground = null;
+  }
