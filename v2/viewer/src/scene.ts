@@ -12,3 +12,20 @@ const ATTACK_TOTAL = 16;
 
 export interface FightOpts { rays: boolean }
 interface Rig { sprite: Sprite }
+
+export class Scene {
+  app!: Application;
+  private atlases = new Map<string, Atlas>();
+  private world = new Container();
+  private layer = new Container();
+  private overlay = new Graphics();
+  private fx = new Graphics();
+  private ground: Sprite | null = null;
+  private rigs: Rig[] = [];
+  private mode: 'fight' | 'map' | null = null;
+  private ts = 32;
+  private blocked: ((x: number, y: number) => boolean) | null = null;
+  private trees = [0, 1, 2].map((v) => Texture.from(paintTree(v)));
+  private rocks = [0, 1, 2].map((v) => Texture.from(paintRock(v)));
+  private heroKey = HERO_MODEL;
+  private monsterKey = MONSTER_MODELS[0];
