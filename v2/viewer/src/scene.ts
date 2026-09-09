@@ -9,3 +9,6 @@ export const STAGE_W = 1536, STAGE_H = 1024;
 const PITCH = 0.8;
 const ATTACK_TICKS = { Windup: 0, Active: 6, Recovery: 10 } as Record<string, number>;
 const ATTACK_TOTAL = 16;
+
+export interface FightOpts { rays: boolean }
+interface Rig { sprite: Sprite }
