@@ -88,3 +88,19 @@ export function paintGround(g: GroundSpec, ts: number, pitch: number): HTMLCanva
   c.fillStyle = vg; c.fillRect(0, 0, out.width, out.height);
   return out;
 }
+
+/** Tree texture with a baked soft shadow; variant 0..2. Anchor at bottom centre (48,108). */
+export function paintTree(variant: number): HTMLCanvasElement {
+  const c = document.createElement('canvas'); c.width = 96; c.height = 120;
+  const x = c.getContext('2d')!;
+  x.fillStyle = 'rgba(0,0,0,0.28)'; x.beginPath(); x.ellipse(52, 108, 34, 10, 0, 0, 7); x.fill();
+  x.fillStyle = '#5b3d22'; x.fillRect(43, 62, 10, 46);
+  x.fillStyle = '#7a5530'; x.fillRect(43, 62, 4, 46);
+  const greens = ['#2c6b32', '#35803a', '#3f9444', '#52aa4f'];
+  for (let i = 0; i < 4; i++) {
+    x.fillStyle = greens[i];
+    const r = [34, 29, 23, 15][i];
+    x.beginPath(); x.ellipse(48 + (variant - 1) * 3 - i * 2, 56 - i * 11, r, r * 0.8, 0, 0, 7); x.fill();
+  }
+  return c;
+}
