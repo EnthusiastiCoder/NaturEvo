@@ -104,3 +104,13 @@ export function paintTree(variant: number): HTMLCanvasElement {
   }
   return c;
 }
+
+/** Rock texture, anchored bottom centre (24,40). */
+export function paintRock(variant: number): HTMLCanvasElement {
+  const c = document.createElement('canvas'); c.width = 48; c.height = 48;
+  const x = c.getContext('2d')!;
+  x.fillStyle = 'rgba(0,0,0,0.3)'; x.beginPath(); x.ellipse(26, 40, 20, 6, 0, 0, 7); x.fill();
+  x.fillStyle = '#6b7260'; x.beginPath(); x.moveTo(6, 40); x.lineTo(10 + variant * 2, 16); x.lineTo(28, 8); x.lineTo(42, 22); x.lineTo(44, 40); x.closePath(); x.fill();
+  x.fillStyle = '#8a9280'; x.beginPath(); x.moveTo(10 + variant * 2, 16); x.lineTo(28, 8); x.lineTo(30, 24); x.lineTo(14, 30); x.closePath(); x.fill();
+  return c;
+}
