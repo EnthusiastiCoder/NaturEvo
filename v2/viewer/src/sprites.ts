@@ -43,3 +43,5 @@ export function directionFromAngle(a: number): number {
   const gx = Math.cos(a), gy = Math.sin(a);
   return ((Math.round(Math.atan2(gx, gy) / (Math.PI / 4)) % 8) + 8) % 8;
 }
+
+export const ANIM = { idle: 'Idle', walk: 'Walking_A', attack: '1H_Melee_Attack_Chop', hit: 'Hit_A', death: 'Death_A' };
