@@ -56,3 +56,13 @@ export class Scene {
     this.mode = mode; this.ts = ts;
     this.ground = null;
   }
+
+  private addGround(canvas: HTMLCanvasElement): void {
+    const g = new Sprite(Texture.from(canvas));
+    g.zIndex = -1e9;
+    this.layer.addChild(g);
+    this.ground = g;
+    this.overlay = new Graphics();
+    this.overlay.zIndex = 1e8;
+    this.layer.addChild(this.overlay);
+  }
