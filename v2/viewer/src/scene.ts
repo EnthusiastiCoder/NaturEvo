@@ -139,3 +139,44 @@ export class Scene {
     sp.tint = hitRecent && fr.state !== 'Dead' ? 0xffb0b0 : 0xffffff;
     void i;
   }
+
+  drawFight(f: Fight, t: number, o: FightOpts): { hero: FighterFrame; monster: FighterFrame } {
+    const hz = f.tickHz;
+    const s = sampleFight(f.frames, t, hz);
+    const p = sampleFight(f.frames, Math.max(0, t - 1 / hz), hz);
+    const back = sampleFight(f.frames, Math.max(0, t - 0.2), hz);
+    this.pose(s.hero, p.hero.pos, this.heroKey, f, 0, t, back.hero.hp - s.hero.hp > 0.5, 0);
+    this.pose(s.monster, p.monster.pos, this.monsterKey, f, 1, t, back.monster.hp - s.monster.hp > 0.5, 1);
+    const g = this.overlay; g.clear();
+    const TS = this.ts, P = PITCH;
+    const fighters: [FighterFrame, FighterFrame, number][] = [[s.hero, s.monster, 0x4cc9f0], [s.monster, s.hero, 0xf4845f]];
+    // ground rings + telegraphs
+    for (const [a, , col] of fighters) {
+      const cx = a.pos[0] * TS, cy = a.pos[1] * TS * P;
+      g.ellipse(cx, cy, 0.5 * TS, 0.5 * TS * P).stroke({ width: 2, color: col, alpha: 0.9 });
+      if (a.state === 'Windup' || a.state === 'Active') {
+        g.moveTo(cx, cy);
+        for (let k = 0; k <= 12; k++) {
+          const ang = a.facing + (k / 12 - 0.5) * 1.3;
+          g.lineTo(cx + Math.cos(ang) * 1.7 * TS, cy + Math.sin(ang) * 1.7 * TS * P);
+        }
+        g.closePath().fill({ color: 0xff3b30, alpha: a.state === 'Active' ? 0.45 : 0.22 });
+      }
+      if (a.state === 'Blocking') {
+        g.ellipse(cx + Math.cos(a.facing) * 0.7 * TS, cy + Math.sin(a.facing) * 0.7 * TS * P, 0.35 * TS, 0.5 * TS * P).stroke({ width: 4, color: 0x9ad1ff, alpha: 0.95 });
+      }
+    }
+    if (o.rays) for (const [a, b, col] of fighters) this.drawRays(g, a, b, col);
+    // bars
+    for (const [a, , col] of fighters) {
+      const cx = a.pos[0] * TS, cy = a.pos[1] * TS * P - 62;
+      const w = 54;
+      g.roundRect(cx - w / 2 - 1, cy - 1, w + 2, 12, 3).fill({ color: 0x000000, alpha: 0.6 });
+      g.rect(cx - w / 2, cy, w * Math.max(0, a.hp) / 100, 6).fill({ color: a.hp > 35 ? 0x6bd968 : 0xe5484d });
+      g.rect(cx - w / 2, cy + 7, w * Math.max(0, a.stamina) / 100, 3).fill({ color: 0xf5d90a });
+      g.circle(cx - w / 2 - 6, cy + 4, 3).fill({ color: col });
+    }
+    this.particles(t, 0, 0, STAGE_W / this.world.scale.x, STAGE_H / this.world.scale.y, true);
+    this.app.render();
+    return s;
+  }
