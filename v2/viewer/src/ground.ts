@@ -19,3 +19,72 @@ export const fbm = (x: number, y: number, s: number) =>
   vnoise(x, y, s) * 0.55 + vnoise(x * 2.1, y * 2.1, s + 5) * 0.3 + vnoise(x * 4.3, y * 4.3, s + 9) * 0.15;
 
 export interface GroundSpec { w: number; h: number; tile: (x: number, y: number) => string; zone: (x: number, y: number) => number; seed: number }
+
+/** Paint the ground. ts = pixels per tile horizontally; pitch = vertical squash. */
+export function paintGround(g: GroundSpec, ts: number, pitch: number): HTMLCanvasElement {
+  const SUB = 4;
+  const lw = g.w * SUB, lh = g.h * SUB;
+  const low = document.createElement('canvas');
+  low.width = lw; low.height = lh;
+  const lc = low.getContext('2d')!;
+  const img = lc.createImageData(lw, lh);
+  for (let py = 0; py < lh; py++) {
+    for (let px = 0; px < lw; px++) {
+      const tx = Math.min(g.w - 1, Math.floor(px / SUB)), ty = Math.min(g.h - 1, Math.floor(py / SUB));
+      // blend colour with the 4 nearest tile centres for soft biome edges
+      const fx = (px + 0.5) / SUB - 0.5, fy = (py + 0.5) / SUB - 0.5;
+      const x0 = Math.floor(fx), y0 = Math.floor(fy), ax = fx - x0, ay = fy - y0;
+      let r = 0, gg = 0, b = 0;
+      for (let k = 0; k < 4; k++) {
+        const cx = Math.max(0, Math.min(g.w - 1, x0 + (k & 1))), cy = Math.max(0, Math.min(g.h - 1, y0 + (k >> 1)));
+        const wgt = ((k & 1) ? ax : 1 - ax) * ((k >> 1) ? ay : 1 - ay);
+        const t = g.tile(cx, cy);
+        const base = TILE_COLORS[t === 'T' ? ',' : t === 'R' || t === 'F' ? '.' : t] ?? TILE_COLORS['.'];
+        const z = ZONE_TINT[Math.min(3, g.zone(cx, cy))];
+        r += (base[0] + z[0]) * wgt; gg += (base[1] + z[1]) * wgt; b += (base[2] + z[2]) * wgt;
+      }
+      const n = fbm(px / 5, py / 5, g.seed) - 0.5;
+      const dapple = fbm(px / 11 + 40, py / 11, g.seed + 3) > 0.62 ? -22 : 0; // canopy light gaps
+      const t = g.tile(tx, ty);
+      const shade = 1 + n * 0.55 + dapple / 255;
+      const wob = t === 'W' ? Math.sin(px * 0.9 + py * 1.3) * 6 : 0;
+      const i = (py * lw + px) * 4;
+      img.data[i] = Math.max(0, Math.min(255, r * shade + wob));
+      img.data[i + 1] = Math.max(0, Math.min(255, gg * shade + wob));
+      img.data[i + 2] = Math.max(0, Math.min(255, b * shade + wob));
+      img.data[i + 3] = 255;
+    }
+  }
+  lc.putImageData(img, 0, 0);
+  const out = document.createElement('canvas');
+  out.width = Math.round(g.w * ts); out.height = Math.round(g.h * ts * pitch);
+  const c = out.getContext('2d')!;
+  c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
+  c.drawImage(low, 0, 0, out.width, out.height);
+  // detail: grass tufts, pebbles and water glints, deterministic
+  const sx = ts, sy = ts * pitch;
+  for (let y = 0; y < g.h; y++) for (let x = 0; x < g.w; x++) {
+    const t = g.tile(x, y);
+    if (t === 'W') {
+      c.fillStyle = 'rgba(255,255,255,0.10)';
+      for (let k = 0; k < 3; k++) c.fillRect((x + hash2(x, y, k)) * sx, (y + hash2(y, x, k + 7)) * sy, sx * 0.4, 1.2);
+      continue;
+    }
+    const grassy = t === ',' || t === 'T';
+    const count = grassy ? 6 : 2;
+    for (let k = 0; k < count; k++) {
+      const px = (x + hash2(x, y, k + 11)) * sx, py = (y + hash2(x, y, k + 31)) * sy;
+      if (grassy) {
+        c.strokeStyle = hash2(x, y, k) > 0.5 ? 'rgba(120,190,80,0.55)' : 'rgba(30,80,30,0.55)';
+        c.lineWidth = 1.2; c.beginPath(); c.moveTo(px, py);
+        c.lineTo(px + (hash2(k, x, y) - 0.5) * 4, py - 4 - hash2(y, k, x) * 4); c.stroke();
+      } else { c.fillStyle = 'rgba(70,56,40,0.35)'; c.fillRect(px, py, 2, 1.4); }
+    }
+  }
+  // soft vignette keeps focus on the centre (lower cognitive load)
+  const vg = c.createRadialGradient(out.width / 2, out.height / 2, Math.min(out.width, out.height) * 0.35,
+    out.width / 2, out.height / 2, Math.max(out.width, out.height) * 0.72);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,10,0,0.45)');
+  c.fillStyle = vg; c.fillRect(0, 0, out.width, out.height);
+  return out;
+}
