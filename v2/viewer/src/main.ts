@@ -3,3 +3,7 @@ import { type Encounter, type Fight, type Run, demoFight, demoRun, parseFight, p
 import { RECORD_DEFAULT, applyRecordMode, isRecordMode } from './record';
 import { Scene } from './scene';
 import { DEFAULT_ACCENT, type Theme, applyTheme, nextTheme, setAccent } from './theme';
+
+const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+const WALK_SPEED = 7; // path tiles per second
+const ENC_PAUSE = 1.2;
