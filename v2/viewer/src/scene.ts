@@ -204,3 +204,16 @@ export class Scene {
       g.moveTo(pts[0], pts[1]).lineTo(ex, ey).stroke({ width: seen ? 2 : 1, color: seen ? 0xff4d4d : col, alpha: seen ? 0.95 : 0.35 });
     }
   }
+
+  /** Ambient fireflies/pollen: pure function of t so every frame is reproducible. */
+  private particles(t: number, x0: number, y0: number, w: number, h: number, screenless: boolean): void {
+    void screenless;
+    const g = this.fx; g.clear();
+    const sc = this.world.scale.x, ox = this.world.x, oy = this.world.y;
+    for (let i = 0; i < 36; i++) {
+      const bx = hash2(i, 1) * w, by = hash2(i, 2) * h;
+      const x = x0 + bx + Math.sin(t * 0.4 + i) * 18, y = y0 + by + Math.cos(t * 0.33 + i * 1.7) * 14 - ((t * 6 + i * 13) % 40);
+      const a = 0.25 + 0.35 * (0.5 + 0.5 * Math.sin(t * 2 + i * 3));
+      g.circle(ox + x * sc, oy + y * sc, 1.6).fill({ color: i % 3 ? 0xd7ff8a : 0xfff2a8, alpha: a });
+    }
+  }
