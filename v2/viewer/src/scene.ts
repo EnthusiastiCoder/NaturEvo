@@ -85,3 +85,27 @@ export class Scene {
       this.rigs.push({ sprite });
     }
   }
+
+  // ---------- fight ----------
+  setFight(f: Fight): void {
+    const ts = 32;
+    this.reset('fight', ts);
+    const { w, h, blocked } = f.arena;
+    const isB = (x: number, y: number) => x < 0 || y < 0 || x >= w || y >= h || (blocked ? blocked[y]?.[x] === '#' : false);
+    this.blocked = (x, y) => isB(Math.floor(x), Math.floor(y));
+    this.addGround(paintGround({
+      w, h, seed: f.seed,
+      tile: (x, y) => (blocked ? (blocked[y]?.[x] === '#' ? 'T' : ',') : ((x + y) % 2 === 0 ? ',' : '.')),
+      zone: (x, y) => (Math.hypot(x - w / 2, y - h / 2) > 15 ? 1 : 0),
+    }, ts, PITCH));
+    if (blocked) {
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (blocked[y][x] === '#') this.addProp(hash2(x, y) > 0.3 ? 'T' : 'R', x, y, 0.7);
+    } else {
+      // decorative treeline so the open arena still reads as a jungle clearing
+      for (let x = 0; x < w; x += 2) { this.addProp('T', x, -1, 0.9); this.addProp('T', x + (x % 4), h, 0.9); }
+      for (let y = 0; y < h; y += 3) { this.addProp('T', -1, y, 0.9); this.addProp('T', w, y, 0.9); }
+    }
+    this.world.scale.set(1); this.world.position.set((STAGE_W - w * ts) / 2, (STAGE_H - h * ts * PITCH) / 2);
+    this.addFighters();
+    this.monsterKey = MONSTER_MODELS[f.monsterIndex % MONSTER_MODELS.length];
+  }
