@@ -180,3 +180,27 @@ export class Scene {
     this.app.render();
     return s;
   }
+
+  private drawRays(g: Graphics, a: FighterFrame, b: FighterFrame, col: number): void {
+    const N = 15, FOV = 2.094, RANGE = 12;
+    const TS = this.ts, P = PITCH;
+    const pts: number[] = [a.pos[0] * TS, a.pos[1] * TS * P];
+    const hits: [number, number, boolean][] = [];
+    for (let i = 0; i < N; i++) {
+      const ang = a.facing + (i / (N - 1) - 0.5) * FOV;
+      const dx = Math.cos(ang), dy = Math.sin(ang);
+      let d = 0, seen = false;
+      for (; d < RANGE; d += 0.25) {
+        const x = a.pos[0] + dx * d, y = a.pos[1] + dy * d;
+        if (this.blocked?.(x, y)) break;
+        if (Math.hypot(x - b.pos[0], y - b.pos[1]) < 0.45) { seen = true; break; }
+      }
+      const ex = (a.pos[0] + dx * d) * TS, ey = (a.pos[1] + dy * d) * TS * P;
+      pts.push(ex, ey);
+      hits.push([ex, ey, seen]);
+    }
+    g.poly(pts).fill({ color: col, alpha: 0.09 });
+    for (const [ex, ey, seen] of hits) {
+      g.moveTo(pts[0], pts[1]).lineTo(ex, ey).stroke({ width: seen ? 2 : 1, color: seen ? 0xff4d4d : col, alpha: seen ? 0.95 : 0.35 });
+    }
+  }
