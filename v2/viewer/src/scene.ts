@@ -77,3 +77,11 @@ export class Scene {
     sp.zIndex = sp.y;
     this.layer.addChild(sp);
   }
+
+  private addFighters(): void {
+    for (let i = 0; i < 2; i++) {
+      const sprite = new Sprite();
+      this.layer.addChild(sprite);
+      this.rigs.push({ sprite });
+    }
+  }
