@@ -29,3 +29,16 @@ export class Scene {
   private rocks = [0, 1, 2].map((v) => Texture.from(paintRock(v)));
   private heroKey = HERO_MODEL;
   private monsterKey = MONSTER_MODELS[0];
+
+  static async create(host: HTMLElement): Promise<Scene> {
+    const s = new Scene();
+    s.app = new Application();
+    await s.app.init({ width: STAGE_W, height: STAGE_H, antialias: true, background: 0x0c120b, resolution: Math.min(2, window.devicePixelRatio || 1), autoDensity: true });
+    host.appendChild(s.app.canvas);
+    s.layer.sortableChildren = true;
+    s.world.addChild(s.layer);
+    s.app.stage.addChild(s.world, s.fx);
+    await Promise.all([HERO_MODEL, ...MONSTER_MODELS].map(async (m) => s.atlases.set(m, await loadAtlas(m))));
+    s.app.ticker.stop();
+    return s;
+  }
