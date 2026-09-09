@@ -66,3 +66,14 @@ export class Scene {
     this.overlay.zIndex = 1e8;
     this.layer.addChild(this.overlay);
   }
+
+  private addProp(kind: 'T' | 'R', x: number, y: number, scale: number): void {
+    const v = Math.floor(hash2(x, y, 5) * 3);
+    const sp = new Sprite(kind === 'T' ? this.trees[v] : this.rocks[v]);
+    if (kind === 'T') sp.anchor.set(0.5, 108 / 120); else sp.anchor.set(0.5, 40 / 48);
+    const s = scale * (0.85 + hash2(x, y, 9) * 0.35);
+    sp.scale.set(hash2(x, y, 2) > 0.5 ? -s : s, s);
+    sp.position.set((x + 0.5) * this.ts, (y + 0.9) * this.ts * PITCH);
+    sp.zIndex = sp.y;
+    this.layer.addChild(sp);
+  }
