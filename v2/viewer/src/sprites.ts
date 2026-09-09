@@ -37,3 +37,9 @@ export async function loadAtlas(model: string): Promise<Atlas> {
   const [tex, json] = await Promise.all([Assets.load<Texture>(u.png), fetch(u.json).then((r) => r.json() as Promise<AtlasJson>)]);
   return new Atlas(tex, json);
 }
+
+/** Facing angle (atan2(dy, dx) in world space) to the bake's direction index. */
+export function directionFromAngle(a: number): number {
+  const gx = Math.cos(a), gy = Math.sin(a);
+  return ((Math.round(Math.atan2(gx, gy) / (Math.PI / 4)) % 8) + 8) % 8;
+}
