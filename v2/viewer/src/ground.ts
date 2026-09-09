@@ -17,3 +17,5 @@ function vnoise(x: number, y: number, s: number): number {
 }
 export const fbm = (x: number, y: number, s: number) =>
   vnoise(x, y, s) * 0.55 + vnoise(x * 2.1, y * 2.1, s + 5) * 0.3 + vnoise(x * 4.3, y * 4.3, s + 9) * 0.15;
+
+export interface GroundSpec { w: number; h: number; tile: (x: number, y: number) => string; zone: (x: number, y: number) => number; seed: number }
