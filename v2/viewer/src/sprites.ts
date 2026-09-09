@@ -9,3 +9,7 @@ const URLS: Record<string, { png: string; json: string }> = {
 };
 export const MONSTER_MODELS = ['Skeleton_Minion', 'Skeleton_Rogue', 'Skeleton_Mage'];
 export const HERO_MODEL = 'Skeleton_Warrior';
+
+interface AtlasFrame { x: number; y: number; w: number; h: number; px: number; py: number }
+interface AtlasJson { animations: Record<string, { frameCount: number }>; frames: Record<string, AtlasFrame> }
+export interface Pick { texture: Texture; ax: number; ay: number }
