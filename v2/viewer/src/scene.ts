@@ -217,3 +217,38 @@ export class Scene {
       g.circle(ox + x * sc, oy + y * sc, 1.6).fill({ color: i % 3 ? 0xd7ff8a : 0xfff2a8, alpha: a });
     }
   }
+
+  // ---------- map ----------
+  setMap(run: Run): void {
+    const ts = 48;
+    this.reset('map', ts);
+    const m = run.map;
+    const tileAt = (x: number, y: number) => m.tiles[Math.max(0, Math.min(m.h - 1, y))][Math.max(0, Math.min(m.w - 1, x))];
+    this.blocked = null;
+    this.addGround(paintGround({ w: m.w, h: m.h, seed: 7, tile: tileAt, zone: (x, y) => Number(m.zones[Math.max(0, Math.min(m.h - 1, y))][Math.max(0, Math.min(m.w - 1, x))]) }, ts, PITCH));
+    const gx = this.overlay;
+    void gx;
+    for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) {
+      const t = m.tiles[y][x];
+      if (t === 'T') this.addProp('T', x, y, 0.95);
+      else if (t === 'R') this.addProp('R', x, y, 0.9);
+      else if (t === '#' || t === 'F') {
+        const b = new Graphics();
+        const px = x * ts, py = y * ts * PITCH;
+        b.rect(px, py + ts * PITCH * 0.3, ts, ts * PITCH * 0.7).fill(t === '#' ? 0x6f7078 : 0x7a5c3a);
+        b.rect(px, py + ts * PITCH * 0.3, ts, 5).fill(t === '#' ? 0x9a9ba3 : 0xa58058);
+        b.zIndex = py + ts * PITCH;
+        this.layer.addChild(b);
+      } else if (t === 'C') {
+        const b = new Graphics();
+        const px = (x + 0.5) * ts, py = (y + 0.6) * ts * PITCH;
+        b.poly([px - 20, py + 8, px, py - 24, px + 20, py + 8]).fill(0xb4552d);
+        b.poly([px - 5, py + 8, px, py - 4, px + 5, py + 8]).fill(0x2a1a10);
+        b.circle(px + 26, py + 8, 4).fill(0xffb347);
+        b.zIndex = py;
+        this.layer.addChild(b);
+      }
+    }
+    this.addFighters();
+    this.monsterKey = MONSTER_MODELS[0];
+  }
