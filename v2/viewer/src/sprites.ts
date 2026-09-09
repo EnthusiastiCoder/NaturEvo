@@ -31,3 +31,9 @@ export class Atlas {
     return p;
   }
 }
+
+export async function loadAtlas(model: string): Promise<Atlas> {
+  const u = URLS[model];
+  const [tex, json] = await Promise.all([Assets.load<Texture>(u.png), fetch(u.json).then((r) => r.json() as Promise<AtlasJson>)]);
+  return new Atlas(tex, json);
+}
