@@ -252,3 +252,45 @@ export class Scene {
     this.addFighters();
     this.monsterKey = MONSTER_MODELS[0];
   }
+
+  drawMap(run: Run, pathPos: number, t: number, activeEnc: number): FighterFrame {
+    const m = run.map, ts = this.ts;
+    const n = run.path.length - 1;
+    const i = Math.max(0, Math.min(n, Math.floor(pathPos))), j = Math.min(n, i + 1), f = Math.min(1, pathPos - i);
+    const a = run.path[i], b = run.path[j];
+    const x = a[0] + (b[0] - a[0]) * f + 0.5, y = a[1] + (b[1] - a[1]) * f + 0.5;
+    const facing = Math.atan2(b[1] - a[1], b[0] - a[0]);
+    const hero: FighterFrame = { pos: [x, y], facing: i === j ? 0 : facing, hp: 100, stamina: 100, action: 'none', state: 'Idle' };
+    const moving = i !== j && pathPos < n;
+    const at = this.atlases.get(HERO_MODEL)!;
+    const pick = at.get(moving ? ANIM.walk : ANIM.idle, directionFromAngle(hero.facing), Math.floor(t * 12));
+    const sp = this.rigs[0].sprite;
+    if (pick) { sp.texture = pick.texture; sp.anchor.set(pick.ax, pick.ay); }
+    sp.scale.set(0.5); sp.position.set(x * ts, y * ts * PITCH); sp.zIndex = sp.y;
+    this.rigs[1].sprite.visible = false;
+    // camera follows the hero, clamped to the map
+    const zoom = 1;
+    const wpx = m.w * ts, hpx = m.h * ts * PITCH;
+    const cx = Math.max(STAGE_W / 2, Math.min(wpx - STAGE_W / 2, x * ts)), cy = Math.max(STAGE_H / 2, Math.min(hpx - STAGE_H / 2, y * ts * PITCH));
+    this.world.scale.set(zoom);
+    this.world.position.set(STAGE_W / 2 - cx * zoom, STAGE_H / 2 - cy * zoom);
+    const g = this.overlay; g.clear();
+    const px = (p: [number, number]) => (p[0] + 0.5) * ts, py = (p: [number, number]) => (p[1] + 0.5) * ts * PITCH;
+    // route: travelled part solid, ahead dotted
+    g.moveTo(px(run.path[0]), py(run.path[0]));
+    for (let k = 1; k <= i; k++) g.lineTo(px(run.path[k]), py(run.path[k]));
+    g.lineTo(x * ts, y * ts * PITCH).stroke({ width: 4, color: 0xfff2a8, alpha: 0.9 });
+    for (let k = i; k < n; k += 1) {
+      if (k % 2) continue;
+      g.moveTo(px(run.path[k]), py(run.path[k])).lineTo(px(run.path[Math.min(n, k + 1)]), py(run.path[Math.min(n, k + 1)])).stroke({ width: 3, color: 0xffffff, alpha: 0.35 });
+    }
+    run.encounters.forEach((e, k) => {
+      const col = e.kind === 'boss' ? 0xe5484d : e.kind === 'elite' ? 0xf5a623 : 0x6bd968;
+      const cx2 = px(e.tile), cy2 = py(e.tile) - 6 + Math.sin(t * 3 + k) * 2;
+      g.circle(cx2, cy2, k === activeEnc ? 13 : 9).fill({ color: col, alpha: 0.95 }).stroke({ width: 2, color: 0x000000, alpha: 0.6 });
+      g.moveTo(cx2 - 4, cy2 - 4).lineTo(cx2 + 4, cy2 + 4).moveTo(cx2 + 4, cy2 - 4).lineTo(cx2 - 4, cy2 + 4).stroke({ width: 2, color: 0x000000, alpha: 0.8 });
+    });
+    this.particles(t, cx - STAGE_W / 2, cy - STAGE_H / 2, STAGE_W, STAGE_H, true);
+    this.app.render();
+    return hero;
+  }
