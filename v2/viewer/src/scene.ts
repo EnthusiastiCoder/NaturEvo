@@ -109,3 +109,33 @@ export class Scene {
     this.addFighters();
     this.monsterKey = MONSTER_MODELS[f.monsterIndex % MONSTER_MODELS.length];
   }
+
+  private pose(fr: FighterFrame, prevPos: [number, number], model: string, f: Fight, i: number, t: number, hitRecent: boolean, role: 0 | 1): void {
+    const atlas = this.atlases.get(model)!;
+    const rig = this.rigs[role];
+    const frames = f.frames;
+    const idx = Math.min(frames.length - 1, Math.floor(t * f.tickHz));
+    const key = role === 0 ? 'hero' : 'monster';
+    let ticks = 0;
+    while (ticks < 24 && idx - ticks > 0 && frames[idx - ticks - 1][key].state === fr.state) ticks++;
+    const frac = t * f.tickHz - Math.floor(t * f.tickHz);
+    const moving = Math.hypot(fr.pos[0] - prevPos[0], fr.pos[1] - prevPos[1]) > 0.004;
+    let anim = moving ? ANIM.walk : ANIM.idle, n = atlas.count(anim), fi = Math.floor(t * 12);
+    if (fr.state in ATTACK_TICKS) {
+      anim = ANIM.attack; n = atlas.count(anim);
+      fi = Math.floor(((ATTACK_TICKS[fr.state] + ticks + frac) / ATTACK_TOTAL) * n);
+    } else if (fr.state === 'Dead') {
+      anim = ANIM.death; n = atlas.count(anim);
+      fi = Math.min(n - 1, Math.floor((ticks + frac) / 2));
+    } else if (hitRecent) { anim = ANIM.hit; n = atlas.count(anim); fi = Math.floor(t * 20) % n; }
+    const pick = atlas.get(anim, directionFromAngle(fr.facing), Math.min(fi, 1e6));
+    const sp = rig.sprite;
+    if (pick) { sp.texture = pick.texture; sp.anchor.set(pick.ax, pick.ay); }
+    const sc = this.mode === 'map' ? 0.5 : 0.62;
+    sp.scale.set(sc);
+    sp.position.set(fr.pos[0] * this.ts, fr.pos[1] * this.ts * PITCH);
+    sp.zIndex = sp.y;
+    sp.alpha = fr.state === 'Dodging' ? 0.55 : 1;
+    sp.tint = hitRecent && fr.state !== 'Dead' ? 0xffb0b0 : 0xffffff;
+    void i;
+  }
