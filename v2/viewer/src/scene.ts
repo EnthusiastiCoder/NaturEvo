@@ -294,3 +294,6 @@ export class Scene {
     this.app.render();
     return hero;
   }
+
+  showMonster(): void { this.rigs[1].sprite.visible = true; }
+}
