@@ -172,3 +172,9 @@ async function main(): Promise<void> {
 
   $('theme-toggle').onclick = () => { theme = nextTheme(theme); applyTheme(root, theme); localStorage.setItem('nv-theme', theme); };
   $<HTMLInputElement>('accent').oninput = (e) => { const v = (e.target as HTMLInputElement).value; setAccent(root, v); localStorage.setItem('nv-accent', v); };
+
+  scene = await Scene.create($('stage'));
+  await tryLoadDefault();
+  buildTimeline(); collectDuels(); populateSelect();
+  fitNow();
+  new ResizeObserver(fitNow).observe($('stage'));
