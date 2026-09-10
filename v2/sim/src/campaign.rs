@@ -192,3 +192,4 @@ pub fn run(seed: u64, cfg: MapCfg, heroes: &Library, monsters: &Library, permade
     }
     CampaignResult { map, path, steps, encounters, outcome, ends: 1 }
 }
+}
