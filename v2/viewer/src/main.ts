@@ -169,3 +169,6 @@ async function main(): Promise<void> {
   setAccent(root, acc); $<HTMLInputElement>('accent').value = acc;
   applyRecordMode(root, isRecordMode(location.search));
   if (isRecordMode(location.search)) { $('stage').style.aspectRatio = `${RECORD_DEFAULT.w} / ${RECORD_DEFAULT.h}`; }
+
+  $('theme-toggle').onclick = () => { theme = nextTheme(theme); applyTheme(root, theme); localStorage.setItem('nv-theme', theme); };
+  $<HTMLInputElement>('accent').oninput = (e) => { const v = (e.target as HTMLInputElement).value; setAccent(root, v); localStorage.setItem('nv-accent', v); };
