@@ -114,3 +114,10 @@ function loop(now: number): void {
   frame();
   requestAnimationFrame(loop);
 }
+
+function syncPlay(): void {
+  const b = $('play');
+  b.innerHTML = playing
+    ? '<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>'
+    : '<svg viewBox="0 0 24 24"><path d="m6 4 14 8-14 8z"/></svg>';
+}
