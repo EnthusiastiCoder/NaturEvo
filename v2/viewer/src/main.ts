@@ -159,3 +159,13 @@ function fitNow(): void {
   const st = $('stage');
   scene.fit(st.clientWidth, st.clientHeight);
 }
+
+async function main(): Promise<void> {
+  let theme: Theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  const stored = localStorage.getItem('nv-theme');
+  if (stored === 'light' || stored === 'dark') theme = stored;
+  applyTheme(root, theme);
+  const acc = localStorage.getItem('nv-accent') ?? DEFAULT_ACCENT;
+  setAccent(root, acc); $<HTMLInputElement>('accent').value = acc;
+  applyRecordMode(root, isRecordMode(location.search));
+  if (isRecordMode(location.search)) { $('stage').style.aspectRatio = `${RECORD_DEFAULT.w} / ${RECORD_DEFAULT.h}`; }
