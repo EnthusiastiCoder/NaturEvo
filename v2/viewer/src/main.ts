@@ -136,3 +136,10 @@ async function loadFiles(files: FileList): Promise<void> {
     else if (j.frames) { duelFights = [{ label: f.name, fight: parseFight(j) }]; setMode('duel'); }
   }
 }
+
+async function resolveFights(): Promise<void> {
+  await Promise.all(run.encounters.map(async (e) => {
+    if (e.fight || !e.fightUrl) return;
+    try { e.fight = parseFight(await (await fetch(e.fightUrl)).json()); } catch { /* leave null: shown as a pause */ }
+  }));
+}
