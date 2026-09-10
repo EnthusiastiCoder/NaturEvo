@@ -42,3 +42,14 @@ function buildTimeline(): void {
   if (end > cursor) { segs.push({ kind: 'walk', from: cursor, to: end, t0: tt, t1: tt + (end - cursor) / WALK_SPEED }); tt += (end - cursor) / WALK_SPEED; }
   total = Math.max(0.1, tt);
 }
+
+function populateSelect(): void {
+  const sel = $<HTMLSelectElement>('fight-select');
+  sel.innerHTML = '';
+  if (mode === 'campaign') {
+    sel.add(new Option('Whole run', '-1'));
+    run.encounters.forEach((e, k) => sel.add(new Option(`${k + 1}. ${e.kind} (zone ${e.zone})`, String(k))));
+  } else {
+    duelFights.forEach((d, k) => sel.add(new Option(d.label, String(k))));
+  }
+}
