@@ -62,3 +62,42 @@ function collectDuels(): void {
 function duration(): number {
   return mode === 'campaign' ? total : duelFights[duelIdx].fight.frames.length / duelFights[duelIdx].fight.tickHz;
 }
+
+function frame(): void {
+  const dur = duration();
+  const scrub = $<HTMLInputElement>('scrub');
+  let label = '', a = '', b = '';
+  if (mode === 'campaign') {
+    const seg = segs.find((s) => t >= s.t0 && t < s.t1) ?? segs[segs.length - 1];
+    if (seg.kind === 'walk') {
+      if (current !== 'map') { scene.setMap(run); current = 'map'; }
+      const f = Math.min(1, (t - seg.t0) / Math.max(1e-6, seg.t1 - seg.t0));
+      scene.drawMap(run, seg.from + (seg.to - seg.from) * f, t, -1);
+      label = 'Walking the jungle route';
+      a = `Step ${Math.floor(seg.from + (seg.to - seg.from) * f)} / ${run.path.length - 1}`;
+    } else {
+      const e = run.encounters[seg.enc];
+      if (e.fight) {
+        const key = `fight${seg.enc}`;
+        if (current !== key) { scene.setFight(e.fight); current = key; }
+        const s = scene.drawFight(e.fight, t - seg.t0, { rays });
+        a = `Hero ${Math.round(s.hero.hp)} HP`; b = `${e.kind} ${Math.round(s.monster.hp)} HP`;
+      } else {
+        if (current !== 'map') { scene.setMap(run); current = 'map'; }
+        scene.drawMap(run, run.path.findIndex((p) => p[0] === e.tile[0] && p[1] === e.tile[1]), t, seg.enc);
+      }
+      label = `Encounter ${seg.enc + 1}: ${e.kind}, zone ${e.zone}${e.result ? ' - ' + e.result : ''}`;
+    }
+  } else {
+    const d = duelFights[duelIdx];
+    const key = `duel${duelIdx}`;
+    if (current !== key) { scene.setFight(d.fight); current = key; }
+    const s = scene.drawFight(d.fight, t, { rays });
+    a = `Hero ${Math.round(s.hero.hp)} HP`; b = `Monster ${Math.round(s.monster.hp)} HP`;
+    label = d.label;
+  }
+  $('hud-a').textContent = label;
+  $('hud-b').textContent = [a, b].filter(Boolean).join('  |  ');
+  scrub.value = String(Math.round((t / dur) * 1000));
+  $('clock').textContent = `${t.toFixed(1)} / ${dur.toFixed(1)} s`;
+}
