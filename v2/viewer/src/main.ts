@@ -58,3 +58,7 @@ function collectDuels(): void {
   duelFights = run.encounters.filter((e) => e.fight).map((e, k) => ({ label: `${k + 1}. ${e.kind} vs monster ${e.monsterIndex}`, fight: e.fight! }));
   if (!duelFights.length) duelFights = [{ label: 'Demo duel', fight: demoFight(1) }];
 }
+
+function duration(): number {
+  return mode === 'campaign' ? total : duelFights[duelIdx].fight.frames.length / duelFights[duelIdx].fight.tickHz;
+}
