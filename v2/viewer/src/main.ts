@@ -24,3 +24,21 @@ let current = '';
 let duelIdx = 0;
 
 const root = document.documentElement;
+
+function buildTimeline(): void {
+  segs = [];
+  let cursor = 0, tt = 0;
+  const idxOf = (e: Encounter) => Math.max(0, run.path.findIndex((p) => p[0] === e.tile[0] && p[1] === e.tile[1]));
+  run.encounters.forEach((e, k) => {
+    const idx = Math.max(cursor, idxOf(e));
+    const d = (idx - cursor) / WALK_SPEED;
+    if (d > 0) segs.push({ kind: 'walk', from: cursor, to: idx, t0: tt, t1: tt + d });
+    tt += d; cursor = idx;
+    const fd = e.fight ? e.fight.frames.length / e.fight.tickHz : ENC_PAUSE;
+    segs.push({ kind: 'fight', enc: k, t0: tt, t1: tt + fd });
+    tt += fd;
+  });
+  const end = run.path.length - 1;
+  if (end > cursor) { segs.push({ kind: 'walk', from: cursor, to: end, t0: tt, t1: tt + (end - cursor) / WALK_SPEED }); tt += (end - cursor) / WALK_SPEED; }
+  total = Math.max(0.1, tt);
+}
