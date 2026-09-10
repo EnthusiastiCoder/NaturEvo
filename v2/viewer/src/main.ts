@@ -22,3 +22,5 @@ let speed = 1;
 let rays = false;
 let current = '';
 let duelIdx = 0;
+
+const root = document.documentElement;
