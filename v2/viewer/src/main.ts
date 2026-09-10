@@ -2,6 +2,7 @@ import './style.css';
 import { type Encounter, type Fight, type Run, demoFight, demoRun, parseFight, parseRun } from './data';
 import { RECORD_DEFAULT, applyRecordMode, isRecordMode } from './record';
 import { Scene } from './scene';
+import { installRecorder, splitSource } from './capture';
 import { DEFAULT_ACCENT, type Theme, applyTheme, nextTheme, setAccent } from './theme';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -206,6 +207,21 @@ async function main(): Promise<void> {
     else if (e.key === 'Escape') $('info').hidden = true;
   });
   syncPlay();
+  if (isRecordMode(location.search)) {
+    const q = new URLSearchParams(location.search);
+    const [e, l] = [q.get('early'), q.get('late')];
+    if (e && l) {
+      const src = await splitSource(e, l);
+      scene.app.canvas.style.display = 'none';
+      const c = src.canvas(); c.style.cssText = 'width:100%;height:100%;object-fit:contain';
+      $('stage').appendChild(c);
+      installRecorder(src); src.draw(0);
+      return;
+    }
+    playing = false;
+    installRecorder({ canvas: () => scene.app.canvas as HTMLCanvasElement, duration, draw: (tt) => { t = Math.min(tt, duration() - 1e-6); frame(); } });
+    return;
+  }
   requestAnimationFrame(loop);
 }
 
