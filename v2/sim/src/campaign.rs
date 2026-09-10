@@ -192,4 +192,14 @@ pub fn run(seed: u64, cfg: MapCfg, heroes: &Library, monsters: &Library, permade
     }
     CampaignResult { map, path, steps, encounters, outcome, ends: 1 }
 }
+
+/// Arena obstacles as `{"w","h","blocked":[rows of '#'/'.']}` for the viewer.
+pub fn arena_json(a: &Arena) -> String {
+    let (w, h) = a.size();
+    let t = a.tiles();
+    let rows: Vec<String> = (0..h)
+        .map(|y| format!("\"{}\"", (0..w).map(|x| if t[y * w + x] { '#' } else { '.' }).collect::<String>()))
+        .collect();
+    format!("{{\"w\":{},\"h\":{},\"blocked\":[{}]}}", w, h, rows.join(","))
+}
 }
