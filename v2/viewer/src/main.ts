@@ -210,3 +210,5 @@ async function main(): Promise<void> {
 }
 
 function toggleRays(): void { rays = !rays; $('rays').setAttribute('aria-pressed', String(rays)); }
+
+void main();
