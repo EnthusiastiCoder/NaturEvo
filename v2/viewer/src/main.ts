@@ -128,3 +128,11 @@ function setMode(m: 'campaign' | 'duel'): void {
   $('mode-duel').setAttribute('aria-pressed', String(m === 'duel'));
   populateSelect();
 }
+
+async function loadFiles(files: FileList): Promise<void> {
+  for (const f of Array.from(files)) {
+    const j = JSON.parse(await f.text());
+    if (j.map && j.path) { run = parseRun(j); await resolveFights(); buildTimeline(); collectDuels(); setMode('campaign'); }
+    else if (j.frames) { duelFights = [{ label: f.name, fight: parseFight(j) }]; setMode('duel'); }
+  }
+}
