@@ -210,4 +210,31 @@ pub fn fight_json(e: &Encounter) -> String {
     let body = log.strip_suffix('}').unwrap_or(&log);
     format!("{},\"arena\":{},\"seed\":{},\"monster_index\":{}}}", body, arena_json(&arena), e.match_seed, e.monster_index)
 }
+
+/// Run JSON for the viewer. With `fights_dir` set, fights are written there as `fight_N.json`
+/// and referenced by relative URL; otherwise they are inlined.
+pub fn run_json(r: &CampaignResult, fights_dir: Option<&str>) -> Result<String, String> {
+    let mut encs = Vec::new();
+    for (i, e) in r.encounters.iter().enumerate() {
+        let fj = fight_json(e);
+        let fight = match fights_dir {
+            Some(d) => {
+                std::fs::create_dir_all(d).map_err(|x| format!("{}: {}", d, x))?;
+                let name = format!("fight_{}.json", i);
+                std::fs::write(std::path::Path::new(d).join(&name), &fj).map_err(|x| x.to_string())?;
+                format!("\"{}\"", name)
+            }
+            None => fj,
+        };
+        let kind = format!("{:?}", e.kind).to_lowercase();
+        encs.push(format!(
+            "{{\"kind\":\"{}\",\"zone\":{},\"tile\":[{},{}],\"monster_index\":{},\"result\":\"{:?}\",\"fight\":{}}}",
+            kind, e.zone, e.tile.0, e.tile.1, e.monster_index, e.result.outcome, fight
+        ));
+    }
+    let path: Vec<String> = r.path.iter().map(|p| format!("[{},{}]", p.0, p.1)).collect();
+    Ok(format!(
+        "{{\"map\":{},\"path\":[{}],\"encounters\":[{}],\"outcome\":\"{:?}\"}}",
+        r.map.to_json(), path.join(","), encs.join(","), r.outcome
+    ))
 }
