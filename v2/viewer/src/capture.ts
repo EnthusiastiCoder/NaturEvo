@@ -40,3 +40,13 @@ export async function splitSource(earlyUrl: string, lateUrl: string, w = RECORD_
 }
 
 const toBlob = (c: HTMLCanvasElement) => new Promise<Blob>((res, rej) => c.toBlob((b) => (b ? res(b) : rej(new Error('toBlob failed'))), 'image/png'));
+
+async function makeSink(): Promise<(name: string, d: Uint8Array | Blob) => void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pick = (window as any).showDirectoryPicker;
+  if (pick) {
+    const dir = await pick.call(window, { mode: 'readwrite' });
+    return (name, d) => { void dir.getFileHandle(name, { create: true }).then(async (fh: any) => { const w = await fh.createWritable(); await w.write(d); await w.close(); }); };
+  }
+  return (name, d) => { const a = document.createElement('a'); a.href = URL.createObjectURL(d instanceof Blob ? d : new Blob([d as BlobPart])); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); };
+}
