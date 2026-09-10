@@ -53,3 +53,8 @@ function populateSelect(): void {
     duelFights.forEach((d, k) => sel.add(new Option(d.label, String(k))));
   }
 }
+
+function collectDuels(): void {
+  duelFights = run.encounters.filter((e) => e.fight).map((e, k) => ({ label: `${k + 1}. ${e.kind} vs monster ${e.monsterIndex}`, fight: e.fight! }));
+  if (!duelFights.length) duelFights = [{ label: 'Demo duel', fight: demoFight(1) }];
+}
