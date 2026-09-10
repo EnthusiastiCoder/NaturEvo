@@ -208,3 +208,5 @@ async function main(): Promise<void> {
   syncPlay();
   requestAnimationFrame(loop);
 }
+
+function toggleRays(): void { rays = !rays; $('rays').setAttribute('aria-pressed', String(rays)); }
