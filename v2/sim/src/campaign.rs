@@ -202,4 +202,12 @@ pub fn arena_json(a: &Arena) -> String {
         .collect();
     format!("{{\"w\":{},\"h\":{},\"blocked\":[{}]}}", w, h, rows.join(","))
 }
+
+/// Fight log JSON plus `arena`, `seed` and `monster_index` fields.
+pub fn fight_json(e: &Encounter) -> String {
+    let log = e.result.log.to_json();
+    let arena = Arena::generate(e.arena_seed, &ArenaConfig::default());
+    let body = log.strip_suffix('}').unwrap_or(&log);
+    format!("{},\"arena\":{},\"seed\":{},\"monster_index\":{}}}", body, arena_json(&arena), e.match_seed, e.monster_index)
+}
 }
