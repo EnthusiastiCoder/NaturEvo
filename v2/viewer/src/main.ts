@@ -143,3 +143,14 @@ async function resolveFights(): Promise<void> {
     try { e.fight = parseFight(await (await fetch(e.fightUrl)).json()); } catch { /* leave null: shown as a pause */ }
   }));
 }
+
+async function tryLoadDefault(): Promise<void> {
+  const q = new URLSearchParams(location.search);
+  const runUrl = q.get('run') ?? '/data/run.json';
+  try {
+    const r = await fetch(runUrl);
+    if (r.ok && (r.headers.get('content-type') ?? '').includes('json')) { run = parseRun(await r.json()); await resolveFights(); }
+  } catch { /* use demo */ }
+  const fu = q.get('fight');
+  if (fu) { try { duelFights = [{ label: fu, fight: parseFight(await (await fetch(fu)).json()) }]; } catch { /* ignore */ } }
+}
