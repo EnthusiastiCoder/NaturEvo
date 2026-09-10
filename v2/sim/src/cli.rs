@@ -29,7 +29,22 @@ pub fn run(args: &[String]) -> Result<(), String> {
             std::fs::write(out, res.log.to_json()).map_err(|e| format!("{}: {}", out, e))
         }
         Some("train") => crate::evolve::train_cli(args),
-        Some("campaign") => Err(format!("{} not implemented yet", args[0])),
+        Some("campaign") => {
+            let dir = need(args, "--champions")?;
+            let out = need(args, "--out")?;
+            let seed: u64 = opt(args, "--seed").unwrap_or("1").parse().map_err(|_| "bad --seed".to_string())?;
+            let keep: usize = opt(args, "--keep").unwrap_or("4").parse().map_err(|_| "bad --keep".to_string())?;
+            let permadeath = opt(args, "--permadeath").map(|v| v != "off").unwrap_or(true);
+            let heroes = crate::campaign::Library::from_dir(dir, "hero", keep)?;
+            let monsters = crate::campaign::Library::from_dir(dir, "monster", keep)?;
+            let r = crate::campaign::run(seed, crate::campaign::MapCfg::default(), &heroes, &monsters, permadeath);
+            let fights = opt(args, "--fights-dir");
+            let json = crate::campaign::run_json(&r, fights)?;
+            std::fs::write(out, json).map_err(|e| format!("{}: {}", out, e))?;
+            let won = r.encounters.iter().filter(|e| e.result.outcome == crate::matchup::Outcome::HeroWin).count();
+            eprintln!("outcome {:?} steps {} encounters {} hero_wins {}", r.outcome, r.steps, r.encounters.len(), won);
+            Ok(())
+        }
         Some(other) => Err(format!("unknown command: {}", other)),
         None => Err("usage: arena-sim <train|fight|campaign> [options]".to_string()),
     }
