@@ -154,3 +154,8 @@ async function tryLoadDefault(): Promise<void> {
   const fu = q.get('fight');
   if (fu) { try { duelFights = [{ label: fu, fight: parseFight(await (await fetch(fu)).json()) }]; } catch { /* ignore */ } }
 }
+
+function fitNow(): void {
+  const st = $('stage');
+  scene.fit(st.clientWidth, st.clientHeight);
+}
