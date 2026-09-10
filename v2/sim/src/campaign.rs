@@ -25,6 +25,30 @@ impl Library {
     pub fn is_empty(&self) -> bool {
         false
     }
+    /// Load trained champions of one role ("hero" or "monster") from a `train` output dir, newest
+    /// generation first, keeping at most `keep`. Index 0 is therefore the latest champion.
+    pub fn from_dir(dir: &str, role: &str, keep: usize) -> Result<Library, String> {
+        let prefix = format!("champion_{}_gen_", role);
+        let mut found: Vec<(u32, std::path::PathBuf)> = Vec::new();
+        for e in std::fs::read_dir(dir).map_err(|e| format!("{}: {}", dir, e))? {
+            let path = e.map_err(|e| e.to_string())?.path();
+            let name = path.file_name().and_then(|n| n.to_str()).unwrap_or("");
+            if let Some(g) = name.strip_prefix(&prefix).and_then(|r| r.strip_suffix(".json")).and_then(|g| g.parse::<u32>().ok()) {
+                found.push((g, path));
+            }
+        }
+        found.sort_by(|a, b| b.0.cmp(&a.0));
+        found.truncate(keep.max(1));
+        let mut gs = Vec::new();
+        for (_, p) in &found {
+            let t = std::fs::read_to_string(p).map_err(|e| format!("{}: {}", p.display(), e))?;
+            gs.push(Genome::from_json(&t)?);
+        }
+        if gs.is_empty() {
+            return Err(format!("no {} champions in {}", role, dir));
+        }
+        Ok(Library::new(gs))
+    }
     pub fn pick(&self, i: usize) -> &Genome {
         &self.genomes[i % self.genomes.len()]
     }
