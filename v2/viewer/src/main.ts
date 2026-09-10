@@ -121,3 +121,10 @@ function syncPlay(): void {
     ? '<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>'
     : '<svg viewBox="0 0 24 24"><path d="m6 4 14 8-14 8z"/></svg>';
 }
+
+function setMode(m: 'campaign' | 'duel'): void {
+  mode = m; t = 0; current = ''; duelIdx = 0;
+  $('mode-walk').setAttribute('aria-pressed', String(m === 'campaign'));
+  $('mode-duel').setAttribute('aria-pressed', String(m === 'duel'));
+  populateSelect();
+}
