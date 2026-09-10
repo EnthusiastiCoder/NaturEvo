@@ -7,3 +7,5 @@ import { DEFAULT_ACCENT, type Theme, applyTheme, nextTheme, setAccent } from './
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const WALK_SPEED = 7; // path tiles per second
 const ENC_PAUSE = 1.2;
+
+type Seg = { kind: 'walk'; from: number; to: number; t0: number; t1: number } | { kind: 'fight'; enc: number; t0: number; t1: number };
