@@ -38,3 +38,5 @@ export async function splitSource(earlyUrl: string, lateUrl: string, w = RECORD_
   };
   return { canvas: () => out, draw, duration: dur };
 }
+
+const toBlob = (c: HTMLCanvasElement) => new Promise<Blob>((res, rej) => c.toBlob((b) => (b ? res(b) : rej(new Error('toBlob failed'))), 'image/png'));
