@@ -101,3 +101,16 @@ function frame(): void {
   scrub.value = String(Math.round((t / dur) * 1000));
   $('clock').textContent = `${t.toFixed(1)} / ${dur.toFixed(1)} s`;
 }
+
+let last = performance.now();
+function loop(now: number): void {
+  const dt = Math.min(0.1, (now - last) / 1000);
+  last = now;
+  const dur = duration();
+  if (playing) {
+    t += dt * speed;
+    if (t >= dur) { t = dur - 1e-6; playing = false; syncPlay(); }
+  }
+  frame();
+  requestAnimationFrame(loop);
+}
