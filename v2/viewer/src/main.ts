@@ -178,3 +178,33 @@ async function main(): Promise<void> {
   buildTimeline(); collectDuels(); populateSelect();
   fitNow();
   new ResizeObserver(fitNow).observe($('stage'));
+
+  $('play').onclick = () => { if (t >= duration() - 1e-3) t = 0; playing = !playing; syncPlay(); };
+  $('restart').onclick = () => { t = 0; playing = true; syncPlay(); };
+  $<HTMLInputElement>('scrub').oninput = (e) => { t = (Number((e.target as HTMLInputElement).value) / 1000) * duration(); };
+  $<HTMLSelectElement>('speed').onchange = (e) => { speed = Number((e.target as HTMLSelectElement).value); };
+  $('mode-walk').onclick = () => setMode('campaign');
+  $('mode-duel').onclick = () => setMode('duel');
+  $<HTMLSelectElement>('fight-select').onchange = (e) => {
+    const v = Number((e.target as HTMLSelectElement).value);
+    if (mode === 'campaign') { const s = segs.find((x) => x.kind === 'fight' && x.enc === v); t = v < 0 ? 0 : s ? s.t0 : 0; }
+    else { duelIdx = v; t = 0; current = ''; }
+    playing = true; syncPlay();
+  };
+  $('rays').onclick = () => toggleRays();
+  $('load').onclick = () => $<HTMLInputElement>('file').click();
+  $<HTMLInputElement>('file').onchange = (e) => { const f = (e.target as HTMLInputElement).files; if (f) void loadFiles(f); };
+  $('help').onclick = () => { const i = $('info'); i.hidden = !i.hidden; };
+  addEventListener('keydown', (e) => {
+    if ((e.target as HTMLElement).tagName === 'INPUT' && (e.target as HTMLInputElement).type !== 'range') return;
+    if (e.key === ' ' && (e.target as HTMLElement).tagName !== 'BUTTON') { e.preventDefault(); $('play').click(); }
+    else if (e.key === 'ArrowRight') t = Math.min(duration(), t + 0.5);
+    else if (e.key === 'ArrowLeft') t = Math.max(0, t - 0.5);
+    else if (e.key === 't') $('theme-toggle').click();
+    else if (e.key === 'v') toggleRays();
+    else if (e.key === '?') $('help').click();
+    else if (e.key === 'Escape') $('info').hidden = true;
+  });
+  syncPlay();
+  requestAnimationFrame(loop);
+}
