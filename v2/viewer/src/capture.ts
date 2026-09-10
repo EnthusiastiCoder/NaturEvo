@@ -50,3 +50,39 @@ async function makeSink(): Promise<(name: string, d: Uint8Array | Blob) => void>
   }
   return (name, d) => { const a = document.createElement('a'); a.href = URL.createObjectURL(d instanceof Blob ? d : new Blob([d as BlobPart])); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); };
 }
+
+export function installRecorder(src: CaptureSource): void {
+  const fps = RECORD_DEFAULT.fps;
+  const frameCount = () => Math.floor(src.duration() * fps);
+  const step = (n: number) => src.draw(frameTime(n, fps));
+  const png = async (n: number) => { step(n); return toBlob(src.canvas()); };
+  const api = {
+    frameCount, step, png,
+    async exportPng(count = frameCount()) {
+      const sink = await makeSink();
+      await new Recorder(png, sink, fps).exportPng(count);
+    },
+    /** Frame-stepped WebM: one captured frame per rendered frame, so timing follows the video clock, not real time. */
+    async webm(count = frameCount()): Promise<Blob> {
+      const stream = src.canvas().captureStream(0);
+      const track = stream.getVideoTracks()[0] as MediaStreamTrack & { requestFrame?: () => void };
+      const rec = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 16_000_000 });
+      const chunks: Blob[] = [];
+      rec.ondataavailable = (e) => chunks.push(e.data);
+      const done = new Promise<void>((r) => { rec.onstop = () => r(); });
+      rec.start();
+      const t0 = performance.now();
+      for (let n = 0; n < count; n++) {
+        step(n); track.requestFrame?.();
+        const wait = t0 + ((n + 1) * 1000) / fps - performance.now(); // pace so the encoder timestamps match 60 fps
+        if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+      }
+      rec.stop(); await done;
+      const blob = new Blob(chunks, { type: 'video/webm' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'naturevo.webm'; a.click();
+      return blob;
+    },
+  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (window as any).__record = api;
+}
