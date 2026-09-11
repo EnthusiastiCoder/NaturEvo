@@ -20,3 +20,4 @@ describe('fight camera', () => {
       expect(p[1] * c.scale + c.y).toBeGreaterThanOrEqual(0);
       expect(p[1] * c.scale + c.y).toBeLessThanOrEqual(st.h);
     }
+  });
