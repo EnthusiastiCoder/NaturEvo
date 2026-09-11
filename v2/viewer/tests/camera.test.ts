@@ -21,3 +21,4 @@ describe('fight camera', () => {
       expect(p[1] * c.scale + c.y).toBeLessThanOrEqual(st.h);
     }
   });
+});
