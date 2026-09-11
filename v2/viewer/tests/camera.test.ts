@@ -12,3 +12,4 @@ describe('fight camera', () => {
     expect(c.y + ARENA.h * c.scale).toBeGreaterThanOrEqual(h - 1e-6);
   });
   it('keeps both fighters in view when far apart', () => {
+    const st = { w: 1920, h: 1080 };
