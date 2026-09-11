@@ -82,3 +82,26 @@ export function demoRun(): Run {
   ];
   return { map: { w: n, h: n, tiles, zones, anchors: [[3, 3], [36, 36]] }, path, encounters: encs, outcome: 'Won' };
 }
+
+/** Fight file names in a run are relative to the run file, so resolve against its URL. */
+export function resolveFightUrl(fight: string, runUrl: string): string {
+  return new URL(fight, runUrl).href;
+}
+
+/** Load every referenced fight; returns one message per failure so the UI can show it. */
+export async function resolveFights(run: Run, runUrl: string, fetchFn: (u: string) => Promise<Response> = (u) => fetch(u)): Promise<string[]> {
+  const errors: string[] = [];
+  await Promise.all(run.encounters.map(async (e) => {
+    if (e.fight || !e.fightUrl) return;
+    try {
+      const r = await fetchFn(resolveFightUrl(e.fightUrl, runUrl));
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      e.fight = parseFight(await r.json());
+    } catch (err) { errors.push(`${e.fightUrl}: ${err instanceof Error ? err.message : String(err)}`); }
+  }));
+  return errors;
+}
+
+export function mergeDuels<T>(fromRun: T[], requested: T | null): T[] {
+  return requested ? [requested, ...fromRun] : fromRun;
+}
