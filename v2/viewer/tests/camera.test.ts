@@ -26,3 +26,4 @@ describe('map camera', () => {
   it('zooms around the hero and clamps to the map', () => {
     const m = { w: 4000, h: 3000 };
     const c = mapCamera(m, [2000, 1500], { w: 1920, h: 1080 });
+    expect(c.scale).toBeGreaterThanOrEqual(1.4);
