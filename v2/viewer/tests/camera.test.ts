@@ -29,3 +29,4 @@ describe('map camera', () => {
     expect(c.scale).toBeGreaterThanOrEqual(1.4);
     expect(2000 * c.scale + c.x).toBeCloseTo(960, 3);
     const edge = mapCamera(m, [0, 0], { w: 1920, h: 1080 });
+    expect(edge.x).toBe(0); expect(edge.y).toBe(0);
