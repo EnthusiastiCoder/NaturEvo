@@ -29,3 +29,12 @@ describe('relative fight urls', () => {
     expect(errs[0]).toContain('404');
   });
 });
+
+describe('?fight is honoured', () => {
+  it('puts the requested fight first, ahead of run fights', () => {
+    const f = (n: number) => ({ tickHz: 30, frames: [], arena: { w: 1, h: 1, blocked: null }, seed: n, monsterIndex: 0 }) as Fight;
+    const out = mergeDuels([{ label: 'run', fight: f(1) }], { label: 'url', fight: f(2) });
+    expect(out.map((d) => d.label)).toEqual(['url', 'run']);
+    expect(mergeDuels([{ label: 'run', fight: f(1) }], null).length).toBe(1);
+  });
+});
