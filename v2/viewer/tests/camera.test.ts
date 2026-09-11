@@ -22,3 +22,4 @@ describe('fight camera', () => {
     }
   });
 });
+describe('map camera', () => {
