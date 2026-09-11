@@ -8,3 +8,4 @@ describe('fight camera', () => {
     expect(c.scale).toBeGreaterThanOrEqual(1.5);
     expect(c.x).toBeLessThanOrEqual(0);
     expect(c.y).toBeLessThanOrEqual(0);
+    expect(c.x + ARENA.w * c.scale).toBeGreaterThanOrEqual(w - 1e-6);
