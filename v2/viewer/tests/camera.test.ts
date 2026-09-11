@@ -28,3 +28,4 @@ describe('map camera', () => {
     const c = mapCamera(m, [2000, 1500], { w: 1920, h: 1080 });
     expect(c.scale).toBeGreaterThanOrEqual(1.4);
     expect(2000 * c.scale + c.x).toBeCloseTo(960, 3);
+    const edge = mapCamera(m, [0, 0], { w: 1920, h: 1080 });
