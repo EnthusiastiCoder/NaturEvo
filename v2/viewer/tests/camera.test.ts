@@ -10,3 +10,4 @@ describe('fight camera', () => {
     expect(c.y).toBeLessThanOrEqual(0);
     expect(c.x + ARENA.w * c.scale).toBeGreaterThanOrEqual(w - 1e-6);
     expect(c.y + ARENA.h * c.scale).toBeGreaterThanOrEqual(h - 1e-6);
+  });
