@@ -7,3 +7,4 @@ describe('fight camera', () => {
     const c = fightCamera(ARENA, [700, 400], [760, 400], { w, h });
     expect(c.scale).toBeGreaterThanOrEqual(1.5);
     expect(c.x).toBeLessThanOrEqual(0);
+    expect(c.y).toBeLessThanOrEqual(0);
