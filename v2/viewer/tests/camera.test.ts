@@ -16,3 +16,4 @@ describe('fight camera', () => {
     const c = fightCamera(ARENA, [200, 200], [1300, 600], st);
     for (const p of [[200, 200], [1300, 600]]) {
       expect(p[0] * c.scale + c.x).toBeGreaterThanOrEqual(0);
+      expect(p[0] * c.scale + c.x).toBeLessThanOrEqual(st.w);
