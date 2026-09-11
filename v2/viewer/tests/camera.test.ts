@@ -13,3 +13,4 @@ describe('fight camera', () => {
   });
   it('keeps both fighters in view when far apart', () => {
     const st = { w: 1920, h: 1080 };
+    const c = fightCamera(ARENA, [200, 200], [1300, 600], st);
