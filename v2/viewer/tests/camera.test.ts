@@ -24,3 +24,4 @@ describe('fight camera', () => {
 });
 describe('map camera', () => {
   it('zooms around the hero and clamps to the map', () => {
+    const m = { w: 4000, h: 3000 };
