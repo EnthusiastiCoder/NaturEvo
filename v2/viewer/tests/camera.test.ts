@@ -27,3 +27,4 @@ describe('map camera', () => {
     const m = { w: 4000, h: 3000 };
     const c = mapCamera(m, [2000, 1500], { w: 1920, h: 1080 });
     expect(c.scale).toBeGreaterThanOrEqual(1.4);
+    expect(2000 * c.scale + c.x).toBeCloseTo(960, 3);
