@@ -33,3 +33,4 @@ describe('map camera', () => {
   });
 });
 describe('visual separation', () => {
+  it('pushes overlapping fighters apart symmetrically, leaves distant ones alone', () => {
