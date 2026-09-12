@@ -37,3 +37,4 @@ describe('visual separation', () => {
     const [a, b] = separate([10, 10], [10.2, 10], 1.5);
     expect(Math.hypot(a[0] - b[0], a[1] - b[1])).toBeCloseTo(1.5, 6);
     expect((a[0] + b[0]) / 2).toBeCloseTo(10.1, 6);
+    expect(separate([0, 0], [3, 0], 1.5)).toEqual([[0, 0], [3, 0]]);
