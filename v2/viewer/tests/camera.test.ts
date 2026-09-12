@@ -40,3 +40,4 @@ describe('visual separation', () => {
     expect(separate([0, 0], [3, 0], 1.5)).toEqual([[0, 0], [3, 0]]);
   });
   it('handles exact overlap', () => {
+    const [a, b] = separate([5, 5], [5, 5], 1);
