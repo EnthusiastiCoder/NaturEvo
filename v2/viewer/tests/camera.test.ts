@@ -36,3 +36,4 @@ describe('visual separation', () => {
   it('pushes overlapping fighters apart symmetrically, leaves distant ones alone', () => {
     const [a, b] = separate([10, 10], [10.2, 10], 1.5);
     expect(Math.hypot(a[0] - b[0], a[1] - b[1])).toBeCloseTo(1.5, 6);
+    expect((a[0] + b[0]) / 2).toBeCloseTo(10.1, 6);
