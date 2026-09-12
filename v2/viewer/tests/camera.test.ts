@@ -31,3 +31,4 @@ describe('map camera', () => {
     const edge = mapCamera(m, [0, 0], { w: 1920, h: 1080 });
     expect(edge.x).toBe(0); expect(edge.y).toBe(0);
   });
+});
