@@ -43,3 +43,4 @@ describe('visual separation', () => {
     const [a, b] = separate([5, 5], [5, 5], 1);
     expect(Math.hypot(a[0] - b[0], a[1] - b[1])).toBeCloseTo(1, 6);
   });
+});
