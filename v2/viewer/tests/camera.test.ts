@@ -32,3 +32,4 @@ describe('map camera', () => {
     expect(edge.x).toBe(0); expect(edge.y).toBe(0);
   });
 });
+describe('visual separation', () => {
