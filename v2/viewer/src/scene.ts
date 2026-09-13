@@ -23,6 +23,11 @@ export class Scene {
   private overlay = new Graphics();
   private fx = new Graphics();
   private ground: Sprite | null = null;
+  private sw = STAGE_W;
+  private sh = STAGE_H;
+  private res = 1;
+  private arenaPx = { w: 1, h: 1 };
+  private clip: Graphics | null = null;
   private rigs: Rig[] = [];
   private mode: 'fight' | 'map' | null = null;
   private ts = 32;
