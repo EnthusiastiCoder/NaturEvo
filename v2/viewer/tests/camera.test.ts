@@ -45,3 +45,4 @@ describe('visual separation', () => {
   });
 });
 describe('state labels', () => {
+  it('gives attack, block and dodge distinct readable labels', () => {
