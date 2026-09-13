@@ -44,3 +44,4 @@ describe('visual separation', () => {
     expect(Math.hypot(a[0] - b[0], a[1] - b[1])).toBeCloseTo(1, 6);
   });
 });
+describe('state labels', () => {
