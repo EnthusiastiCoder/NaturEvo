@@ -51,3 +51,4 @@ describe('state labels', () => {
     expect(new Set(l.map((x) => x!.text)).size).toBeGreaterThanOrEqual(3);
     expect(stateLabel('Idle')).toBeNull();
   });
+});
