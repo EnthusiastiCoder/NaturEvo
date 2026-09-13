@@ -23,3 +23,13 @@ export function mapCamera(map: { w: number; h: number }, hero: V, stage: { w: nu
   const scale = Math.max(zoom, stage.w / map.w, stage.h / map.h);
   return { scale, x: clamp(stage.w / 2 - hero[0] * scale, stage.w - map.w * scale, 0), y: clamp(stage.h / 2 - hero[1] * scale, stage.h - map.h * scale, 0) };
 }
+
+/** Visual-only separation so melee fighters never fully overlap (distances in tiles). */
+export function separate(a: V, b: V, minDist: number): [V, V] {
+  const dx = b[0] - a[0], dy = b[1] - a[1];
+  const d = Math.hypot(dx, dy);
+  if (d >= minDist) return [a, b];
+  const ux = d > 1e-6 ? dx / d : 1, uy = d > 1e-6 ? dy / d : 0;
+  const push = (minDist - d) / 2;
+  return [[a[0] - ux * push, a[1] - uy * push], [b[0] + ux * push, b[1] + uy * push]];
+}
