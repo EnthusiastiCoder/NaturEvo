@@ -25,3 +25,10 @@ export class Recorder {
 export function splitCaptions(a: { generation: number }, b: { generation: number }): [string, string] {
   return [`Early: gen ${a.generation}`, `Late: gen ${b.generation}`];
 }
+
+/** Pixi canvas size: record mode is exactly 1920x1080 at resolution 1; otherwise logical 16:9 stage at dpr (max 2). */
+export function sceneSize(record: boolean, dpr: number): { w: number; h: number; resolution: number } {
+  return record ? { w: RECORD_DEFAULT.w, h: RECORD_DEFAULT.h, resolution: 1 } : { w: 1920, h: 1080, resolution: Math.min(2, dpr || 1) };
+}
+/** Each split-screen half is rendered at its own native size (no letterboxing). */
+export function splitCellSize(w: number, h: number): { w: number; h: number } { return { w: w / 2, h }; }
