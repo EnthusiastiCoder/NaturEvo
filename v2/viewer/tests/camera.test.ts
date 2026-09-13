@@ -48,3 +48,4 @@ describe('state labels', () => {
   it('gives attack, block and dodge distinct readable labels', () => {
     const l = ['Windup', 'Active', 'Blocking', 'Dodging'].map((s) => stateLabel(s));
     expect(l.every((x) => x && x.text.length > 0)).toBe(true);
+    expect(new Set(l.map((x) => x!.text)).size).toBeGreaterThanOrEqual(3);
