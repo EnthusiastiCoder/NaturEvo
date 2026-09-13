@@ -20,9 +20,14 @@ export const fbm = (x: number, y: number, s: number) =>
 
 export interface GroundSpec { w: number; h: number; tile: (x: number, y: number) => string; zone: (x: number, y: number) => number; seed: number }
 
-/** Paint the ground. ts = pixels per tile horizontally; pitch = vertical squash. */
-export function paintGround(g: GroundSpec, ts: number, pitch: number): HTMLCanvasElement {
-  const SUB = 4;
+export const groundPixels = (w: number, h: number, ts: number, pitch: number, dpr: number) =>
+  ({ w: Math.round(w * ts * dpr), h: Math.round(h * ts * pitch * dpr) });
+/** Colour/shade samples per tile edge: dense enough that smooth upscaling no longer smears (8 at ts 48). */
+export const lowResSub = (ts: number) => Math.max(8, Math.ceil(ts / 6));
+
+/** Paint the ground at device resolution (dpr). ts = logical pixels per tile; pitch = vertical squash. */
+export function paintGround(g: GroundSpec, ts: number, pitch: number, dpr = 1): HTMLCanvasElement {
+  const SUB = lowResSub(ts);
   const lw = g.w * SUB, lh = g.h * SUB;
   const low = document.createElement('canvas');
   low.width = lw; low.height = lh;
@@ -57,10 +62,12 @@ export function paintGround(g: GroundSpec, ts: number, pitch: number): HTMLCanva
   }
   lc.putImageData(img, 0, 0);
   const out = document.createElement('canvas');
-  out.width = Math.round(g.w * ts); out.height = Math.round(g.h * ts * pitch);
+  const dim = groundPixels(g.w, g.h, ts, pitch, dpr);
+  out.width = dim.w; out.height = dim.h;
   const c = out.getContext('2d')!;
   c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
   c.drawImage(low, 0, 0, out.width, out.height);
+  c.scale(dpr, dpr); // everything below is drawn crisp, in logical pixels, at device resolution
   // detail: grass tufts, pebbles and water glints, deterministic
   const sx = ts, sy = ts * pitch;
   for (let y = 0; y < g.h; y++) for (let x = 0; x < g.w; x++) {
@@ -71,21 +78,23 @@ export function paintGround(g: GroundSpec, ts: number, pitch: number): HTMLCanva
       continue;
     }
     const grassy = t === ',' || t === 'T';
-    const count = grassy ? 6 : 2;
+    const count = grassy ? 10 : 4;
     for (let k = 0; k < count; k++) {
       const px = (x + hash2(x, y, k + 11)) * sx, py = (y + hash2(x, y, k + 31)) * sy;
       if (grassy) {
         c.strokeStyle = hash2(x, y, k) > 0.5 ? 'rgba(120,190,80,0.55)' : 'rgba(30,80,30,0.55)';
-        c.lineWidth = 1.2; c.beginPath(); c.moveTo(px, py);
+        c.lineWidth = 1; c.beginPath(); c.moveTo(px, py);
         c.lineTo(px + (hash2(k, x, y) - 0.5) * 4, py - 4 - hash2(y, k, x) * 4); c.stroke();
-      } else { c.fillStyle = 'rgba(70,56,40,0.35)'; c.fillRect(px, py, 2, 1.4); }
+      } else { c.fillStyle = hash2(x, y, k + 3) > 0.5 ? 'rgba(70,56,40,0.5)' : 'rgba(190,165,120,0.4)'; c.fillRect(px, py, 2, 1.4); }
+      c.fillStyle = hash2(k, y, x) > 0.5 ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.10)';
+      c.fillRect((x + hash2(x, y, k + 51)) * sx, (y + hash2(x, y, k + 71)) * sy, 1, 1); // crisp grain
     }
   }
   // soft vignette keeps focus on the centre (lower cognitive load)
-  const vg = c.createRadialGradient(out.width / 2, out.height / 2, Math.min(out.width, out.height) * 0.35,
-    out.width / 2, out.height / 2, Math.max(out.width, out.height) * 0.72);
-  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,10,0,0.45)');
-  c.fillStyle = vg; c.fillRect(0, 0, out.width, out.height);
+  const lw2 = out.width / dpr, lh2 = out.height / dpr;
+  const vg = c.createRadialGradient(lw2 / 2, lh2 / 2, Math.min(lw2, lh2) * 0.35, lw2 / 2, lh2 / 2, Math.max(lw2, lh2) * 0.72);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,10,0,0.35)');
+  c.fillStyle = vg; c.fillRect(0, 0, lw2, lh2);
   return out;
 }
 
