@@ -33,3 +33,14 @@ export function separate(a: V, b: V, minDist: number): [V, V] {
   const push = (minDist - d) / 2;
   return [[a[0] - ux * push, a[1] - uy * push], [b[0] + ux * push, b[1] + uy * push]];
 }
+
+export interface StateLabel { text: string; color: number }
+export function stateLabel(state: string): StateLabel | null {
+  switch (state) {
+    case 'Windup': return { text: 'WINDUP', color: 0xffd166 };
+    case 'Active': return { text: 'STRIKE!', color: 0xff3b30 };
+    case 'Blocking': return { text: 'BLOCK', color: 0x6cc4ff };
+    case 'Dodging': return { text: 'DODGE', color: 0xc9a7ff };
+    default: return null;
+  }
+}
