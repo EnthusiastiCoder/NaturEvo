@@ -1,4 +1,4 @@
-import { Application, Container, Graphics, Sprite, Texture } from 'pixi.js';
+import { Application, Container, Graphics, Sprite, Text, Texture } from 'pixi.js';
 import { type Fight, type Run } from './data';
 import { fitStage } from './layout';
 import { hash2, paintGround, paintRock, paintTree } from './ground';
