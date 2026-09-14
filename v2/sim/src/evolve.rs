@@ -108,6 +108,7 @@ impl GenStats {
 
 const HOF_CAP: usize = 64;
 const ELITES: usize = 2;
+const DRAW_PENALTY: f32 = 3.0;
 const BASELINE_N: usize = 10;
 
 /// Per-match outcome for the evaluated role.
@@ -196,6 +197,17 @@ fn score_match(role: Role, me: &Genome, opp: &Genome, seed: u64, cfg: &ArenaConf
         c[2] += a.dodge as u8 as f32;
     }
     fitness += 0.5 * shape / n;
+    // Anti-stalemate: a timeout draw costs, and so does lingering without winning.
+    if res.outcome == Outcome::Draw {
+        fitness -= DRAW_PENALTY;
+    }
+    if !win {
+        fitness -= 1.0 * res.ticks as f32 / cfg.max_ticks as f32;
+    }
+    // Anti-spam: dodging most of the time is a way to avoid combat; reward a mix with blocking.
+    let (fa, fb, fd) = (c[0] / n, c[1] / n, c[2] / n);
+    fitness -= 3.0 * (fd - 0.25).max(0.0);
+    fitness += 1.5 * fb.min(0.12) + 0.5 * fa.min(0.3);
     MatchScore { fitness, win, ticks: res.ticks, freq: [c[0] / n, c[1] / n, c[2] / n] }
 }
 
