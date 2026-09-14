@@ -215,7 +215,7 @@ export class Scene {
     if (o.rays) for (const [a, b, col] of fighters) this.drawRays(g, a, b, col);
     // bars
     for (const [a, , col] of fighters) {
-      const cx = a.pos[0] * TS, cy = a.pos[1] * TS * P - 62;
+      const cx = a.pos[0] * TS, cy = a.pos[1] * TS * P - 80;
       const w = 54;
       g.roundRect(cx - w / 2 - 1, cy - 1, w + 2, 12, 3).fill({ color: 0x000000, alpha: 0.6 });
       g.rect(cx - w / 2, cy, w * Math.max(0, a.hp) / 100, 6).fill({ color: a.hp > 35 ? 0x6bd968 : 0xe5484d });
