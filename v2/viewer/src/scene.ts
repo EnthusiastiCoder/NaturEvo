@@ -222,7 +222,7 @@ export class Scene {
       g.rect(cx - w / 2, cy + 7, w * Math.max(0, a.stamina) / 100, 3).fill({ color: 0xf5d90a });
       g.circle(cx - w / 2 - 6, cy + 4, 3).fill({ color: col });
     }
-    this.particles(t, 0, 0, STAGE_W / this.world.scale.x, STAGE_H / this.world.scale.y, true);
+    this.particles(t, -cam.x / cam.scale, -cam.y / cam.scale, this.sw / cam.scale, this.sh / cam.scale, true);
     this.app.render();
     return s;
   }
