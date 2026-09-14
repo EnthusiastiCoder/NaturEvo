@@ -96,8 +96,10 @@ export class Scene {
   private addFighters(): void {
     for (let i = 0; i < 2; i++) {
       const sprite = new Sprite();
-      this.layer.addChild(sprite);
-      this.rigs.push({ sprite });
+      const label = new Text({ text: '', style: { fontFamily: 'system-ui, sans-serif', fontSize: 15, fontWeight: '800', fill: 0xffffff, stroke: { color: 0x000000, width: 4 } }, resolution: 3 });
+      label.anchor.set(0.5, 1); label.visible = false; label.zIndex = 1e8 + 1;
+      this.layer.addChild(sprite, label);
+      this.rigs.push({ sprite, label });
     }
   }
 
