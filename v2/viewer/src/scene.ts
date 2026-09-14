@@ -330,6 +330,8 @@ export class Scene {
       if (k % 2) continue;
       g.moveTo(px(run.path[k]), py(run.path[k])).lineTo(px(run.path[Math.min(n, k + 1)]), py(run.path[Math.min(n, k + 1)])).stroke({ width: 3, color: 0xffffff, alpha: 0.35 });
     }
+    // pulsing locator ring so the hero is easy to find
+    g.ellipse(x * ts, y * ts * PITCH, 20 + Math.sin(t * 5) * 2, 11 + Math.sin(t * 5)).stroke({ width: 3, color: 0xfff2a8, alpha: 0.95 });
     run.encounters.forEach((e, k) => {
       const col = e.kind === 'boss' ? 0xe5484d : e.kind === 'elite' ? 0xf5a623 : 0x6bd968;
       const cx2 = px(e.tile), cy2 = py(e.tile) - 6 + Math.sin(t * 3 + k) * 2;
