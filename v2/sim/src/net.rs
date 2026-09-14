@@ -91,7 +91,11 @@ impl Net {
             for o in 0..N_OUT {
                 out[o] += col[o] * hj;
             }
-            *slot = s.tanh();
+        }
+        // Only the three analogue outputs need squashing; the rest are used by sign alone
+        // and tanh preserves sign.
+        for v in out[..3].iter_mut() {
+            *v = fast_tanh(*v);
         }
         Action {
             fwd: out[0],
