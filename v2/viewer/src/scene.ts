@@ -119,8 +119,9 @@ export class Scene {
       for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (blocked[y][x] === '#') this.addProp(hash2(x, y) > 0.3 ? 'T' : 'R', x, y, 0.7);
     } else {
       // decorative treeline so the open arena still reads as a jungle clearing
-      for (let x = 0; x < w; x += 2) { this.addProp('T', x, -1, 0.9); this.addProp('T', x + (x % 4), h, 0.9); }
-      for (let y = 0; y < h; y += 3) { this.addProp('T', -1, y, 0.9); this.addProp('T', w, y, 0.9); }
+      // kept inside the arena rectangle and clipped by the ground mask: nothing spills onto the stage
+      for (let x = 0; x < w; x += 2) { this.addProp('T', x, 0.3, 0.9); this.addProp('T', Math.min(w - 1, x + (x % 4)), h - 0.2, 0.9); }
+      for (let y = 2; y < h - 1; y += 3) { this.addProp('T', 0.2, y, 0.9); this.addProp('T', w - 1.2, y, 0.9); }
     }
     this.world.scale.set(1); this.world.position.set((STAGE_W - w * ts) / 2, (STAGE_H - h * ts * PITCH) / 2);
     this.addFighters();
