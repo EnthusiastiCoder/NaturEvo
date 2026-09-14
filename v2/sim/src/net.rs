@@ -24,7 +24,11 @@ pub fn fast_tanh(x: f32) -> f32 {
 /// (bias, inputs in order, recurrent in order), so results are bit-identical.
 #[derive(Clone, Debug)]
 pub struct Net {
-    w: Vec<f32>,
+    w1t: [[f32; N_HID]; N_IN],
+    rt: [[f32; N_HID]; N_HID],
+    b1: [f32; N_HID],
+    w2t: [[f32; N_OUT]; N_HID],
+    b2: [f32; N_OUT],
     h: [f32; N_HID],
 }
 
