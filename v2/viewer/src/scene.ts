@@ -338,7 +338,7 @@ export class Scene {
       g.circle(cx2, cy2, k === activeEnc ? 13 : 9).fill({ color: col, alpha: 0.95 }).stroke({ width: 2, color: 0x000000, alpha: 0.6 });
       g.moveTo(cx2 - 4, cy2 - 4).lineTo(cx2 + 4, cy2 + 4).moveTo(cx2 + 4, cy2 - 4).lineTo(cx2 - 4, cy2 + 4).stroke({ width: 2, color: 0x000000, alpha: 0.8 });
     });
-    this.particles(t, cx - STAGE_W / 2, cy - STAGE_H / 2, STAGE_W, STAGE_H, true);
+    this.particles(t, cx - this.sw / cam.scale / 2, cy - this.sh / cam.scale / 2, this.sw / cam.scale, this.sh / cam.scale, true);
     this.app.render();
     return hero;
   }
