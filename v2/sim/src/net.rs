@@ -82,6 +82,9 @@ impl Net {
                 nh[j] += col[j] * hk;
             }
         }
+        for v in nh.iter_mut() {
+            *v = fast_tanh(*v);
+        }
         self.h = nh;
         let mut out = [0.0f32; N_OUT];
         for (o, slot) in out.iter_mut().enumerate() {
