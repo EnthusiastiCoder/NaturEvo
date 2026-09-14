@@ -176,7 +176,11 @@ export class Scene {
     // ground rings + telegraphs
     for (const [a, , col] of fighters) {
       const cx = a.pos[0] * TS, cy = a.pos[1] * TS * P;
-      g.ellipse(cx, cy, 0.5 * TS, 0.5 * TS * P).stroke({ width: 2, color: col, alpha: 0.9 });
+      g.ellipse(cx, cy, 0.6 * TS, 0.6 * TS * P).stroke({ width: 3, color: col, alpha: 0.95 });
+      if (a.state === 'Dodging') { // afterimages trailing opposite the facing
+        for (let k = 1; k <= 3; k++) g.ellipse(cx - Math.cos(a.facing) * k * 0.45 * TS, cy - Math.sin(a.facing) * k * 0.45 * TS * P, 0.6 * TS, 0.6 * TS * P).stroke({ width: 3, color: 0xc9a7ff, alpha: 0.6 - k * 0.15 });
+        for (let k = -1; k <= 1; k++) g.moveTo(cx - Math.cos(a.facing) * 0.9 * TS, cy - Math.sin(a.facing) * 0.9 * TS * P + k * 7).lineTo(cx - Math.cos(a.facing) * 2.2 * TS, cy - Math.sin(a.facing) * 2.2 * TS * P + k * 7).stroke({ width: 3, color: 0xe3d4ff, alpha: 0.7 });
+      }
       if (a.state === 'Windup' || a.state === 'Active') {
         g.moveTo(cx, cy);
         for (let k = 0; k <= 12; k++) {
