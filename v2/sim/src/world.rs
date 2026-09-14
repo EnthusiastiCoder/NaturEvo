@@ -7,6 +7,8 @@ pub struct Arena {
     w: usize,
     h: usize,
     blocked: Vec<bool>,
+    /// Chebyshev tile distance to the nearest blocked tile or border (0 = blocked), capped at 255.
+    clear: Vec<u8>,
     spawns: [(f32, f32); 2],
 }
 
