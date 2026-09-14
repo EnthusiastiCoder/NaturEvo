@@ -149,7 +149,7 @@ export class Scene {
     const pick = atlas.get(anim, directionFromAngle(fr.facing), Math.min(fi, 1e6));
     const sp = rig.sprite;
     if (pick) { sp.texture = pick.texture; sp.anchor.set(pick.ax, pick.ay); }
-    const sc = this.mode === 'map' ? 0.5 : 0.62;
+    const sc = 1.1;
     sp.scale.set(sc);
     sp.position.set(fr.pos[0] * this.ts, fr.pos[1] * this.ts * PITCH);
     sp.zIndex = sp.y;
