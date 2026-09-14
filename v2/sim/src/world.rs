@@ -42,6 +42,7 @@ impl Arena {
                 *b = false;
             }
         }
+        a.clear = a.compute_clear();
         a
     }
 
