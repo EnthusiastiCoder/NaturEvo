@@ -198,7 +198,9 @@ export class Scene {
         g.stroke({ width: 7, color: 0xffffff, alpha: 0.95, cap: 'round' });
       }
       if (a.state === 'Blocking') {
-        g.ellipse(cx + Math.cos(a.facing) * 0.7 * TS, cy + Math.sin(a.facing) * 0.7 * TS * P, 0.35 * TS, 0.5 * TS * P).stroke({ width: 4, color: 0x9ad1ff, alpha: 0.95 });
+        const sx = cx + Math.cos(a.facing) * 0.85 * TS, sy = cy + Math.sin(a.facing) * 0.85 * TS * P;
+        g.ellipse(sx, sy, 0.5 * TS, 0.85 * TS * P).fill({ color: 0x6cc4ff, alpha: 0.35 }).stroke({ width: 6, color: 0xbfe6ff, alpha: 1 });
+        g.ellipse(cx, cy, 0.9 * TS, 0.9 * TS * P).stroke({ width: 3, color: 0x6cc4ff, alpha: 0.8 });
       }
     }
     if (o.rays) for (const [a, b, col] of fighters) this.drawRays(g, a, b, col);
