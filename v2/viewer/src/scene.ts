@@ -73,6 +73,10 @@ export class Scene {
     g.zIndex = -1e9;
     this.layer.addChild(g);
     this.ground = g;
+    // clip props (border trees) to the map rectangle
+    this.clip?.destroy(); this.clip = new Graphics();
+    this.clip.rect(0, 0, canvas.width / this.res, canvas.height / this.res).fill(0xffffff);
+    this.world.addChild(this.clip); this.layer.mask = this.clip;
     this.overlay = new Graphics();
     this.overlay.zIndex = 1e8;
     this.layer.addChild(this.overlay);
