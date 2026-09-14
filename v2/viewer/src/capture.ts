@@ -1,6 +1,6 @@
 // Browser-side capture for record mode: deterministic stepping, PNG sequence, WebM, early/late split-screen.
 import { type Fight, parseFight } from './data';
-import { RECORD_DEFAULT, Recorder, frameTime, splitCaptions } from './record';
+import { RECORD_DEFAULT, Recorder, frameTime, splitCaptions, splitCellSize } from './record';
 import { Scene } from './scene';
 
 export interface CaptureSource { canvas: () => HTMLCanvasElement; draw: (t: number) => void; duration: () => number }
@@ -14,7 +14,7 @@ export function genFromUrl(u: string): number {
 export async function splitSource(earlyUrl: string, lateUrl: string, w = RECORD_DEFAULT.w, h = RECORD_DEFAULT.h): Promise<CaptureSource> {
   const load = async (u: string): Promise<Fight> => parseFight(await (await fetch(u)).json());
   const [fa, fb] = await Promise.all([load(earlyUrl), load(lateUrl)]);
-  const mk = async (f: Fight) => { const s = await Scene.create(document.createElement('div')); s.setFight(f); return s; };
+  const mk = async (f: Fight) => { const s = await Scene.create(document.createElement('div'), { record: true, ...splitCellSize(w, h) }); s.setFight(f); return s; };
   const [sa, sb] = [await mk(fa), await mk(fb)];
   const caps = splitCaptions({ generation: genFromUrl(earlyUrl) }, { generation: genFromUrl(lateUrl) });
   const out = document.createElement('canvas');
@@ -25,8 +25,8 @@ export async function splitSource(earlyUrl: string, lateUrl: string, w = RECORD_
     ctx.fillStyle = '#0c120b'; ctx.fillRect(0, 0, w, h);
     ([[sa, fa, 0], [sb, fb, 1]] as const).forEach(([s, f, i]) => {
       s.drawFight(f, Math.min(t, f.frames.length / f.tickHz - 1e-6), { rays: false });
-      const cw = w / 2, ch = cw * (s.app.canvas.height / s.app.canvas.width);
-      ctx.drawImage(s.app.canvas, i * cw, (h - ch) / 2, cw, ch);
+      const cw = w / 2; // each half is rendered at exactly cw x h: no crop, no bands
+      ctx.drawImage(s.app.canvas, i * cw, 0, cw, h);
     });
     ctx.fillStyle = '#ffffff22'; ctx.fillRect(w / 2 - 1, 0, 2, h);
     ctx.font = `700 ${Math.round(h / 20)}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
