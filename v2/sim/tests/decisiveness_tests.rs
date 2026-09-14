@@ -34,3 +34,21 @@ fn late_champion_fights_are_decisive_and_use_all_actions() {
     assert!((draws as f64) / (n as f64) < 0.2, "draw rate {draws}/{n}");
     for (i, s) in sh.iter().enumerate() { assert!(*s >= 0.02, "action {i} share {s}"); }
 }
+
+#[test]
+#[ignore]
+fn probe_gen0_vs_late() {
+    let mut t = Trainer::new(TrainConfig { seed: 1, generations: 40, pop: 24, k_opponents: 4, hof_sample: 2 });
+    t.run_generation();
+    let g0 = t.hero_champion().clone();
+    for _ in 0..39 { t.run_generation(); }
+    let (c, m) = (t.hero_champion().clone(), t.monster_champion().clone());
+    let cfg = ArenaConfig::default();
+    for (name, h) in [("late", &c), ("gen0", &g0)] {
+        let mut o = [0; 3];
+        for s in 0..50u64 {
+            match play(Arena::generate(s, &cfg), h.clone(), m.clone(), s, &cfg).outcome { Outcome::HeroWin => o[0] += 1, Outcome::Draw => o[1] += 1, _ => o[2] += 1 }
+        }
+        eprintln!("PROBE {name} vs late monster: win {} draw {} loss {}", o[0], o[1], o[2]);
+    }
+}
