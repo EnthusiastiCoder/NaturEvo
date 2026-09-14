@@ -203,6 +203,15 @@ export class Scene {
         g.ellipse(cx, cy, 0.9 * TS, 0.9 * TS * P).stroke({ width: 3, color: 0x6cc4ff, alpha: 0.8 });
       }
     }
+    // hit burst + state labels
+    ([[s.hero, hitH], [s.monster, hitM]] as [FighterFrame, boolean][]).forEach(([fa, hit], k) => {
+      const cx = fa.pos[0] * TS, cy = fa.pos[1] * TS * P;
+      if (hit && fa.state !== 'Dead') g.circle(cx, cy - 22, 0.9 * TS).stroke({ width: 5, color: 0xff4d4d, alpha: 0.9 });
+      const lab = stateLabel(fa.state) ?? (hit && fa.state !== 'Dead' ? { text: 'HIT', color: 0xff6b6b } : null);
+      const L = this.rigs[k].label;
+      L.visible = !!lab;
+      if (lab) { L.text = lab.text; L.style.fill = lab.color; L.position.set(cx, cy - 96); }
+    });
     if (o.rays) for (const [a, b, col] of fighters) this.drawRays(g, a, b, col);
     // bars
     for (const [a, , col] of fighters) {
