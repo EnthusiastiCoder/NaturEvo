@@ -81,7 +81,6 @@ impl Net {
             for j in 0..N_HID {
                 nh[j] += col[j] * hk;
             }
-            *slot = s.tanh();
         }
         self.h = nh;
         let mut out = [0.0f32; N_OUT];
