@@ -316,12 +316,10 @@ export class Scene {
     sp.scale.set(1.0); sp.position.set(x * ts, y * ts * PITCH); sp.zIndex = sp.y;
     this.rigs[0].label.visible = false; this.rigs[1].label.visible = false;
     this.rigs[1].sprite.visible = false;
-    // camera follows the hero, clamped to the map
-    const zoom = 1;
-    const wpx = m.w * ts, hpx = m.h * ts * PITCH;
-    const cx = Math.max(STAGE_W / 2, Math.min(wpx - STAGE_W / 2, x * ts)), cy = Math.max(STAGE_H / 2, Math.min(hpx - STAGE_H / 2, y * ts * PITCH));
-    this.world.scale.set(zoom);
-    this.world.position.set(STAGE_W / 2 - cx * zoom, STAGE_H / 2 - cy * zoom);
+    // camera zooms around the hero (like v1), clamped to the map
+    const cam = mapCamera(this.arenaPx, [x * ts, y * ts * PITCH], { w: this.sw, h: this.sh });
+    const cx = -cam.x / cam.scale + this.sw / cam.scale / 2, cy = -cam.y / cam.scale + this.sh / cam.scale / 2;
+    this.world.scale.set(cam.scale); this.world.position.set(cam.x, cam.y);
     const g = this.overlay; g.clear();
     const px = (p: [number, number]) => (p[0] + 0.5) * ts, py = (p: [number, number]) => (p[1] + 0.5) * ts * PITCH;
     // route: travelled part solid, ahead dotted
