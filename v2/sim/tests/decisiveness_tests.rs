@@ -52,3 +52,19 @@ fn probe_gen0_vs_late() {
         eprintln!("PROBE {name} vs late monster: win {} draw {} loss {}", o[0], o[1], o[2]);
     }
 }
+
+#[test]
+#[ignore]
+fn probe_saved_run() {
+    use arena_sim::genome::Genome;
+    let d = std::env::var("RUN_DIR").unwrap();
+    let ld = |r: &str, g: u32| Genome::from_json(&std::fs::read_to_string(format!("{d}/champion_{r}_gen_{g}.json")).unwrap()).unwrap();
+    let cfg = ArenaConfig::default();
+    for (hg, mg) in [(199, 199), (199, 9), (9, 199), (9, 9)] {
+        let mut o = [0; 3];
+        for s in 0..40u64 {
+            match play(Arena::generate(s, &cfg), ld("hero", hg), ld("monster", mg), s, &cfg).outcome { Outcome::HeroWin => o[0] += 1, Outcome::Draw => o[1] += 1, _ => o[2] += 1 }
+        }
+        eprintln!("PROBE hero{hg} vs mon{mg}: heroWin {} draw {} monWin {}", o[0], o[1], o[2]);
+    }
+}
