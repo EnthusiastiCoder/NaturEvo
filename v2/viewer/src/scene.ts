@@ -40,7 +40,10 @@ export class Scene {
   static async create(host: HTMLElement, o: SceneOpts = {}): Promise<Scene> {
     const s = new Scene();
     s.app = new Application();
-    await s.app.init({ width: STAGE_W, height: STAGE_H, antialias: true, background: 0x0c120b, resolution: Math.min(2, window.devicePixelRatio || 1), autoDensity: true });
+    const size = sceneSize(!!o.record, window.devicePixelRatio || 1);
+    s.sw = o.w ?? size.w; s.sh = o.h ?? size.h; s.res = size.resolution;
+    // transparent outside record so the themed stage shows; record frames are opaque
+    await s.app.init({ width: s.sw, height: s.sh, antialias: true, ...(o.record ? { background: 0x0c120b } : { backgroundAlpha: 0 }), resolution: size.resolution, autoDensity: !o.record });
     host.appendChild(s.app.canvas);
     s.layer.sortableChildren = true;
     s.world.addChild(s.layer);
