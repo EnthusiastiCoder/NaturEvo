@@ -69,6 +69,7 @@ export class Scene {
 
   private addGround(canvas: HTMLCanvasElement): void {
     const g = new Sprite(Texture.from(canvas));
+    g.scale.set(1 / this.res); // texture is painted at device resolution
     g.zIndex = -1e9;
     this.layer.addChild(g);
     this.ground = g;
