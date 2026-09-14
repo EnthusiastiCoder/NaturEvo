@@ -54,6 +54,60 @@ impl Arena {
         self.blocked[ty as usize * self.w + tx as usize]
     }
 
+    fn compute_clear(&self) -> Vec<u8> {
+        let (w, h) = (self.w as i32, self.h as i32);
+        let big = 255u8;
+        let at = |d: &Vec<u8>, x: i32, y: i32| -> u8 {
+            if x < 0 || y < 0 || x >= w || y >= h { 0 } else { d[(y * w + x) as usize] }
+        };
+        let mut d: Vec<u8> = self.blocked.iter().map(|&b| if b { 0 } else { big }).collect();
+        for y in 0..h {
+            for x in 0..w {
+                let i = (y * w + x) as usize;
+                if d[i] == 0 { continue; }
+                let m = at(&d, x - 1, y).min(at(&d, x, y - 1)).min(at(&d, x - 1, y - 1)).min(at(&d, x + 1, y - 1));
+                d[i] = d[i].min(m.saturating_add(1));
+            }
+        }
+        for y in (0..h).rev() {
+            for x in (0..w).rev() {
+                let i = (y * w + x) as usize;
+                if d[i] == 0 { continue; }
+                let m = at(&d, x + 1, y).min(at(&d, x, y + 1)).min(at(&d, x + 1, y + 1)).min(at(&d, x - 1, y + 1));
+                d[i] = d[i].min(m.saturating_add(1));
+            }
+        }
+        d
+    }
+
+    /// Distance along the ray (x, y) + t*(dx, dy) to the first blocked sample taken at
+    /// t = 1, 2, 3, ... strictly below `range`; `range` if none. Samples that provably
+    /// cannot be blocked (inside the clearance of a free tile) are skipped, so the result
+    /// equals plain unit stepping. The step index stays an integer so the loop-carried
+    /// dependency does not go through float conversions.
+    pub fn ray_dist(&self, x: f32, y: f32, dx: f32, dy: f32, range: f32) -> f32 {
+        let (wi, hi) = (self.w as u32, self.h as u32);
+        let mut i = 1i32;
+        while (i as f32) < range {
+            let r = i as f32;
+            let (px, py) = (x + dx * r, y + dy * r);
+            // Shift by one so truncation floors points in [-1, 0) to tile -1; any negative
+            // tile (or NaN, which casts to 0 -> -1) fails the unsigned bounds check.
+            let (tx, ty) = ((px + 1.0) as i32 - 1, (py + 1.0) as i32 - 1);
+            if (tx as u32) >= wi || (ty as u32) >= hi {
+                return r;
+            }
+            let c = self.clear[ty as usize * self.w + tx as usize] as i32;
+            if c == 0 {
+                return r;
+            }
+            // Points within distance < c - 1 lie in free tiles: skip the next c - 2 samples.
+            i += 1 + (c - 2).max(0);
+        }
+        range
+    }
+
+    #[inline(always)]
     pub fn is_blocked(&self, x: f32, y: f32) -> bool {
         if !(x >= 0.0 && y >= 0.0) {
             return true;
