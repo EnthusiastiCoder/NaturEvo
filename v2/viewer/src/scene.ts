@@ -114,7 +114,7 @@ export class Scene {
       w, h, seed: f.seed,
       tile: (x, y) => (blocked ? (blocked[y]?.[x] === '#' ? 'T' : ',') : ((x + y) % 2 === 0 ? ',' : '.')),
       zone: (x, y) => (Math.hypot(x - w / 2, y - h / 2) > 15 ? 1 : 0),
-    }, ts, PITCH));
+    }, ts, PITCH, this.res));
     if (blocked) {
       for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (blocked[y][x] === '#') this.addProp(hash2(x, y) > 0.3 ? 'T' : 'R', x, y, 0.7);
     } else {
