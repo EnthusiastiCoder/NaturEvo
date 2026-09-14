@@ -86,7 +86,7 @@ impl Match {
             finished: false,
             outcome: Outcome::Draw,
             damage_dealt: [0.0; 2],
-            log: FightLog::new(cfg.tick_hz),
+            log: FightLog::with_capacity(cfg.tick_hz, cfg.max_ticks as usize),
             seed,
         }
     }
