@@ -23,6 +23,10 @@ impl FightLog {
         FightLog { tick_hz, frames: Vec::new() }
     }
 
+    pub fn with_capacity(tick_hz: u32, n: usize) -> FightLog {
+        FightLog { tick_hz, frames: Vec::with_capacity(n) }
+    }
+
     pub fn to_json(&self) -> String {
         let mut s = String::with_capacity(self.frames.len() * 300 + 64);
         let _ = write!(s, "{{\"tick_hz\":{},\"frames\":[", self.tick_hz);
