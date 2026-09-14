@@ -86,11 +86,10 @@ impl Net {
             *v = fast_tanh(*v);
         }
         self.h = nh;
-        let mut out = [0.0f32; N_OUT];
-        for (o, slot) in out.iter_mut().enumerate() {
-            let mut s = w[b2 + o];
-            for (j, hj) in nh.iter().enumerate() {
-                s += w[w2 + o * N_HID + j] * hj;
+        let mut out = self.b2;
+        for (hj, col) in nh.iter().zip(self.w2t.iter()) {
+            for o in 0..N_OUT {
+                out[o] += col[o] * hj;
             }
             *slot = s.tanh();
         }
