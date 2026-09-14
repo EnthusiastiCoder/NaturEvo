@@ -189,6 +189,14 @@ export class Scene {
         }
         g.closePath().fill({ color: a.state === 'Active' ? 0xff3b30 : 0xffd166, alpha: a.state === 'Active' ? 0.5 : 0.28 }).stroke({ width: 2, color: a.state === 'Active' ? 0xff3b30 : 0xffd166, alpha: 0.9 });
       }
+      if (a.state === 'Active') { // bright slash crescent
+        for (let k = 0; k <= 14; k++) {
+          const ang = a.facing + (k / 14 - 0.5) * 1.5;
+          const x1 = cx + Math.cos(ang) * 1.6 * TS, y1 = cy + Math.sin(ang) * 1.6 * TS * P;
+          if (k === 0) g.moveTo(x1, y1); else g.lineTo(x1, y1);
+        }
+        g.stroke({ width: 7, color: 0xffffff, alpha: 0.95, cap: 'round' });
+      }
       if (a.state === 'Blocking') {
         g.ellipse(cx + Math.cos(a.facing) * 0.7 * TS, cy + Math.sin(a.facing) * 0.7 * TS * P, 0.35 * TS, 0.5 * TS * P).stroke({ width: 4, color: 0x9ad1ff, alpha: 0.95 });
       }
