@@ -123,7 +123,7 @@ export class Scene {
       for (let x = 0; x < w; x += 2) { this.addProp('T', x, 0.3, 0.9); this.addProp('T', Math.min(w - 1, x + (x % 4)), h - 0.2, 0.9); }
       for (let y = 2; y < h - 1; y += 3) { this.addProp('T', 0.2, y, 0.9); this.addProp('T', w - 1.2, y, 0.9); }
     }
-    this.world.scale.set(1); this.world.position.set((STAGE_W - w * ts) / 2, (STAGE_H - h * ts * PITCH) / 2);
+    this.arenaPx = { w: w * ts, h: h * ts * PITCH };
     this.addFighters();
     this.monsterKey = MONSTER_MODELS[f.monsterIndex % MONSTER_MODELS.length];
   }
