@@ -76,8 +76,10 @@ impl Net {
             for j in 0..N_HID {
                 nh[j] += col[j] * xi;
             }
-            for (k, hk) in self.h.iter().enumerate() {
-                s += w[r_off + j * N_HID + k] * hk;
+        }
+        for (hk, col) in self.h.iter().zip(self.rt.iter()) {
+            for j in 0..N_HID {
+                nh[j] += col[j] * hk;
             }
             *slot = s.tanh();
         }
