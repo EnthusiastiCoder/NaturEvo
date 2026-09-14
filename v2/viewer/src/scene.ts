@@ -313,7 +313,8 @@ export class Scene {
     const pick = at.get(moving ? ANIM.walk : ANIM.idle, directionFromAngle(hero.facing), Math.floor(t * 12));
     const sp = this.rigs[0].sprite;
     if (pick) { sp.texture = pick.texture; sp.anchor.set(pick.ax, pick.ay); }
-    sp.scale.set(0.5); sp.position.set(x * ts, y * ts * PITCH); sp.zIndex = sp.y;
+    sp.scale.set(1.0); sp.position.set(x * ts, y * ts * PITCH); sp.zIndex = sp.y;
+    this.rigs[0].label.visible = false; this.rigs[1].label.visible = false;
     this.rigs[1].sprite.visible = false;
     // camera follows the hero, clamped to the map
     const zoom = 1;
