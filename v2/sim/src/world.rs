@@ -36,7 +36,7 @@ impl Arena {
                 }
             }
         }
-        let mut a = Arena { w, h, blocked, spawns };
+        let mut a = Arena { w, h, blocked, clear: Vec::new(), spawns };
         if !a.reachable(spawns[0], spawns[1]) {
             for b in a.blocked.iter_mut() {
                 *b = false;
