@@ -187,7 +187,7 @@ export class Scene {
           const ang = a.facing + (k / 12 - 0.5) * 1.3;
           g.lineTo(cx + Math.cos(ang) * 1.7 * TS, cy + Math.sin(ang) * 1.7 * TS * P);
         }
-        g.closePath().fill({ color: 0xff3b30, alpha: a.state === 'Active' ? 0.45 : 0.22 });
+        g.closePath().fill({ color: a.state === 'Active' ? 0xff3b30 : 0xffd166, alpha: a.state === 'Active' ? 0.5 : 0.28 }).stroke({ width: 2, color: a.state === 'Active' ? 0xff3b30 : 0xffd166, alpha: 0.9 });
       }
       if (a.state === 'Blocking') {
         g.ellipse(cx + Math.cos(a.facing) * 0.7 * TS, cy + Math.sin(a.facing) * 0.7 * TS * P, 0.35 * TS, 0.5 * TS * P).stroke({ width: 4, color: 0x9ad1ff, alpha: 0.95 });
