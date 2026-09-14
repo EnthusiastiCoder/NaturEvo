@@ -36,7 +36,34 @@ impl Net {
     pub fn from_genome(g: &Genome) -> Net {
         let mut w = g.weights.clone();
         w.resize(N_PARAMS, 0.0);
-        Net { w, h: [0.0; N_HID] }
+        let r_off = N_HID * N_IN;
+        let b1o = r_off + N_HID * N_HID;
+        let w2o = b1o + N_HID;
+        let b2o = w2o + N_OUT * N_HID;
+        let mut n = Net {
+            w1t: [[0.0; N_HID]; N_IN],
+            rt: [[0.0; N_HID]; N_HID],
+            b1: [0.0; N_HID],
+            w2t: [[0.0; N_OUT]; N_HID],
+            b2: [0.0; N_OUT],
+            h: [0.0; N_HID],
+        };
+        for j in 0..N_HID {
+            n.b1[j] = w[b1o + j];
+            for i in 0..N_IN {
+                n.w1t[i][j] = w[j * N_IN + i];
+            }
+            for k in 0..N_HID {
+                n.rt[k][j] = w[r_off + j * N_HID + k];
+            }
+        }
+        for o in 0..N_OUT {
+            n.b2[o] = w[b2o + o];
+            for j in 0..N_HID {
+                n.w2t[j][o] = w[w2o + o * N_HID + j];
+            }
+        }
+        n
     }
 
     pub fn reset(&mut self) {
