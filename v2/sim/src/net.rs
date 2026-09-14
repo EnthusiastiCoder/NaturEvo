@@ -8,6 +8,20 @@ pub const N_OUT: usize = 7;
 pub const N_HID: usize = 16;
 pub const N_PARAMS: usize = N_HID * N_IN + N_HID * N_HID + N_HID + N_OUT * N_HID + N_OUT;
 
+/// Rational tanh (Lambert continued fraction, 7th order), branch-free so it vectorises.
+/// Abs error is below 1e-4 over the range, and the output is clamped to [-1, 1].
+#[inline(always)]
+pub fn fast_tanh(x: f32) -> f32 {
+    let x = x.clamp(-5.0, 5.0);
+    let x2 = x * x;
+    let p = x * (135135.0 + x2 * (17325.0 + x2 * (378.0 + x2)));
+    let q = 135135.0 + x2 * (62370.0 + x2 * (3150.0 + x2 * 28.0));
+    (p / q).clamp(-1.0, 1.0)
+}
+
+/// Weights are stored transposed (input-major) so the inner loops run over the
+/// hidden units and vectorise. Per-unit summation order matches the genome layout
+/// (bias, inputs in order, recurrent in order), so results are bit-identical.
 #[derive(Clone, Debug)]
 pub struct Net {
     w: Vec<f32>,
