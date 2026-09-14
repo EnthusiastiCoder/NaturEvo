@@ -37,7 +37,7 @@ export class Scene {
   private heroKey = HERO_MODEL;
   private monsterKey = MONSTER_MODELS[0];
 
-  static async create(host: HTMLElement): Promise<Scene> {
+  static async create(host: HTMLElement, o: SceneOpts = {}): Promise<Scene> {
     const s = new Scene();
     s.app = new Application();
     await s.app.init({ width: STAGE_W, height: STAGE_H, antialias: true, background: 0x0c120b, resolution: Math.min(2, window.devicePixelRatio || 1), autoDensity: true });
