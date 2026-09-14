@@ -44,3 +44,4 @@ export function stateLabel(state: string): StateLabel | null {
     default: return null;
   }
 }
+export const STAGE_W = 1920, STAGE_H = 1080;
