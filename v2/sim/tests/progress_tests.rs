@@ -26,3 +26,22 @@ fn late_share(role: Role, late: &Genome, early: &Genome, panel: &[Genome], seeds
     }
     (l, e)
 }
+
+#[test]
+fn late_checkpoints_beat_earlier_ones_for_both_sides() {
+    let gens = 150usize;
+    let mut t = Trainer::new(TrainConfig { seed: 1, generations: gens as u32, pop: 48, k_opponents: 4, hof_sample: 8 });
+    for _ in 0..gens { t.run_generation(); }
+    for role in [Role::Hero, Role::Monster] {
+        let h = t.hall_of_fame(role);
+        let panel: Vec<Genome> = t.hall_of_fame(role.other()).iter().step_by(3).cloned().collect();
+        assert!(h.len() >= gens, "hall of fame must keep every champion");
+        let late = &h[gens - 1];
+        for early in [10usize, 50] {
+            let (l, e) = late_share(role, late, &h[early], &panel, 8);
+            eprintln!("PROGRESS {:?} late vs gen{early}: late {l} early {e}", role);
+            assert!(l + e >= 8, "{:?} too few discordant fights {l}/{e}", role);
+            assert!(l as f64 >= 0.75 * (l + e) as f64, "{:?} gen{} lost to gen{early}: {l} vs {e}", role, gens - 1);
+        }
+    }
+}
