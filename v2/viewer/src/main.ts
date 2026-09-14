@@ -1,9 +1,9 @@
 import './style.css';
-import { type Encounter, type Fight, type Run, demoFight, demoRun, parseFight, parseRun } from './data';
-import { RECORD_DEFAULT, applyRecordMode, isRecordMode } from './record';
+import { type Encounter, type Fight, type Run, demoFight, demoRun, mergeDuels, parseFight, parseRun, resolveFights } from './data';
+import { applyRecordMode, isRecordMode } from './record';
 import { Scene } from './scene';
 import { installRecorder, splitSource } from './capture';
-import { DEFAULT_ACCENT, type Theme, applyTheme, nextTheme, setAccent } from './theme';
+import { DEFAULT_ACCENT, type Theme, applyTheme, nextTheme, setAccent, themeIconPath } from './theme';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const WALK_SPEED = 7; // path tiles per second
@@ -25,6 +25,12 @@ let current = '';
 let duelIdx = 0;
 
 const root = document.documentElement;
+let requestedDuel: { label: string; fight: Fight } | null = null;
+
+function banner(msg: string): void {
+  const b = $('banner');
+  b.textContent = msg; b.hidden = !msg;
+}
 
 function buildTimeline(): void {
   segs = [];
@@ -56,7 +62,7 @@ function populateSelect(): void {
 }
 
 function collectDuels(): void {
-  duelFights = run.encounters.filter((e) => e.fight).map((e, k) => ({ label: `${k + 1}. ${e.kind} vs monster ${e.monsterIndex}`, fight: e.fight! }));
+  duelFights = mergeDuels(run.encounters.filter((e) => e.fight).map((e, k) => ({ label: `${k + 1}. ${e.kind} vs monster ${e.monsterIndex}`, fight: e.fight! })), requestedDuel);
   if (!duelFights.length) duelFights = [{ label: 'Demo duel', fight: demoFight(1) }];
 }
 
@@ -133,31 +139,38 @@ function setMode(m: 'campaign' | 'duel'): void {
 async function loadFiles(files: FileList): Promise<void> {
   for (const f of Array.from(files)) {
     const j = JSON.parse(await f.text());
-    if (j.map && j.path) { run = parseRun(j); await resolveFights(); buildTimeline(); collectDuels(); setMode('campaign'); }
+    if (j.map && j.path) { run = parseRun(j); const errs = await resolveFights(run, location.href); banner(errs.length ? `Could not load fights: ${errs.join('; ')}` : ''); buildTimeline(); collectDuels(); setMode('campaign'); }
     else if (j.frames) { duelFights = [{ label: f.name, fight: parseFight(j) }]; setMode('duel'); }
   }
 }
 
-async function resolveFights(): Promise<void> {
-  await Promise.all(run.encounters.map(async (e) => {
-    if (e.fight || !e.fightUrl) return;
-    try { e.fight = parseFight(await (await fetch(e.fightUrl)).json()); } catch { /* leave null: shown as a pause */ }
-  }));
-}
-
 async function tryLoadDefault(): Promise<void> {
   const q = new URLSearchParams(location.search);
-  const runUrl = q.get('run') ?? '/data/run.json';
+  const runUrl = new URL(q.get('run') ?? '/data/run.json', location.href).href;
+  const problems: string[] = [];
+  let loaded = false;
   try {
     const r = await fetch(runUrl);
-    if (r.ok && (r.headers.get('content-type') ?? '').includes('json')) { run = parseRun(await r.json()); await resolveFights(); }
-  } catch { /* use demo */ }
+    if (r.ok && (r.headers.get('content-type') ?? '').includes('json')) {
+      run = parseRun(await r.json()); loaded = true;
+      const errs = await resolveFights(run, runUrl);
+      if (errs.length) problems.push(`Could not load fights: ${errs.join('; ')}`);
+    } else problems.push(`No run found at ${q.get('run') ?? '/data/run.json'} (HTTP ${r.status}); showing the built-in demo.`);
+  } catch (err) { problems.push(`Could not read run ${runUrl}: ${err instanceof Error ? err.message : String(err)}; showing the built-in demo.`); }
   const fu = q.get('fight');
-  if (fu) { try { duelFights = [{ label: fu, fight: parseFight(await (await fetch(fu)).json()) }]; } catch { /* ignore */ } }
+  if (fu) {
+    try {
+      const r = await fetch(new URL(fu, location.href).href);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      requestedDuel = { label: `Requested: ${fu}`, fight: parseFight(await r.json()) };
+    } catch (err) { problems.push(`Could not load ?fight=${fu}: ${err instanceof Error ? err.message : String(err)}`); }
+  }
+  if (!loaded && !q.get('run') && requestedDuel) problems.shift(); // an explicit fight makes the missing default run expected
+  banner(problems.join(' | '));
 }
 
 function fitNow(): void {
-  const st = $('stage');
+  const st = $('view');
   scene.fit(st.clientWidth, st.clientHeight);
 }
 
@@ -169,14 +182,15 @@ async function main(): Promise<void> {
   const acc = localStorage.getItem('nv-accent') ?? DEFAULT_ACCENT;
   setAccent(root, acc); $<HTMLInputElement>('accent').value = acc;
   applyRecordMode(root, isRecordMode(location.search));
-  if (isRecordMode(location.search)) { $('stage').style.aspectRatio = `${RECORD_DEFAULT.w} / ${RECORD_DEFAULT.h}`; }
-
-  $('theme-toggle').onclick = () => { theme = nextTheme(theme); applyTheme(root, theme); localStorage.setItem('nv-theme', theme); };
+  const syncThemeIcon = () => { $('theme-toggle').innerHTML = `<svg viewBox="0 0 24 24">${themeIconPath(theme)}</svg>`; };
+  syncThemeIcon();
+  $('theme-toggle').onclick = () => { theme = nextTheme(theme); applyTheme(root, theme); localStorage.setItem('nv-theme', theme); syncThemeIcon(); };
   $<HTMLInputElement>('accent').oninput = (e) => { const v = (e.target as HTMLInputElement).value; setAccent(root, v); localStorage.setItem('nv-accent', v); };
 
-  scene = await Scene.create($('stage'));
+  scene = await Scene.create($('view'), { record: isRecordMode(location.search) });
   await tryLoadDefault();
-  buildTimeline(); collectDuels(); populateSelect();
+  buildTimeline(); collectDuels();
+  if (requestedDuel) setMode('duel'); else populateSelect();
   fitNow();
   new ResizeObserver(fitNow).observe($('stage'));
 
@@ -214,11 +228,12 @@ async function main(): Promise<void> {
       const src = await splitSource(e, l);
       scene.app.canvas.style.display = 'none';
       const c = src.canvas(); c.style.cssText = 'width:100%;height:100%;object-fit:contain';
-      $('stage').appendChild(c);
+      $('view').appendChild(c);
       installRecorder(src); src.draw(0);
       return;
     }
     playing = false;
+    frame(); // first frame is visible without calling __record.step
     installRecorder({ canvas: () => scene.app.canvas as HTMLCanvasElement, duration, draw: (tt) => { t = Math.min(tt, duration() - 1e-6); frame(); } });
     return;
   }
