@@ -46,6 +46,7 @@ impl Arena {
         a
     }
 
+    #[inline(always)]
     fn tile_blocked(&self, tx: i32, ty: i32) -> bool {
         if tx < 0 || ty < 0 || tx >= self.w as i32 || ty >= self.h as i32 {
             return true;
