@@ -55,7 +55,7 @@ export class Scene {
 
   /** Fit the fixed-size logical stage to the host element. */
   fit(hostW: number, hostH: number): void {
-    const f = fitStage(hostW - 2, hostH - 2, STAGE_W, STAGE_H);
+    const f = fitStage(hostW - 2, hostH - 2, this.sw, this.sh);
     this.app.canvas.style.width = `${f.w}px`;
     this.app.canvas.style.height = `${f.h}px`;
   }
