@@ -8,6 +8,7 @@ import { ANIM, Atlas, HERO_MODEL, MONSTER_MODELS, directionFromAngle, loadAtlas 
 
 export { STAGE_W, STAGE_H };
 export interface SceneOpts { record?: boolean; w?: number; h?: number }
+const GROUND_ZOOM = 1.75; // typical camera zoom: paint the ground this much denser than the stage
 const PITCH = 0.8;
 const ATTACK_TICKS = { Windup: 0, Active: 6, Recovery: 10 } as Record<string, number>;
 const ATTACK_TOTAL = 16;
