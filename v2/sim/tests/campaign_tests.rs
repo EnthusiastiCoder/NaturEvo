@@ -109,3 +109,19 @@ fn grass_monsters_are_older_champions_and_boss_is_the_latest() {
     }
     assert!(g > 0 && b > 0);
 }
+
+#[test]
+fn run_file_fight_paths_resolve_relative_to_the_run_file() {
+    use arena_sim::campaign::run_json;
+    let (h, m) = libs(3);
+    let r = run(3, MapCfg::default(), &h, &m, true);
+    let base = std::env::temp_dir().join(format!("nv_run_rel_{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&base);
+    std::fs::create_dir_all(&base).unwrap();
+    let run_file = base.join("campaign.json");
+    let fights = base.join("fights_on");
+    let json = run_json(&r, Some(fights.to_str().unwrap()), Some(run_file.to_str().unwrap())).unwrap();
+    assert!(json.contains("\"fight\":\"fights_on/fight_0.json\""), "{}", &json[json.len().saturating_sub(300)..]);
+    assert!(base.join("fights_on/fight_0.json").exists());
+    let _ = std::fs::remove_dir_all(&base);
+}
