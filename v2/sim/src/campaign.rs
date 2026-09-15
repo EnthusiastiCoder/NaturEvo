@@ -161,7 +161,15 @@ pub fn run(seed: u64, cfg: MapCfg, heroes: &Library, monsters: &Library, permade
         }
         let arena_seed = rng.next_u64();
         let match_seed = rng.next_u64();
-        let monster_index = (rng.next_u64() % monsters.len() as u64) as usize;
+        // Library index 0 is the latest champion. Grass meets older champions so early fights are
+        // beatable; elites any but the latest; the boss is always the latest.
+        let n = monsters.len();
+        let roll = rng.next_u64() as usize;
+        let monster_index = match kind {
+            EncounterKind::Boss => 0,
+            EncounterKind::Elite => if n > 1 { 1 + roll % (n - 1) } else { 0 },
+            EncounterKind::Grass => { let lo = n / 2; lo + roll % (n - lo) }
+        };
         let tier = map.zone_tier(tile);
         let result = play(
             Arena::generate(arena_seed, &acfg),
