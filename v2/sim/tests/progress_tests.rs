@@ -45,3 +45,17 @@ fn late_checkpoints_beat_earlier_ones_for_both_sides() {
         }
     }
 }
+
+#[test]
+#[ignore]
+fn probe_saved_run_progress() {
+    let d = std::env::var("RUN_DIR").unwrap();
+    let ld = |r: &str, g: u32| Genome::from_json(&std::fs::read_to_string(format!("{d}/champion_{r}_gen_{g}.json")).unwrap()).unwrap();
+    for (role, name, other) in [(Role::Hero, "hero", "monster"), (Role::Monster, "monster", "hero")] {
+        let panel: Vec<Genome> = (0..20).map(|k| ld(other, k * 10 + 9)).collect();
+        for early in [9u32, 49] {
+            let (l, e) = late_share(role, &ld(name, 199), &ld(name, early), &panel, 8);
+            eprintln!("SAVED {name} 199 vs {early}: late {l} early {e} share {:.2}", l as f64 / (l + e).max(1) as f64);
+        }
+    }
+}
