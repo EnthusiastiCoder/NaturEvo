@@ -40,3 +40,14 @@ describe('melee readability', () => {
     expect(c.scale).toBeGreaterThan(1.5);
   });
 });
+
+describe('split-screen fit', () => {
+  it('fits the whole arena inside a half and centres it', () => {
+    const arena = { w: 1536, h: 819 };
+    const c = fitCamera(arena, { w: 960, h: 1080 });
+    expect(arena.w * c.scale).toBeLessThanOrEqual(960 + 1e-6);
+    expect(arena.h * c.scale).toBeLessThanOrEqual(1080 + 1e-6);
+    expect(c.x + arena.w * c.scale / 2).toBeCloseTo(480);
+    expect(c.y + arena.h * c.scale / 2).toBeCloseTo(540);
+  });
+});
