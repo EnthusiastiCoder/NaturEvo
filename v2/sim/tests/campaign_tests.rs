@@ -91,3 +91,21 @@ fn zone_tier_raises_monster_stats() {
     assert!(t2.hp > t0.hp || t2.damage > t0.damage);
     assert!(boss.hp > t2.hp && boss.damage >= t2.damage);
 }
+
+#[test]
+fn grass_monsters_are_older_champions_and_boss_is_the_latest() {
+    let mut r = Rng::new(9);
+    let h = Library::new(vec![Genome::random(Role::Hero, &mut r)]);
+    let m = Library::new((0..4).map(|_| Genome::random(Role::Monster, &mut r)).collect());
+    let (mut g, mut b) = (0, 0);
+    for seed in 0..20u64 {
+        for e in &run(seed, MapCfg::default(), &h, &m, false).encounters {
+            match e.kind {
+                EncounterKind::Grass => { assert!(e.monster_index >= 2, "grass index {}", e.monster_index); g += 1; }
+                EncounterKind::Boss => { assert_eq!(e.monster_index, 0); b += 1; }
+                _ => {}
+            }
+        }
+    }
+    assert!(g > 0 && b > 0);
+}
