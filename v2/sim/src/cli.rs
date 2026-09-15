@@ -39,7 +39,7 @@ pub fn run(args: &[String]) -> Result<(), String> {
             let monsters = crate::campaign::Library::from_dir(dir, "monster", keep)?;
             let r = crate::campaign::run(seed, crate::campaign::MapCfg::default(), &heroes, &monsters, permadeath);
             let fights = opt(args, "--fights-dir");
-            let json = crate::campaign::run_json(&r, fights)?;
+            let json = crate::campaign::run_json(&r, fights, Some(out))?;
             std::fs::write(out, json).map_err(|e| format!("{}: {}", out, e))?;
             let won = r.encounters.iter().filter(|e| e.result.outcome == crate::matchup::Outcome::HeroWin).count();
             eprintln!("outcome {:?} steps {} encounters {} hero_wins {}", r.outcome, r.steps, r.encounters.len(), won);

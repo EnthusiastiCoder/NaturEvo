@@ -221,7 +221,17 @@ pub fn fight_json(e: &Encounter) -> String {
 
 /// Run JSON for the viewer. With `fights_dir` set, fights are written there as `fight_N.json`
 /// and referenced by relative URL; otherwise they are inlined.
-pub fn run_json(r: &CampaignResult, fights_dir: Option<&str>) -> Result<String, String> {
+pub fn run_json(r: &CampaignResult, fights_dir: Option<&str>, run_file: Option<&str>) -> Result<String, String> {
+    // fight URLs are stored relative to the run file's directory so the viewer resolves them
+    let prefix = match (fights_dir, run_file) {
+        (Some(d), Some(f)) => {
+            let parent = std::path::Path::new(f).parent().unwrap_or(std::path::Path::new(""));
+            let rel = std::path::Path::new(d).strip_prefix(parent).unwrap_or(std::path::Path::new(d));
+            let s = rel.to_string_lossy().replace("\\", "/");
+            if s.is_empty() { String::new() } else { format!("{}/", s.trim_end_matches('/')) }
+        }
+        _ => String::new(),
+    };
     let mut encs = Vec::new();
     for (i, e) in r.encounters.iter().enumerate() {
         let fj = fight_json(e);
@@ -230,7 +240,7 @@ pub fn run_json(r: &CampaignResult, fights_dir: Option<&str>) -> Result<String, 
                 std::fs::create_dir_all(d).map_err(|x| format!("{}: {}", d, x))?;
                 let name = format!("fight_{}.json", i);
                 std::fs::write(std::path::Path::new(d).join(&name), &fj).map_err(|x| x.to_string())?;
-                format!("\"{}\"", name)
+                format!("\"{}{}\"", prefix, name)
             }
             None => fj,
         };
