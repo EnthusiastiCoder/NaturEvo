@@ -106,7 +106,7 @@ impl GenStats {
     }
 }
 
-const HOF_CAP: usize = 64;
+const HOF_CAP: usize = 256;
 const ELITES: usize = 2;
 const DRAW_PENALTY: f32 = 3.0;
 const BASELINE_N: usize = 10;
@@ -408,28 +408,51 @@ impl Trainer {
             let oi = 1 - ri;
             let mut order: Vec<usize> = (0..fits[ri].len()).collect();
             order.sort_by(|a, b| fits[ri][*b].partial_cmp(&fits[ri][*a]).unwrap_or(std::cmp::Ordering::Equal).then(a.cmp(b)));
-            let cands: Vec<usize> = order.into_iter().take(3).collect();
-            let mut opps: Vec<(Genome, u64)> = (0..6).map(|_| (Genome::random(role.other(), &mut rng), rng.next_u64())).collect();
-            for _ in 0..2 {
-                if !self.hof[oi].is_empty() {
-                    let j = (rng.next_u64() % self.hof[oi].len() as u64) as usize;
-                    opps.push((self.hof[oi][j].clone(), rng.next_u64()));
+            let mut cand_g: Vec<Genome> = order.iter().take(4).map(|&i| self.pops[ri][i].clone()).collect();
+            let n_pop_c = cand_g.len();
+            if gen > 0 {
+                cand_g.push(self.champs[ri].clone());
+            }
+            // Panel: fresh randoms, the opposing current champion, and an evenly spaced slice of its whole history.
+            let mut opps: Vec<(Genome, u64)> = (0..3).map(|_| (Genome::random(role.other(), &mut rng), rng.next_u64())).collect();
+            let hl = self.hof[oi].len();
+            if hl > 0 {
+                opps.push((self.champs[oi].clone(), rng.next_u64()));
+                let k = hl.min(14);
+                for q in 0..k {
+                    opps.push((self.hof[oi][q * hl / k].clone(), rng.next_u64()));
                 }
             }
-            let (pops_ref, cfg_ref, opps_ref, cands_ref) = (&self.pops[ri], &cfg, &opps, &cands);
-            let sc: Vec<f32> = par_map(cands.len(), |c| {
-                opps_ref.iter().map(|(o, s)| score_match(role, &pops_ref[cands_ref[c]], o, *s, cfg_ref, None).fitness).sum::<f32>()
+            let (cfg_ref, opps_ref, cands_ref) = (&cfg, &opps, &cand_g);
+            let sc: Vec<f32> = par_map(cand_g.len(), |c| {
+                opps_ref
+                    .iter()
+                    .flat_map(|(o, s)| [*s, s ^ 0x5EED_5EED])
+                    .zip(opps_ref.iter().flat_map(|(o, _)| [o, o]))
+                    .map(|(s, o)| {
+                        let m = score_match(role, &cands_ref[c], o, s, cfg_ref, None);
+                        m.fitness + if m.win { 3.0 } else { 0.0 }
+                    })
+                    .sum::<f32>()
             });
+            // Hysteresis: a challenger must clearly beat the sitting champion.
+            let mut sc = sc;
+            if gen > 0 {
+                let last = sc.len() - 1;
+                sc[last] += 0.08 * sc[last].abs() + 2.0;
+            }
             let mut bi = 0;
             for (i, v) in sc.iter().enumerate() {
                 if *v > sc[bi] {
                     bi = i;
                 }
             }
-            best[ri] = cands[bi];
-            let mut c = self.pops[ri][best[ri]].clone();
-            c.generation = gen;
-            c.fitness = fits[ri][best[ri]];
+            // A kept previous champion competes for the title but is not a population member.
+            let kept_prev = bi >= n_pop_c;
+            best[ri] = if kept_prev { order[0] } else { order[bi] };
+            let mut c = cand_g[bi].clone();
+            c.generation = if kept_prev { c.generation } else { gen };
+            c.fitness = if kept_prev { c.fitness } else { fits[ri][best[ri]] };
             champs[ri] = c;
         }
         let mut wr_hof = [0.0f32; 2];
@@ -495,7 +518,7 @@ impl Trainer {
                 let a = &old[tournament(fit, &mut br)];
                 let b = &old[tournament(fit, &mut br)];
                 let mut child = if br.f32() < 0.5 { Genome::crossover(a, b, &mut br) } else { a.clone() };
-                child.mutate(&mut br, 0.05, 0.25);
+                child.mutate(&mut br, 0.05, 0.25 * (1.0 - gen as f32 / 150.0).max(0.3));
                 child.generation = gen + 1;
                 child.fitness = 0.0;
                 next.push(child);
@@ -605,7 +628,7 @@ pub fn train_cli(args: &[String]) -> Result<(), String> {
         generations: gens,
         pop: num(args, "--pop", 64)?,
         k_opponents: num(args, "--k", 4)?,
-        hof_sample: num(args, "--hof", 2)?,
+        hof_sample: num(args, "--hof", 8)?,
     };
     let dir = std::path::Path::new(out);
     std::fs::create_dir_all(dir).map_err(|e| format!("{}: {}", out, e))?;
