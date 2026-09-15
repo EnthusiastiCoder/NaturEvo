@@ -11,7 +11,7 @@ const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v
 /** Zoom on the fighters (min view ~640 px wide), never showing outside the arena. Returns world container transform. */
 export function fightCamera(arena: { w: number; h: number }, a: V, b: V, stage: { w: number; h: number }): Cam {
   const aspect = stage.w / stage.h;
-  const vw = Math.max(Math.abs(a[0] - b[0]) + 480, (Math.abs(a[1] - b[1]) + 360) * aspect, 640);
+  const vw = Math.max(Math.abs(a[0] - b[0]) + 360, (Math.abs(a[1] - b[1]) + 280) * aspect, 870);
   const cover = Math.max(stage.w / arena.w, stage.h / arena.h);
   const scale = Math.max(stage.w / vw, cover);
   const cx = (a[0] + b[0]) / 2, cy = (a[1] + b[1]) / 2;
@@ -24,6 +24,7 @@ export function mapCamera(map: { w: number; h: number }, hero: V, stage: { w: nu
   return { scale, x: clamp(stage.w / 2 - hero[0] * scale, stage.w - map.w * scale, 0), y: clamp(stage.h / 2 - hero[1] * scale, stage.h - map.h * scale, 0) };
 }
 
+export const VISUAL_MIN_DIST = 2.2;
 /** Visual-only separation so melee fighters never fully overlap (distances in tiles). */
 export function separate(a: V, b: V, minDist: number): [V, V] {
   const dx = b[0] - a[0], dy = b[1] - a[1];
@@ -45,3 +46,23 @@ export function stateLabel(state: string): StateLabel | null {
   }
 }
 export const STAGE_W = 1920, STAGE_H = 1080;
+
+/** Backing-store plan: render at the displayed size times dpr, and scale the logical stage into it (no css resampling). */
+export function displayPlan(hostW: number, hostH: number, stageW: number, stageH: number, dpr: number) {
+  const f = fitStage(hostW, hostH, stageW, stageH);
+  return { cssW: f.w, cssH: f.h, resolution: dpr, stageScale: f.w / stageW };
+}
+
+/** Whole arena inside the stage, centred (split-screen halves). */
+export function fitCamera(arena: { w: number; h: number }, stage: { w: number; h: number }): Cam {
+  const scale = Math.min(stage.w / arena.w, stage.h / arena.h);
+  return { scale, x: (stage.w - arena.w * scale) / 2, y: (stage.h - arena.h * scale) / 2 };
+}
+
+/** Fighter-related overlay scale: keeps fighters at least ~1.5 screen px per sprite px when the camera is zoomed out. */
+export function uiScale(camScale: number): number { return Math.max(1, 1.5 / Math.max(0.01, camScale)); }
+
+/** Offsets (world px, y down, relative to the fighter's feet) of the HP bar and the state label; the label is always above the bar. */
+export function hudOffsets(u: number): { barTop: number; labelBottom: number } {
+  return { barTop: -92 * u, labelBottom: -100 * u };
+}
