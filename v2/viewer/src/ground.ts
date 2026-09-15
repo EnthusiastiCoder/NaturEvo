@@ -23,7 +23,7 @@ export interface GroundSpec { w: number; h: number; tile: (x: number, y: number)
 export const groundPixels = (w: number, h: number, ts: number, pitch: number, dpr: number) =>
   ({ w: Math.round(w * ts * dpr), h: Math.round(h * ts * pitch * dpr) });
 /** Colour/shade samples per tile edge: dense enough that smooth upscaling no longer smears (8 at ts 48). */
-export const lowResSub = (ts: number) => Math.max(8, Math.ceil(ts / 6));
+export const lowResSub = (ts: number) => Math.max(8, Math.ceil(ts / 2));
 
 /** Paint the ground at device resolution (dpr). ts = logical pixels per tile; pitch = vertical squash. */
 export function paintGround(g: GroundSpec, ts: number, pitch: number, dpr = 1): HTMLCanvasElement {
@@ -48,11 +48,12 @@ export function paintGround(g: GroundSpec, ts: number, pitch: number, dpr = 1): 
         const z = ZONE_TINT[Math.min(3, g.zone(cx, cy))];
         r += (base[0] + z[0]) * wgt; gg += (base[1] + z[1]) * wgt; b += (base[2] + z[2]) * wgt;
       }
-      const n = fbm(px / 5, py / 5, g.seed) - 0.5;
-      const dapple = fbm(px / 11 + 40, py / 11, g.seed + 3) > 0.62 ? -22 : 0; // canopy light gaps
+      const n = fbm((px / SUB) * ts / 20, (py / SUB) * ts / 20, g.seed) - 0.5;
+      const dapple = fbm(((px / SUB) * ts) / 44 + 40, ((py / SUB) * ts) / 44, g.seed + 3) > 0.62 ? -22 : 0; // canopy light gaps
       const t = g.tile(tx, ty);
-      const shade = 1 + n * 0.55 + dapple / 255;
-      const wob = t === 'W' ? Math.sin(px * 0.9 + py * 1.3) * 6 : 0;
+      const grain = (hash2(px, py, g.seed + 1) - 0.5) * 0.16; // per-sample grain keeps the surface crisp
+      const shade = 1 + n * 0.34 + grain + dapple / 255;
+      const wob = t === 'W' ? Math.sin(px * 0.9 * 8 / SUB + py * 1.3 * 8 / SUB) * 6 : 0;
       const i = (py * lw + px) * 4;
       img.data[i] = Math.max(0, Math.min(255, r * shade + wob));
       img.data[i + 1] = Math.max(0, Math.min(255, gg * shade + wob));
