@@ -51,3 +51,22 @@ describe('split-screen fit', () => {
     expect(c.y + arena.h * c.scale / 2).toBeCloseTo(540);
   });
 });
+
+const fr = (hh: number, mh: number, hs: string, ms: string): Frame => ({
+  hero: { pos: [0, 0], facing: 0, hp: hh, stamina: 100, action: 'none', state: hs },
+  monster: { pos: [1, 0], facing: 0, hp: mh, stamina: 100, action: 'none', state: ms },
+});
+describe('fight stats strip', () => {
+  const frames = [fr(100, 100, 'Idle', 'Idle'), fr(100, 90, 'Active', 'Idle'), fr(100, 90, 'Idle', 'Blocking'), fr(100, 90, 'Idle', 'Blocking'),
+    fr(80, 90, 'Idle', 'Active'), fr(80, 90, 'Dodging', 'Idle'), fr(80, 70, 'Idle', 'Idle')];
+  it('counts hits landed, blocks and dodges per fighter up to a frame', () => {
+    const s = fightStats(frames, frames.length - 1);
+    expect(s.hero).toEqual({ hits: 2, blocks: 0, dodges: 1 });
+    expect(s.monster).toEqual({ hits: 1, blocks: 1, dodges: 0 });
+    expect(fightStats(frames, 1).hero.hits).toBe(1);
+    expect(fightStats(frames, 0).hero.hits).toBe(0);
+  });
+  it('formats a short line', () => {
+    expect(statsLine('Hero', { hits: 1, blocks: 2, dodges: 3 })).toBe('Hero: 1 hits, 2 blocks, 3 dodges');
+  });
+});
