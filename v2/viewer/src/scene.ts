@@ -175,7 +175,7 @@ export class Scene {
   drawFight(f: Fight, t: number, o: FightOpts): { hero: FighterFrame; monster: FighterFrame } {
     const hz = f.tickHz;
     const raw = sampleFight(f.frames, t, hz);
-    const [hp, mp] = separate(raw.hero.pos, raw.monster.pos, 1.3); // visual only
+    const [hp, mp] = separate(raw.hero.pos, raw.monster.pos, VISUAL_MIN_DIST); // visual only
     const s = { hero: { ...raw.hero, pos: hp }, monster: { ...raw.monster, pos: mp } };
     const p = sampleFight(f.frames, Math.max(0, t - 1 / hz), hz);
     const back = sampleFight(f.frames, Math.max(0, t - 0.2), hz);
