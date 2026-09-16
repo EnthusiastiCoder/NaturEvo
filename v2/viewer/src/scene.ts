@@ -227,7 +227,7 @@ export class Scene {
       const lab = stateLabel(fa.state) ?? (hit && fa.state !== 'Dead' ? { text: 'HIT', color: 0xff6b6b } : null);
       const L = this.rigs[k].label;
       L.visible = !!lab;
-      if (lab) { L.text = lab.text; L.style.fill = lab.color; L.position.set(cx, cy - 96); }
+      if (lab) { L.text = lab.text; L.style.fill = lab.color; L.scale.set(U); L.position.set(cx, cy + hudOffsets(U).labelBottom); }
     });
     if (o.rays) for (const [a, b, col] of fighters) this.drawRays(g, a, b, col);
     // bars
