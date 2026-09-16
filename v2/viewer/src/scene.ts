@@ -179,6 +179,11 @@ export class Scene {
     const s = { hero: { ...raw.hero, pos: hp }, monster: { ...raw.monster, pos: mp } };
     const p = sampleFight(f.frames, Math.max(0, t - 1 / hz), hz);
     const back = sampleFight(f.frames, Math.max(0, t - 0.2), hz);
+    const TS = this.ts, P = PITCH;
+    const cam = o.fit ? fitCamera(this.arenaPx, { w: this.sw, h: this.sh })
+      : fightCamera(this.arenaPx, [s.hero.pos[0] * TS, s.hero.pos[1] * TS * P], [s.monster.pos[0] * TS, s.monster.pos[1] * TS * P], { w: this.sw, h: this.sh });
+    this.u = uiScale(cam.scale);
+    const U = this.u;
     this.pose(s.hero, p.hero.pos, this.heroKey, f, 0, t, back.hero.hp - s.hero.hp > 0.5, 0);
     this.pose(s.monster, p.monster.pos, this.monsterKey, f, 1, t, back.monster.hp - s.monster.hp > 0.5, 1);
     const g = this.overlay; g.clear();
