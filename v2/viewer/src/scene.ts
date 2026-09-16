@@ -29,6 +29,7 @@ export class Scene {
   private res = 1;
   private arenaPx = { w: 1, h: 1 };
   private rigs: Rig[] = [];
+  private u = 1;
   private mode: 'fight' | 'map' | null = null;
   private ts = 32;
   private blocked: ((x: number, y: number) => boolean) | null = null;
