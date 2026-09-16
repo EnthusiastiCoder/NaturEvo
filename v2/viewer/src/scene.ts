@@ -288,7 +288,8 @@ export class Scene {
     const m = run.map;
     const tileAt = (x: number, y: number) => m.tiles[Math.max(0, Math.min(m.h - 1, y))][Math.max(0, Math.min(m.w - 1, x))];
     this.blocked = null;
-    this.addGround(paintGround({ w: m.w, h: m.h, seed: 7, tile: tileAt, zone: (x, y) => Number(m.zones[Math.max(0, Math.min(m.h - 1, y))][Math.max(0, Math.min(m.w - 1, x))]) }, ts, PITCH, this.res));
+    const gres = this.groundRes(m.w, m.h, ts);
+    this.addGround(paintGround({ w: m.w, h: m.h, seed: 7, tile: tileAt, zone: (x, y) => Number(m.zones[Math.max(0, Math.min(m.h - 1, y))][Math.max(0, Math.min(m.w - 1, x))]) }, ts, PITCH, gres), gres);
     this.arenaPx = { w: m.w * ts, h: m.h * ts * PITCH };
     const gx = this.overlay;
     void gx;
