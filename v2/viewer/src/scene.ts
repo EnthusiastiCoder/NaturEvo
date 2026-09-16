@@ -232,12 +232,12 @@ export class Scene {
     if (o.rays) for (const [a, b, col] of fighters) this.drawRays(g, a, b, col);
     // bars
     for (const [a, , col] of fighters) {
-      const cx = a.pos[0] * TS, cy = a.pos[1] * TS * P - 80;
-      const w = 54;
-      g.roundRect(cx - w / 2 - 1, cy - 1, w + 2, 12, 3).fill({ color: 0x000000, alpha: 0.6 });
-      g.rect(cx - w / 2, cy, w * Math.max(0, a.hp) / 100, 6).fill({ color: a.hp > 35 ? 0x6bd968 : 0xe5484d });
-      g.rect(cx - w / 2, cy + 7, w * Math.max(0, a.stamina) / 100, 3).fill({ color: 0xf5d90a });
-      g.circle(cx - w / 2 - 6, cy + 4, 3).fill({ color: col });
+      const cx = a.pos[0] * TS, cy = a.pos[1] * TS * P + hudOffsets(U).barTop;
+      const w = 54 * U, bh = 6 * U;
+      g.roundRect(cx - w / 2 - U, cy - U, w + 2 * U, 12 * U, 3 * U).fill({ color: 0x000000, alpha: 0.6 });
+      g.rect(cx - w / 2, cy, w * Math.max(0, a.hp) / 100, bh).fill({ color: a.hp > 35 ? 0x6bd968 : 0xe5484d });
+      g.rect(cx - w / 2, cy + 7 * U, w * Math.max(0, a.stamina) / 100, 3 * U).fill({ color: 0xf5d90a });
+      g.circle(cx - w / 2 - 6 * U, cy + 4 * U, 3 * U).fill({ color: col });
     }
     this.particles(t, -cam.x / cam.scale, -cam.y / cam.scale, this.sw / cam.scale, this.sh / cam.scale, true);
     this.app.render();
