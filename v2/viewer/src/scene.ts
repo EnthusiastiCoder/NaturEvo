@@ -79,7 +79,12 @@ export class Scene {
     this.ground = null;
   }
 
-  private addGround(canvas: HTMLCanvasElement): void {
+  /** Ground texture density: dense enough to stay crisp when zoomed, capped for GPU limits. */
+  private groundRes(w: number, h: number, ts: number): number {
+    return Math.max(0.5, Math.min(this.res, 7000 / Math.max(w * ts, h * ts * PITCH)));
+  }
+
+  private addGround(canvas: HTMLCanvasElement, res: number): void {
     const g = new Sprite(Texture.from(canvas));
     g.scale.set(1 / this.res); // texture is painted at device resolution
     g.zIndex = -1e9;
