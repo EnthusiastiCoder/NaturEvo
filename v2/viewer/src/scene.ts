@@ -123,6 +123,7 @@ export class Scene {
     const { w, h, blocked } = f.arena;
     const isB = (x: number, y: number) => x < 0 || y < 0 || x >= w || y >= h || (blocked ? blocked[y]?.[x] === '#' : false);
     this.blocked = (x, y) => isB(Math.floor(x), Math.floor(y));
+    const gres = this.groundRes(w, h, ts);
     this.addGround(paintGround({
       w, h, seed: f.seed,
       tile: (x, y) => (blocked ? (blocked[y]?.[x] === '#' ? 'T' : ',') : ((x + y) % 2 === 0 ? ',' : '.')),
