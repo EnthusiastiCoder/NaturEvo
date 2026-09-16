@@ -187,8 +187,6 @@ export class Scene {
     this.pose(s.hero, p.hero.pos, this.heroKey, f, 0, t, back.hero.hp - s.hero.hp > 0.5, 0);
     this.pose(s.monster, p.monster.pos, this.monsterKey, f, 1, t, back.monster.hp - s.monster.hp > 0.5, 1);
     const g = this.overlay; g.clear();
-    const TS = this.ts, P = PITCH;
-    const cam = fightCamera(this.arenaPx, [s.hero.pos[0] * TS, s.hero.pos[1] * TS * P], [s.monster.pos[0] * TS, s.monster.pos[1] * TS * P], { w: this.sw, h: this.sh });
     this.world.scale.set(cam.scale); this.world.position.set(cam.x, cam.y);
     const hitH = back.hero.hp - s.hero.hp > 0.5, hitM = back.monster.hp - s.monster.hp > 0.5;
     const fighters: [FighterFrame, FighterFrame, number][] = [[s.hero, s.monster, 0x4cc9f0], [s.monster, s.hero, 0xf4845f]];
