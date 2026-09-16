@@ -86,7 +86,7 @@ export class Scene {
 
   private addGround(canvas: HTMLCanvasElement, res: number): void {
     const g = new Sprite(Texture.from(canvas));
-    g.scale.set(1 / this.res); // texture is painted at device resolution
+    g.scale.set(1 / res); // texture is painted denser than the stage
     g.zIndex = -1e9;
     this.layer.addChild(g);
     this.ground = g;
