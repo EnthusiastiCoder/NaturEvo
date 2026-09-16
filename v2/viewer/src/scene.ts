@@ -54,11 +54,22 @@ export class Scene {
     return s;
   }
 
-  /** Fit the fixed-size logical stage to the host element. */
-  fit(hostW: number, hostH: number): void {
-    const f = fitStage(hostW - 2, hostH - 2, this.sw, this.sh);
-    this.app.canvas.style.width = `${f.w}px`;
-    this.app.canvas.style.height = `${f.h}px`;
+  private record = false;
+  private fixed = false;
+  /** Render at the displayed size times dpr (no css resampling). Returns true when the ground must be repainted. */
+  fit(hostW: number, hostH: number): boolean {
+    if (this.record) {
+      const f = displayPlan(hostW - 2, hostH - 2, this.sw, this.sh, 1);
+      this.app.canvas.style.width = `${f.cssW}px`; this.app.canvas.style.height = `${f.cssH}px`;
+      return false;
+    }
+    const p = displayPlan(hostW - 2, hostH - 2, this.sw, this.sh, window.devicePixelRatio || 1);
+    const want = Math.max(0.25, p.resolution * p.stageScale * GROUND_ZOOM);
+    this.app.renderer.resize(p.cssW, p.cssH, p.resolution);
+    this.app.stage.scale.set(p.stageScale);
+    const changed = Math.abs(want / this.res - 1) > 0.2;
+    this.res = want;
+    return changed;
   }
 
   private reset(mode: 'fight' | 'map', ts: number): void {
