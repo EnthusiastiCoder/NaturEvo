@@ -42,7 +42,7 @@ export class Scene {
     const s = new Scene();
     s.app = new Application();
     const size = sceneSize(!!o.record, window.devicePixelRatio || 1);
-    s.sw = o.w ?? size.w; s.sh = o.h ?? size.h; s.res = size.resolution;
+    s.sw = o.w ?? size.w; s.sh = o.h ?? size.h; s.res = o.record ? size.resolution * 1.5 : size.resolution * GROUND_ZOOM; s.record = !!o.record; s.fixed = !!o.w;
     // transparent outside record so the themed stage shows; record frames are opaque
     await s.app.init({ width: s.sw, height: s.sh, antialias: true, ...(o.record ? { background: 0x0c120b } : { backgroundAlpha: 0 }), resolution: size.resolution, autoDensity: !o.record });
     host.appendChild(s.app.canvas);
