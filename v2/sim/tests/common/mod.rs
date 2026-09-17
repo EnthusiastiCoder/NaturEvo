@@ -56,3 +56,13 @@ pub fn dist(m: &Match) -> f32 {
     let (a, b) = (m.pos(Role::Hero), m.pos(Role::Monster));
     ((a.0 - b.0).powi(2) + (a.1 - b.1).powi(2)).sqrt()
 }
+
+/// Hero vs Minion grass, no place_for_duel (spawn positions as generated).
+pub fn duel_unplaced(seed: u64) -> Match {
+    let cfg = ArenaConfig::default();
+    let mut r = Rng::new(seed);
+    let h = Genome::random(Role::Hero, &mut r);
+    let m = Genome::random(Role::Monster, &mut r);
+    let setup = Setup { hp: [cfg.max_hp, cfg.max_hp], species: [Species::Hero, Species::Minion], rank: [Rank::Grass, Rank::Grass] };
+    Match::new_with_setup(Arena::generate(seed, &cfg), h, m, seed, &cfg, setup)
+}
