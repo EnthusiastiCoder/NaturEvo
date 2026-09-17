@@ -150,3 +150,13 @@ fn releasing_guard_enters_guard_recover_8_ignoring_inputs() {
     }
     assert_eq!(n, 8);
 }
+
+#[test]
+fn holding_block_drains_6_per_second_and_no_regen() {
+    let mut m = duel(5.0);
+    run(&mut m, 20, idle(), blk());
+    let s20 = m.stamina(M);
+    run(&mut m, 40, idle(), blk());
+    assert!(s20 >= m.stamina(M), "no regen while blocking");
+    assert!((87.0..=90.0).contains(&m.stamina(M)), "after 60 ticks {}", m.stamina(M));
+}
