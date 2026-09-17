@@ -22,3 +22,12 @@ export function tintStatus(fx: number[]): string | null {
   return null;
 }
 export const statusColor = (key: string): number => STATUSES.find((s) => s.key === key)?.color ?? 0xffffff;
+
+/** Sprite lags behind the sim's instant jump and catches up: -dir * dist * remaining/total. */
+export function knockbackOffset(remaining: number, total: number, dist: number, dir: [number, number]): [number, number] {
+  if (total <= 0) return [0, 0];
+  const k = Math.max(0, Math.min(1, remaining / total)) * dist;
+  return [-dir[0] * k || 0, -dir[1] * k || 0];
+}
+export const staggerShake = (t: number, remaining: number): number => (remaining <= 0 ? 0 : Math.sin(t * 90) * Math.cos(t * 37));
+export const stunStarCount = (remaining: number): number => (remaining <= 0 ? 0 : Math.max(1, Math.min(5, Math.ceil(remaining / 4))));
