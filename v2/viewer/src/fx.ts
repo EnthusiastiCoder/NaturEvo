@@ -34,3 +34,21 @@ export const stunStarCount = (remaining: number): number => (remaining <= 0 ? 0 
 
 export interface FightEvent { t: string; [k: string]: unknown }
 export const dotEvents = (ev: FightEvent[]): FightEvent[] => ev.filter((e) => e.t === 'dot');
+
+export interface SideFx { statuses: Record<string, number>; punishes: number; parries: number }
+export function statusStats(frames: Frame[], upTo: number): { hero: SideFx; monster: SideFx } {
+  const mk = (): SideFx => ({ statuses: Object.fromEntries(KEYS.map((k) => [k, 0])), punishes: 0, parries: 0 });
+  const out = { hero: mk(), monster: mk() };
+  const end = Math.min(frames.length - 1, Math.max(0, upTo));
+  for (let i = 0; i <= end; i++) {
+    for (const e of (frames[i].ev ?? []) as FightEvent[]) {
+      const side = e.by === 0 ? out.hero : e.by === 1 ? out.monster : null;
+      if (!side) continue;
+      if (e.t === 'hit') {
+        for (const idx of (e.fx as number[]) ?? []) if (KEYS[idx]) side.statuses[KEYS[idx]]++;
+        if (e.punish) side.punishes++;
+      } else if (e.t === 'parry') side.parries++;
+    }
+  }
+  return out;
+}
