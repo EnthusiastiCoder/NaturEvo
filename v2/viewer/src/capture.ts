@@ -24,8 +24,8 @@ export async function splitSource(earlyUrl: string, lateUrl: string, w = RECORD_
   const draw = (t: number) => {
     ctx.fillStyle = '#0c120b'; ctx.fillRect(0, 0, w, h);
     ([[sa, fa, 0], [sb, fb, 1]] as const).forEach(([s, f, i]) => {
-      s.drawFight(f, Math.min(t, f.frames.length / f.tickHz - 1e-6), { rays: false });
-      const cw = w / 2; // each half is rendered at exactly cw x h: no crop, no bands
+      s.drawFight(f, Math.min(t, f.frames.length / f.tickHz - 1e-6), { rays: false, fit: true });
+      const cw = w / 2; // each half is rendered at exactly cw x h with the whole arena fitted inside (no crop)
       ctx.drawImage(s.app.canvas, i * cw, 0, cw, h);
     });
     ctx.fillStyle = '#ffffff22'; ctx.fillRect(w / 2 - 1, 0, 2, h);
