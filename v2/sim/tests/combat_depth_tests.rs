@@ -38,3 +38,13 @@ fn light_hits_at_step_5_heavy_at_step_13() {
     m.step_with(idle(), idle());
     assert_eq!(m.hp(M), 82.0, "heavy dmg 18 at step 13");
 }
+
+#[test]
+fn attacks_cost_stamina() {
+    let mut m = duel(1.0);
+    m.step_with(atk(0), idle());
+    assert!((m.stamina(H) - 95.0).abs() < 1.0, "light cost 5, got {}", m.stamina(H));
+    let mut m = duel(1.0);
+    m.step_with(atk(1), idle());
+    assert!((m.stamina(H) - 85.0).abs() < 1.0, "heavy cost 15, got {}", m.stamina(H));
+}
