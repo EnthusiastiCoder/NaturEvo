@@ -137,3 +137,16 @@ fn parry_blocks_all_and_staggers_attacker_14() {
     assert!((13..=14).contains(&s), "stagger {s}");
     assert!(m.log().to_json().contains("parry"));
 }
+
+#[test]
+fn releasing_guard_enters_guard_recover_8_ignoring_inputs() {
+    let mut m = duel(5.0);
+    run(&mut m, 20, idle(), blk());
+    assert_eq!(st(&m, M), S::Blocking);
+    let mut n = 0;
+    for _ in 0..20 {
+        m.step_with(idle(), Action { attack: true, dodge: true, ..idle() });
+        if st(&m, M) == S::GuardRecover { n += 1; } else if n > 0 { break; }
+    }
+    assert_eq!(n, 8);
+}
