@@ -252,3 +252,15 @@ fn poison_duration_adds_capped_at_300() {
     m.apply_status(H, Status::Poison, 100, 1.0, M);
     assert_eq!(fx(&m, H, Status::Poison), 200);
 }
+
+#[test]
+fn poison_halves_stamina_regen_and_credits_dot() {
+    let mut m = duel(8.0);
+    m.set_stamina(H, 10.0);
+    m.apply_status(H, Status::Poison, 300, 1.0, M);
+    run(&mut m, 30, idle(), idle());
+    assert!(near(m.stamina(H), 16.0, 0.6), "stamina {}", m.stamina(H));
+    assert_eq!(m.hp(H), 98.0, "ticks at 15 and 30");
+    assert!(near(m.damage_dealt()[M.index()], 2.0, 1e-3));
+    assert!(m.log().to_json().contains("\"kind\":\"poison\""));
+}
