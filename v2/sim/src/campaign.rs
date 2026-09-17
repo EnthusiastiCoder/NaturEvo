@@ -183,6 +183,11 @@ pub fn run(seed: u64, cfg: MapCfg, heroes: &Library, monsters: &Library, permade
             EncounterKind::Elite => (0.2, 0.65),
             EncounterKind::Grass => (0.65, 1.0),
         };
+        let f = f_lo + (f_hi - f_lo) * roll;
+        let mut monster_index = (f * (n - 1) as f32).round() as usize;
+        if kind == EncounterKind::Elite && n > 1 {
+            monster_index = monster_index.max(1);
+        }
         let tier = map.zone_tier(tile);
         let result = play(
             Arena::generate(arena_seed, &acfg),
