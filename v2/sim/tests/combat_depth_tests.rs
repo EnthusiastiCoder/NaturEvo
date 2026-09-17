@@ -74,3 +74,15 @@ fn whiff_recovery_is_9_vs_hit_6() {
     let mut m = duel(1.0);
     assert_eq!(recovery_len(&mut m, idle()), 6);
 }
+
+#[test]
+fn punish_on_staggered_victim_is_1_25x_and_logged() {
+    let mut m = duel(1.0);
+    m.apply_status(M, Status::Stagger, 30, 1.0, H);
+    run(&mut m, 5, atk(0), idle());
+    assert_eq!(m.hp(M), 90.0, "8 * 1.25");
+    assert!(m.log().to_json().contains("\"punish\":true"));
+    let mut m = duel(1.0);
+    run(&mut m, 5, atk(0), idle());
+    assert!(!m.log().to_json().contains("\"punish\":true"));
+}
