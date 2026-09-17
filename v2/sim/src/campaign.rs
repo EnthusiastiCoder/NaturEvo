@@ -119,6 +119,8 @@ pub struct Encounter {
     pub match_seed: u64,
     pub monster_index: usize,
     pub stats: TierStats,
+    /// Monster starting hp in the duel (wild monsters are handicapped, the boss is at full strength).
+    pub monster_hp: f32,
     pub result: MatchResult,
 }
 
