@@ -182,6 +182,14 @@ export class Scene {
     const raw = sampleFight(f.frames, t, hz);
     const [hp, mp] = separate(raw.hero.pos, raw.monster.pos, VISUAL_MIN_DIST); // visual only
     const s = { hero: { ...raw.hero, pos: hp }, monster: { ...raw.monster, pos: mp } };
+    const kb = (a: FighterFrame, from: [number, number]) => { // visual lag behind the sim's push
+      const r = a.fx[0]; if (!(r > 0)) return;
+      const d = Math.hypot(a.pos[0] - from[0], a.pos[1] - from[1]) || 1;
+      const o = knockbackOffset(r, KNOCK_TICKS, 1.5, [(a.pos[0] - from[0]) / d, (a.pos[1] - from[1]) / d]);
+      a.pos = [a.pos[0] + o[0], a.pos[1] + o[1]];
+    };
+    kb(s.hero, s.monster.pos); kb(s.monster, s.hero.pos);
+    for (const a of [s.hero, s.monster]) if (a.fx[1] > 0) a.pos = [a.pos[0] + staggerShake(t, a.fx[1]) * 0.08, a.pos[1]];
     const p = sampleFight(f.frames, Math.max(0, t - 1 / hz), hz);
     const back = sampleFight(f.frames, Math.max(0, t - 0.2), hz);
     const TS = this.ts, P = PITCH;
