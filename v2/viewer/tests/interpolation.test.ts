@@ -35,6 +35,23 @@ describe('fight interpolation', () => {
     const r = lerpAngle(Math.PI - 0.1, -Math.PI + 0.1, 0.5);
     expect(Math.abs(Math.abs(r) - Math.PI)).toBeLessThan(1e-6);
   });
+  it('carries atk, fx, seen and ev from the earlier frame (not blended)', () => {
+    const mk = (x: number, atk: number, fx: number[], seen: boolean, ev: unknown[]) => ({
+      hero: { pos: [x, 0], facing: 0, hp: 100, stamina: 100, action: 'none', state: 'Idle', atk, fx, seen },
+      monster: { pos: [10, 0], facing: 0, hp: 100, stamina: 100, action: 'none', state: 'Idle', atk: -1, fx: [0, 0, 0, 0, 0, 0, 0], seen: false },
+      ev,
+    });
+    const e0 = [{ t: 'parry', by: 0 }];
+    const fs = [mk(0, 2, [0, 0, 8, 0, 0, 0, 0], true, e0), mk(4, 0, [0, 0, 7, 0, 0, 0, 0], false, [])] as never;
+    const s = sampleFight(fs, 0.5 / 30, 30) as never as { hero: { atk: number; fx: number[]; seen: boolean }; ev: unknown[] };
+    expect(s.hero.atk).toBe(2);
+    expect(s.hero.fx).toEqual([0, 0, 8, 0, 0, 0, 0]);
+    expect(s.hero.seen).toBe(true);
+    expect(s.ev).toEqual(e0);
+    const at1 = sampleFight(fs, 1 / 30, 30) as never as { hero: { atk: number }; ev: unknown[] };
+    expect(at1.hero.atk).toBe(0);
+    expect(at1.ev).toEqual([]);
+  });
   it('is independent of display refresh rate (same t, same sample)', () => {
     const a = sampleFight(frames, 0.017, 30);
     const b = sampleFight(frames, 0.017, 30);
