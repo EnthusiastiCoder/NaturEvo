@@ -173,3 +173,18 @@ fn zero_stamina_drops_guard_into_guard_recover() {
     assert!(seen);
     assert_ne!(st(&m, M), S::Stunned);
 }
+
+#[test]
+fn block_arc_is_90_degrees_front_only() {
+    let loss = |off_deg: f32| {
+        let mut m = duel(1.0);
+        m.set_facing(M, PI + off_deg.to_radians());
+        run(&mut m, 10, idle(), blk());
+        run(&mut m, 5, atk(0), blk());
+        100.0 - m.hp(M)
+    };
+    assert!((loss(40.0) - 1.6).abs() < 1e-3);
+    for off in [50.0, 100.0, 180.0] {
+        assert!((loss(off) - 8.0).abs() < 1e-3, "off {off}");
+    }
+}
