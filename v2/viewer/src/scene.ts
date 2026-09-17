@@ -112,8 +112,10 @@ export class Scene {
       const sprite = new Sprite();
       const label = new Text({ text: '', style: { fontFamily: 'system-ui, sans-serif', fontSize: 15, fontWeight: '800', fill: 0xffffff, stroke: { color: 0x000000, width: 4 } }, resolution: 3 });
       label.anchor.set(0.5, 1); label.visible = false; label.zIndex = 1e8 + 1;
-      this.layer.addChild(sprite, label);
-      this.rigs.push({ sprite, label });
+      const timers = new Text({ text: '', style: { fontFamily: 'system-ui, sans-serif', fontSize: 11, fontWeight: '700', fill: 0xffffff, stroke: { color: 0x000000, width: 3 } }, resolution: 3 });
+      timers.anchor.set(0.5, 1); timers.visible = false; timers.zIndex = 1e8 + 2;
+      this.layer.addChild(sprite, label, timers);
+      this.rigs.push({ sprite, label, timers });
     }
   }
 
