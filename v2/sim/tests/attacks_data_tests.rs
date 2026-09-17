@@ -88,3 +88,12 @@ fn boss_has_three_moves_including_slam() {
         assert!((v[0].damage - g[0].damage * 1.2).abs() < 1e-3);
     }
 }
+
+#[test]
+fn all_seven_statuses_appear_in_some_move() {
+    let mut all = vec![];
+    for sp in [Species::Hero, Species::Minion, Species::Rogue, Species::Warrior, Species::Mage] {
+        for rk in [Rank::Grass, Rank::Elite, Rank::Boss] { all.extend(moves(sp, rk)); }
+    }
+    for s in Status::ALL { assert!(all.iter().any(|m| has(m, s)), "{:?} unused", s); }
+}
