@@ -66,3 +66,11 @@ fn no_acting_in_recovery_and_hit_recovery_is_6() {
     assert_eq!(recovery_len(&mut m, all_on()), 6);
     assert_eq!(m.hp(M), 92.0, "only the first swing landed; recovery ignores attack");
 }
+
+#[test]
+fn whiff_recovery_is_9_vs_hit_6() {
+    let mut m = duel(3.0);
+    assert_eq!(recovery_len(&mut m, idle()), 9);
+    let mut m = duel(1.0);
+    assert_eq!(recovery_len(&mut m, idle()), 6);
+}
