@@ -174,8 +174,8 @@ pub fn run(seed: u64, cfg: MapCfg, heroes: &Library, monsters: &Library, permade
         }
         let arena_seed = rng.next_u64();
         let match_seed = rng.next_u64();
-        // Library index 0 is the latest champion. Grass meets older champions so early fights are
-        // beatable; elites any but the latest; the boss is always the latest.
+        // Library index 0 is the latest champion; higher indices are older and weaker. Grass meets
+        // the oldest champions, elites the middle ones, the boss always the latest.
         let n = monsters.len();
         let roll = rng.next_u64() as usize;
         let monster_index = match kind {
