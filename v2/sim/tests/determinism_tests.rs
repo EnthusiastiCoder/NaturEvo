@@ -33,3 +33,26 @@ fn log_has_a_frame_per_tick_and_tick_hz() {
     assert!(n as u32 >= ticks, "frames {n} ticks {ticks}");
     assert!(j.contains("\"tick_hz\":30") || j.contains("\"tick_hz\": 30"));
 }
+
+#[test]
+fn scripted_status_match_is_byte_identical() {
+    use arena_sim::fighter::Action;
+    use arena_sim::matchup::Match;
+    use arena_sim::status::Status;
+    let go = || {
+        let cfg = ArenaConfig::default();
+        let mut r = Rng::new(3);
+        let h = Genome::random(Role::Hero, &mut r);
+        let m = Genome::random(Role::Monster, &mut r);
+        let mut mt = Match::new(Arena::generate(3, &cfg), h, m, 3, &cfg);
+        mt.place_for_duel(1.0);
+        mt.apply_status(Role::Hero, Status::Confused, 90, 1.0, Role::Monster);
+        mt.apply_status(Role::Monster, Status::Bleed, 90, 1.0, Role::Hero);
+        for i in 0..200 {
+            let a = Action { fwd: 1.0, strafe: 0.5, turn: 0.3, attack: i % 7 == 0, attack_kind: (i % 3) as u8, ..Action::idle() };
+            mt.step_with(a, Action { attack: true, attack_kind: (i % 2) as u8, ..Action::idle() });
+        }
+        mt.log().to_json()
+    };
+    assert_eq!(go(), go());
+}
