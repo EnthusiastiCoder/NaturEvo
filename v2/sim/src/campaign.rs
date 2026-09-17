@@ -206,6 +206,7 @@ pub fn run(seed: u64, cfg: MapCfg, heroes: &Library, monsters: &Library, permade
             arena_seed,
             match_seed,
             monster_index,
+            monster_hp,
             stats: tier_stats(tier, kind == EncounterKind::Boss),
             result,
         });
