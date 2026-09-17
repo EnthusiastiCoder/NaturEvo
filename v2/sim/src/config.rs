@@ -1,5 +1,7 @@
 //! Arena configuration (world units are tiles).
 
+/// Block half arc: 90 degrees, strictly narrower than the vision half-FOV.
+pub const BLOCK_HALF_ARC: f32 = std::f32::consts::PI / 4.0;
 #[derive(Clone, Debug)]
 pub struct ArenaConfig {
     pub tick_hz: u32,
