@@ -73,3 +73,18 @@ fn elites_are_stronger_with_one_extra_effect() {
         assert_ne!(g, e);
     }
 }
+
+#[test]
+fn boss_has_three_moves_including_slam() {
+    for sp in [Species::Warrior, Species::Mage] {
+        let v = moves(sp, Rank::Boss);
+        assert_eq!(v.len(), 3);
+        let s = v.iter().find(|m| m.name == "Slam").expect("Slam");
+        assert_eq!((s.windup, s.active, s.recovery), (16, 4, 16));
+        assert_eq!(eff(s, Status::Stun).0, 30);
+        assert_eq!(eff(s, Status::Knock).1, 2.0);
+        assert!((20.0..=24.0).contains(&s.damage), "slam dmg {}", s.damage);
+        let g = moves(sp, Rank::Grass);
+        assert!((v[0].damage - g[0].damage * 1.2).abs() < 1e-3);
+    }
+}
