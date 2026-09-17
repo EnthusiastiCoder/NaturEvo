@@ -437,16 +437,21 @@ impl Trainer {
                 }
             }
             let (cfg_ref, opps_ref, cands_ref) = (&cfg, &opps, &cand_g);
-            let sc: Vec<f32> = par_map(cand_g.len(), |c| {
-                opps_ref
-                    .iter()
-                    .flat_map(|(o, s)| [*s, s ^ 0x5EED_5EED])
-                    .zip(opps_ref.iter().flat_map(|(o, _)| [o, o]))
-                    .map(|(s, o)| {
-                        let m = score_match(role, &cands_ref[c], o, s, cfg_ref, None);
-                        m.fitness + if m.win { 3.0 } else { 0.0 }
-                    })
-                    .sum::<f32>()
+            // Group of each panel opponent: 0 fresh random, 1 the opposing champion, 2 past champions.
+            let n_cur = if hl > 0 { if ri == 0 { PANEL_CURRENT_HERO } else { PANEL_CURRENT_MONSTER } } else { 0 };
+            let n_rand = PANEL_RANDOM;
+            let group = |i: usize| if i < n_rand { 0 } else if i < n_rand + n_cur { 1 } else { 2 };
+            let per: Vec<[f32; 3]> = par_map(cand_g.len(), |c| {
+                let mut tot = [0.0f32; 3];
+                let mut cnt = [0.0f32; 3];
+                for (i, (o, s)) in opps_ref.iter().enumerate() {
+                    for sd in [*s, s ^ 0x5EED_5EED, s ^ 0x7A11_7A11, s ^ 0x1357_9BDF, s ^ 0x2468_ACE0] {
+                        let m = score_match(role, &cands_ref[c], o, sd, cfg_ref, None);
+                        tot[group(i)] += m.fitness + if m.win { 3.0 } else { 0.0 };
+                        cnt[group(i)] += 1.0;
+                    }
+                }
+                [tot[0] / cnt[0].max(1.0), tot[1] / cnt[1].max(1.0), tot[2] / cnt[2].max(1.0)]
             });
             // Hysteresis: a challenger must clearly beat the sitting champion.
             let mut sc = sc;
