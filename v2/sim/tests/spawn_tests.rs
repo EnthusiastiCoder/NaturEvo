@@ -17,3 +17,12 @@ fn spawns_13_apart_open_reachable_for_200_seeds() {
         assert!(a.reachable(s[0], s[1]), "seed {seed}");
     }
 }
+
+#[test]
+fn match_start_fighters_face_each_other() {
+    let m = common::duel_unplaced(7);
+    assert_eq!(m.pos(Role::Hero), (17.5, 16.5));
+    assert_eq!(m.pos(Role::Monster), (30.5, 16.5));
+    assert!(m.fighter(Role::Hero).facing.abs() < 1e-5);
+    assert!((m.fighter(Role::Monster).facing.abs() - std::f32::consts::PI).abs() < 1e-5);
+}
