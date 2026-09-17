@@ -242,6 +242,14 @@ export class Scene {
       if (lab && nm && ['Windup', 'Active', 'Recovery'].includes(fa.state)) lab = { ...lab, text: `${lab.text} ${nm}` };
       const L = this.rigs[k].label;
       L.visible = !!lab;
+      // status pips + timers above the bar
+      const T = this.rigs[k].timers, ho = hudOffsets(U);
+      const act = STATUSES.map((st, si) => ({ st, r: fa.fx[si] })).filter((x) => x.r > 0);
+      act.forEach((x, n) => g.circle(cx + (n - (act.length - 1) / 2) * 12 * U, cy + (ho.statusRowTop + ho.statusRowBottom) / 2, 4.5 * U).fill({ color: x.st.color }).stroke({ width: U, color: 0x000000, alpha: 0.8 }));
+      T.visible = act.length > 0;
+      if (act.length) { T.text = act.map((x) => statusTimer(x.st.key, x.r, f.tickHz)).join('  '); T.scale.set(U * 0.9); T.position.set(cx, cy + ho.statusRowTop); }
+      if (fa.fx[2] > 0) for (let n = 0; n < stunStarCount(fa.fx[2]); n++) { const a = t * 6 + (n * 2 * Math.PI) / stunStarCount(fa.fx[2]); g.star(cx + Math.cos(a) * 14 * U, cy - 70 * U + Math.sin(a) * 4 * U, 4, 4 * U, 2 * U).fill({ color: 0xffd43b }); }
+      g.circle(cx + Math.cos(fa.facing) * 8 * U, cy - 52 * U, 2.5 * U).fill({ color: 0xffffff, alpha: eyeAlpha(fa.seen) }); // sight marker
       if (lab) { L.text = lab.text; L.style.fill = lab.color; L.scale.set(U); L.position.set(cx, cy + hudOffsets(U).labelBottom); }
     });
     if (o.rays) for (const [a, b, col] of fighters) this.drawRays(g, a, b, col);
