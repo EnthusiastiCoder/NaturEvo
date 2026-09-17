@@ -427,8 +427,11 @@ impl Trainer {
             let mut opps: Vec<(Genome, u64)> = (0..PANEL_RANDOM).map(|_| (Genome::random(role.other(), &mut rng), rng.next_u64())).collect();
             let hl = self.hof[oi].len();
             if hl > 0 {
-                opps.push((self.champs[oi].clone(), rng.next_u64()));
-                let k = hl.min(14);
+                for _ in 0..if ri == 0 { PANEL_CURRENT_HERO } else { PANEL_CURRENT_MONSTER } {
+                    let cur = if ri == 1 { self.hof[oi][hl / 2].clone() } else { champs[oi].clone() };
+                    opps.push((cur, rng.next_u64()));
+                }
+                let k = hl.min(PANEL_PAST);
                 for q in 0..k {
                     opps.push((self.hof[oi][q * hl / k].clone(), rng.next_u64()));
                 }
