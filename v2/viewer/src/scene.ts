@@ -15,7 +15,7 @@ const ATTACK_TICKS = { Windup: 0, Active: 6, Recovery: 10 } as Record<string, nu
 const ATTACK_TOTAL = 16;
 
 export interface FightOpts { rays: boolean; fit?: boolean }
-interface Rig { sprite: Sprite; label: Text }
+interface Rig { sprite: Sprite; label: Text; timers: Text }
 
 export class Scene {
   app!: Application;
