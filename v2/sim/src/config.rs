@@ -133,6 +133,7 @@ impl Default for ArenaConfig {
             vision_range: 12.0,
             max_stamina: 100.0,
             max_hp: 100.0,
+            combat: CombatTuning::default(),
         }
     }
 }
