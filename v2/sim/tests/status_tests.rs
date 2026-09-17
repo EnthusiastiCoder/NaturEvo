@@ -114,3 +114,19 @@ fn lunge_does_not_pass_through_target() {
     run(&mut m, 15, atk(2), idle());
     assert!(dist(&m) >= 0.8 - 1e-3, "dist {}", dist(&m));
 }
+
+#[test]
+fn confused_rotates_move_vector_60_degrees_flipping_per_window() {
+    let heading = |m: &mut Match, n: u32| {
+        let p0 = m.pos(H);
+        run(m, n, fwd(1.0), idle());
+        let p1 = m.pos(H);
+        (p1.1 - p0.1).atan2(p1.0 - p0.0).to_degrees()
+    };
+    let mut m = duel(20.0);
+    m.apply_status(H, Status::Confused, 90, 1.0, M);
+    let (a, b) = (heading(&mut m, 14), heading(&mut m, 16));
+    assert!(near(a.abs(), 60.0, 6.0), "window 1 heading {a}");
+    assert!(near(b.abs(), 60.0, 6.0), "window 2 heading {b}");
+    assert!(a * b < 0.0, "sign flips: {a} {b}");
+}
