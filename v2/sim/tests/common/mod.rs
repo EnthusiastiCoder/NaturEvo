@@ -33,3 +33,7 @@ pub fn duel_both(hero: Species, monster: Species, rank: Rank, dist: f32) -> Matc
     mt.place_for_duel(dist);
     mt
 }
+
+pub fn run(m: &mut Match, n: u32, a: Action, b: Action) {
+    for _ in 0..n { m.step_with(a, b); }
+}
