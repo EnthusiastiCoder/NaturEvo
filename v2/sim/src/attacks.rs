@@ -44,3 +44,6 @@ impl Rank {
         }
     }
 }
+
+pub const ELITE_DAMAGE_MULT: f32 = 1.15;
+pub const BOSS_DAMAGE_MULT: f32 = 1.2;
