@@ -51,4 +51,12 @@ describe('state labels', () => {
     expect(new Set(l.map((x) => x!.text)).size).toBeGreaterThanOrEqual(3);
     expect(stateLabel('Idle')).toBeNull();
   });
+  it('labels the 5 new states plus Recovery', () => {
+    const want: Record<string, string> = {
+      GuardRaise: 'GUARD UP', GuardRecover: 'GUARD DOWN', Staggered: 'STAGGER', Stunned: 'STUN', Knocked: 'KNOCKED', Recovery: 'RECOVER',
+    };
+    for (const [s, t] of Object.entries(want)) expect(stateLabel(s)?.text, s).toBe(t);
+    const all = ['Windup', 'Active', 'Blocking', 'Dodging', ...Object.keys(want)].map((s) => stateLabel(s)!.text);
+    expect(new Set(all).size).toBe(all.length);
+  });
 });
