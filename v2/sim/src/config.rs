@@ -115,6 +115,7 @@ pub struct ArenaConfig {
     pub vision_range: f32,
     pub max_stamina: f32,
     pub max_hp: f32,
+    pub combat: CombatTuning,
 }
 
 impl Default for ArenaConfig {
