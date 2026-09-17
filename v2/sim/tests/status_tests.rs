@@ -77,3 +77,9 @@ fn knockback_moves_2_tiles_over_6_ticks() {
     assert!(near(m.pos(M).0 - x0, 2.0, 0.05), "stops after 6 ticks");
     assert_eq!(m.fighter(M).state, S::Idle);
 }
+
+fn open_edge_x(m: &Match) -> f32 {
+    let mut x = 40.0f32;
+    while !m.arena().circle_blocked(x + 0.1, 16.5, 0.4) { x += 0.1; }
+    x
+}
