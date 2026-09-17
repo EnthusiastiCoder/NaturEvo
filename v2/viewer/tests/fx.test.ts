@@ -4,3 +4,6 @@ import {
   STATUSES, statusTimer, tintStatus, knockbackOffset, KNOCK_TICKS, staggerShake, stunStarCount,
   dotEvents, statusStats, attackName, eyeAlpha,
 } from '../src/fx';
+
+const KEYS = ['knock', 'stagger', 'stun', 'confused', 'slowed', 'bleed', 'poison'];
+const fxOf = (o: Record<string, number>) => KEYS.map((k) => o[k] ?? 0);
