@@ -8,3 +8,9 @@ use arena_sim::matchup::{Match, Setup};
 use arena_sim::net::{N_OUT, N_PARAMS};
 use arena_sim::rng::Rng;
 use arena_sim::world::Arena;
+
+pub fn idle() -> Action { Action::idle() }
+pub fn atk(kind: u8) -> Action { Action { attack: true, attack_kind: kind, ..Action::idle() } }
+pub fn blk() -> Action { Action { block: true, ..Action::idle() } }
+pub fn dge() -> Action { Action { dodge: true, ..Action::idle() } }
+pub fn fwd(v: f32) -> Action { Action { fwd: v, ..Action::idle() } }
