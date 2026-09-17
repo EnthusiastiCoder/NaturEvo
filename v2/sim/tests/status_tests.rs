@@ -149,3 +149,14 @@ fn confused_inverts_turn_on_alternate_windows_bits_unaffected() {
     run(&mut m, 5, atk(0), idle());
     assert_eq!(m.hp(M), 92.0, "attack bit unaffected");
 }
+
+#[test]
+fn confusion_is_deterministic() {
+    let go = || {
+        let mut m = duel(20.0);
+        m.apply_status(H, Status::Confused, 90, 1.0, M);
+        run(&mut m, 60, fwd(1.0), idle());
+        m.pos(H)
+    };
+    assert_eq!(go(), go());
+}
