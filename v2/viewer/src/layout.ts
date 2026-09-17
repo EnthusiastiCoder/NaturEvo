@@ -42,6 +42,12 @@ export function stateLabel(state: string): StateLabel | null {
     case 'Active': return { text: 'STRIKE!', color: 0xff3b30 };
     case 'Blocking': return { text: 'BLOCK', color: 0x6cc4ff };
     case 'Dodging': return { text: 'DODGE', color: 0xc9a7ff };
+    case 'Recovery': return { text: 'RECOVER', color: 0xffa8a8 };
+    case 'GuardRaise': return { text: 'GUARD UP', color: 0x9bd7ff };
+    case 'GuardRecover': return { text: 'GUARD DOWN', color: 0x8fb3cc };
+    case 'Staggered': return { text: 'STAGGER', color: 0xffa94d };
+    case 'Stunned': return { text: 'STUN', color: 0xffd43b };
+    case 'Knocked': return { text: 'KNOCKED', color: 0xffffff };
     default: return null;
   }
 }
@@ -63,6 +69,6 @@ export function fitCamera(arena: { w: number; h: number }, stage: { w: number; h
 export function uiScale(camScale: number): number { return Math.max(1, 1.5 / Math.max(0.01, camScale)); }
 
 /** Offsets (world px, y down, relative to the fighter's feet) of the HP bar and the state label; the label is always above the bar. */
-export function hudOffsets(u: number): { barTop: number; labelBottom: number } {
-  return { barTop: -92 * u, labelBottom: -100 * u };
+export function hudOffsets(u: number): { barTop: number; labelBottom: number; statusRowTop: number; statusRowBottom: number } {
+  return { barTop: -92 * u, labelBottom: -118 * u, statusRowTop: -114 * u, statusRowBottom: -100 * u };
 }
