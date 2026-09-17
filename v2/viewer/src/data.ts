@@ -1,7 +1,7 @@
 import { type Frame, type FighterFrame } from './interp';
 
 export interface ArenaInfo { w: number; h: number; blocked: string[] | null }
-export interface Fight { tickHz: number; frames: Frame[]; arena: ArenaInfo; seed: number; monsterIndex: number }
+export interface Fight { tickHz: number; frames: Frame[]; arena: ArenaInfo; seed: number; monsterIndex: number; species: string[] | null; rank: string[] | null; monsterName: string | null }
 export interface MapData { w: number; h: number; tiles: string[]; zones: string[]; anchors: [number, number][] }
 export interface Encounter { kind: string; zone: number; tile: [number, number]; monsterIndex: number; result: string; fight: Fight | null; fightUrl?: string }
 export interface Run { map: MapData; path: [number, number][]; encounters: Encounter[]; outcome: string }
@@ -11,16 +11,18 @@ type J = any;
 const fighter = (f: J, i: number): FighterFrame => ({
   pos: [f.pos[i][0], f.pos[i][1]], facing: f.facing[i], hp: f.hp[i], stamina: f.stamina[i],
   action: f.action[i], state: f.state[i],
+  atk: f.atk?.[i] ?? -1, fx: f.fx?.[i] ? [...f.fx[i]] : [0, 0, 0, 0, 0, 0, 0], seen: f.seen?.[i] ?? false,
 });
 
 /** Convert the sim's FightLog JSON (per-fighter arrays, index 0 hero, 1 monster) into viewer frames. */
 export function parseFight(j: J): Fight {
-  const frames: Frame[] = j.frames.map((f: J) => ({ hero: fighter(f, 0), monster: fighter(f, 1) }));
+  const frames: Frame[] = j.frames.map((f: J) => ({ hero: fighter(f, 0), monster: fighter(f, 1), ev: f.ev ?? [] }));
   const a = j.arena;
   return {
     tickHz: j.tick_hz ?? 30, frames,
     arena: { w: a?.w ?? 48, h: a?.h ?? 32, blocked: a?.blocked ?? null },
     seed: j.seed ?? 1, monsterIndex: j.monster_index ?? 0,
+    species: j.species ?? null, rank: j.rank ?? null, monsterName: j.monster_name ?? null,
   };
 }
 
@@ -48,13 +50,25 @@ export function demoFight(seed: number): Fight {
     if (ph === 78 && (Math.floor(t / 90) % 2)) hh = Math.max(0, hh - 7);
     const orbit = Math.sin(t * 0.03) * 3;
     const hx = 24 - gap / 2, mx = 24 + gap / 2;
+    const c = Math.floor(t / 90) % 7;
+    const mfx = [0, 0, 0, 0, 0, 0, 0], hfx = [0, 0, 0, 0, 0, 0, 0];
+    if (ph >= 58) mfx[c] = Math.max(1, 32 - (ph - 58));
+    if (ph >= 20 && ph < 50) hfx[(c + 3) % 7] = 50 - ph;
+    const ev: Frame['ev'] = [];
+    if (ph === 58) ev.push({ t: 'hit', by: 0, atk: 0, dmg: 9, blocked: false, punish: true, fx: [c] });
+    if (ph === 78) ev.push({ t: 'hit', by: 1, atk: 1, dmg: 7, blocked: false, punish: false, fx: [(c + 3) % 7] });
+    if (ph === 62) ev.push({ t: 'parry', by: 1 });
+    if (ph % 10 === 0 && mfx[6] > 0) ev.push({ t: 'dot', to: 1, kind: 'poison', dmg: 1 });
+    if (ph % 10 === 5 && mfx[5] > 0) ev.push({ t: 'dot', to: 1, kind: 'bleed', dmg: 1 });
     frames.push({
-      hero: { pos: [hx, 16 + orbit], facing: Math.atan2(-orbit * 0.1, 1), hp: hh, stamina: 100 - (t % 90) * 0.6, action: 'none', state: swing },
+      hero: { pos: [hx, 16 + orbit], facing: Math.atan2(-orbit * 0.1, 1), hp: hh, stamina: 100 - (t % 90) * 0.6, action: 'none', state: swing,
+        atk: swing === 'Idle' ? -1 : c % 3, fx: hfx, seen: ph < 70 },
       monster: { pos: [mx, 16 - orbit * 0.5], facing: Math.PI, hp: mh, stamina: 100 - (t % 70) * 0.5, action: 'none',
-        state: ph >= 76 && ph < 84 ? 'Blocking' : mswing },
+        state: ph >= 76 && ph < 84 ? 'Blocking' : mswing, atk: mswing === 'Idle' ? -1 : c % 2, fx: mfx, seen: true },
+      ev,
     });
   }
-  return { tickHz: 30, frames, arena: { w: 48, h: 32, blocked: null }, seed, monsterIndex: seed % 3 };
+  return { tickHz: 30, frames, arena: { w: 48, h: 32, blocked: null }, seed, monsterIndex: seed % 3, species: ['hero', 'minion'], rank: ['normal', 'normal'], monsterName: null };
 }
 
 export function demoRun(): Run {
