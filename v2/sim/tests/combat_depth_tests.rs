@@ -105,3 +105,14 @@ fn stagger_interrupts_windup_not_active() {
     m.step_with(idle(), idle());
     assert_eq!(st(&m, H), S::Active, "committed swing not interrupted");
 }
+
+#[test]
+fn guard_raise_gives_no_protection_for_6_ticks() {
+    let mut m = duel(1.0);
+    m.step_with(atk(0), blk());
+    assert_eq!(st(&m, M), S::GuardRaise);
+    run(&mut m, 4, idle(), blk());
+    assert_eq!(m.hp(M), 92.0, "hit at step 5 lands in full during raise");
+    run(&mut m, 2, idle(), blk());
+    assert_eq!(st(&m, M), S::Blocking);
+}
