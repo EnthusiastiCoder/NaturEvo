@@ -26,3 +26,10 @@ impl Species {
         }
     }
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Rank {
+    Grass,
+    Elite,
+    Boss,
+}
