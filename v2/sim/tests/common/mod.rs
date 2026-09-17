@@ -17,3 +17,7 @@ pub fn fwd(v: f32) -> Action { Action { fwd: v, ..Action::idle() } }
 
 /// Hero vs Minion grass, `dist` apart in the open centre band, facing each other.
 pub fn duel(dist: f32) -> Match { duel_sp(Species::Minion, Rank::Grass, dist) }
+
+pub fn duel_sp(monster: Species, rank: Rank, dist: f32) -> Match {
+    duel_both(Species::Hero, monster, rank, dist)
+}
