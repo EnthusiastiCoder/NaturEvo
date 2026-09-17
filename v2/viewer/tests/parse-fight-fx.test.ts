@@ -53,3 +53,19 @@ describe('parseFight new logs', () => {
     expect(f.monsterName).toBe('Grub');
   });
 });
+
+describe('demoFight', () => {
+  const d = demoFight(1);
+  it('shows all 7 statuses with no run', () => {
+    for (let i = 0; i < 7; i++) {
+      expect(d.frames.some((fr) => fr.hero.fx[i] > 0 || fr.monster.fx[i] > 0), `status ${i}`).toBe(true);
+    }
+  });
+  it('has a punish hit event and every frame has the new fields', () => {
+    expect(d.frames.some((fr) => fr.ev.some((e) => e.t === 'hit' && e.punish))).toBe(true);
+    for (const fr of d.frames) {
+      expect(fr.hero.fx).toHaveLength(7);
+      expect(Array.isArray(fr.ev)).toBe(true);
+    }
+  });
+});
