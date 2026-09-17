@@ -72,10 +72,15 @@ fn clean(v: f32) -> f32 {
 
 impl Match {
     pub fn new(arena: Arena, hero: Genome, monster: Genome, seed: u64, cfg: &ArenaConfig) -> Match {
+        Match::new_with_hp(arena, hero, monster, seed, cfg, [cfg.max_hp, cfg.max_hp])
+    }
+
+    /// Like `new` but with explicit starting hp per side (campaign handicaps). Arena rules are unchanged.
+    pub fn new_with_hp(arena: Arena, hero: Genome, monster: Genome, seed: u64, cfg: &ArenaConfig, hp: [f32; 2]) -> Match {
         let s = arena.spawns();
         let fighters = [
-            Fighter::new(s[0].0, s[0].1, 0.0, cfg.max_hp, cfg.max_stamina),
-            Fighter::new(s[1].0, s[1].1, PI, cfg.max_hp, cfg.max_stamina),
+            Fighter::new(s[0].0, s[0].1, 0.0, hp[0], cfg.max_stamina),
+            Fighter::new(s[1].0, s[1].1, PI, hp[1], cfg.max_stamina),
         ];
         Match {
             cfg: cfg.clone(),
@@ -367,7 +372,12 @@ impl Match {
 
 /// Play a full match with the nets and return the result and log.
 pub fn play(arena: Arena, hero: Genome, monster: Genome, seed: u64, cfg: &ArenaConfig) -> MatchResult {
-    let mut m = Match::new(arena, hero, monster, seed, cfg);
+    play_with_hp(arena, hero, monster, seed, cfg, [cfg.max_hp, cfg.max_hp])
+}
+
+/// `play` with explicit starting hp per side.
+pub fn play_with_hp(arena: Arena, hero: Genome, monster: Genome, seed: u64, cfg: &ArenaConfig, hp: [f32; 2]) -> MatchResult {
+    let mut m = Match::new_with_hp(arena, hero, monster, seed, cfg, hp);
     while !m.finished() {
         m.step();
     }
