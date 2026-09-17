@@ -194,3 +194,22 @@ fn block_arc_narrower_than_vision() {
     assert!((BLOCK_HALF_ARC - PI / 4.0).abs() < 1e-6);
     assert!(BLOCK_HALF_ARC < ArenaConfig::default().vision_fov / 2.0);
 }
+
+#[test]
+fn blocked_hit_skips_effects_and_degrades_stun() {
+    let go = |sp: Species, n: u32| {
+        let mut m = duel_sp(sp, Rank::Grass, 1.0);
+        run(&mut m, 10, blk(), idle());
+        run(&mut m, n, blk(), atk(0));
+        m
+    };
+    let m = go(Species::Rogue, 12);
+    assert_eq!(m.fx(H)[Status::Bleed.idx()], 0, "blocked stab: no bleed");
+    let m = go(Species::Mage, 24);
+    assert_eq!(m.fx(H)[Status::Poison.idx()], 0);
+    assert_eq!(m.fx(H)[Status::Confused.idx()], 0);
+    let m = go(Species::Warrior, 16);
+    assert_eq!(m.fx(H)[Status::Stun.idx()], 0, "blocked stun degrades");
+    let s = m.fx(H)[Status::Stagger.idx()];
+    assert!((7..=8).contains(&s), "stagger {s}");
+}
