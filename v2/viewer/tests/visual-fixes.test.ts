@@ -28,6 +28,17 @@ describe('melee readability', () => {
       expect(o.labelBottom).toBeLessThan(o.barTop - 2 * u); // y grows down
     }
   });
+  it('status row sits between the label and the bar, scaling linearly with u', () => {
+    for (const u of [1, 2.5]) {
+      const o = hudOffsets(u) as ReturnType<typeof hudOffsets> & { statusRowTop: number; statusRowBottom: number };
+      expect(o.labelBottom).toBeLessThanOrEqual(o.statusRowTop);
+      expect(o.statusRowTop).toBeLessThan(o.statusRowBottom);
+      expect(o.statusRowBottom).toBeLessThan(o.barTop);
+    }
+    const a = hudOffsets(1) as any, b = hudOffsets(2.5) as any;
+    expect(b.statusRowTop).toBeCloseTo(a.statusRowTop * 2.5, 6);
+    expect(b.statusRowBottom).toBeCloseTo(a.statusRowBottom * 2.5, 6);
+  });
   it('fighters are never smaller than a readable size when the camera is zoomed out', () => {
     expect(uiScale(2)).toBe(1);
     expect(uiScale(0.64) * 0.64).toBeGreaterThanOrEqual(1.5 - 1e-9);
