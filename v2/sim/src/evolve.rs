@@ -418,7 +418,7 @@ impl Trainer {
             let oi = 1 - ri;
             let mut order: Vec<usize> = (0..fits[ri].len()).collect();
             order.sort_by(|a, b| fits[ri][*b].partial_cmp(&fits[ri][*a]).unwrap_or(std::cmp::Ordering::Equal).then(a.cmp(b)));
-            let mut cand_g: Vec<Genome> = order.iter().take(4).map(|&i| self.pops[ri][i].clone()).collect();
+            let mut cand_g: Vec<Genome> = order.iter().take(6).map(|&i| self.pops[ri][i].clone()).collect();
             let n_pop_c = cand_g.len();
             if gen > 0 {
                 cand_g.push(self.champs[ri].clone());
