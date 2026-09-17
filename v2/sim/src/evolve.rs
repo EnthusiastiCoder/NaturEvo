@@ -453,6 +453,19 @@ impl Trainer {
                 }
                 [tot[0] / cnt[0].max(1.0), tot[1] / cnt[1].max(1.0), tot[2] / cnt[2].max(1.0)]
             });
+            // Blend of the average and the worst group: the champion must hold up against random
+            // opponents, the current rival and its own past, not trade one for another.
+            let n_fights = (opps.len() * 5) as f32;
+            let sc: Vec<f32> = per
+                .iter()
+                .map(|g| {
+                    let used: Vec<f32> = (0..3).filter(|k| if *k == 0 { n_rand > 0 } else if *k == 1 { n_cur > 0 } else { hl > 0 }).map(|k| g[k]).collect();
+                    let mean = used.iter().sum::<f32>() / used.len() as f32;
+                    let min = used.iter().cloned().fold(f32::INFINITY, f32::min);
+                    let w = GROUP_MIN_WEIGHT;
+                    n_fights * ((1.0 - w) * mean + w * min)
+                })
+                .collect();
             // Hysteresis: a challenger must clearly beat the sitting champion.
             let mut sc = sc;
             if gen > 0 {
