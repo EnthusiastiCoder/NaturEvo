@@ -240,3 +240,15 @@ fn poison_never_kills_floor_hp_1() {
     assert_eq!(m.hp(H), 1.0);
     assert!(!m.finished());
 }
+
+#[test]
+fn poison_duration_adds_capped_at_300() {
+    let mut m = duel(8.0);
+    m.apply_status(H, Status::Poison, 240, 1.0, M);
+    m.apply_status(H, Status::Poison, 240, 1.0, M);
+    assert_eq!(fx(&m, H, Status::Poison), 300);
+    let mut m = duel(8.0);
+    m.apply_status(H, Status::Poison, 100, 1.0, M);
+    m.apply_status(H, Status::Poison, 100, 1.0, M);
+    assert_eq!(fx(&m, H, Status::Poison), 200);
+}
