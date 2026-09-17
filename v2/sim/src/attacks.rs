@@ -59,3 +59,18 @@ pub struct Effect {
     pub magnitude: f32,
     pub vulnerable_only: bool,
 }
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct Move {
+    pub name: &'static str,
+    pub windup: u32,
+    pub active: u32,
+    pub recovery: u32,
+    pub damage: f32,
+    pub range: f32,
+    pub half_arc: f32,
+    pub stamina_cost: f32,
+    /// Tiles moved forward during the active frames.
+    pub lunge: f32,
+    pub effects: Vec<Effect>,
+}
