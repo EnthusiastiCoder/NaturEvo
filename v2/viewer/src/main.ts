@@ -1,6 +1,7 @@
 import './style.css';
 import { type Encounter, type Fight, type Run, demoFight, demoRun, mergeDuels, parseFight, parseRun, resolveFights } from './data';
 import { fightStats, statsLine } from './interp';
+import { statusStats } from './fx';
 import { applyRecordMode, isRecordMode } from './record';
 import { Scene } from './scene';
 import { installRecorder, splitSource } from './capture';
@@ -73,7 +74,12 @@ function duration(): number {
 
 function strip(f: Fight, tt: number): string {
   const st = fightStats(f.frames, Math.floor(tt * f.tickHz));
-  return `${statsLine('Hero', st.hero)}  |  ${statsLine('Monster', st.monster)}`;
+  const fx = statusStats(f.frames, Math.floor(tt * f.tickHz));
+  const side = (n: string, s: typeof st.hero, x: typeof fx.hero) => {
+    const on = Object.entries(x.statuses).filter(([, v]) => v > 0).map(([k, v]) => `${k} ${v}`).join(', ');
+    return `${statsLine(n, s)}, ${x.punishes} punish, ${x.parries} parry${on ? ` [${on}]` : ''}`;
+  };
+  return `${side('Hero', st.hero, fx.hero)}  |  ${side('Monster', st.monster, fx.monster)}`;
 }
 
 function frame(): void {
