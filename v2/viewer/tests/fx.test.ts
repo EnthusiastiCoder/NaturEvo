@@ -67,3 +67,20 @@ describe('knockbackOffset', () => {
     expect(knockbackOffset(0, 0, 2, [1, 0])).toEqual([0, 0]);
   });
 });
+
+describe('staggerShake and stun stars', () => {
+  it('shake is zero when not staggered, bounded and deterministic otherwise', () => {
+    expect(staggerShake(1.3, 0)).toBe(0);
+    const a = staggerShake(0.37, 10);
+    expect(a).toBe(staggerShake(0.37, 10));
+    for (let i = 0; i < 50; i++) expect(Math.abs(staggerShake(i * 0.013, 8))).toBeLessThanOrEqual(1);
+    expect(Array.from({ length: 50 }, (_, i) => staggerShake(i * 0.013, 8)).some((v) => Math.abs(v) > 0.1)).toBe(true);
+  });
+  it('star count is 0 without stun and 1..5 with it', () => {
+    expect(stunStarCount(0)).toBe(0);
+    for (const r of [1, 10, 20]) {
+      expect(stunStarCount(r)).toBeGreaterThanOrEqual(1);
+      expect(stunStarCount(r)).toBeLessThanOrEqual(5);
+    }
+  });
+});
