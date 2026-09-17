@@ -39,6 +39,13 @@ describe('theme', () => {
   });
 });
 
+describe('status tokens', () => {
+  it('style.css defines one --fx-* colour token per status', () => {
+    const c = css();
+    for (const k of ['knock', 'stagger', 'stun', 'confused', 'slowed', 'bleed', 'poison']) expect(c).toMatch(new RegExp(`--fx-${k}\\s*:`));
+  });
+});
+
 describe('no scroll', () => {
   it('page cannot scroll: body overflow hidden and viewport height units', () => {
     const c = css();
