@@ -121,3 +121,23 @@ fn species_and_rank_strings_and_status_indices() {
     let order = [Status::Knock, Status::Stagger, Status::Stun, Status::Confused, Status::Slowed, Status::Bleed, Status::Poison];
     for (i, s) in order.iter().enumerate() { assert_eq!(s.idx(), i); assert_eq!(Status::ALL[i], *s); }
 }
+
+#[test]
+fn log_json_has_new_fields_and_old_fields() {
+    let mut m = duel(1.0);
+    run(&mut m, 5, atk(0), idle());
+    let j = m.log().to_json();
+    for k in ["\"atk\":[0,-1]", "\"fx\":[[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]", "\"seen\":[true,true]", "\"ev\":["] {
+        assert!(j.contains(k), "missing {k}");
+    }
+    assert!(
+        j.contains("{\"t\":\"hit\",\"by\":0,\"atk\":0,\"dmg\":8,\"blocked\":false,\"punish\":false,\"fx\":[1]}"),
+        "hit event missing"
+    );
+    for k in ["\"tick_hz\"", "\"frames\"", "\"pos\"", "\"facing\"", "\"hp\"", "\"stamina\"", "\"action\"", "\"state\""] {
+        assert!(j.contains(k), "old field {k}");
+    }
+    assert_eq!(j.matches('{').count(), j.matches('}').count());
+    assert_eq!(j.matches('[').count(), j.matches(']').count());
+    assert_eq!(j.matches("\"hp\"").count(), 5);
+}
