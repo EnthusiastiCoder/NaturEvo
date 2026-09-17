@@ -99,6 +99,17 @@ pub fn tier_stats(tier: u32, boss: bool) -> TierStats {
     }
 }
 
+/// Starting hp for the monster by encounter kind. The hero always starts at full hp.
+pub fn monster_hp_for(kind: EncounterKind) -> f32 {
+    match kind {
+        EncounterKind::Grass => GRASS_HP,
+        EncounterKind::Elite => ELITE_HP,
+        EncounterKind::Boss => 100.0,
+    }
+}
+const GRASS_HP: f32 = 85.0;
+const ELITE_HP: f32 = 96.0;
+
 #[derive(Clone, Debug)]
 pub struct Encounter {
     pub kind: EncounterKind,
