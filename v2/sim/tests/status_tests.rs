@@ -50,3 +50,18 @@ fn stun_diminishing_returns_20_10_6_with_immunity_45() {
     }
     assert_eq!(got, vec![20, 10, 6]);
 }
+
+#[test]
+fn warrior_club_cannot_chain_stuns() {
+    let mut m = duel_sp(Species::Warrior, Rank::Grass, 1.0);
+    m.set_hp(H, 10000.0);
+    let (mut starts, mut prev) = (vec![], 0u32);
+    for t in 0..900u32 {
+        m.step_with(idle(), Action { fwd: 1.0, ..atk(0) });
+        let s = fx(&m, H, Status::Stun);
+        if s > 0 && prev == 0 { starts.push(t); }
+        prev = s;
+    }
+    assert!(starts.len() >= 2, "club should stun repeatedly: {starts:?}");
+    for w in starts.windows(2) { assert!(w[1] - w[0] >= 51, "stuns too close: {starts:?}"); }
+}
