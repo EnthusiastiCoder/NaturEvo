@@ -37,3 +37,17 @@ pub fn duel_both(hero: Species, monster: Species, rank: Rank, dist: f32) -> Matc
 pub fn run(m: &mut Match, n: u32, a: Action, b: Action) {
     for _ in 0..n { m.step_with(a, b); }
 }
+
+/// Genome whose net outputs are constant biases (all weights zero): `bias[i]` sets output i.
+pub fn bias_genome(role: Role, bias: &[(usize, f32)]) -> Genome {
+    let mut w = vec![0.0f32; N_PARAMS];
+    let b2 = N_PARAMS - N_OUT;
+    for (i, v) in bias { w[b2 + i] = *v; }
+    Genome { role, weights: w, generation: 0, fitness: 0.0 }
+}
+/// Always blocks.
+pub fn turtle(role: Role) -> Genome { bias_genome(role, &[(4, 1.0), (3, -1.0)]) }
+/// Walks forward and attacks (light).
+pub fn aggressor(role: Role) -> Genome { bias_genome(role, &[(0, 1.0), (3, 1.0), (4, -1.0)]) }
+/// Does nothing.
+pub fn idler(role: Role) -> Genome { bias_genome(role, &[(3, -1.0), (4, -1.0), (5, -1.0)]) }
