@@ -4,6 +4,7 @@ use arena_sim::fighter::{Action, Role};
 use arena_sim::genome::Genome;
 use arena_sim::matchup::{play, Match};
 use arena_sim::rng::Rng;
+use arena_sim::status::Status;
 use arena_sim::world::Arena;
 
 #[test]
@@ -25,13 +26,21 @@ fn fuzz_random_and_extreme_actions_never_panic() {
                 attack: r.f32() < 0.4,
                 block: r.f32() < 0.3,
                 dodge: r.f32() < 0.2,
+                attack_kind: (r.next_u64() % 5) as u8,
             };
             let (a, b) = (act(), act());
+            if r.f32() < 0.05 {
+                let st = Status::ALL[(r.next_u64() % 7) as usize];
+                let who = if r.f32() < 0.5 { Role::Hero } else { Role::Monster };
+                mt.apply_status(who, st, (r.next_u64() % 400) as u32, r.range(0.0, 3.0), who.other());
+            }
             mt.step_with(a, b);
             for role in [Role::Hero, Role::Monster] {
                 let (x, y) = mt.pos(role);
                 assert!(x.is_finite() && y.is_finite());
-                assert!(mt.hp(role) >= 0.0 && mt.stamina(role) >= 0.0);
+                assert!(mt.hp(role) >= 0.0 && mt.hp(role) <= 100.0);
+                assert!(mt.stamina(role) >= 0.0 && mt.stamina(role) <= 100.0);
+                assert!(mt.hp(role).is_finite() && mt.stamina(role).is_finite());
             }
         }
     }
