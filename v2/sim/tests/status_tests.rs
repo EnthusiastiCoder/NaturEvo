@@ -97,3 +97,13 @@ fn wall_slam_deals_3_and_staggers_once() {
     assert_eq!(m.hp(M), 100.0 - 18.0 - 3.0);
     assert_eq!(count(&m.log().to_json(), "\"t\":\"slam\""), 1);
 }
+
+#[test]
+fn blocking_halves_knockback() {
+    let mut m = duel(1.0);
+    run(&mut m, 10, idle(), blk());
+    let x0 = m.pos(M).0;
+    run(&mut m, 13, atk(1), blk());
+    run(&mut m, 8, idle(), blk());
+    assert!(near(m.pos(M).0 - x0, 1.0, 0.1), "blocked knock {}", m.pos(M).0 - x0);
+}
