@@ -74,3 +74,17 @@ pub struct Move {
     pub lunge: f32,
     pub effects: Vec<Effect>,
 }
+
+fn fx(status: Status, duration: u32) -> Effect {
+    Effect { status, chance: 1.0, duration, magnitude: 1.0, vulnerable_only: false }
+}
+fn knock(dist: f32) -> Effect {
+    Effect { status: Status::Knock, chance: 1.0, duration: 0, magnitude: dist, vulnerable_only: false }
+}
+fn deg(d: f32) -> f32 {
+    d * PI / 180.0
+}
+#[allow(clippy::too_many_arguments)]
+fn mv(name: &'static str, w: u32, a: u32, r: u32, damage: f32, range: f32, half_arc_deg: f32, cost: f32, lunge: f32, effects: Vec<Effect>) -> Move {
+    Move { name, windup: w, active: a, recovery: r, damage, range, half_arc: deg(half_arc_deg), stamina_cost: cost, lunge, effects }
+}
