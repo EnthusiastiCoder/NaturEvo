@@ -52,3 +52,13 @@ export function statusStats(frames: Frame[], upTo: number): { hero: SideFx; mons
   }
   return out;
 }
+
+const NAMES: Record<string, string[]> = {
+  hero: ['LIGHT', 'HEAVY', 'LUNGE'], minion: ['SWIPE', 'BITE'], rogue: ['STAB', 'DASH'],
+  warrior: ['CLUB', 'CLEAVE', 'SLAM'], mage: ['HEX', 'ZAP'],
+};
+export function attackName(species: string, kind: number, _rank?: string): string {
+  void _rank;
+  return kind < 0 ? '' : NAMES[species]?.[kind] ?? '';
+}
+export const eyeAlpha = (seen: boolean): number => (seen ? 1 : 0.35);
