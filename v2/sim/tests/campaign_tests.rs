@@ -6,7 +6,7 @@ use arena_sim::campaign::{run, tier_stats, EncounterKind, Library, MapCfg, Outco
 use arena_sim::config::ArenaConfig;
 use arena_sim::fighter::Role;
 use arena_sim::genome::Genome;
-use arena_sim::matchup::{play, Outcome};
+use arena_sim::matchup::{play_with_hp, Outcome};
 use arena_sim::rng::Rng;
 use arena_sim::world::Arena;
 
@@ -71,7 +71,7 @@ fn each_encounter_has_replayable_log() {
     for e in &r.encounters {
         assert!(e.result.ticks >= 1);
         assert!(e.result.log.to_json().contains("\"frames\""));
-        let again = play(Arena::generate(e.arena_seed, &cfg), h.pick(0).clone(), m.pick(e.monster_index).clone(), e.match_seed, &cfg);
+        let again = play_with_hp(Arena::generate(e.arena_seed, &cfg), h.pick(0).clone(), m.pick(e.monster_index).clone(), e.match_seed, &cfg, [cfg.max_hp, e.monster_hp]);
         assert_eq!(again.log.to_json(), e.result.log.to_json());
     }
 }
@@ -124,4 +124,22 @@ fn run_file_fight_paths_resolve_relative_to_the_run_file() {
     assert!(json.contains("\"fight\":\"fights_on/fight_0.json\""), "{}", &json[json.len().saturating_sub(300)..]);
     assert!(base.join("fights_on/fight_0.json").exists());
     let _ = std::fs::remove_dir_all(&base);
+}
+
+#[test]
+fn wild_monsters_are_weaker_than_elites_and_boss_is_full_strength() {
+    let (h, m) = libs(4);
+    let (mut g, mut el, mut b) = (0, 0, 0);
+    for seed in 0..20u64 {
+        for e in &run(seed, MapCfg::default(), &h, &m, false).encounters {
+            assert!(e.monster_hp <= 100.0 && e.monster_hp > 0.0);
+            assert!(e.result.monster_hp <= e.monster_hp + 1e-3, "monster exceeded its starting hp");
+            match e.kind {
+                EncounterKind::Grass => { assert!(e.monster_hp < 100.0); g += 1; }
+                EncounterKind::Elite => { assert!(e.monster_hp < 100.0); el += 1; }
+                EncounterKind::Boss => { assert_eq!(e.monster_hp, 100.0); b += 1; }
+            }
+        }
+    }
+    assert!(g > 0 && el > 0 && b > 0);
 }
