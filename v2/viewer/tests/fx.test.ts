@@ -84,3 +84,16 @@ describe('staggerShake and stun stars', () => {
     }
   });
 });
+
+describe('dotEvents', () => {
+  it('keeps only dot events, in order', () => {
+    const ev = [
+      { t: 'hit', by: 0, atk: 0, dmg: 5, blocked: false, punish: false, fx: [] },
+      { t: 'dot', to: 1, kind: 'poison', dmg: 1 },
+      { t: 'parry', by: 0 },
+      { t: 'dot', to: 0, kind: 'bleed', dmg: 2 },
+    ];
+    expect(dotEvents(ev as never)).toEqual([ev[1], ev[3]]);
+    expect(dotEvents([])).toEqual([]);
+  });
+});
