@@ -355,7 +355,7 @@ export class Scene {
     const sp = this.rigs[0].sprite;
     if (pick) { sp.texture = pick.texture; sp.anchor.set(pick.ax, pick.ay); }
     sp.scale.set(1.0); sp.position.set(x * ts, y * ts * PITCH); sp.zIndex = sp.y;
-    this.rigs[0].label.visible = false; this.rigs[1].label.visible = false;
+    this.rigs[0].label.visible = false; this.rigs[1].label.visible = false; this.rigs[0].timers.visible = false; this.rigs[1].timers.visible = false;
     this.rigs[1].sprite.visible = false;
     // camera zooms around the hero (like v1), clamped to the map
     const cam = mapCamera(this.arenaPx, [x * ts, y * ts * PITCH], { w: this.sw, h: this.sh });
