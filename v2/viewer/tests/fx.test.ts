@@ -24,3 +24,20 @@ describe('statusTimer', () => {
     expect(statusTimer('poison', 15, 30)).toBe('poison 0.5');
   });
 });
+
+describe('tintStatus priority', () => {
+  it('returns null with no status or knock only', () => {
+    expect(tintStatus(fxOf({}))).toBeNull();
+    expect(tintStatus(fxOf({ knock: 4 }))).toBeNull();
+  });
+  it('stun > stagger > confused > slowed > poison > bleed', () => {
+    const order = ['stun', 'stagger', 'confused', 'slowed', 'poison', 'bleed'];
+    for (let i = 0; i < order.length; i++) {
+      const all = Object.fromEntries(order.slice(i).map((k) => [k, 5]));
+      expect(tintStatus(fxOf(all))).toBe(order[i]);
+    }
+  });
+  it('ignores knock when another status is active', () => {
+    expect(tintStatus(fxOf({ knock: 3, bleed: 9 }))).toBe('bleed');
+  });
+});
