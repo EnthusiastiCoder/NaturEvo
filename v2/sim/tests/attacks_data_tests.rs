@@ -37,3 +37,24 @@ fn hero_has_three_moves_with_table_values() {
     assert_eq!(eff(&v[2], Status::Stagger).0, 6);
     assert!(v[0].windup < v[1].windup, "light strictly faster than heavy");
 }
+
+#[test]
+fn species_have_two_distinct_moves_with_signature_values() {
+    for sp in SPECIES {
+        let v = moves(sp, Rank::Grass);
+        assert!(v.len() >= 2, "{:?}", sp);
+        assert_ne!(v[0], v[1]);
+        assert_ne!(v[0].name, v[1].name);
+    }
+    let w = moves(Species::Warrior, Rank::Grass);
+    assert_eq!(w[0].windup, 14);
+    assert_eq!(eff(&w[0], Status::Knock).1, 2.5);
+    assert_eq!(eff(&w[0], Status::Stun).0, 24);
+    assert!((w[1].half_arc - 70.0f32.to_radians()).abs() < 1e-3, "cleave arc 140");
+    let h = moves(Species::Mage, Rank::Grass);
+    assert_eq!((h[0].windup, h[0].damage), (10, 5.0));
+    assert!((h[0].range - 2.0).abs() < 1e-5);
+    assert_eq!(eff(&h[0], Status::Poison).0, 240);
+    assert_eq!(eff(&h[0], Status::Confused).0, 90);
+    assert_eq!(moves(Species::Rogue, Rank::Grass)[0].windup, 3);
+}
