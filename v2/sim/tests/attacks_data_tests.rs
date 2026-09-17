@@ -97,3 +97,16 @@ fn all_seven_statuses_appear_in_some_move() {
     }
     for s in Status::ALL { assert!(all.iter().any(|m| has(m, s)), "{:?} unused", s); }
 }
+
+#[test]
+fn every_move_total_frames_within_13_to_46() {
+    for sp in [Species::Hero, Species::Minion, Species::Rogue, Species::Warrior, Species::Mage] {
+        for rk in [Rank::Grass, Rank::Elite, Rank::Boss] {
+            for m in moves(sp, rk) {
+                let t = m.windup + m.active + m.recovery;
+                assert!((13..=46).contains(&t), "{:?} {:?} {} total {t}", sp, rk, m.name);
+                assert!(m.damage > 0.0 && m.stamina_cost >= 0.0);
+            }
+        }
+    }
+}
