@@ -125,3 +125,15 @@ fn blocked_hit_after_parry_window_loses_1_6() {
     assert!((m.hp(M) - 98.4).abs() < 1e-3, "8 * 0.2, got {}", m.hp(M));
     assert_eq!(st(&m, M), S::Blocking);
 }
+
+#[test]
+fn parry_blocks_all_and_staggers_attacker_14() {
+    let mut m = duel(1.0);
+    run(&mut m, 3, idle(), blk());
+    run(&mut m, 5, atk(0), blk());
+    assert_eq!(m.hp(M), 100.0);
+    assert_eq!(st(&m, H), S::Staggered);
+    let s = m.fx(H)[Status::Stagger.idx()];
+    assert!((13..=14).contains(&s), "stagger {s}");
+    assert!(m.log().to_json().contains("parry"));
+}
