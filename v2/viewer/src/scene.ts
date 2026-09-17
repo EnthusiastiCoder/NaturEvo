@@ -3,6 +3,7 @@ import { type Fight, type Run } from './data';
 import { STAGE_H, STAGE_W, VISUAL_MIN_DIST, displayPlan, fightCamera, fitCamera, hudOffsets, mapCamera, separate, stateLabel, uiScale } from './layout';
 import { sceneSize } from './record';
 import { hash2, paintGround, paintRock, paintTree } from './ground';
+import { KEYS, KNOCK_TICKS, STATUSES, attackName, eyeAlpha, knockbackOffset, staggerShake, statusColor, statusTimer, stunStarCount, tintStatus } from './fx';
 import { sampleFight, type FighterFrame } from './interp';
 import { ANIM, Atlas, HERO_MODEL, MONSTER_MODELS, directionFromAngle, loadAtlas } from './sprites';
 
