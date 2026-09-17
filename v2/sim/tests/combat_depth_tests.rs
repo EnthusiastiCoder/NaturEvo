@@ -116,3 +116,12 @@ fn guard_raise_gives_no_protection_for_6_ticks() {
     run(&mut m, 2, idle(), blk());
     assert_eq!(st(&m, M), S::Blocking);
 }
+
+#[test]
+fn blocked_hit_after_parry_window_loses_1_6() {
+    let mut m = duel(1.0);
+    run(&mut m, 8, idle(), blk());
+    run(&mut m, 5, atk(0), blk());
+    assert!((m.hp(M) - 98.4).abs() < 1e-3, "8 * 0.2, got {}", m.hp(M));
+    assert_eq!(st(&m, M), S::Blocking);
+}
