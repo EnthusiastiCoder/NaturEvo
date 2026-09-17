@@ -237,7 +237,9 @@ export class Scene {
     ([[s.hero, hitH], [s.monster, hitM]] as [FighterFrame, boolean][]).forEach(([fa, hit], k) => {
       const cx = fa.pos[0] * TS, cy = fa.pos[1] * TS * P;
       if (hit && fa.state !== 'Dead') g.circle(cx, cy - 22, 0.9 * TS).stroke({ width: 5, color: 0xff4d4d, alpha: 0.9 });
-      const lab = stateLabel(fa.state) ?? (hit && fa.state !== 'Dead' ? { text: 'HIT', color: 0xff6b6b } : null);
+      let lab = stateLabel(fa.state) ?? (hit && fa.state !== 'Dead' ? { text: 'HIT', color: 0xff6b6b } : null);
+      const nm = attackName(f.species?.[k] ?? (k === 0 ? 'hero' : 'minion'), fa.atk, f.rank?.[k]);
+      if (lab && nm && ['Windup', 'Active', 'Recovery'].includes(fa.state)) lab = { ...lab, text: `${lab.text} ${nm}` };
       const L = this.rigs[k].label;
       L.visible = !!lab;
       if (lab) { L.text = lab.text; L.style.fill = lab.color; L.scale.set(U); L.position.set(cx, cy + hudOffsets(U).labelBottom); }
