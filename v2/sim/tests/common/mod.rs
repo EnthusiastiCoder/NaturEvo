@@ -21,3 +21,15 @@ pub fn duel(dist: f32) -> Match { duel_sp(Species::Minion, Rank::Grass, dist) }
 pub fn duel_sp(monster: Species, rank: Rank, dist: f32) -> Match {
     duel_both(Species::Hero, monster, rank, dist)
 }
+
+pub fn duel_both(hero: Species, monster: Species, rank: Rank, dist: f32) -> Match {
+    let cfg = ArenaConfig::default();
+    let seed = 1u64;
+    let mut r = Rng::new(seed);
+    let h = Genome::random(Role::Hero, &mut r);
+    let m = Genome::random(Role::Monster, &mut r);
+    let setup = Setup { hp: [cfg.max_hp, cfg.max_hp], species: [hero, monster], rank: [Rank::Grass, rank] };
+    let mut mt = Match::new_with_setup(Arena::generate(seed, &cfg), h, m, seed, &cfg, setup);
+    mt.place_for_duel(dist);
+    mt
+}
