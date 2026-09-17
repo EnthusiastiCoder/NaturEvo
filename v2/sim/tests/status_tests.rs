@@ -22,3 +22,16 @@ fn stagger_refresh_is_max_without_stacking() {
     assert_eq!(fx(&m, M, Status::Stagger), 20);
     assert!(m.stacks(M)[Status::Stagger.idx()] <= 1);
 }
+
+#[test]
+fn stagger_has_12_tick_poise_after_it_ends() {
+    let mut m = duel(8.0);
+    m.apply_status(M, Status::Stagger, 10, 1.0, H);
+    for _ in 0..30 { if fx(&m, M, Status::Stagger) == 0 { break; } m.step_with(idle(), idle()); }
+    assert_eq!(fx(&m, M, Status::Stagger), 0);
+    m.apply_status(M, Status::Stagger, 10, 1.0, H);
+    assert_eq!(fx(&m, M, Status::Stagger), 0, "immune right after");
+    run(&mut m, 13, idle(), idle());
+    m.apply_status(M, Status::Stagger, 10, 1.0, H);
+    assert_eq!(fx(&m, M, Status::Stagger), 10);
+}
