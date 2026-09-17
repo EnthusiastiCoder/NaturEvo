@@ -48,3 +48,14 @@ fn attacks_cost_stamina() {
     m.step_with(atk(1), idle());
     assert!((m.stamina(H) - 85.0).abs() < 1.0, "heavy cost 15, got {}", m.stamina(H));
 }
+
+#[test]
+fn heavy_refused_below_cost() {
+    let mut m = duel(1.0);
+    m.set_stamina(H, 5.0);
+    for _ in 0..10 {
+        m.step_with(atk(1), idle());
+        assert_ne!(st(&m, H), S::Windup);
+    }
+    assert_eq!(m.hp(M), 100.0);
+}
