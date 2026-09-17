@@ -110,3 +110,14 @@ fn every_move_total_frames_within_13_to_46() {
         }
     }
 }
+
+#[test]
+fn species_and_rank_strings_and_status_indices() {
+    assert_eq!(Species::ALL.len(), 5);
+    assert_eq!(Species::Hero.as_str(), "hero");
+    assert_eq!(Species::Mage.as_str(), "mage");
+    assert_eq!(Rank::ALL.len(), 3);
+    assert_eq!(Rank::Boss.as_str(), "boss");
+    let order = [Status::Knock, Status::Stagger, Status::Stun, Status::Confused, Status::Slowed, Status::Bleed, Status::Poison];
+    for (i, s) in order.iter().enumerate() { assert_eq!(s.idx(), i); assert_eq!(Status::ALL[i], *s); }
+}
