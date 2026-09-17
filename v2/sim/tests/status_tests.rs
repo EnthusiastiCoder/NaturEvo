@@ -65,3 +65,15 @@ fn warrior_club_cannot_chain_stuns() {
     assert!(starts.len() >= 2, "club should stun repeatedly: {starts:?}");
     for w in starts.windows(2) { assert!(w[1] - w[0] >= 51, "stuns too close: {starts:?}"); }
 }
+
+#[test]
+fn knockback_moves_2_tiles_over_6_ticks() {
+    let mut m = duel(8.0);
+    let x0 = m.pos(M).0;
+    m.apply_status(M, Status::Knock, 6, 2.0, H);
+    run(&mut m, 6, idle(), idle());
+    assert!(near(m.pos(M).0 - x0, 2.0, 0.05), "moved {}", m.pos(M).0 - x0);
+    run(&mut m, 10, idle(), idle());
+    assert!(near(m.pos(M).0 - x0, 2.0, 0.05), "stops after 6 ticks");
+    assert_eq!(m.fighter(M).state, S::Idle);
+}
