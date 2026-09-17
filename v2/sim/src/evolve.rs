@@ -424,7 +424,7 @@ impl Trainer {
                 cand_g.push(self.champs[ri].clone());
             }
             // Panel: fresh randoms, the opposing current champion, and an evenly spaced slice of its whole history.
-            let mut opps: Vec<(Genome, u64)> = (0..3).map(|_| (Genome::random(role.other(), &mut rng), rng.next_u64())).collect();
+            let mut opps: Vec<(Genome, u64)> = (0..PANEL_RANDOM).map(|_| (Genome::random(role.other(), &mut rng), rng.next_u64())).collect();
             let hl = self.hof[oi].len();
             if hl > 0 {
                 opps.push((self.champs[oi].clone(), rng.next_u64()));
