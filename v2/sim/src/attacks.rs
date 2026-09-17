@@ -33,3 +33,14 @@ pub enum Rank {
     Elite,
     Boss,
 }
+
+impl Rank {
+    pub const ALL: [Rank; 3] = [Rank::Grass, Rank::Elite, Rank::Boss];
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Rank::Grass => "grass",
+            Rank::Elite => "elite",
+            Rank::Boss => "boss",
+        }
+    }
+}
