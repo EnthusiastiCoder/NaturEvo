@@ -411,7 +411,8 @@ impl Trainer {
             fits[1].iter().cloned().fold(f32::MIN, f32::max),
         ];
         let mut champs = self.champs.clone();
-        for ri in 0..2 {
+        // Monster champion is picked first; the hero is then judged against the fresh monster champion.
+        for ri in [1usize, 0] {
             // Re-rank the top few on fresh opponents so the champion is not just a lucky draw.
             let role = if ri == 0 { Role::Hero } else { Role::Monster };
             let oi = 1 - ri;
