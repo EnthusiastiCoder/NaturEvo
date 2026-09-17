@@ -86,3 +86,22 @@ fn punish_on_staggered_victim_is_1_25x_and_logged() {
     run(&mut m, 5, atk(0), idle());
     assert!(!m.log().to_json().contains("\"punish\":true"));
 }
+
+#[test]
+fn stagger_interrupts_windup_not_active() {
+    let mut m = duel_sp(Species::Warrior, Rank::Grass, 1.0);
+    m.step_with(idle(), atk(0));
+    m.step_with(idle(), idle());
+    assert_eq!(st(&m, M), S::Windup);
+    m.apply_status(M, Status::Stagger, 10, 1.0, H);
+    m.step_with(idle(), idle());
+    assert_eq!(st(&m, M), S::Staggered);
+    run(&mut m, 40, idle(), idle());
+    assert_eq!(m.hp(H), 100.0, "cancelled club never lands");
+    let mut m = duel(1.0);
+    run(&mut m, 5, atk(0), idle());
+    assert_eq!(st(&m, H), S::Active);
+    m.apply_status(H, Status::Stagger, 10, 1.0, M);
+    m.step_with(idle(), idle());
+    assert_eq!(st(&m, H), S::Active, "committed swing not interrupted");
+}
