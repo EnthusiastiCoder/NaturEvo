@@ -160,3 +160,23 @@ fn confusion_is_deterministic() {
     };
     assert_eq!(go(), go());
 }
+
+#[test]
+fn slowed_stacks_to_two_speed_and_turn() {
+    let step_len = |n_apply: u32| {
+        let mut m = duel(20.0);
+        for _ in 0..n_apply { m.apply_status(H, Status::Slowed, 90, 1.0, M); }
+        let p0 = m.pos(H);
+        m.step_with(fwd(1.0), idle());
+        let p1 = m.pos(H);
+        ((p1.0 - p0.0).powi(2) + (p1.1 - p0.1).powi(2)).sqrt()
+    };
+    assert!(near(step_len(1), 0.08, 1e-3));
+    assert!(near(step_len(2), 0.048, 1e-3));
+    assert!(near(step_len(3), 0.048, 1e-3), "max 2 stacks");
+    let mut m = duel(20.0);
+    m.apply_status(H, Status::Slowed, 90, 1.0, M);
+    let f0 = m.fighter(H).facing;
+    m.step_with(Action { turn: 1.0, ..idle() }, idle());
+    assert!(near(m.fighter(H).facing - f0, 0.14, 1e-3));
+}
