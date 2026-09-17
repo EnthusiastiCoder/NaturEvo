@@ -144,3 +144,11 @@ describe('attackName', () => {
     expect(attackName('hero', -1, 'normal')).toBe('');
   });
 });
+
+describe('eyeAlpha', () => {
+  it('bright when seen, dimmed but visible when not', () => {
+    expect(eyeAlpha(true)).toBe(1);
+    expect(eyeAlpha(false)).toBeGreaterThan(0);
+    expect(eyeAlpha(false)).toBeLessThan(0.6);
+  });
+});
