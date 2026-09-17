@@ -193,3 +193,12 @@ fn bleed_ticks_1_per_15_per_stack_up_to_3() {
     run(&mut m, 16, idle(), idle());
     assert_eq!(m.hp(H), 97.0);
 }
+
+#[test]
+fn bleed_doubles_while_moving() {
+    let mut m = duel(8.0);
+    m.apply_status(H, Status::Bleed, 300, 1.0, M);
+    m.set_pos(H, 14.0, 16.5);
+    run(&mut m, 31, Action { fwd: 0.6, turn: 0.0, ..idle() }, idle());
+    assert_eq!(m.hp(H), 96.0);
+}
