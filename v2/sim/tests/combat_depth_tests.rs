@@ -188,3 +188,9 @@ fn block_arc_is_90_degrees_front_only() {
         assert!((loss(off) - 8.0).abs() < 1e-3, "off {off}");
     }
 }
+
+#[test]
+fn block_arc_narrower_than_vision() {
+    assert!((BLOCK_HALF_ARC - PI / 4.0).abs() < 1e-6);
+    assert!(BLOCK_HALF_ARC < ArenaConfig::default().vision_fov / 2.0);
+}
