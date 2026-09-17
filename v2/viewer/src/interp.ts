@@ -6,8 +6,11 @@ export interface FighterFrame {
   stamina: number;
   action: Record<string, number | boolean> | string;
   state: string;
+  atk: number;
+  fx: number[];
+  seen: boolean;
 }
-export interface Frame { hero: FighterFrame; monster: FighterFrame }
+export interface Frame { hero: FighterFrame; monster: FighterFrame; ev: { t: string; [k: string]: unknown }[] }
 
 export function lerpAngle(a: number, b: number, t: number): number {
   const d = ((((b - a + Math.PI) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)) - Math.PI;
@@ -23,6 +26,7 @@ function mix(a: FighterFrame, b: FighterFrame, t: number): FighterFrame {
     stamina: lerp(a.stamina, b.stamina, t),
     action: a.action, // discrete values snap to the earlier tick
     state: a.state,
+    atk: a.atk, fx: a.fx, seen: a.seen,
   };
 }
 
@@ -34,7 +38,7 @@ export function sampleFight(frames: Frame[], tSeconds: number, tickHz: number): 
   const f = s - i;
   if (f === 0) return frames[i];
   const a = frames[i], b = frames[i + 1];
-  return { hero: mix(a.hero, b.hero, f), monster: mix(a.monster, b.monster, f) };
+  return { hero: mix(a.hero, b.hero, f), monster: mix(a.monster, b.monster, f), ev: a.ev };
 }
 
 export interface SideStats { hits: number; blocks: number; dodges: number }
