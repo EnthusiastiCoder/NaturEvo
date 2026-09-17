@@ -171,7 +171,9 @@ export class Scene {
     sp.position.set(fr.pos[0] * this.ts, fr.pos[1] * this.ts * PITCH);
     sp.zIndex = sp.y;
     sp.alpha = fr.state === 'Dodging' ? 0.55 : 1;
-    sp.tint = hitRecent && fr.state !== 'Dead' ? 0xffb0b0 : 0xffffff;
+    const tk = tintStatus(fr.fx);
+    sp.tint = hitRecent && fr.state !== 'Dead' ? 0xffb0b0 : tk ? statusColor(tk) : 0xffffff;
+    if (fr.state === 'Recovery') sp.alpha = 0.8;
     void i;
   }
 
