@@ -51,3 +51,8 @@ pub fn turtle(role: Role) -> Genome { bias_genome(role, &[(4, 1.0), (3, -1.0)]) 
 pub fn aggressor(role: Role) -> Genome { bias_genome(role, &[(0, 1.0), (3, 1.0), (4, -1.0)]) }
 /// Does nothing.
 pub fn idler(role: Role) -> Genome { bias_genome(role, &[(3, -1.0), (4, -1.0), (5, -1.0)]) }
+
+pub fn dist(m: &Match) -> f32 {
+    let (a, b) = (m.pos(Role::Hero), m.pos(Role::Monster));
+    ((a.0 - b.0).powi(2) + (a.1 - b.1).powi(2)).sqrt()
+}
