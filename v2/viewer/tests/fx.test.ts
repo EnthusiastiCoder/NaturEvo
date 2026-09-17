@@ -131,3 +131,16 @@ describe('statusStats', () => {
     expect(statusStats([{ hero: {}, monster: {} }] as never, 0).hero.punishes).toBe(0);
   });
 });
+
+describe('attackName', () => {
+  it('names per species and kind', () => {
+    expect(['hero', 'hero', 'hero'].map((s, k) => attackName(s, k, 'normal'))).toEqual(['LIGHT', 'HEAVY', 'LUNGE']);
+    expect([0, 1].map((k) => attackName('minion', k, 'normal'))).toEqual(['SWIPE', 'BITE']);
+    expect([0, 1].map((k) => attackName('rogue', k, 'normal'))).toEqual(['STAB', 'DASH']);
+    expect([0, 1, 2].map((k) => attackName('warrior', k, 'normal'))).toEqual(['CLUB', 'CLEAVE', 'SLAM']);
+    expect([0, 1].map((k) => attackName('mage', k, 'normal'))).toEqual(['HEX', 'ZAP']);
+  });
+  it('is empty for no attack (-1)', () => {
+    expect(attackName('hero', -1, 'normal')).toBe('');
+  });
+});
