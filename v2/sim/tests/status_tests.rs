@@ -230,3 +230,13 @@ fn bleed_refresh_is_max_and_expires() {
     assert!((2.0..=3.0).contains(&lost), "lost {lost}");
     assert_eq!(fx(&m, H, Status::Bleed), 0);
 }
+
+#[test]
+fn poison_never_kills_floor_hp_1() {
+    let mut m = duel(8.0);
+    m.set_hp(H, 2.0);
+    m.apply_status(H, Status::Poison, 300, 1.0, M);
+    run(&mut m, 200, idle(), idle());
+    assert_eq!(m.hp(H), 1.0);
+    assert!(!m.finished());
+}
