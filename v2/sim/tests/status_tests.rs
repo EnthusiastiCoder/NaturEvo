@@ -202,3 +202,15 @@ fn bleed_doubles_while_moving() {
     run(&mut m, 31, Action { fwd: 0.6, turn: 0.0, ..idle() }, idle());
     assert_eq!(m.hp(H), 96.0);
 }
+
+#[test]
+fn bleed_kills_and_credits_source() {
+    let mut m = duel(8.0);
+    m.set_hp(H, 1.5);
+    m.apply_status(H, Status::Bleed, 300, 1.0, M);
+    run(&mut m, 31, idle(), idle());
+    assert!(m.finished());
+    assert_eq!(m.outcome(), Outcome::MonsterWin);
+    assert!(m.damage_dealt()[M.index()] >= 1.5 - 1e-3);
+    assert!(m.log().to_json().contains("\"t\":\"dot\""));
+}
