@@ -23,3 +23,18 @@ fn recovery_len(m: &mut Match, inp: Action) -> u32 {
     }
     n
 }
+
+#[test]
+fn light_hits_at_step_5_heavy_at_step_13() {
+    let mut m = duel(1.0);
+    run(&mut m, 4, atk(0), idle());
+    assert_eq!(m.hp(M), 100.0);
+    m.step_with(idle(), idle());
+    assert_eq!(m.hp(M), 92.0);
+    let mut m = duel(1.0);
+    m.step_with(atk(1), idle());
+    run(&mut m, 11, idle(), idle());
+    assert_eq!(m.hp(M), 100.0, "heavy still winding up at step 12");
+    m.step_with(idle(), idle());
+    assert_eq!(m.hp(M), 82.0, "heavy dmg 18 at step 13");
+}
