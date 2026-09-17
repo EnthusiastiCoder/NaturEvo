@@ -213,3 +213,15 @@ fn blocked_hit_skips_effects_and_degrades_stun() {
     let s = m.fx(H)[Status::Stagger.idx()];
     assert!((7..=8).contains(&s), "stagger {s}");
 }
+
+#[test]
+fn guard_break_stuns_20() {
+    let mut m = duel(1.0);
+    m.set_stamina(H, 10.0);
+    run(&mut m, 10, blk(), idle());
+    run(&mut m, 6, blk(), atk(0));
+    assert_eq!(st(&m, H), S::Stunned);
+    let s = m.fx(H)[Status::Stun.idx()];
+    assert!((19..=20).contains(&s), "stun {s}");
+    assert!(m.log().to_json().contains("guard_break"));
+}
