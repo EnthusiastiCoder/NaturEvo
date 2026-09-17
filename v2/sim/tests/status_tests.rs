@@ -35,3 +35,18 @@ fn stagger_has_12_tick_poise_after_it_ends() {
     m.apply_status(M, Status::Stagger, 10, 1.0, H);
     assert_eq!(fx(&m, M, Status::Stagger), 10);
 }
+
+#[test]
+fn stun_diminishing_returns_20_10_6_with_immunity_45() {
+    let mut m = duel(8.0);
+    let mut got = vec![];
+    for _ in 0..3 {
+        m.apply_status(M, Status::Stun, 20, 1.0, H);
+        got.push(fx(&m, M, Status::Stun));
+        for _ in 0..40 { if fx(&m, M, Status::Stun) == 0 { break; } m.step_with(idle(), idle()); }
+        m.apply_status(M, Status::Stun, 20, 1.0, H);
+        assert_eq!(fx(&m, M, Status::Stun), 0, "immune after stun");
+        run(&mut m, 46, idle(), idle());
+    }
+    assert_eq!(got, vec![20, 10, 6]);
+}
