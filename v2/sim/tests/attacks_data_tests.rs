@@ -58,3 +58,18 @@ fn species_have_two_distinct_moves_with_signature_values() {
     assert_eq!(eff(&h[0], Status::Confused).0, 90);
     assert_eq!(moves(Species::Rogue, Rank::Grass)[0].windup, 3);
 }
+
+#[test]
+fn elites_are_stronger_with_one_extra_effect() {
+    let extra = [(Species::Minion, Status::Slowed), (Species::Rogue, Status::Poison), (Species::Warrior, Status::Bleed), (Species::Mage, Status::Knock)];
+    for (sp, st) in extra {
+        let (g, e) = (moves(sp, Rank::Grass), moves(sp, Rank::Elite));
+        assert_eq!(g.len(), e.len());
+        for (a, b) in g.iter().zip(e.iter()) {
+            assert!((b.damage - a.damage * 1.15).abs() < 1e-3, "{} dmg", a.name);
+            assert_eq!(b.effects.len(), a.effects.len() + 1, "{}", a.name);
+        }
+        assert!(e.iter().any(|m| has(m, st)), "{:?} elite lacks {:?}", sp, st);
+        assert_ne!(g, e);
+    }
+}
