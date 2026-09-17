@@ -88,3 +88,40 @@ fn deg(d: f32) -> f32 {
 fn mv(name: &'static str, w: u32, a: u32, r: u32, damage: f32, range: f32, half_arc_deg: f32, cost: f32, lunge: f32, effects: Vec<Effect>) -> Move {
     Move { name, windup: w, active: a, recovery: r, damage, range, half_arc: deg(half_arc_deg), stamina_cost: cost, lunge, effects }
 }
+
+fn base(species: Species) -> Vec<Move> {
+    match species {
+        Species::Hero => vec![
+            mv("Light", 4, 3, 6, 8.0, 1.2, 45.0, 5.0, 0.0, vec![fx(Status::Stagger, 8)]),
+            mv(
+                "Heavy",
+                12,
+                4,
+                14,
+                18.0,
+                1.3,
+                45.0,
+                15.0,
+                0.0,
+                vec![knock(2.0), Effect { vulnerable_only: true, ..fx(Status::Stun, 20) }],
+            ),
+            mv("Lunge", 8, 3, 12, 10.0, 1.6, 30.0, 12.0, 2.0, vec![fx(Status::Slowed, 90), fx(Status::Stagger, 6)]),
+        ],
+        Species::Minion => vec![
+            mv("Swipe", 5, 3, 7, 6.0, 1.1, 45.0, 5.0, 0.0, vec![fx(Status::Stagger, 8)]),
+            mv("Bite", 8, 3, 10, 9.0, 1.0, 20.0, 10.0, 0.0, vec![fx(Status::Bleed, 150)]),
+        ],
+        Species::Rogue => vec![
+            mv("Stab", 3, 2, 8, 6.0, 1.1, 40.0, 6.0, 0.0, vec![fx(Status::Bleed, 150)]),
+            mv("Dash", 6, 3, 12, 7.0, 1.5, 30.0, 12.0, 2.0, vec![fx(Status::Slowed, 90)]),
+        ],
+        Species::Warrior => vec![
+            mv("Club", 14, 4, 16, 16.0, 1.3, 45.0, 15.0, 0.0, vec![knock(2.5), fx(Status::Stun, 24)]),
+            mv("Cleave", 8, 4, 12, 9.0, 1.3, 70.0, 10.0, 0.0, vec![fx(Status::Stagger, 10)]),
+        ],
+        Species::Mage => vec![
+            mv("Hex", 10, 3, 12, 5.0, 2.0, 30.0, 12.0, 0.0, vec![fx(Status::Poison, 240), fx(Status::Confused, 90)]),
+            mv("Zap", 6, 3, 10, 6.0, 1.6, 45.0, 8.0, 0.0, vec![fx(Status::Stagger, 8), fx(Status::Slowed, 60)]),
+        ],
+    }
+}
