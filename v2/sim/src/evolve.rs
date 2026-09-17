@@ -280,6 +280,15 @@ fn tournament(fit: &[f32], r: &mut Rng) -> usize {
     best
 }
 
+/// Held-out champion panel: fixed mix of fresh random opponents and evenly spaced past champions.
+const PANEL_RANDOM: usize = 6;
+const PANEL_PAST: usize = 12;
+/// Copies of the rival champion in the panel (hero panel / monster panel).
+const PANEL_CURRENT_HERO: usize = 8;
+const PANEL_CURRENT_MONSTER: usize = 2;
+/// Weight of the worst group in the blended panel score (tenths).
+const GROUP_MIN_WEIGHT: f32 = 0.5;
+
 pub struct Trainer {
     cfg: TrainConfig,
     arena_cfg: ArenaConfig,
