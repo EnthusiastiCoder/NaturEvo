@@ -47,3 +47,15 @@ impl Rank {
 
 pub const ELITE_DAMAGE_MULT: f32 = 1.15;
 pub const BOSS_DAMAGE_MULT: f32 = 1.2;
+
+/// One status applied by a hit. `chance` is always 1.0 (deterministic). For Knock `magnitude` is the
+/// distance in tiles (duration comes from the combat tuning). `vulnerable_only` effects apply only
+/// when the victim is Blocking or in Recovery.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Effect {
+    pub status: Status,
+    pub chance: f32,
+    pub duration: u32,
+    pub magnitude: f32,
+    pub vulnerable_only: bool,
+}
