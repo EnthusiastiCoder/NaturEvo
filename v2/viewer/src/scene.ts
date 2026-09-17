@@ -348,7 +348,7 @@ export class Scene {
     const a = run.path[i], b = run.path[j];
     const x = a[0] + (b[0] - a[0]) * f + 0.5, y = a[1] + (b[1] - a[1]) * f + 0.5;
     const facing = Math.atan2(b[1] - a[1], b[0] - a[0]);
-    const hero: FighterFrame = { pos: [x, y], facing: i === j ? 0 : facing, hp: 100, stamina: 100, action: 'none', state: 'Idle' };
+    const hero: FighterFrame = { pos: [x, y], facing: i === j ? 0 : facing, hp: 100, stamina: 100, action: 'none', state: 'Idle', atk: -1, fx: [0, 0, 0, 0, 0, 0, 0], seen: false };
     const moving = i !== j && pathPos < n;
     const at = this.atlases.get(HERO_MODEL)!;
     const pick = at.get(moving ? ANIM.walk : ANIM.idle, directionFromAngle(hero.facing), Math.floor(t * 12));
