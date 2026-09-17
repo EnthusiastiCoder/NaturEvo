@@ -125,3 +125,13 @@ fn base(species: Species) -> Vec<Move> {
         ],
     }
 }
+
+fn elite_extra(species: Species) -> Option<Effect> {
+    match species {
+        Species::Hero => None,
+        Species::Minion => Some(fx(Status::Slowed, 60)),
+        Species::Rogue => Some(fx(Status::Poison, 120)),
+        Species::Warrior => Some(fx(Status::Bleed, 90)),
+        Species::Mage => Some(knock(1.0)),
+    }
+}
