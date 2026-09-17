@@ -189,7 +189,8 @@ pub fn run(seed: u64, cfg: MapCfg, heroes: &Library, monsters: &Library, permade
             monster_index = monster_index.max(1);
         }
         let tier = map.zone_tier(tile);
-        let result = play(
+        let monster_hp = monster_hp_for(kind);
+        let result = play_with_hp(
             Arena::generate(arena_seed, &acfg),
             heroes.pick(0).clone(),
             monsters.pick(monster_index).clone(),
