@@ -107,3 +107,10 @@ fn blocking_halves_knockback() {
     run(&mut m, 8, idle(), blk());
     assert!(near(m.pos(M).0 - x0, 1.0, 0.1), "blocked knock {}", m.pos(M).0 - x0);
 }
+
+#[test]
+fn lunge_does_not_pass_through_target() {
+    let mut m = duel(1.0);
+    run(&mut m, 15, atk(2), idle());
+    assert!(dist(&m) >= 0.8 - 1e-3, "dist {}", dist(&m));
+}
