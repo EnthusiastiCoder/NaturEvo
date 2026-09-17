@@ -1,5 +1,6 @@
 import './style.css';
 import { type Encounter, type Fight, type Run, demoFight, demoRun, mergeDuels, parseFight, parseRun, resolveFights } from './data';
+import { fightStats, statsLine } from './interp';
 import { applyRecordMode, isRecordMode } from './record';
 import { Scene } from './scene';
 import { installRecorder, splitSource } from './capture';
@@ -70,10 +71,15 @@ function duration(): number {
   return mode === 'campaign' ? total : duelFights[duelIdx].fight.frames.length / duelFights[duelIdx].fight.tickHz;
 }
 
+function strip(f: Fight, tt: number): string {
+  const st = fightStats(f.frames, Math.floor(tt * f.tickHz));
+  return `${statsLine('Hero', st.hero)}  |  ${statsLine('Monster', st.monster)}`;
+}
+
 function frame(): void {
   const dur = duration();
   const scrub = $<HTMLInputElement>('scrub');
-  let label = '', a = '', b = '';
+  let label = '', a = '', b = '', c = '';
   if (mode === 'campaign') {
     const seg = segs.find((s) => t >= s.t0 && t < s.t1) ?? segs[segs.length - 1];
     if (seg.kind === 'walk') {
@@ -89,6 +95,7 @@ function frame(): void {
         if (current !== key) { scene.setFight(e.fight); current = key; }
         const s = scene.drawFight(e.fight, t - seg.t0, { rays });
         a = `Hero ${Math.round(s.hero.hp)} HP`; b = `${e.kind} ${Math.round(s.monster.hp)} HP`;
+        c = strip(e.fight, t - seg.t0);
       } else {
         if (current !== 'map') { scene.setMap(run); current = 'map'; }
         scene.drawMap(run, run.path.findIndex((p) => p[0] === e.tile[0] && p[1] === e.tile[1]), t, seg.enc);
@@ -101,10 +108,12 @@ function frame(): void {
     if (current !== key) { scene.setFight(d.fight); current = key; }
     const s = scene.drawFight(d.fight, t, { rays });
     a = `Hero ${Math.round(s.hero.hp)} HP`; b = `Monster ${Math.round(s.monster.hp)} HP`;
+    c = strip(d.fight, t);
     label = d.label;
   }
   $('hud-a').textContent = label;
   $('hud-b').textContent = [a, b].filter(Boolean).join('  |  ');
+  $('hud-c').textContent = c; $('hud-c').hidden = !c;
   scrub.value = String(Math.round((t / dur) * 1000));
   $('clock').textContent = `${t.toFixed(1)} / ${dur.toFixed(1)} s`;
 }
@@ -171,7 +180,7 @@ async function tryLoadDefault(): Promise<void> {
 
 function fitNow(): void {
   const st = $('view');
-  scene.fit(st.clientWidth, st.clientHeight);
+  if (scene.fit(st.clientWidth, st.clientHeight)) current = ''; // ground texture density follows the display size
 }
 
 async function main(): Promise<void> {
