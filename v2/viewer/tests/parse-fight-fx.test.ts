@@ -29,3 +29,27 @@ describe('parseFight old logs', () => {
     expect(f.frames[0].monster.state).toBe('Windup');
   });
 });
+
+describe('parseFight new logs', () => {
+  const ev = [{ t: 'hit', by: 0, atk: 1, dmg: 8, blocked: false, punish: true, fx: [2] }, { t: 'parry', by: 1 }];
+  const f = parseFight(base(
+    { species: ['hero', 'warrior'], rank: ['normal', 'elite'], monster_name: 'Grub' },
+    { atk: [1, -1], fx: [[0, 0, 5, 0, 0, 0, 0], [0, 0, 0, 0, 0, 3, 9]], seen: [true, false], ev },
+  ));
+  it('reads atk, fx, seen per fighter (index 0 hero, 1 monster)', () => {
+    expect(f.frames[0].hero.atk).toBe(1);
+    expect(f.frames[0].monster.atk).toBe(-1);
+    expect(f.frames[0].hero.fx).toEqual([0, 0, 5, 0, 0, 0, 0]);
+    expect(f.frames[0].monster.fx).toEqual([0, 0, 0, 0, 0, 3, 9]);
+    expect(f.frames[0].hero.seen).toBe(true);
+    expect(f.frames[0].monster.seen).toBe(false);
+  });
+  it('reads events unchanged', () => {
+    expect(f.frames[0].ev).toEqual(ev);
+  });
+  it('reads species, rank and monster name', () => {
+    expect(f.species).toEqual(['hero', 'warrior']);
+    expect(f.rank).toEqual(['normal', 'elite']);
+    expect(f.monsterName).toBe('Grub');
+  });
+});
