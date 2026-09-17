@@ -97,3 +97,37 @@ describe('dotEvents', () => {
     expect(dotEvents([])).toEqual([]);
   });
 });
+
+const hit = (by: number, fx: number[], punish = false) => ({ t: 'hit', by, atk: 0, dmg: 5, blocked: false, punish, fx });
+const frame = (ev: unknown[]) => ({ hero: {}, monster: {}, ev });
+describe('statusStats', () => {
+  const frames = [
+    frame([]),
+    frame([hit(0, [2], true), { t: 'parry', by: 1 }]),                  // hero applies stun, punishes; monster parries
+    frame([hit(1, [5, 6]), hit(0, [2])]),                               // monster applies bleed+poison; hero stun again
+    frame([{ t: 'parry', by: 0 }, hit(0, [], true)]),                   // after upTo for some queries
+  ];
+  it('counts statuses applied BY each side, punishes and parries', () => {
+    const s = statusStats(frames as never, 2);
+    expect(s.hero.statuses.stun).toBe(2);
+    expect(s.hero.punishes).toBe(1);
+    expect(s.hero.parries).toBe(0);
+    expect(s.monster.statuses.bleed).toBe(1);
+    expect(s.monster.statuses.poison).toBe(1);
+    expect(s.monster.statuses.stun).toBe(0);
+    expect(s.monster.parries).toBe(1);
+    expect(s.monster.punishes).toBe(0);
+  });
+  it('includes frame upTo and respects it', () => {
+    const all = statusStats(frames as never, 3);
+    expect(all.hero.parries).toBe(1);
+    expect(all.hero.punishes).toBe(2);
+    const none = statusStats(frames as never, 0);
+    expect(none.hero.punishes).toBe(0);
+    expect(Object.values(none.hero.statuses).every((v) => v === 0)).toBe(true);
+    expect(Object.keys(none.hero.statuses)).toEqual(KEYS);
+  });
+  it('tolerates frames without ev', () => {
+    expect(statusStats([{ hero: {}, monster: {} }] as never, 0).hero.punishes).toBe(0);
+  });
+});
