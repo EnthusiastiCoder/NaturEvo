@@ -130,3 +130,22 @@ fn confused_rotates_move_vector_60_degrees_flipping_per_window() {
     assert!(near(b.abs(), 60.0, 6.0), "window 2 heading {b}");
     assert!(a * b < 0.0, "sign flips: {a} {b}");
 }
+
+#[test]
+fn confused_inverts_turn_on_alternate_windows_bits_unaffected() {
+    let mut m = duel(20.0);
+    m.apply_status(H, Status::Confused, 90, 1.0, M);
+    let turn = Action { turn: 0.5, ..idle() };
+    let f0 = m.fighter(H).facing;
+    run(&mut m, 15, turn, idle());
+    let f1 = m.fighter(H).facing;
+    run(&mut m, 15, turn, idle());
+    let f2 = m.fighter(H).facing;
+    let (d1, d2) = (f1 - f0, f2 - f1);
+    assert!(near(d1.abs(), 1.5, 0.05) && near(d2.abs(), 1.5, 0.05), "{d1} {d2}");
+    assert!(d1 * d2 < 0.0);
+    let mut m = duel(1.0);
+    m.apply_status(H, Status::Confused, 90, 1.0, M);
+    run(&mut m, 5, atk(0), idle());
+    assert_eq!(m.hp(M), 92.0, "attack bit unaffected");
+}
