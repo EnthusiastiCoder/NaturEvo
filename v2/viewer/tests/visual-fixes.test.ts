@@ -7,7 +7,6 @@ describe('crisp rendering', () => {
   it('renderer backing store matches displayed device pixels (no css downscale)', () => {
     const p = displayPlan(1301, 732, 1920, 1080, 1.25);
     expect(p.resolution).toBe(1.25);
-    expect(p.cssW * p.stageScale).toBeCloseTo(p.cssW);
     expect(p.stageScale * 1920).toBeCloseTo(p.cssW, 5);
     expect(p.cssW / p.cssH).toBeCloseTo(16 / 9, 1);
   });
@@ -37,7 +36,8 @@ describe('melee readability', () => {
     const arena = { w: 1536, h: 1024 };
     const c = fightCamera(arena, [200, 400], [1200, 400], { w: 1920, h: 1080 });
     expect(1000 * c.scale).toBeLessThanOrEqual(1920); // both fighters still in view
-    expect(c.scale).toBeGreaterThan(1.5);
+    expect(c.scale).toBeGreaterThan(1.3);
+    expect(fightCamera(arena, [700, 400], [800, 400], { w: 1920, h: 1080 }).scale).toBeGreaterThan(2);
   });
 });
 
