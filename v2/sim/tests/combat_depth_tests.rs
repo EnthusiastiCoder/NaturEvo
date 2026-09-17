@@ -225,3 +225,13 @@ fn guard_break_stuns_20() {
     assert!((19..=20).contains(&s), "stun {s}");
     assert!(m.log().to_json().contains("guard_break"));
 }
+
+#[test]
+fn dodge_iframes_ignore_effects() {
+    let mut m = duel(1.0);
+    m.step_with(idle(), dge());
+    assert_eq!(st(&m, M), S::Dodging);
+    m.apply_status(M, Status::Stun, 20, 1.0, H);
+    m.apply_status(M, Status::Bleed, 90, 1.0, H);
+    assert_eq!(m.fx(M), [0u32; 7]);
+}
