@@ -214,3 +214,19 @@ fn bleed_kills_and_credits_source() {
     assert!(m.damage_dealt()[M.index()] >= 1.5 - 1e-3);
     assert!(m.log().to_json().contains("\"t\":\"dot\""));
 }
+
+#[test]
+fn bleed_refresh_is_max_and_expires() {
+    let mut m = duel(8.0);
+    m.apply_status(H, Status::Bleed, 30, 1.0, M);
+    m.apply_status(H, Status::Bleed, 60, 1.0, M);
+    assert_eq!(fx(&m, H, Status::Bleed), 60);
+    m.apply_status(H, Status::Bleed, 10, 1.0, M);
+    assert_eq!(fx(&m, H, Status::Bleed), 60);
+    let mut m = duel(8.0);
+    m.apply_status(H, Status::Bleed, 45, 1.0, M);
+    run(&mut m, 120, idle(), idle());
+    let lost = 100.0 - m.hp(H);
+    assert!((2.0..=3.0).contains(&lost), "lost {lost}");
+    assert_eq!(fx(&m, H, Status::Bleed), 0);
+}
