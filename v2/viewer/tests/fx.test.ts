@@ -41,3 +41,29 @@ describe('tintStatus priority', () => {
     expect(tintStatus(fxOf({ knock: 3, bleed: 9 }))).toBe('bleed');
   });
 });
+
+describe('knockbackOffset', () => {
+  it('KNOCK_TICKS is 6', () => expect(KNOCK_TICKS).toBe(6));
+  it('visual lag trails the sim jump: full at start, zero at end, against the push direction', () => {
+    const start = knockbackOffset(6, 6, 2, [1, 0]);
+    expect(start[0]).toBeCloseTo(-2, 6);
+    expect(start[1]).toBeCloseTo(0, 6);
+    const end = knockbackOffset(0, 6, 2, [1, 0]);
+    expect(end[0]).toBeCloseTo(0, 6);
+    expect(end[1]).toBeCloseTo(0, 6);
+  });
+  it('shrinks monotonically and follows the direction', () => {
+    let prev = Infinity;
+    for (let r = 6; r >= 0; r--) {
+      const m = Math.hypot(...knockbackOffset(r, 6, 3, [0, 1]));
+      expect(m).toBeLessThanOrEqual(prev + 1e-9);
+      prev = m;
+    }
+    const o = knockbackOffset(3, 6, 3, [0, 1]);
+    expect(o[0]).toBeCloseTo(0, 6);
+    expect(o[1]).toBeLessThan(0);
+  });
+  it('returns zero when total is 0', () => {
+    expect(knockbackOffset(0, 0, 2, [1, 0])).toEqual([0, 0]);
+  });
+});
