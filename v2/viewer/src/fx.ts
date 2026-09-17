@@ -31,3 +31,6 @@ export function knockbackOffset(remaining: number, total: number, dist: number, 
 }
 export const staggerShake = (t: number, remaining: number): number => (remaining <= 0 ? 0 : Math.sin(t * 90) * Math.cos(t * 37));
 export const stunStarCount = (remaining: number): number => (remaining <= 0 ? 0 : Math.max(1, Math.min(5, Math.ceil(remaining / 4))));
+
+export interface FightEvent { t: string; [k: string]: unknown }
+export const dotEvents = (ev: FightEvent[]): FightEvent[] => ev.filter((e) => e.t === 'dot');
