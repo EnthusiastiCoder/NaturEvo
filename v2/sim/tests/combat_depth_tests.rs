@@ -235,3 +235,13 @@ fn dodge_iframes_ignore_effects() {
     m.apply_status(M, Status::Bleed, 90, 1.0, H);
     assert_eq!(m.fx(M), [0u32; 7]);
 }
+
+#[test]
+fn dead_fighter_ignores_apply_status() {
+    let mut m = duel(1.0);
+    m.set_hp(M, 1.0);
+    run(&mut m, 5, atk(0), idle());
+    assert_eq!(st(&m, M), S::Dead);
+    m.apply_status(M, Status::Stun, 20, 1.0, H);
+    assert_eq!(m.fx(M), [0u32; 7]);
+}
