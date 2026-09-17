@@ -50,6 +50,57 @@ pub struct CombatTuning {
     pub guard_move_factor: f32,
     pub dodge_move_factor: f32,
 }
+
+impl Default for CombatTuning {
+    fn default() -> Self {
+        CombatTuning {
+            block_half_arc: BLOCK_HALF_ARC,
+            block_reduction: 0.8,
+            block_absorb_cost: 15.0,
+            block_hold_drain: 6.0,
+            guard_raise_ticks: 6,
+            guard_recover_ticks: 8,
+            guard_break_stun: 20,
+            parry_window: 5,
+            parry_stagger: 14,
+            blocked_stun_stagger: 8,
+            dodge_stamina_cost: 30.0,
+            dodge_ticks: 8,
+            dodge_cooldown: 45,
+            stamina_regen_per_sec: 12.0,
+            whiff_recovery_mult: 1.5,
+            punish_mult: 1.25,
+            stagger_immunity: 12,
+            stagger_turn_mult: 0.5,
+            stun_immunity: 45,
+            stun_dr_window: 300,
+            stun_dr_floor: 6,
+            knock_ticks: 6,
+            knock_immunity: 10,
+            knock_block_mult: 0.5,
+            wall_slam_damage: 3.0,
+            wall_slam_stagger: 10,
+            wall_slam_min_short: 0.3,
+            confused_window: 15,
+            confused_angle: 60.0 * std::f32::consts::PI / 180.0,
+            slowed_max_stacks: 2,
+            slowed_factor: 0.6,
+            slowed_floor: 0.36,
+            slowed_turn_mult: 0.7,
+            bleed_max_stacks: 3,
+            bleed_move_threshold: 0.5,
+            bleed_move_mult: 2.0,
+            dot_interval: 15,
+            dot_damage: 1.0,
+            poison_cap: 300,
+            poison_regen_mult: 0.5,
+            phase_move_factor: 0.3,
+            guard_move_factor: 0.5,
+            dodge_move_factor: 1.5,
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct ArenaConfig {
     pub tick_hz: u32,
