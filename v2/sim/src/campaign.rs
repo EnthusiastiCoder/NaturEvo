@@ -177,11 +177,11 @@ pub fn run(seed: u64, cfg: MapCfg, heroes: &Library, monsters: &Library, permade
         // Library index 0 is the latest champion; higher indices are older and weaker. Grass meets
         // the oldest champions, elites the middle ones, the boss always the latest.
         let n = monsters.len();
-        let roll = rng.next_u64() as usize;
-        let monster_index = match kind {
-            EncounterKind::Boss => 0,
-            EncounterKind::Elite => if n > 1 { 1 + roll % (n - 1) } else { 0 },
-            EncounterKind::Grass => { let lo = n / 2; lo + roll % (n - lo) }
+        let roll = rng.f32();
+        let (f_lo, f_hi) = match kind {
+            EncounterKind::Boss => (0.0, 0.0),
+            EncounterKind::Elite => (0.2, 0.65),
+            EncounterKind::Grass => (0.65, 1.0),
         };
         let tier = map.zone_tier(tile);
         let result = play(
