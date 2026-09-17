@@ -180,3 +180,16 @@ fn slowed_stacks_to_two_speed_and_turn() {
     m.step_with(Action { turn: 1.0, ..idle() }, idle());
     assert!(near(m.fighter(H).facing - f0, 0.14, 1e-3));
 }
+
+#[test]
+fn bleed_ticks_1_per_15_per_stack_up_to_3() {
+    let mut m = duel(8.0);
+    m.apply_status(H, Status::Bleed, 300, 1.0, M);
+    run(&mut m, 31, idle(), idle());
+    assert_eq!(m.hp(H), 98.0);
+    let mut m = duel(8.0);
+    for _ in 0..5 { m.apply_status(H, Status::Bleed, 300, 1.0, M); }
+    assert_eq!(m.stacks(H)[Status::Bleed.idx()], 3);
+    run(&mut m, 16, idle(), idle());
+    assert_eq!(m.hp(H), 97.0);
+}
