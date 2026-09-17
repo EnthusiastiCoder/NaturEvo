@@ -160,3 +160,16 @@ fn holding_block_drains_6_per_second_and_no_regen() {
     assert!(s20 >= m.stamina(M), "no regen while blocking");
     assert!((87.0..=90.0).contains(&m.stamina(M)), "after 60 ticks {}", m.stamina(M));
 }
+
+#[test]
+fn zero_stamina_drops_guard_into_guard_recover() {
+    let mut m = duel(5.0);
+    m.set_stamina(M, 1.0);
+    let mut seen = false;
+    for _ in 0..60 {
+        m.step_with(idle(), blk());
+        if st(&m, M) == S::GuardRecover { seen = true; break; }
+    }
+    assert!(seen);
+    assert_ne!(st(&m, M), S::Stunned);
+}
