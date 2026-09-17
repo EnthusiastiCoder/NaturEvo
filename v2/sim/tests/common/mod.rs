@@ -14,3 +14,6 @@ pub fn atk(kind: u8) -> Action { Action { attack: true, attack_kind: kind, ..Act
 pub fn blk() -> Action { Action { block: true, ..Action::idle() } }
 pub fn dge() -> Action { Action { dodge: true, ..Action::idle() } }
 pub fn fwd(v: f32) -> Action { Action { fwd: v, ..Action::idle() } }
+
+/// Hero vs Minion grass, `dist` apart in the open centre band, facing each other.
+pub fn duel(dist: f32) -> Match { duel_sp(Species::Minion, Rank::Grass, dist) }
