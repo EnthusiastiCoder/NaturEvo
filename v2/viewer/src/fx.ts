@@ -15,3 +15,10 @@ export const KEYS = STATUSES.map((s) => s.key);
 export const KNOCK_TICKS = 6;
 
 export const statusTimer = (key: string, remaining: number, hz: number): string => `${key} ${(remaining / hz).toFixed(1)}`;
+
+const TINT_ORDER = ['stun', 'stagger', 'confused', 'slowed', 'poison', 'bleed'];
+export function tintStatus(fx: number[]): string | null {
+  for (const k of TINT_ORDER) if ((fx[KEYS.indexOf(k)] ?? 0) > 0) return k;
+  return null;
+}
+export const statusColor = (key: string): number => STATUSES.find((s) => s.key === key)?.color ?? 0xffffff;
