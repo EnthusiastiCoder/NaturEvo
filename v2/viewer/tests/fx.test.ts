@@ -16,3 +16,11 @@ describe('status table', () => {
     for (const s of STATUSES) expect(s.info.length).toBeGreaterThan(5);
   });
 });
+
+describe('statusTimer', () => {
+  it('formats seconds with one decimal', () => {
+    expect(statusTimer('stun', 24, 30)).toBe('stun 0.8');
+    expect(statusTimer('bleed', 60, 30)).toBe('bleed 2.0');
+    expect(statusTimer('poison', 15, 30)).toBe('poison 0.5');
+  });
+});
