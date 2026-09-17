@@ -196,6 +196,7 @@ pub fn run(seed: u64, cfg: MapCfg, heroes: &Library, monsters: &Library, permade
             monsters.pick(monster_index).clone(),
             match_seed,
             &acfg,
+            [acfg.max_hp, monster_hp],
         );
         let lost = result.outcome != MOutcome::HeroWin;
         encounters.push(Encounter {
