@@ -13,3 +13,5 @@ export const STATUSES: StatusDef[] = [
 ];
 export const KEYS = STATUSES.map((s) => s.key);
 export const KNOCK_TICKS = 6;
+
+export const statusTimer = (key: string, remaining: number, hz: number): string => `${key} ${(remaining / hz).toFixed(1)}`;
