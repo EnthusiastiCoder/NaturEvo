@@ -83,3 +83,17 @@ fn open_edge_x(m: &Match) -> f32 {
     while !m.arena().circle_blocked(x + 0.1, 16.5, 0.4) { x += 0.1; }
     x
 }
+
+#[test]
+fn wall_slam_deals_3_and_staggers_once() {
+    let mut m = duel(1.0);
+    let ex = open_edge_x(&m);
+    m.set_pos(M, ex, 16.5);
+    m.set_pos(H, ex - 1.0, 16.5);
+    m.set_facing(H, 0.0);
+    m.set_facing(M, std::f32::consts::PI);
+    run(&mut m, 13, atk(1), idle());
+    run(&mut m, 30, idle(), idle());
+    assert_eq!(m.hp(M), 100.0 - 18.0 - 3.0);
+    assert_eq!(count(&m.log().to_json(), "\"t\":\"slam\""), 1);
+}
