@@ -135,3 +135,30 @@ fn elite_extra(species: Species) -> Option<Effect> {
         Species::Mage => Some(knock(1.0)),
     }
 }
+
+/// The moveset for a species at a rank. Hero ignores rank.
+pub fn moves(species: Species, rank: Rank) -> Vec<Move> {
+    let mut v = base(species);
+    if species == Species::Hero {
+        return v;
+    }
+    match rank {
+        Rank::Grass => {}
+        Rank::Elite => {
+            let extra = elite_extra(species);
+            for m in v.iter_mut() {
+                m.damage *= ELITE_DAMAGE_MULT;
+                if let Some(e) = &extra {
+                    m.effects.push(e.clone());
+                }
+            }
+        }
+        Rank::Boss => {
+            v.push(mv("Slam", 16, 4, 16, 20.0, 1.6, 60.0, 20.0, 0.0, vec![fx(Status::Stun, 30), knock(2.0)]));
+            for m in v.iter_mut() {
+                m.damage *= BOSS_DAMAGE_MULT;
+            }
+        }
+    }
+    v
+}
