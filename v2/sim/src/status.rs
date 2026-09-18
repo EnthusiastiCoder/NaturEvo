@@ -68,3 +68,14 @@ impl StatusState {
         let d = (base as f32 * 0.5f32.powi(n)).round() as u32;
         d.max(t.stun_dr_floor.min(base))
     }
+
+    /// Speed multiplier from slowed stacks.
+    pub fn speed_mult(&self, t: &CombatTuning) -> f32 {
+        let n = self.stacks[Status::Slowed.idx()] as i32;
+        if self.active(Status::Slowed) && n > 0 {
+            t.slowed_factor.powi(n).max(t.slowed_floor)
+        } else {
+            1.0
+        }
+    }
+}
