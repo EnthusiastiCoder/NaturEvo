@@ -19,3 +19,16 @@ impl Status {
     pub fn idx(self) -> usize {
         self as usize
     }
+
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Status::Knock => "knock",
+            Status::Stagger => "stagger",
+            Status::Stun => "stun",
+            Status::Confused => "confused",
+            Status::Slowed => "slowed",
+            Status::Bleed => "bleed",
+            Status::Poison => "poison",
+        }
+    }
+}
