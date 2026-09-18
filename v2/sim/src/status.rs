@@ -15,3 +15,7 @@ pub enum Status {
 impl Status {
     pub const ALL: [Status; 7] =
         [Status::Knock, Status::Stagger, Status::Stun, Status::Confused, Status::Slowed, Status::Bleed, Status::Poison];
+
+    pub fn idx(self) -> usize {
+        self as usize
+    }
