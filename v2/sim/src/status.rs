@@ -57,3 +57,7 @@ impl StatusState {
         self.stun_imm = self.stun_imm.saturating_sub(1);
         self.knock_imm = self.knock_imm.saturating_sub(1);
     }
+
+    pub fn active(&self, s: Status) -> bool {
+        self.remaining[s.idx()] > 0
+    }
