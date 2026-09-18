@@ -32,3 +32,21 @@ impl Status {
         }
     }
 }
+
+/// Per fighter status bookkeeping. `remaining` is in ticks, indexed by `Status::idx`.
+#[derive(Clone, Debug, Default)]
+pub struct StatusState {
+    pub remaining: [u32; 7],
+    pub stacks: [u8; 7],
+    /// Source role index (0 hero, 1 monster) credited for damage over time.
+    pub source: [usize; 7],
+    pub stagger_imm: u32,
+    pub stun_imm: u32,
+    pub knock_imm: u32,
+    /// Ticks at which stuns were received (for diminishing returns).
+    pub stun_hist: Vec<u32>,
+    pub bleed_timer: u32,
+    pub poison_timer: u32,
+    /// Knockback displacement per tick.
+    pub knock_step: (f32, f32),
+}
