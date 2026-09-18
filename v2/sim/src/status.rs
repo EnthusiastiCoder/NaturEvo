@@ -61,3 +61,10 @@ impl StatusState {
     pub fn active(&self, s: Status) -> bool {
         self.remaining[s.idx()] > 0
     }
+
+    /// Stun duration after diminishing returns: base * 0.5^n, n = stuns in the previous window.
+    pub fn stun_duration(&self, base: u32, now: u32, t: &CombatTuning) -> u32 {
+        let n = self.stun_hist.iter().filter(|&&at| now.saturating_sub(at) < t.stun_dr_window).count() as i32;
+        let d = (base as f32 * 0.5f32.powi(n)).round() as u32;
+        d.max(t.stun_dr_floor.min(base))
+    }
