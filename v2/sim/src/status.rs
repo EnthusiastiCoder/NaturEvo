@@ -11,3 +11,7 @@ pub enum Status {
     Bleed,
     Poison,
 }
+
+impl Status {
+    pub const ALL: [Status; 7] =
+        [Status::Knock, Status::Stagger, Status::Stun, Status::Confused, Status::Slowed, Status::Bleed, Status::Poison];
