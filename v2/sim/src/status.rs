@@ -50,3 +50,10 @@ pub struct StatusState {
     /// Knockback displacement per tick.
     pub knock_step: (f32, f32),
 }
+
+impl StatusState {
+    pub fn tick_immunities(&mut self) {
+        self.stagger_imm = self.stagger_imm.saturating_sub(1);
+        self.stun_imm = self.stun_imm.saturating_sub(1);
+        self.knock_imm = self.knock_imm.saturating_sub(1);
+    }
