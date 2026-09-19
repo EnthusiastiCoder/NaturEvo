@@ -253,8 +253,8 @@ fn prime(g: &mut Genome, level: u32) {
         w[b2 + i] = 0.0;
     }
     w[b1] = 3.0;
-    w[1 * N_IN + 12] = 4.0;
-    w[2 * N_IN + 38] = 4.0;
+    w[1 * N_IN + crate::sense::idx::ENEMY_SIN] = 4.0;
+    w[2 * N_IN + crate::sense::idx::IN_RANGE] = 4.0;
     w[w2] = 1.5;
     w[w2 + 2 * N_HID + 1] = 1.2;
     if level >= 2 {
