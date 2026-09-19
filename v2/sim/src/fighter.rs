@@ -55,6 +55,11 @@ pub enum CombatState {
     Blocking,
     Dodging,
     Dead,
+    GuardRaise,
+    GuardRecover,
+    Staggered,
+    Stunned,
+    Knocked,
 }
 
 impl CombatState {
