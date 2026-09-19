@@ -7,3 +7,5 @@ use arena_sim::fighter::{Action, Role};
 use arena_sim::matchup::{Match, MatchResult};
 use arena_sim::status::Status;
 use common::*;
+
+fn cfg() -> ArenaConfig { ArenaConfig::default() }
