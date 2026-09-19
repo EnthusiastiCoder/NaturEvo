@@ -5,6 +5,7 @@ use arena_sim::genome::Genome;
 use arena_sim::net::{Net, N_HID, N_OUT, N_PARAMS};
 use arena_sim::rng::Rng;
 use arena_sim::sense::N_IN;
+use common::bias_genome;
 
 #[test]
 fn n_out_is_7() {
