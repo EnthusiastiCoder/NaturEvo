@@ -431,7 +431,7 @@ impl Match {
             let mv = &self.moveset[i][f.move_idx.min(self.moveset[i].len() - 1)];
             match f.state {
                 CombatState::Windup => {
-                    f.timer -= 1;
+                    f.timer = f.timer.saturating_sub(1);
                     if f.timer == 0 {
                         f.state = CombatState::Active;
                         f.timer = ACTIVE_TICKS;
