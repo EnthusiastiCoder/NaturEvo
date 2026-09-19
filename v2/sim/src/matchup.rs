@@ -555,14 +555,44 @@ impl Match {
             CombatState::Idle => {
                 if can_dodge {
                     f.state = CombatState::Dodging;
-                    f.timer = DODGE_TICKS;
-                    f.stamina -= DODGE_STAMINA_COST;
-                    f.dodge_cooldown = DODGE_COOLDOWN;
-                } else if a.attack {
-                    f.state = CombatState::Windup;
-                    f.timer = WINDUP_TICKS;
-                } else if a.block {
-                    f.state = CombatState::Blocking;
+                    f.timer = t.dodge_ticks;
+                    f.stamina -= t.dodge_stamina_cost;
+                    f.dodge_cooldown = t.dodge_cooldown;
+                    return;
+                }
+                if a.attack {
+                    let set = &self.moveset[i];
+                    let idx = a.attack_kind as usize % set.len();
+                    let mv = &set[idx];
+                    if f.stamina >= mv.stamina_cost {
+                        f.state = CombatState::Windup;
+                        f.timer = mv.windup;
+                        f.move_idx = idx;
+                        f.swing_hit = false;
+                        f.stamina -= mv.stamina_cost;
+                        return;
+                    }
+                }
+                if a.block {
+                    f.state = CombatState::GuardRaise;
+                    f.timer = t.guard_raise_ticks;
+                }
+            }
+            CombatState::GuardRaise => {
+                if !a.block {
+                    f.state = CombatState::GuardRecover;
+                    f.timer = t.guard_recover_ticks;
+                }
+            }
+            CombatState::Blocking => {
+                if !a.block {
+                    f.state = CombatState::GuardRecover;
+                    f.timer = t.guard_recover_ticks;
+                } else if can_dodge {
+                    f.state = CombatState::Dodging;
+                    f.timer = t.dodge_ticks;
+                    f.stamina -= t.dodge_stamina_cost;
+                    f.dodge_cooldown = t.dodge_cooldown;
                 } else {
                     f.state = CombatState::Idle;
                 }
