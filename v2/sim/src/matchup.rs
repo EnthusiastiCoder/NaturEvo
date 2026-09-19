@@ -149,6 +149,13 @@ impl Match {
     pub fn log(&self) -> &FightLog {
         &self.log
     }
+    /// Remaining ticks per status, indexed by `Status::idx`.
+    pub fn fx(&self, r: Role) -> [u32; 7] {
+        self.fighters[r.index()].status.remaining
+    }
+    pub fn stacks(&self, r: Role) -> [u8; 7] {
+        self.fighters[r.index()].status.stacks
+    }
 
     // ---- test hooks ----
 
