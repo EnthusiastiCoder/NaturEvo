@@ -17,3 +17,5 @@ fn play_out(mut m: Match, a: Action, b: Action) -> MatchResult {
 }
 
 fn score(role: Role, r: &MatchResult) -> f32 { score_result(role, r, &cfg()) }
+
+fn fwd_atk(kind: u8) -> Action { Action { fwd: 1.0, ..atk(kind) } }
