@@ -449,8 +449,8 @@ impl Match {
                         };
                     }
                 }
-                CombatState::Recovery => {
-                    f.timer -= 1;
+                CombatState::Recovery | CombatState::Dodging | CombatState::GuardRecover => {
+                    f.timer = f.timer.saturating_sub(1);
                     if f.timer == 0 {
                         f.state = CombatState::Idle;
                     }
