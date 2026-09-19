@@ -97,6 +97,8 @@ impl Match {
             Fighter::new(s[0].0, s[0].1, 0.0, setup.hp[0], cfg.max_stamina),
             Fighter::new(s[1].0, s[1].1, PI, setup.hp[1], cfg.max_stamina),
         ];
+        let mut log = FightLog::with_capacity(cfg.tick_hz, cfg.max_ticks as usize);
+        log.meta = Some((setup.species, setup.rank));
         Match {
             cfg: cfg.clone(),
             arena,
