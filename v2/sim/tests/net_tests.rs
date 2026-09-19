@@ -8,8 +8,11 @@ use arena_sim::sense::N_IN;
 use common::bias_genome;
 
 #[test]
-fn n_out_is_7() {
-    assert_eq!(N_OUT, 7);
+fn sizes_and_param_formula() {
+    assert_eq!(N_OUT, 9);
+    assert_eq!(N_HID, 24);
+    assert_eq!(N_PARAMS, N_HID * N_IN + N_HID * N_HID + N_HID + N_OUT * N_HID + N_OUT);
+    assert_eq!(N_PARAMS, 2745);
 }
 
 #[test]
