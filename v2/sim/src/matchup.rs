@@ -641,12 +641,15 @@ impl Match {
                 at.timer = 0;
                 continue;
             }
-            dmg[j] += d;
-        }
-        for j in 0..2 {
-            let f = &mut self.fighters[j];
-            if stam_cost[j] > 0.0 {
-                f.stamina = (f.stamina - stam_cost[j]).max(0.0);
+            let punish = matches!(
+                v.state,
+                CombatState::Recovery | CombatState::Staggered | CombatState::Stunned | CombatState::GuardRecover
+            );
+            let mut d = mv.damage;
+            if guarded {
+                d *= 1.0 - t.block_reduction;
+            } else if punish {
+                d *= t.punish_mult;
             }
             if dmg[j] > 0.0 {
                 let loss = dmg[j].min(f.hp);
