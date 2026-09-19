@@ -36,6 +36,7 @@ fn crossover_from_parents_only() {
     assert_eq!(c.weights, d.weights);
     assert_eq!(c.role, a.role);
     assert!(c.generation >= 1);
+    assert_eq!(c.weights.len(), N_PARAMS);
     for i in 0..c.weights.len() {
         assert!(c.weights[i] == a.weights[i] || c.weights[i] == b.weights[i]);
     }
