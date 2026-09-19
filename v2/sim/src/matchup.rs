@@ -2,6 +2,7 @@
 //! Every gameplay constant lives in `config::CombatTuning` or the move tables in `attacks.rs`.
 use crate::attacks::{moves, Move, Rank, Species};
 use crate::config::ArenaConfig;
+pub use crate::config::BLOCK_HALF_ARC;
 use crate::fighter::{Action, CombatState, Fighter, Role};
 use crate::genome::Genome;
 use crate::log::{FightLog, Frame};
