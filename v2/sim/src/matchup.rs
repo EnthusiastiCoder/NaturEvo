@@ -1,4 +1,6 @@
-//! A single real-time 1v1 duel: physics, combat state machine, logging.
+//! A single real-time 1v1 duel: physics, combat state machine, status effects, logging.
+//! Every gameplay constant lives in `config::CombatTuning` or the move tables in `attacks.rs`.
+use crate::attacks::{moves, Move, Rank, Species};
 use crate::config::ArenaConfig;
 use crate::fighter::{Action, CombatState, Fighter, Role};
 use crate::genome::Genome;
