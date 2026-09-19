@@ -63,6 +63,7 @@ fn forward_is_deterministic_and_bounded() {
         for v in [a.fwd, a.strafe, a.turn] {
             assert!((-1.0..=1.0).contains(&v));
         }
+        assert!(a.attack_kind <= 2);
     }
 }
 
