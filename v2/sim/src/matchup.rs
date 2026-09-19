@@ -428,6 +428,7 @@ impl Match {
             if f.state == CombatState::Blocking {
                 f.block_age += 1;
             }
+            let mv = &self.moveset[i][f.move_idx.min(self.moveset[i].len() - 1)];
             match f.state {
                 CombatState::Windup => {
                     f.timer -= 1;
