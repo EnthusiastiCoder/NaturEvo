@@ -354,6 +354,74 @@ impl Match {
         }
         let mut hit = [false; 2];
         for i in 0..2 {
+            hit[i] = self.advance_timers(i, &acts[i]);
+        }
+        for i in 0..2 {
+            self.decide(i, &acts[i]);
+        }
+        for i in 0..2 {
+            self.move_fighter(i, acts[i]);
+        }
+        self.resolve_hits(hit);
+        // stamina regen while idle
+        let hz = self.cfg.tick_hz as f32;
+        let t = self.cfg.combat;
+        for f in self.fighters.iter_mut() {
+            if f.state == CombatState::Idle {
+                let mut regen = t.stamina_regen_per_sec / hz;
+                if f.status.active(Status::Poison) {
+                    regen *= t.poison_regen_mult;
+                }
+                f.stamina = (f.stamina + regen).min(self.cfg.max_stamina);
+            }
+        }
+        // bookkeeping
+        self.tick += 1;
+        let swinging = |f: &Fighter| {
+            if matches!(f.state, CombatState::Windup | CombatState::Active | CombatState::Recovery) {
+                f.move_idx as i8
+            } else {
+                -1
+            }
+        };
+        let seen = seen.unwrap_or_else(|| [sees(self, Role::Hero), sees(self, Role::Monster)]);
+        let (f0, f1) = (&self.fighters[0], &self.fighters[1]);
+        let frame = Frame {
+            pos: [(f0.x, f0.y), (f1.x, f1.y)],
+            facing: [f0.facing, f1.facing],
+            hp: [f0.hp, f1.hp],
+            stamina: [f0.stamina, f1.stamina],
+            action: [f0.last_action, f1.last_action],
+            state: [f0.state, f1.state],
+            atk: [swinging(f0), swinging(f1)],
+            fx: [f0.status.remaining, f1.status.remaining],
+            seen,
+            ev: std::mem::take(&mut self.events),
+        };
+        self.log.frames.push(frame);
+        let hero_dead = self.fighters[0].state == CombatState::Dead;
+        let mon_dead = self.fighters[1].state == CombatState::Dead;
+        if hero_dead || mon_dead {
+            self.finished = true;
+            self.outcome = match (hero_dead, mon_dead) {
+                (false, true) => Outcome::HeroWin,
+                (true, false) => Outcome::MonsterWin,
+                _ => Outcome::Draw,
+            };
+        } else if self.tick >= self.cfg.max_ticks {
+            self.finished = true;
+            self.outcome = Outcome::Draw;
+        }
+    }
+
+    /// Phase 1: cooldowns, state timers and status timers. Returns whether a swing became active.
+    fn advance_timers(&mut self, i: usize, act: &Action) -> bool {
+        if self.fighters[i].state == CombatState::Dead {
+            return false;
+        }
+        let mut hit = false;
+        {
+            let t = &self.cfg.combat;
             let f = &mut self.fighters[i];
             if f.dodge_cooldown > 0 {
                 f.dodge_cooldown -= 1;
