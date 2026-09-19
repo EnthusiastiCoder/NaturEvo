@@ -88,3 +88,38 @@ fn reset_restores_initial_behaviour() {
     let again = n.forward(&x);
     assert_eq!((first.fwd, first.turn), (again.fwd, again.turn));
 }
+
+fn kind(bias: &[(usize, f32)]) -> u8 {
+    let mut n = Net::from_genome(&bias_genome(Role::Hero, bias));
+    n.forward(&[0.0f32; N_IN]).attack_kind
+}
+
+#[test]
+fn attack_kind_is_argmax_of_outputs_6_to_8() {
+    assert_eq!(kind(&[(6, 0.8)]), 0);
+    assert_eq!(kind(&[(7, 0.8)]), 1);
+    assert_eq!(kind(&[(8, 0.8)]), 2);
+    assert_eq!(kind(&[(6, -0.5), (7, -0.9), (8, -0.2)]), 2);
+    assert_eq!(kind(&[(6, 0.3), (7, 0.9), (8, 0.5)]), 1);
+}
+
+#[test]
+fn attack_kind_ties_pick_lowest() {
+    assert_eq!(kind(&[]), 0, "all equal -> light");
+    assert_eq!(kind(&[(6, 0.5), (7, 0.5)]), 0);
+    assert_eq!(kind(&[(7, 0.5), (8, 0.5)]), 1);
+    assert_eq!(kind(&[(6, 0.5), (7, 0.1), (8, 0.5)]), 0);
+}
+
+#[test]
+fn same_genome_same_actions_over_a_sequence() {
+    let g = Genome::random(Role::Monster, &mut Rng::new(8));
+    let (mut a, mut b) = (Net::from_genome(&g), Net::from_genome(&g));
+    let mut r = Rng::new(2);
+    for _ in 0..50 {
+        let mut x = [0.0f32; N_IN];
+        for v in x.iter_mut() { *v = r.range(-1.0, 1.0); }
+        let (p, q) = (a.forward(&x), b.forward(&x));
+        assert_eq!((p.fwd, p.attack, p.block, p.attack_kind), (q.fwd, q.attack, q.block, q.attack_kind));
+    }
+}
