@@ -610,12 +610,6 @@ impl Match {
         let sn = |f: &Fighter| Snap { state: f.state, x: f.x, y: f.y, facing: f.facing, stamina: f.stamina, block_age: f.block_age };
         let snap = [sn(&self.fighters[0]), sn(&self.fighters[1])];
         for i in 0..2 {
-            self.move_fighter(i, acts[i]);
-        }
-        // 4. hits (resolved against pre-hit states, so trades are simultaneous)
-        let mut dmg = [0.0f32; 2];
-        let mut stam_cost = [0.0f32; 2];
-        for i in 0..2 {
             if !hit[i] {
                 continue;
             }
