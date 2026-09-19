@@ -423,8 +423,10 @@ impl Match {
         {
             let t = &self.cfg.combat;
             let f = &mut self.fighters[i];
-            if f.dodge_cooldown > 0 {
-                f.dodge_cooldown -= 1;
+            f.dodge_cooldown = f.dodge_cooldown.saturating_sub(1);
+            f.status.tick_immunities();
+            if f.state == CombatState::Blocking {
+                f.block_age += 1;
             }
             match f.state {
                 CombatState::Windup => {
