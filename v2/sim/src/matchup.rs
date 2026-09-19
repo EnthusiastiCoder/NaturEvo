@@ -439,7 +439,7 @@ impl Match {
                     }
                 }
                 CombatState::Active => {
-                    f.timer -= 1;
+                    f.timer = f.timer.saturating_sub(1);
                     if f.timer == 0 {
                         f.state = CombatState::Recovery;
                         f.timer = RECOVERY_TICKS;
