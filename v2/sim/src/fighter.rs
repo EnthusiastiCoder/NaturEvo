@@ -36,6 +36,8 @@ pub struct Action {
     pub attack: bool,
     pub block: bool,
     pub dodge: bool,
+    /// Which move of the fighter's moveset to use when attacking (wraps by moveset length).
+    pub attack_kind: u8,
 }
 
 impl Action {
