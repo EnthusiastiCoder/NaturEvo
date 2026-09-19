@@ -688,6 +688,7 @@ impl Match {
         if state == CombatState::Dead {
             return;
         }
+        let t = self.cfg.combat;
         let hz = self.cfg.tick_hz as f32;
         let f = &mut self.fighters[i];
         f.facing = wrap_angle(f.facing + a.turn * self.cfg.max_turn / hz);
