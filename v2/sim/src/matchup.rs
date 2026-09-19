@@ -690,8 +690,25 @@ impl Match {
         }
         let t = self.cfg.combat;
         let hz = self.cfg.tick_hz as f32;
-        let f = &mut self.fighters[i];
-        f.facing = wrap_angle(f.facing + a.turn * self.cfg.max_turn / hz);
+        let window = self.tick / t.confused_window.max(1);
+        let confused = self.fighters[i].status.active(Status::Confused);
+        let odd = window % 2 == 1;
+        let mut turn_mult = match state {
+            CombatState::Staggered => t.stagger_turn_mult,
+            CombatState::Stunned | CombatState::Knocked => 0.0,
+            _ => 1.0,
+        };
+        let slowed = self.fighters[i].status.active(Status::Slowed);
+        if slowed {
+            turn_mult *= t.slowed_turn_mult;
+        }
+        if confused && odd {
+            turn_mult = -turn_mult;
+        }
+        {
+            let f = &mut self.fighters[i];
+            f.facing = wrap_angle(f.facing + a.turn * turn_mult * self.cfg.max_turn / hz);
+        }
         let factor = match state {
             CombatState::Windup | CombatState::Active | CombatState::Recovery => 0.3,
             CombatState::Blocking => 0.5,
