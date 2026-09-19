@@ -9,3 +9,9 @@ use arena_sim::status::Status;
 use common::*;
 
 fn cfg() -> ArenaConfig { ArenaConfig::default() }
+
+/// Step with fixed scripted actions until finished (max ticks).
+fn play_out(mut m: Match, a: Action, b: Action) -> MatchResult {
+    while !m.finished() { m.step_with(a, b); }
+    m.result()
+}
