@@ -50,6 +50,13 @@ pub struct Frame {
     pub stamina: [f32; 2],
     pub action: [Action; 2],
     pub state: [CombatState; 2],
+    /// Move index being swung (Windup/Active/Recovery), else -1.
+    pub atk: [i8; 2],
+    /// Remaining ticks per status, indexed by `Status::idx`.
+    pub fx: [[u32; 7]; 2],
+    /// Whether each fighter currently sees the other.
+    pub seen: [bool; 2],
+    pub ev: Vec<Event>,
 }
 
 #[derive(Clone, Debug)]
