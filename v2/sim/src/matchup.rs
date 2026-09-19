@@ -594,7 +594,11 @@ impl Match {
                     f.stamina -= t.dodge_stamina_cost;
                     f.dodge_cooldown = t.dodge_cooldown;
                 } else {
-                    f.state = CombatState::Idle;
+                    f.stamina = (f.stamina - t.block_hold_drain / hz).max(0.0);
+                    if f.stamina <= 0.0 {
+                        f.state = CombatState::GuardRecover;
+                        f.timer = t.guard_recover_ticks;
+                    }
                 }
             }
             f.last_action = a;
