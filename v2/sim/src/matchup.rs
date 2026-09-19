@@ -124,6 +124,13 @@ impl Match {
     pub fn fighter(&self, r: Role) -> &Fighter {
         &self.fighters[r.index()]
     }
+    /// Moveset of a fighter (read by the sensors).
+    pub fn moveset(&self, r: Role) -> &[Move] {
+        &self.moveset[r.index()]
+    }
+    pub fn species(&self, r: Role) -> Species {
+        self.log.meta.map(|m| m.0[r.index()]).unwrap_or(if r == Role::Hero { Species::Hero } else { Species::Minion })
+    }
     pub fn tick(&self) -> u32 {
         self.tick
     }
@@ -334,7 +341,7 @@ impl Match {
         let ah = self.nets[0].forward(&oh);
         let am = self.nets[1].forward(&om);
         // Observation slot 37 is set exactly when the other fighter is seen.
-        self.step_inner(ah, am, Some([oh[37] > 0.0, om[37] > 0.0]));
+        self.step_inner(ah, am, Some([oh[crate::sense::idx::SEEN] > 0.0, om[crate::sense::idx::SEEN] > 0.0]));
     }
 
     /// Advance one tick with scripted actions (bypasses the nets).
