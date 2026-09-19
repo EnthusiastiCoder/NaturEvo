@@ -69,7 +69,7 @@ pub struct FightLog {
 
 impl FightLog {
     pub fn new(tick_hz: u32) -> FightLog {
-        FightLog { tick_hz, frames: Vec::new() }
+        FightLog { tick_hz, frames: Vec::new(), meta: None }
     }
 
     pub fn with_capacity(tick_hz: u32, n: usize) -> FightLog {
