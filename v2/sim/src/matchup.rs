@@ -710,9 +710,10 @@ impl Match {
             f.facing = wrap_angle(f.facing + a.turn * turn_mult * self.cfg.max_turn / hz);
         }
         let factor = match state {
-            CombatState::Windup | CombatState::Active | CombatState::Recovery => 0.3,
-            CombatState::Blocking => 0.5,
-            CombatState::Dodging => 1.5,
+            CombatState::Windup | CombatState::Active | CombatState::Recovery => t.phase_move_factor,
+            CombatState::Blocking | CombatState::GuardRaise | CombatState::GuardRecover => t.guard_move_factor,
+            CombatState::Dodging => t.dodge_move_factor,
+            CombatState::Staggered | CombatState::Stunned | CombatState::Knocked => 0.0,
             _ => 1.0,
         };
         let len = (a.fwd * a.fwd + a.strafe * a.strafe).sqrt();
