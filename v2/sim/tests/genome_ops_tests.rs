@@ -11,6 +11,8 @@ fn g(seed: u64) -> Genome {
 #[test]
 fn size_matches_layout() {
     assert_eq!(g(1).weights.len(), N_WEIGHTS);
+    assert_eq!(N_WEIGHTS, N_PARAMS);
+    assert_eq!(N_WEIGHTS, N_HID * N_IN + N_HID * N_HID + N_HID + N_OUT * N_HID + N_OUT);
 }
 
 #[test]
