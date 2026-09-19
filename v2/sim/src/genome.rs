@@ -80,6 +80,9 @@ impl Genome {
         if weights.iter().any(|w| !w.is_finite()) {
             return Err("non-finite weight".into());
         }
+        if weights.len() != N_WEIGHTS {
+            return Err(format!("weights length {} does not match expected {}", weights.len(), N_WEIGHTS));
+        }
         Ok(Genome { role, weights, generation, fitness })
     }
 }
