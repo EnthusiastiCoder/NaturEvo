@@ -4,7 +4,7 @@
 //! 16-22 enemy state one-hot, 23 enemy timer, 24/25 enemy facing relative sin/cos,
 //! 26/27 own position, 28-39 wall rays across the field of view.
 use crate::fighter::{CombatState, Role};
-use crate::matchup::{Match, DODGE_COOLDOWN};
+use crate::matchup::Match;
 
 pub const N_IN: usize = 40;
 const MAX_RAYS: usize = 9; // slots 28-36; n_rays (default 9) fills them, rest stay 0
@@ -50,11 +50,27 @@ fn state_idx(s: CombatState) -> usize {
         CombatState::Blocking => 4,
         CombatState::Dodging => 5,
         CombatState::Dead => 6,
+        // Temporary mapping until the sensor layout is rewritten for the new states.
+        CombatState::GuardRaise | CombatState::GuardRecover => 4,
+        CombatState::Staggered | CombatState::Stunned | CombatState::Knocked => 3,
     }
 }
 
 fn unit(v: f32) -> f32 {
     if v.is_finite() { v.clamp(-1.0, 1.0) } else { 0.0 }
+}
+
+/// Whether `role` currently sees the other fighter (range, field of view and line of sight).
+pub fn sees(m: &Match, role: Role) -> bool {
+    let cfg = m.cfg();
+    let me = m.fighter(role);
+    let en = m.fighter(role.other());
+    let (dx, dy) = (en.x - me.x, en.y - me.y);
+    let dist = (dx * dx + dy * dy).sqrt();
+    let (sf, cf) = me.facing.sin_cos();
+    let bcos = if dist > 1e-6 { (cf * dx + sf * dy) / dist } else { 1.0 };
+    let (_, chf, _, _) = fov_consts(cfg.vision_fov, cfg.n_rays.min(MAX_RAYS).max(1));
+    dist <= cfg.vision_range && bcos >= chf && !occluded(m.arena(), me.x, me.y, en.x, en.y, dist)
 }
 
 pub fn observe(m: &Match, role: Role) -> [f32; N_IN] {
@@ -64,7 +80,7 @@ pub fn observe(m: &Match, role: Role) -> [f32; N_IN] {
     let mut o = [0.0f32; N_IN];
     o[0] = me.hp / cfg.max_hp;
     o[1] = me.stamina / cfg.max_stamina;
-    o[2] = me.dodge_cooldown as f32 / DODGE_COOLDOWN as f32;
+    o[2] = me.dodge_cooldown as f32 / cfg.combat.dodge_cooldown as f32;
     o[3] = me.timer as f32 / 10.0;
     o[4 + state_idx(me.state)] = 1.0;
     let (dx, dy) = (en.x - me.x, en.y - me.y);
@@ -74,9 +90,7 @@ pub fn observe(m: &Match, role: Role) -> [f32; N_IN] {
     let (bsin, bcos) = if dist > 1e-6 { ((cf * dy - sf * dx) / dist, (cf * dx + sf * dy) / dist) } else { (0.0, 1.0) };
     let (shf, chf, sd, cd) = fov_consts(cfg.vision_fov, cfg.n_rays.min(MAX_RAYS).max(1));
     let arena = m.arena();
-    let seen = dist <= cfg.vision_range
-        && bcos >= chf
-        && !occluded(arena, me.x, me.y, en.x, en.y, dist);
+    let seen = dist <= cfg.vision_range && bcos >= chf && !occluded(arena, me.x, me.y, en.x, en.y, dist);
     if seen {
         o[11] = dist / cfg.vision_range;
         o[12] = bsin;
@@ -89,7 +103,7 @@ pub fn observe(m: &Match, role: Role) -> [f32; N_IN] {
         o[24] = se * cf - ce * sf; // sin(en.facing - me.facing)
         o[25] = ce * cf + se * sf;
         o[37] = 1.0;
-        o[38] = if dist <= crate::matchup::ATTACK_RANGE { 1.0 } else { 0.0 };
+        o[38] = if dist <= 1.2 { 1.0 } else { 0.0 };
     }
     o[39] = 1.0; // bias
     o[26] = me.x / cfg.arena_w * 2.0 - 1.0;
