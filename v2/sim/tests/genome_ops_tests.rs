@@ -59,3 +59,27 @@ fn json_roundtrip_new_size() {
     let a = g(6);
     assert_eq!(Genome::from_json(&a.to_json()).unwrap().weights, a.weights);
 }
+
+#[test]
+fn old_length_genome_is_rejected() {
+    // the pre-combat-depth layout: N_IN 40, N_HID 16, N_OUT 7
+    let old = 40 * 16 + 16 * 16 + 16 + 7 * 16 + 7;
+    assert_eq!(old, 1031);
+    let mut a = g(7);
+    a.weights = vec![0.1; old];
+    let err = Genome::from_json(&a.to_json()).unwrap_err();
+    assert!(err.contains("weights length"), "{err}");
+}
+
+#[test]
+fn off_by_one_lengths_are_rejected_without_resize() {
+    let mut short = g(8);
+    short.weights.pop();
+    assert!(Genome::from_json(&short.to_json()).unwrap_err().contains("weights length"));
+    let mut long = g(8);
+    long.weights.push(0.0);
+    assert!(Genome::from_json(&long.to_json()).unwrap_err().contains("weights length"));
+    let mut empty = g(8);
+    empty.weights.clear();
+    assert!(Genome::from_json(&empty.to_json()).is_err());
+}
