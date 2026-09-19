@@ -442,7 +442,11 @@ impl Match {
                     f.timer = f.timer.saturating_sub(1);
                     if f.timer == 0 {
                         f.state = CombatState::Recovery;
-                        f.timer = RECOVERY_TICKS;
+                        f.timer = if f.swing_hit {
+                            mv.recovery
+                        } else {
+                            (mv.recovery as f32 * t.whiff_recovery_mult).round() as u32
+                        };
                     }
                 }
                 CombatState::Recovery => {
