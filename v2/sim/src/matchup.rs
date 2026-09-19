@@ -716,9 +716,14 @@ impl Match {
             CombatState::Staggered | CombatState::Stunned | CombatState::Knocked => 0.0,
             _ => 1.0,
         };
-        let len = (a.fwd * a.fwd + a.strafe * a.strafe).sqrt();
-        if len <= 0.0 {
-            return;
+        let (mut fwd, mut strafe) = (a.fwd, a.strafe);
+        if confused {
+            let neg = (confusion_hash(self.seed, i, 0) & 1 == 1) != odd;
+            let ang = if neg { -t.confused_angle } else { t.confused_angle };
+            let (s, c) = ang.sin_cos();
+            let (nf, ns) = (fwd * c - strafe * s, fwd * s + strafe * c);
+            fwd = nf;
+            strafe = ns;
         }
         let scale = if len > 1.0 { 1.0 / len } else { 1.0 };
         let step = self.cfg.max_speed / hz * factor * scale;
