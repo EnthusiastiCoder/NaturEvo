@@ -664,6 +664,16 @@ impl Match {
                 if e.vulnerable_only && !vulnerable {
                     continue;
                 }
+                let (st, dur, mag) = match (guarded, e.status) {
+                    (false, s) => (s, if s == Status::Knock { t.knock_ticks } else { e.duration }, e.magnitude),
+                    (true, Status::Stun) => (Status::Stagger, t.blocked_stun_stagger, 1.0),
+                    (true, Status::Knock) => (Status::Knock, t.knock_ticks, e.magnitude * t.knock_block_mult),
+                    (true, _) => continue,
+                };
+                applied.push(e.status.idx());
+                if self.fighters[j].state != CombatState::Dead {
+                    self.apply_inner(j, st, dur, mag, i);
+                }
             }
         }
         // 5. stamina regen while idle
