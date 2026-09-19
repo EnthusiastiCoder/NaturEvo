@@ -115,6 +115,11 @@ impl Fighter {
             timer: 0,
             dodge_cooldown: 0,
             last_action: Action::idle(),
+            status: StatusState::default(),
+            move_idx: 0,
+            block_age: 0,
+            swing_hit: false,
+            knock_short: 0.0,
         }
     }
 }
