@@ -109,7 +109,21 @@ impl FightLog {
                     a.fwd, a.strafe, a.turn, a.attack, a.block, a.dodge
                 );
             }
-            let _ = write!(s, "],\"state\":[\"{}\",\"{}\"]}}", f.state[0].as_str(), f.state[1].as_str());
+            let _ = write!(s, "],\"state\":[\"{}\",\"{}\"],\"atk\":[{},{}],\"fx\":[", f.state[0].as_str(), f.state[1].as_str(), f.atk[0], f.atk[1]);
+            for (k, row) in f.fx.iter().enumerate() {
+                if k > 0 {
+                    s.push(',');
+                }
+                let _ = write!(s, "[{},{},{},{},{},{},{}]", row[0], row[1], row[2], row[3], row[4], row[5], row[6]);
+            }
+            let _ = write!(s, "],\"seen\":[{},{}],\"ev\":[", f.seen[0], f.seen[1]);
+            for (k, e) in f.ev.iter().enumerate() {
+                if k > 0 {
+                    s.push(',');
+                }
+                e.write(&mut s);
+            }
+            s.push_str("]}");
         }
         s.push_str("]}");
         s
