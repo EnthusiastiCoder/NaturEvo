@@ -22,7 +22,7 @@ fn random_genome_is_seeded() {
     let c = Genome::random(Role::Hero, &mut Rng::new(2));
     assert_eq!(a.weights, b.weights);
     assert_ne!(a.weights, c.weights);
-    assert!(!a.weights.is_empty());
+    assert_eq!(a.weights.len(), N_PARAMS);
     assert!(a.weights.iter().all(|w| w.is_finite()));
 }
 
