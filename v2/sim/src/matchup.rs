@@ -192,6 +192,136 @@ impl Match {
         self.fighters[r.index()].facing = wrap_angle(facing);
     }
 
+    // ---- statuses ----
+
+    /// Apply a status. Ignored for dead or dodging fighters and while the relevant immunity holds.
+    /// For Knock, `mag` is the distance in tiles and `dur` the ticks it takes.
+    pub fn apply_status(&mut self, role: Role, st: Status, dur: u32, mag: f32, source: Role) {
+        self.apply_inner(role.index(), st, dur, mag, source.index());
+    }
+
+    fn apply_inner(&mut self, j: usize, st: Status, dur: u32, mag: f32, src: usize) {
+        if dur == 0 {
+            return;
+        }
+        let state = self.fighters[j].state;
+        if matches!(state, CombatState::Dead | CombatState::Dodging) {
+            return;
+        }
+        let now = self.tick;
+        let t = &self.cfg.combat;
+        let k = st.idx();
+        match st {
+            Status::Stagger => {
+                let s = &mut self.fighters[j].status;
+                if s.stagger_imm > 0 || matches!(state, CombatState::Active | CombatState::GuardRaise) {
+                    return;
+                }
+                s.remaining[k] = s.remaining[k].max(dur);
+                s.stacks[k] = 1;
+            }
+            Status::Stun => {
+                let s = &mut self.fighters[j].status;
+                if s.remaining[k] > 0 || s.stun_imm > 0 {
+                    return;
+                }
+                let d = s.stun_duration(dur, now, t);
+                s.remaining[k] = d;
+                s.stacks[k] = 1;
+                s.stun_hist.push(now);
+            }
+            Status::Knock => {
+                if self.fighters[j].status.knock_imm > 0 || self.fighters[j].status.remaining[k] > 0 {
+                    return;
+                }
+                let (dx, dy) = (self.fighters[j].x - self.fighters[src].x, self.fighters[j].y - self.fighters[src].y);
+                let len = (dx * dx + dy * dy).sqrt();
+                let (ux, uy) = if len > 1e-6 { (dx / len, dy / len) } else { (1.0, 0.0) };
+                let per = mag.max(0.0) / dur as f32;
+                let f = &mut self.fighters[j];
+                f.status.knock_step = (ux * per, uy * per);
+                f.status.remaining[k] = dur;
+                f.status.stacks[k] = 1;
+                f.knock_short = 0.0;
+            }
+            Status::Confused => {
+                let s = &mut self.fighters[j].status;
+                s.remaining[k] = s.remaining[k].max(dur);
+                s.stacks[k] = 1;
+            }
+            Status::Slowed => {
+                let s = &mut self.fighters[j].status;
+                s.stacks[k] = (s.stacks[k] + 1).min(t.slowed_max_stacks);
+                s.remaining[k] = s.remaining[k].max(dur);
+            }
+            Status::Bleed => {
+                let s = &mut self.fighters[j].status;
+                if s.remaining[k] == 0 {
+                    s.bleed_timer = t.dot_interval;
+                    s.stacks[k] = 0;
+                }
+                s.stacks[k] = (s.stacks[k] + 1).min(t.bleed_max_stacks);
+                s.remaining[k] = s.remaining[k].max(dur);
+            }
+            Status::Poison => {
+                let s = &mut self.fighters[j].status;
+                if s.remaining[k] == 0 {
+                    s.poison_timer = t.dot_interval;
+                }
+                s.remaining[k] = (s.remaining[k] + dur).min(t.poison_cap);
+                s.stacks[k] = 1;
+            }
+        }
+        self.fighters[j].status.source[k] = src;
+        self.sync_state(j);
+    }
+
+    /// Make the combat state agree with the active statuses (stun over knock over stagger).
+    fn sync_state(&mut self, j: usize) {
+        let f = &mut self.fighters[j];
+        if matches!(f.state, CombatState::Dead | CombatState::Dodging) {
+            return;
+        }
+        let s = &f.status;
+        let want = if s.active(Status::Stun) {
+            Some(CombatState::Stunned)
+        } else if s.active(Status::Knock) {
+            Some(CombatState::Knocked)
+        } else if s.active(Status::Stagger) && !matches!(f.state, CombatState::Active | CombatState::GuardRaise) {
+            Some(CombatState::Staggered)
+        } else {
+            None
+        };
+        match want {
+            Some(ns) => {
+                if f.state != ns {
+                    f.state = ns;
+                    f.timer = 0;
+                }
+            }
+            None => {
+                if matches!(f.state, CombatState::Staggered | CombatState::Stunned | CombatState::Knocked) {
+                    f.state = CombatState::Idle;
+                    f.timer = 0;
+                }
+            }
+        }
+    }
+
+    fn damage(&mut self, j: usize, amount: f32, src: usize, floor: f32) -> f32 {
+        let f = &mut self.fighters[j];
+        let loss = amount.min((f.hp - floor).max(0.0));
+        if loss > 0.0 {
+            f.hp -= loss;
+            self.damage_dealt[src] += loss;
+        }
+        if f.hp <= 0.0 {
+            f.hp = 0.0;
+            f.state = CombatState::Dead;
+        }
+        loss
+    }
+
     // ---- simulation ----
 
     /// Advance one tick using the nets.
