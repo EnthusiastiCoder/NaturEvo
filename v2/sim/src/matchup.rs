@@ -333,7 +333,8 @@ impl Match {
         let om = observe(self, Role::Monster);
         let ah = self.nets[0].forward(&oh);
         let am = self.nets[1].forward(&om);
-        self.step_with(ah, am);
+        // Observation slot 37 is set exactly when the other fighter is seen.
+        self.step_inner(ah, am, Some([oh[37] > 0.0, om[37] > 0.0]));
     }
 
     /// Advance one tick with scripted actions (bypasses the nets).
