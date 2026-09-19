@@ -15,3 +15,5 @@ fn play_out(mut m: Match, a: Action, b: Action) -> MatchResult {
     while !m.finished() { m.step_with(a, b); }
     m.result()
 }
+
+fn score(role: Role, r: &MatchResult) -> f32 { score_result(role, r, &cfg()) }
