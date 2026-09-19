@@ -458,7 +458,8 @@ impl Match {
                 CombatState::GuardRaise => {
                     f.timer = f.timer.saturating_sub(1);
                     if f.timer == 0 {
-                        f.state = CombatState::Idle;
+                        f.state = CombatState::Blocking;
+                        f.block_age = 0;
                     }
                 }
                 _ => {}
