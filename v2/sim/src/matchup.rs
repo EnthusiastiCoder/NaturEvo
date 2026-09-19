@@ -455,8 +455,8 @@ impl Match {
                         f.state = CombatState::Idle;
                     }
                 }
-                CombatState::Dodging => {
-                    f.timer -= 1;
+                CombatState::GuardRaise => {
+                    f.timer = f.timer.saturating_sub(1);
                     if f.timer == 0 {
                         f.state = CombatState::Idle;
                     }
