@@ -434,8 +434,8 @@ impl Match {
                     f.timer = f.timer.saturating_sub(1);
                     if f.timer == 0 {
                         f.state = CombatState::Active;
-                        f.timer = ACTIVE_TICKS;
-                        hit[i] = true;
+                        f.timer = mv.active;
+                        hit = true;
                     }
                 }
                 CombatState::Active => {
