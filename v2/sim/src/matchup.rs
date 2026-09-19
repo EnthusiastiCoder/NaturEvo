@@ -53,6 +53,17 @@ pub struct Match {
     seed: u64,
 }
 
+/// Pre-hit view of a fighter, so simultaneous hits resolve against the same state.
+#[derive(Clone, Copy)]
+struct Snap {
+    state: CombatState,
+    x: f32,
+    y: f32,
+    facing: f32,
+    stamina: f32,
+    block_age: u32,
+}
+
 fn wrap_angle(a: f32) -> f32 {
     let mut a = (a + PI).rem_euclid(2.0 * PI) - PI;
     if a <= -PI {
