@@ -92,6 +92,15 @@ pub struct Fighter {
     pub timer: u32,
     pub dodge_cooldown: u32,
     pub last_action: Action,
+    pub status: StatusState,
+    /// Index into the moveset of the swing in progress.
+    pub move_idx: usize,
+    /// Ticks spent in Blocking (parry window).
+    pub block_age: u32,
+    /// Whether the current swing has hit something.
+    pub swing_hit: bool,
+    /// Knockback distance that was blocked by walls so far.
+    pub knock_short: f32,
 }
 
 impl Fighter {
