@@ -63,6 +63,8 @@ pub struct Frame {
 pub struct FightLog {
     pub tick_hz: u32,
     pub frames: Vec<Frame>,
+    /// Optional species and rank of each side, written to the JSON header.
+    pub meta: Option<([Species; 2], [Rank; 2])>,
 }
 
 impl FightLog {
