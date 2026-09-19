@@ -3,6 +3,45 @@ use crate::attacks::{Rank, Species};
 use crate::fighter::{Action, CombatState};
 use std::fmt::Write;
 
+/// Something that happened this tick (hits, damage over time, parries, wall slams, guard breaks).
+#[derive(Clone, Debug, PartialEq)]
+pub enum Event {
+    Hit { by: usize, atk: usize, dmg: f32, blocked: bool, punish: bool, fx: Vec<usize> },
+    Dot { who: usize, kind: &'static str, dmg: f32 },
+    Parry { by: usize },
+    Slam { who: usize, dmg: f32 },
+    GuardBreak { who: usize },
+}
+
+impl Event {
+    fn write(&self, s: &mut String) {
+        match self {
+            Event::Hit { by, atk, dmg, blocked, punish, fx } => {
+                let _ = write!(s, "{{\"t\":\"hit\",\"by\":{},\"atk\":{},\"dmg\":{},\"blocked\":{},\"punish\":{},\"fx\":[", by, atk, dmg, blocked, punish);
+                for (i, k) in fx.iter().enumerate() {
+                    if i > 0 {
+                        s.push(',');
+                    }
+                    let _ = write!(s, "{}", k);
+                }
+                s.push_str("]}");
+            }
+            Event::Dot { who, kind, dmg } => {
+                let _ = write!(s, "{{\"t\":\"dot\",\"who\":{},\"kind\":\"{}\",\"dmg\":{}}}", who, kind, dmg);
+            }
+            Event::Parry { by } => {
+                let _ = write!(s, "{{\"t\":\"parry\",\"by\":{}}}", by);
+            }
+            Event::Slam { who, dmg } => {
+                let _ = write!(s, "{{\"t\":\"slam\",\"who\":{},\"dmg\":{}}}", who, dmg);
+            }
+            Event::GuardBreak { who } => {
+                let _ = write!(s, "{{\"t\":\"guard_break\",\"who\":{}}}", who);
+            }
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Frame {
     pub pos: [(f32, f32); 2],
