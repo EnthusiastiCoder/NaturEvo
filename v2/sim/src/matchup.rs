@@ -49,7 +49,7 @@ pub struct Match {
     outcome: Outcome,
     damage_dealt: [f32; 2],
     log: FightLog,
-    #[allow(dead_code)]
+    events: Vec<Event>,
     seed: u64,
 }
 
