@@ -1,4 +1,5 @@
 //! Arena neuroevolution simulator. Zero third-party crates.
+pub mod attacks;
 pub mod cli;
 pub mod campaign;
 pub mod config;
@@ -11,4 +12,5 @@ pub mod matchup;
 pub mod net;
 pub mod rng;
 pub mod sense;
+pub mod status;
 pub mod world;
