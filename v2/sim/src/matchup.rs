@@ -29,6 +29,14 @@ pub struct MatchResult {
     pub log: FightLog,
 }
 
+/// Who fights: starting hp, species and rank per side (index 0 hero, 1 monster).
+#[derive(Clone, Copy, Debug)]
+pub struct Setup {
+    pub hp: [f32; 2],
+    pub species: [Species; 2],
+    pub rank: [Rank; 2],
+}
+
 #[derive(Clone, Debug)]
 pub struct Match {
     cfg: ArenaConfig,
