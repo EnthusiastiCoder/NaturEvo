@@ -1,3 +1,5 @@
+// WS2: N_OUT 9, N_HID 24, attack-kind argmax over outputs 6..=8 (ties to the lowest).
+mod common;
 use arena_sim::fighter::Role;
 use arena_sim::genome::Genome;
 use arena_sim::net::{Net, N_OUT};
