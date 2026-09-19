@@ -57,8 +57,8 @@ fn forward_is_deterministic_and_bounded() {
         let a = n1.forward(&x);
         let b = n2.forward(&x);
         assert_eq!(
-            (a.fwd, a.strafe, a.turn, a.attack, a.block, a.dodge),
-            (b.fwd, b.strafe, b.turn, b.attack, b.block, b.dodge)
+            (a.fwd, a.strafe, a.turn, a.attack, a.block, a.dodge, a.attack_kind),
+            (b.fwd, b.strafe, b.turn, b.attack, b.block, b.dodge, b.attack_kind)
         );
         for v in [a.fwd, a.strafe, a.turn] {
             assert!((-1.0..=1.0).contains(&v));
