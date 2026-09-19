@@ -339,6 +339,10 @@ impl Match {
 
     /// Advance one tick with scripted actions (bypasses the nets).
     pub fn step_with(&mut self, hero: Action, monster: Action) {
+        self.step_inner(hero, monster, None);
+    }
+
+    fn step_inner(&mut self, hero: Action, monster: Action, seen: Option<[bool; 2]>) {
         if self.finished {
             return;
         }
