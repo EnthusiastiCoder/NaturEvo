@@ -42,6 +42,7 @@ pub struct Match {
     cfg: ArenaConfig,
     arena: Arena,
     fighters: [Fighter; 2],
+    moveset: [Vec<Move>; 2],
     nets: [Net; 2],
     tick: u32,
     finished: bool,
