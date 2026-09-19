@@ -624,7 +624,7 @@ impl Match {
             if (dx * dx + dy * dy).sqrt() > mv.range {
                 continue;
             }
-            if wrap_angle(dy.atan2(dx) - a.facing).abs() > ATTACK_HALF_ARC {
+            if wrap_angle(dy.atan2(dx) - a.facing).abs() > mv.half_arc {
                 continue;
             }
             let mut d = DAMAGE;
