@@ -1,4 +1,5 @@
 //! Fighter types: roles, actions, combat state.
+use crate::status::StatusState;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Role {
