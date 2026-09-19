@@ -87,6 +87,11 @@ impl Match {
 
     /// Like `new` but with explicit starting hp per side (campaign handicaps). Arena rules are unchanged.
     pub fn new_with_hp(arena: Arena, hero: Genome, monster: Genome, seed: u64, cfg: &ArenaConfig, hp: [f32; 2]) -> Match {
+        let setup = Setup { hp, species: [Species::Hero, Species::Minion], rank: [Rank::Grass, Rank::Grass] };
+        Match::new_with_setup(arena, hero, monster, seed, cfg, setup)
+    }
+
+    pub fn new_with_setup(arena: Arena, hero: Genome, monster: Genome, seed: u64, cfg: &ArenaConfig, setup: Setup) -> Match {
         let s = arena.spawns();
         let fighters = [
             Fighter::new(s[0].0, s[0].1, 0.0, hp[0], cfg.max_stamina),
