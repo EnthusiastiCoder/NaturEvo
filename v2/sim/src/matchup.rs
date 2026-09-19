@@ -94,8 +94,8 @@ impl Match {
     pub fn new_with_setup(arena: Arena, hero: Genome, monster: Genome, seed: u64, cfg: &ArenaConfig, setup: Setup) -> Match {
         let s = arena.spawns();
         let fighters = [
-            Fighter::new(s[0].0, s[0].1, 0.0, hp[0], cfg.max_stamina),
-            Fighter::new(s[1].0, s[1].1, PI, hp[1], cfg.max_stamina),
+            Fighter::new(s[0].0, s[0].1, 0.0, setup.hp[0], cfg.max_stamina),
+            Fighter::new(s[1].0, s[1].1, PI, setup.hp[1], cfg.max_stamina),
         ];
         Match {
             cfg: cfg.clone(),
