@@ -777,7 +777,13 @@ pub fn play(arena: Arena, hero: Genome, monster: Genome, seed: u64, cfg: &ArenaC
 
 /// `play` with explicit starting hp per side.
 pub fn play_with_hp(arena: Arena, hero: Genome, monster: Genome, seed: u64, cfg: &ArenaConfig, hp: [f32; 2]) -> MatchResult {
-    let mut m = Match::new_with_hp(arena, hero, monster, seed, cfg, hp);
+    let setup = Setup { hp, species: [Species::Hero, Species::Minion], rank: [Rank::Grass, Rank::Grass] };
+    play_with_setup(arena, hero, monster, seed, cfg, setup)
+}
+
+/// `play` with explicit hp, species and rank.
+pub fn play_with_setup(arena: Arena, hero: Genome, monster: Genome, seed: u64, cfg: &ArenaConfig, setup: Setup) -> MatchResult {
+    let mut m = Match::new_with_setup(arena, hero, monster, seed, cfg, setup);
     while !m.finished() {
         m.step();
     }
