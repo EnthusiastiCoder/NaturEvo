@@ -17,7 +17,7 @@ impl Arena {
         let w = cfg.arena_w as usize;
         let h = cfg.arena_h as usize;
         let mut rng = Rng::new(seed ^ 0xA4E4_A000_0000_0001);
-        let spawns = [(3.5, h as f32 / 2.0 + 0.5), (w as f32 - 3.5, h as f32 / 2.0 + 0.5)];
+        let spawns = [(w as f32 / 2.0 - 6.5, h as f32 / 2.0 + 0.5), (w as f32 / 2.0 + 6.5, h as f32 / 2.0 + 0.5)];
         let mut blocked = vec![false; w * h];
         let n_obst = 14 + (rng.next_u64() % 10) as usize;
         for _ in 0..n_obst {
