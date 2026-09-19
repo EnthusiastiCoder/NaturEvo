@@ -180,6 +180,17 @@ impl Match {
     pub fn set_stamina(&mut self, r: Role, s: f32) {
         self.fighters[r.index()].stamina = s;
     }
+    pub fn set_hp(&mut self, r: Role, hp: f32) {
+        self.fighters[r.index()].hp = hp;
+    }
+    pub fn set_pos(&mut self, r: Role, x: f32, y: f32) {
+        let f = &mut self.fighters[r.index()];
+        f.x = x;
+        f.y = y;
+    }
+    pub fn set_facing(&mut self, r: Role, facing: f32) {
+        self.fighters[r.index()].facing = wrap_angle(facing);
+    }
 
     // ---- simulation ----
 
