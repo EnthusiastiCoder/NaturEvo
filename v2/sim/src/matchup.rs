@@ -725,12 +725,24 @@ impl Match {
             fwd = nf;
             strafe = ns;
         }
-        let scale = if len > 1.0 { 1.0 / len } else { 1.0 };
-        let step = self.cfg.max_speed / hz * factor * scale;
-        let (sin, cos) = f.facing.sin_cos();
-        let dx = (cos * a.fwd - sin * a.strafe) * step;
-        let dy = (sin * a.fwd + cos * a.strafe) * step;
-        let (x, y) = (f.x, f.y);
+        let len = (fwd * fwd + strafe * strafe).sqrt();
+        let (sin, cos) = self.fighters[i].facing.sin_cos();
+        if len > 0.0 && factor > 0.0 {
+            let scale = if len > 1.0 { 1.0 / len } else { 1.0 };
+            let step = self.cfg.max_speed / hz * factor * scale * self.fighters[i].status.speed_mult(&t);
+            self.try_move(i, (cos * fwd - sin * strafe) * step, (sin * fwd + cos * strafe) * step);
+        }
+        if state == CombatState::Active {
+            let mv = &self.moveset[i][self.fighters[i].move_idx];
+            if mv.lunge > 0.0 && mv.active > 0 {
+                let step = mv.lunge / mv.active as f32;
+                self.try_move(i, cos * step, sin * step);
+            }
+        }
+    }
+
+    fn try_move(&mut self, i: usize, dx: f32, dy: f32) {
+        let (x, y) = (self.fighters[i].x, self.fighters[i].y);
         for (mx, my) in [(dx, dy), (dx, 0.0), (0.0, dy)] {
             if (mx != 0.0 || my != 0.0) && self.can_stand(i, x + mx, y + my) {
                 self.fighters[i].x = x + mx;
