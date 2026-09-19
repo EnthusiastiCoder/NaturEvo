@@ -603,7 +603,12 @@ impl Match {
             }
             _ => {}
         }
-        // 3. movement
+    }
+
+    /// Phase 4: resolve every swing that became active this tick against the pre-hit states.
+    fn resolve_hits(&mut self, hit: [bool; 2]) {
+        let sn = |f: &Fighter| Snap { state: f.state, x: f.x, y: f.y, facing: f.facing, stamina: f.stamina, block_age: f.block_age };
+        let snap = [sn(&self.fighters[0]), sn(&self.fighters[1])];
         for i in 0..2 {
             self.move_fighter(i, acts[i]);
         }
