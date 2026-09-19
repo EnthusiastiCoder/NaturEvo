@@ -5,7 +5,7 @@ use crate::config::ArenaConfig;
 pub use crate::config::BLOCK_HALF_ARC;
 use crate::fighter::{Action, CombatState, Fighter, Role};
 use crate::genome::Genome;
-use crate::log::{FightLog, Frame};
+use crate::log::{Event, FightLog, Frame};
 use crate::net::Net;
 use crate::sense::observe;
 use crate::world::Arena;
