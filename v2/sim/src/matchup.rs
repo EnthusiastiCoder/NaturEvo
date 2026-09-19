@@ -618,8 +618,10 @@ impl Match {
             if matches!(v.state, CombatState::Dead | CombatState::Dodging) {
                 continue;
             }
-            let (dx, dy) = (t.x - a.x, t.y - a.y);
-            if (dx * dx + dy * dy).sqrt() > ATTACK_RANGE {
+            let idx = self.fighters[i].move_idx;
+            let mv = self.moveset[i][idx].clone();
+            let (dx, dy) = (v.x - a.x, v.y - a.y);
+            if (dx * dx + dy * dy).sqrt() > mv.range {
                 continue;
             }
             if wrap_angle(dy.atan2(dx) - a.facing).abs() > ATTACK_HALF_ARC {
