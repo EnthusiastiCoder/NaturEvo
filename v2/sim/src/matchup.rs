@@ -103,6 +103,7 @@ impl Match {
             cfg: cfg.clone(),
             arena,
             fighters,
+            moveset: [moves(setup.species[0], setup.rank[0]), moves(setup.species[1], setup.rank[1])],
             nets: [Net::from_genome(&hero), Net::from_genome(&monster)],
             tick: 0,
             finished: false,
