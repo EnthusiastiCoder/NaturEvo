@@ -675,12 +675,10 @@ impl Match {
                     self.apply_inner(j, st, dur, mag, i);
                 }
             }
-        }
-        // 5. stamina regen while idle
-        let regen = STAMINA_REGEN_PER_SEC / self.cfg.tick_hz as f32;
-        for f in self.fighters.iter_mut() {
-            if f.state == CombatState::Idle {
-                f.stamina = (f.stamina + regen).min(self.cfg.max_stamina);
+            self.events.push(Event::Hit { by: i, atk: idx, dmg: d, blocked: guarded, punish, fx: applied });
+            if broke && self.fighters[j].state != CombatState::Dead {
+                self.events.push(Event::GuardBreak { who: j });
+                self.apply_inner(j, Status::Stun, t.guard_break_stun, 1.0, i);
             }
         }
         // 6. bookkeeping
