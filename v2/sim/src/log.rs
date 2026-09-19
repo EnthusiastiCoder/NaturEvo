@@ -78,7 +78,18 @@ impl FightLog {
 
     pub fn to_json(&self) -> String {
         let mut s = String::with_capacity(self.frames.len() * 300 + 64);
-        let _ = write!(s, "{{\"tick_hz\":{},\"frames\":[", self.tick_hz);
+        let _ = write!(s, "{{\"tick_hz\":{},", self.tick_hz);
+        if let Some((sp, rk)) = &self.meta {
+            let _ = write!(
+                s,
+                "\"species\":[\"{}\",\"{}\"],\"rank\":[\"{}\",\"{}\"],",
+                sp[0].as_str(),
+                sp[1].as_str(),
+                rk[0].as_str(),
+                rk[1].as_str()
+            );
+        }
+        s.push_str("\"frames\":[");
         for (i, f) in self.frames.iter().enumerate() {
             if i > 0 {
                 s.push(',');
