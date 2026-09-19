@@ -352,7 +352,6 @@ impl Match {
             a.strafe = clean(a.strafe);
             a.turn = clean(a.turn);
         }
-        // 1. advance timers; swings that become active this tick land a hit
         let mut hit = [false; 2];
         for i in 0..2 {
             let f = &mut self.fighters[i];
