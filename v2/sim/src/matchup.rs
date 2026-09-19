@@ -627,13 +627,19 @@ impl Match {
             if wrap_angle(dy.atan2(dx) - a.facing).abs() > mv.half_arc {
                 continue;
             }
-            let mut d = DAMAGE;
-            if t.state == CombatState::Blocking && t.stamina > 0.0 {
-                let to_att = (-dy).atan2(-dx);
-                if wrap_angle(to_att - t.facing).abs() <= BLOCK_HALF_ARC {
-                    d *= 1.0 - BLOCK_REDUCTION;
-                    stam_cost[j] += BLOCK_STAMINA_COST;
-                }
+            self.fighters[i].swing_hit = true;
+            let t = self.cfg.combat;
+            let to_att = (-dy).atan2(-dx);
+            let guarded = v.state == CombatState::Blocking && v.stamina > 0.0 && wrap_angle(to_att - v.facing).abs() <= t.block_half_arc;
+            if guarded && v.block_age < t.parry_window {
+                self.events.push(Event::Parry { by: j });
+                let at = &mut self.fighters[i];
+                at.status.remaining[Status::Stagger.idx()] = t.parry_stagger;
+                at.status.stacks[Status::Stagger.idx()] = 1;
+                at.status.source[Status::Stagger.idx()] = j;
+                at.state = CombatState::Staggered;
+                at.timer = 0;
+                continue;
             }
             dmg[j] += d;
         }
