@@ -7,7 +7,8 @@ use crate::fighter::{Action, CombatState, Fighter, Role};
 use crate::genome::Genome;
 use crate::log::{Event, FightLog, Frame};
 use crate::net::Net;
-use crate::sense::observe;
+use crate::sense::{observe, sees};
+use crate::status::{confusion_hash, Status};
 use crate::world::Arena;
 use std::f32::consts::PI;
 
