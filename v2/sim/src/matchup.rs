@@ -651,13 +651,18 @@ impl Match {
             } else if punish {
                 d *= t.punish_mult;
             }
-            if dmg[j] > 0.0 {
-                let loss = dmg[j].min(f.hp);
-                f.hp -= loss;
-                self.damage_dealt[1 - j] += loss;
-                if f.hp <= 0.0 {
-                    f.hp = 0.0;
-                    f.state = CombatState::Dead;
+            let vulnerable = matches!(v.state, CombatState::Blocking | CombatState::Recovery);
+            let mut broke = false;
+            if guarded {
+                let vf = &mut self.fighters[j];
+                vf.stamina = (vf.stamina - t.block_absorb_cost).max(0.0);
+                broke = vf.stamina <= 0.0;
+            }
+            self.damage(j, d, i, 0.0);
+            let mut applied = Vec::new();
+            for e in &mv.effects {
+                if e.vulnerable_only && !vulnerable {
+                    continue;
                 }
             }
         }
