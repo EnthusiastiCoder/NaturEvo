@@ -104,6 +104,7 @@ impl Net {
             attack: out[3] > 0.0,
             block: out[4] > 0.0,
             dodge: out[5] > 0.0,
+            attack_kind: 0,
         }
     }
 }
