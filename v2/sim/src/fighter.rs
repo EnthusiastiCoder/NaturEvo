@@ -72,6 +72,11 @@ impl CombatState {
             CombatState::Blocking => "Blocking",
             CombatState::Dodging => "Dodging",
             CombatState::Dead => "Dead",
+            CombatState::GuardRaise => "GuardRaise",
+            CombatState::GuardRecover => "GuardRecover",
+            CombatState::Staggered => "Staggered",
+            CombatState::Stunned => "Stunned",
+            CombatState::Knocked => "Knocked",
         }
     }
 }
