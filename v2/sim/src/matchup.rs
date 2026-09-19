@@ -601,7 +601,7 @@ impl Match {
                     }
                 }
             }
-            f.last_action = a;
+            _ => {}
         }
         // 3. movement
         for i in 0..2 {
