@@ -465,12 +465,95 @@ impl Match {
                 _ => {}
             }
         }
-        // 2. decisions
-        for i in 0..2 {
-            let a = acts[i];
-            let f = &mut self.fighters[i];
-            if matches!(f.state, CombatState::Idle | CombatState::Blocking) {
-                if a.dodge && f.dodge_cooldown == 0 && f.stamina >= DODGE_STAMINA_COST {
+        self.advance_statuses(i, act);
+        self.sync_state(i);
+        hit
+    }
+
+    fn advance_statuses(&mut self, i: usize, act: &Action) {
+        // Knockback displacement.
+        let k = Status::Knock.idx();
+        if self.fighters[i].status.remaining[k] > 0 {
+            let (sx, sy) = self.fighters[i].status.knock_step;
+            let planned = (sx * sx + sy * sy).sqrt();
+            let (x, y) = (self.fighters[i].x, self.fighters[i].y);
+            let mut moved = 0.0;
+            for (mx, my) in [(sx, sy), (sx, 0.0), (0.0, sy)] {
+                if (mx != 0.0 || my != 0.0) && self.can_stand(i, x + mx, y + my) {
+                    self.fighters[i].x = x + mx;
+                    self.fighters[i].y = y + my;
+                    moved = (mx * mx + my * my).sqrt();
+                    break;
+                }
+            }
+            self.fighters[i].knock_short += (planned - moved).max(0.0);
+        }
+        let t = self.cfg.combat;
+        for st in Status::ALL {
+            let k = st.idx();
+            if self.fighters[i].status.remaining[k] == 0 {
+                continue;
+            }
+            let src = self.fighters[i].status.source[k];
+            match st {
+                Status::Bleed | Status::Poison => {
+                    let timer = if st == Status::Bleed { &mut self.fighters[i].status.bleed_timer } else { &mut self.fighters[i].status.poison_timer };
+                    *timer = timer.saturating_sub(1);
+                    if *timer == 0 {
+                        *timer = t.dot_interval;
+                        if st == Status::Bleed {
+                            let mut d = t.dot_damage * self.fighters[i].status.stacks[k] as f32;
+                            if act.fwd.abs() > t.bleed_move_threshold {
+                                d *= t.bleed_move_mult;
+                            }
+                            let loss = self.damage(i, d, src, 0.0);
+                            self.events.push(Event::Dot { who: i, kind: "bleed", dmg: loss });
+                        } else {
+                            let loss = self.damage(i, t.dot_damage, src, 1.0);
+                            self.events.push(Event::Dot { who: i, kind: "poison", dmg: loss });
+                        }
+                    }
+                }
+                _ => {}
+            }
+            if self.fighters[i].state == CombatState::Dead {
+                return;
+            }
+            let s = &mut self.fighters[i].status;
+            s.remaining[k] -= 1;
+            if s.remaining[k] == 0 {
+                s.stacks[k] = 0;
+                match st {
+                    Status::Stagger => s.stagger_imm = t.stagger_immunity,
+                    Status::Stun => s.stun_imm = t.stun_immunity,
+                    Status::Knock => {
+                        s.knock_imm = t.knock_immunity;
+                        if self.fighters[i].knock_short > t.wall_slam_min_short {
+                            let loss = self.damage(i, t.wall_slam_damage, src, 0.0);
+                            self.events.push(Event::Slam { who: i, dmg: loss });
+                            self.apply_inner(i, Status::Stagger, t.wall_slam_stagger, 1.0, src);
+                        }
+                        self.fighters[i].knock_short = 0.0;
+                    }
+                    _ => {}
+                }
+                if self.fighters[i].state == CombatState::Dead {
+                    return;
+                }
+            }
+        }
+    }
+
+    /// Phase 2: what each fighter chooses to do this tick.
+    fn decide(&mut self, i: usize, a: &Action) {
+        let t = &self.cfg.combat;
+        let hz = self.cfg.tick_hz as f32;
+        let f = &mut self.fighters[i];
+        f.last_action = *a;
+        let can_dodge = a.dodge && f.dodge_cooldown == 0 && f.stamina >= t.dodge_stamina_cost;
+        match f.state {
+            CombatState::Idle => {
+                if can_dodge {
                     f.state = CombatState::Dodging;
                     f.timer = DODGE_TICKS;
                     f.stamina -= DODGE_STAMINA_COST;
