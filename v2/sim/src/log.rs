@@ -73,7 +73,7 @@ impl FightLog {
     }
 
     pub fn with_capacity(tick_hz: u32, n: usize) -> FightLog {
-        FightLog { tick_hz, frames: Vec::with_capacity(n) }
+        FightLog { tick_hz, frames: Vec::with_capacity(n), meta: None }
     }
 
     pub fn to_json(&self) -> String {
