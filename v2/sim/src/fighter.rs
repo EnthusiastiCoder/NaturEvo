@@ -42,7 +42,7 @@ pub struct Action {
 
 impl Action {
     pub fn idle() -> Action {
-        Action { fwd: 0.0, strafe: 0.0, turn: 0.0, attack: false, block: false, dodge: false }
+        Action { fwd: 0.0, strafe: 0.0, turn: 0.0, attack: false, block: false, dodge: false, attack_kind: 0 }
     }
 }
 
