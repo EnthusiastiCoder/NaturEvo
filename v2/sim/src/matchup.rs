@@ -614,8 +614,8 @@ impl Match {
                 continue;
             }
             let j = 1 - i;
-            let (a, t) = (&self.fighters[i], &self.fighters[j]);
-            if t.state == CombatState::Dead || t.state == CombatState::Dodging {
+            let (a, v) = (snap[i], snap[j]);
+            if matches!(v.state, CombatState::Dead | CombatState::Dodging) {
                 continue;
             }
             let (dx, dy) = (t.x - a.x, t.y - a.y);
