@@ -681,29 +681,6 @@ impl Match {
                 self.apply_inner(j, Status::Stun, t.guard_break_stun, 1.0, i);
             }
         }
-        // 6. bookkeeping
-        self.tick += 1;
-        self.log.frames.push(Frame {
-            pos: [(self.fighters[0].x, self.fighters[0].y), (self.fighters[1].x, self.fighters[1].y)],
-            facing: [self.fighters[0].facing, self.fighters[1].facing],
-            hp: [self.fighters[0].hp, self.fighters[1].hp],
-            stamina: [self.fighters[0].stamina, self.fighters[1].stamina],
-            action: [self.fighters[0].last_action, self.fighters[1].last_action],
-            state: [self.fighters[0].state, self.fighters[1].state],
-        });
-        let hero_dead = self.fighters[0].state == CombatState::Dead;
-        let mon_dead = self.fighters[1].state == CombatState::Dead;
-        if hero_dead || mon_dead {
-            self.finished = true;
-            self.outcome = match (hero_dead, mon_dead) {
-                (false, true) => Outcome::HeroWin,
-                (true, false) => Outcome::MonsterWin,
-                _ => Outcome::Draw,
-            };
-        } else if self.tick >= self.cfg.max_ticks {
-            self.finished = true;
-            self.outcome = Outcome::Draw;
-        }
     }
 
     fn move_fighter(&mut self, i: usize, a: Action) {
