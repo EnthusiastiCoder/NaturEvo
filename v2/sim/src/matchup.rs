@@ -156,6 +156,17 @@ impl Match {
     pub fn log(&self) -> &FightLog {
         &self.log
     }
+    /// Snapshot of the match so far as a result (clones the log).
+    pub fn result(&self) -> MatchResult {
+        MatchResult {
+            outcome: self.outcome,
+            ticks: self.tick,
+            hero_hp: self.fighters[0].hp,
+            monster_hp: self.fighters[1].hp,
+            damage_dealt: self.damage_dealt,
+            log: self.log.clone(),
+        }
+    }
     /// Remaining ticks per status, indexed by `Status::idx`.
     pub fn fx(&self, r: Role) -> [u32; 7] {
         self.fighters[r.index()].status.remaining
