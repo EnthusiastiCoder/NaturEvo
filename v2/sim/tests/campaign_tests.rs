@@ -226,4 +226,20 @@ fn library_screen_is_applied_by_default_and_skippable() {
     assert!(Library::from_dir_opts(ds, "hero", 20, false).is_ok());
     let _ = std::fs::remove_dir_all(&d);
 }
+
+#[test]
+fn cli_campaign_screens_by_default_and_no_screen_skips_it() {
+    use common::turtle;
+    let d = champ_dir("screen_cli", &turtle(Role::Hero), &turtle(Role::Monster));
+    let out = d.join("run.json");
+    let a = |extra: &[&str]| {
+        let mut v: Vec<String> = ["campaign", "--champions", d.to_str().unwrap(), "--out", out.to_str().unwrap(), "--seed", "1"].iter().map(|s| s.to_string()).collect();
+        v.extend(extra.iter().map(|s| s.to_string()));
+        v
+    };
+    let e = arena_sim::cli::run(&a(&[])).unwrap_err();
+    assert!(e.contains("block_share"), "{e}");
+    arena_sim::cli::run(&a(&["--no-screen"])).unwrap();
+    assert!(std::fs::read_to_string(&out).unwrap().contains("\"species\""));
+    let _ = std::fs::remove_dir_all(&d);
 }
