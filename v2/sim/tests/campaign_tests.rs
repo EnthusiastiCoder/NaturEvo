@@ -180,4 +180,16 @@ fn species_rank_and_name_are_deterministic_by_seed() {
         assert_eq!(x.monster_name, y.monster_name);
     }
 }
+
+#[test]
+fn all_four_species_appear_across_seeds() {
+    let (h, m) = libs(6);
+    let mut seen = [false; 4];
+    for seed in 0..30u64 {
+        for e in &run(seed, MapCfg::default(), &h, &m, false).encounters {
+            match e.species { Species::Minion => seen[0] = true, Species::Rogue => seen[1] = true, Species::Warrior => seen[2] = true, Species::Mage => seen[3] = true, Species::Hero => panic!("hero species monster") }
+        }
+    }
+    assert_eq!(seen, [true; 4]);
+}
 }
