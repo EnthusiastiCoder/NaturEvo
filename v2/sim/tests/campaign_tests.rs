@@ -146,4 +146,26 @@ fn wild_monsters_are_weaker_than_elites_and_boss_is_full_strength() {
     }
     assert!(g > 0 && el > 0 && b > 0);
 }
+
+#[test]
+fn encounters_record_species_rank_and_name_by_kind() {
+    let (h, m) = libs(4);
+    let (mut g, mut el, mut b) = (0, 0, 0);
+    for seed in 0..20u64 {
+        for e in &run(seed, MapCfg::default(), &h, &m, false).encounters {
+            assert_ne!(e.species, Species::Hero, "monsters are never the hero species");
+            assert!(!e.monster_name.is_empty());
+            match e.kind {
+                EncounterKind::Grass => { assert_eq!(e.rank, Rank::Grass); g += 1; }
+                EncounterKind::Elite => { assert_eq!(e.rank, Rank::Elite); el += 1; }
+                EncounterKind::Boss => {
+                    assert_eq!(e.rank, Rank::Boss);
+                    assert!(e.species == Species::Warrior || e.species == Species::Mage, "boss species {:?}", e.species);
+                    b += 1;
+                }
+            }
+        }
+    }
+    assert!(g > 0 && el > 0 && b > 0);
+}
 }
