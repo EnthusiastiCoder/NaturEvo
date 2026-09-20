@@ -192,4 +192,18 @@ fn all_four_species_appear_across_seeds() {
     }
     assert_eq!(seen, [true; 4]);
 }
+
+#[test]
+fn fight_and_run_json_carry_species_rank_and_monster_name() {
+    use arena_sim::campaign::{fight_json, run_json};
+    let (h, m) = libs(3);
+    let r = run(3, MapCfg::default(), &h, &m, true);
+    let e = &r.encounters[0];
+    let fj = fight_json(e);
+    assert!(fj.contains(&format!("\"species\":\"{}\"", e.species.as_str())), "{}", &fj[fj.len().saturating_sub(300)..]);
+    assert!(fj.contains(&format!("\"rank\":\"{}\"", e.rank.as_str())));
+    assert!(fj.contains(&format!("\"monster_name\":\"{}\"", e.monster_name)));
+    let rj = run_json(&r, None, None).unwrap();
+    for k in ["\"species\"", "\"rank\"", "\"monster_name\""] { assert!(rj.contains(k), "run json missing {k}"); }
+}
 }
