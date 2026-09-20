@@ -136,3 +136,17 @@ fn status_reward_counts_distinct_statuses() {
     assert!((t.status_reward - 0.3).abs() < 1e-5, "{}", t.status_reward);
     assert_eq!(terms(Role::Hero, &m.result(), &cfg()).statuses, 0);
 }
+
+#[test]
+fn status_reward_caps_at_six() {
+    // Boss Mage: Hex (poison, confused), Zap (stagger, slowed), Slam (stun, knockback) = 6 distinct.
+    let mut m = duel_sp(Species::Mage, Rank::Boss, 1.0);
+    m.set_hp(Role::Hero, 10_000.0);
+    for k in 0..3u8 {
+        run(&mut m, 45, idle(), atk(k));
+        run(&mut m, 30, idle(), idle());
+    }
+    let t = terms(Role::Monster, &m.result(), &cfg());
+    assert_eq!(t.statuses as f32, 6.0);
+    assert!((t.status_reward - 0.9).abs() < 1e-5, "{}", t.status_reward);
+}
