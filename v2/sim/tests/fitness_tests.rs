@@ -159,3 +159,10 @@ fn passivity_share_on_idle_draw() {
     // (1800 - 300) / 1800
     assert!((share - 0.8333).abs() < 0.01, "{share}");
 }
+
+#[test]
+fn scoring_is_deterministic_and_symmetric_roles_differ() {
+    let (a, b) = (trade(), trade());
+    assert_eq!(score(Role::Hero, &a), score(Role::Hero, &b));
+    assert_eq!(score(Role::Monster, &a), score(Role::Monster, &b));
+}
