@@ -97,3 +97,17 @@ fn no_free_block_bonus_block_bit_toggle_changes_nothing() {
     let d = (score(Role::Hero, &with) - score(Role::Hero, &without)).abs();
     assert!(d < 1e-6, "block bit must not change fitness when it has no state effect (diff {d})");
 }
+
+#[test]
+fn punish_reward_is_capped_at_three_hits() {
+    let mut m = duel(1.0);
+    for _ in 0..68 {
+        m.apply_status(Role::Monster, Status::Stagger, 40, 0.0, Role::Hero); // keep victim staggered
+        m.step_with(atk(0), idle());
+    }
+    let r = m.result();
+    let t = terms(Role::Hero, &r, &cfg());
+    assert_eq!(t.punish_hits, 5);
+    assert!((t.punish_reward - 0.6 * 3.0).abs() < 1e-5, "{}", t.punish_reward);
+    assert_eq!(terms(Role::Monster, &r, &cfg()).punish_hits, 0);
+}
