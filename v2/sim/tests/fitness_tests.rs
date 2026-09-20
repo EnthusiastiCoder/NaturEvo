@@ -55,3 +55,10 @@ fn turtle_below_no_damage_loss_below_trader() {
     assert!(st < sl, "turtle {st} must be below no-damage loss {sl}");
     assert!(sl < str_, "no-damage loss {sl} must be below trader {str_}");
 }
+
+#[test]
+fn draw_strictly_worse_than_no_damage_loss() {
+    let draw = play_out(duel(13.0), idle(), idle());
+    assert_eq!(draw.outcome, arena_sim::matchup::Outcome::Draw);
+    assert!(score(Role::Hero, &draw) < score(Role::Hero, &no_damage_loss()));
+}
