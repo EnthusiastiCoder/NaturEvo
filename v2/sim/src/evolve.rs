@@ -4,7 +4,10 @@
 use crate::config::ArenaConfig;
 use crate::fighter::Role;
 use crate::genome::Genome;
-use crate::matchup::{play, Match, MatchResult, Outcome};
+use crate::attacks::{Rank, Species};
+use crate::fighter::CombatState;
+use crate::log::Event;
+use crate::matchup::{play, Match, MatchResult, Outcome, Setup};
 use crate::rng::Rng;
 use crate::world::Arena;
 use std::fmt::Write;
