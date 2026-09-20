@@ -45,3 +45,13 @@ fn fitness_defaults_match_plan() {
     assert_eq!(f.punish_cap as f32, 3.0);
     assert_eq!(f.status_cap as f32, 6.0);
 }
+
+#[test]
+fn turtle_below_no_damage_loss_below_trader() {
+    let (t, l, tr) = (turtle_draw(), no_damage_loss(), trade());
+    assert_eq!(t.outcome, arena_sim::matchup::Outcome::Draw);
+    assert_eq!(l.outcome, arena_sim::matchup::Outcome::MonsterWin);
+    let (st, sl, str_) = (score(Role::Hero, &t), score(Role::Hero, &l), score(Role::Hero, &tr));
+    assert!(st < sl, "turtle {st} must be below no-damage loss {sl}");
+    assert!(sl < str_, "no-damage loss {sl} must be below trader {str_}");
+}
