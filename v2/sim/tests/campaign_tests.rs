@@ -215,4 +215,15 @@ fn champ_dir(name: &str, hero: &Genome, monster: &Genome) -> std::path::PathBuf 
     std::fs::write(d.join("champion_monster_gen_0.json"), monster.to_json()).unwrap();
     d
 }
+
+#[test]
+fn library_screen_is_applied_by_default_and_skippable() {
+    use common::turtle;
+    let d = champ_dir("screen_lib", &turtle(Role::Hero), &turtle(Role::Monster));
+    let ds = d.to_str().unwrap();
+    let e = match Library::from_dir(ds, "hero", 20) { Ok(_) => panic!("turtle must be screened out"), Err(e) => e };
+    assert!(e.contains("block_share"), "{e}");
+    assert!(Library::from_dir_opts(ds, "hero", 20, false).is_ok());
+    let _ = std::fs::remove_dir_all(&d);
+}
 }
