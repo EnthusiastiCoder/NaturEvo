@@ -35,3 +35,9 @@ fn aggressor_passes_the_screen_thresholds() {
     assert!(s.draw_rate <= 0.25, "{s:?}");
     assert!(s.statuses_per_fight >= 1.0, "{s:?}");
 }
+
+#[test]
+fn screen_is_deterministic() {
+    let g = turtle(Role::Hero);
+    assert_eq!(screen(&g, Role::Hero, &panel(), 3), screen(&g, Role::Hero, &panel(), 3));
+}
