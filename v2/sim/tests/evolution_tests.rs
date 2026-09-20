@@ -81,3 +81,10 @@ fn resume_rejects_garbage() {
 mod species_assignment {
     use arena_sim::attacks::{Rank, Species};
     use arena_sim::evolve::species_for;
+
+    #[test]
+    fn deterministic() {
+        for s in 0..200u64 {
+            assert_eq!(species_for(s), species_for(s));
+        }
+    }
