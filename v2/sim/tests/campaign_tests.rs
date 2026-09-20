@@ -168,4 +168,16 @@ fn encounters_record_species_rank_and_name_by_kind() {
     }
     assert!(g > 0 && el > 0 && b > 0);
 }
+
+#[test]
+fn species_rank_and_name_are_deterministic_by_seed() {
+    let (h, m) = libs(5);
+    let a = run(7, MapCfg::default(), &h, &m, false);
+    let b = run(7, MapCfg::default(), &h, &m, false);
+    assert_eq!(a.encounters.len(), b.encounters.len());
+    for (x, y) in a.encounters.iter().zip(b.encounters.iter()) {
+        assert_eq!((x.species, x.rank), (y.species, y.rank));
+        assert_eq!(x.monster_name, y.monster_name);
+    }
+}
 }
