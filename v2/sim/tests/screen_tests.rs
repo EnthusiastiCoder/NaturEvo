@@ -41,3 +41,13 @@ fn screen_is_deterministic() {
     let g = turtle(Role::Hero);
     assert_eq!(screen(&g, Role::Hero, &panel(), 3), screen(&g, Role::Hero, &panel(), 3));
 }
+
+#[test]
+fn from_dir_drops_turtle_and_keeps_normal() {
+    let d = tmp_dir("mix");
+    put(&d, 5, &turtle(Role::Hero)); // newest first, so a plain truncate(1) would keep the turtle
+    put(&d, 3, &aggressor(Role::Hero));
+    let lib = Library::from_dir(d.to_str().unwrap(), "hero", 1).unwrap();
+    assert_eq!(lib.len(), 1);
+    assert_eq!(lib.pick(0).weights, aggressor(Role::Hero).weights);
+}
