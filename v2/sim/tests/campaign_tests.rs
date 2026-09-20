@@ -73,7 +73,8 @@ fn each_encounter_has_replayable_log() {
     for e in &r.encounters {
         assert!(e.result.ticks >= 1);
         assert!(e.result.log.to_json().contains("\"frames\""));
-        let again = play_with_hp(Arena::generate(e.arena_seed, &cfg), h.pick(0).clone(), m.pick(e.monster_index).clone(), e.match_seed, &cfg, [cfg.max_hp, e.monster_hp]);
+        let setup = Setup { hp: [cfg.max_hp, e.monster_hp], species: [Species::Hero, e.species], rank: [Rank::Grass, e.rank] };
+        let again = play_with_setup(Arena::generate(e.arena_seed, &cfg), h.pick(0).clone(), m.pick(e.monster_index).clone(), e.match_seed, &cfg, setup);
         assert_eq!(again.log.to_json(), e.result.log.to_json());
     }
 }
