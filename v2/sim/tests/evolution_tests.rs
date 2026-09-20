@@ -97,3 +97,16 @@ mod species_assignment {
             assert_eq!(species_for(s).0, want, "seed {s}");
         }
     }
+
+    #[test]
+    fn rank_cadence_and_boss_species() {
+        for s in 1..200u64 {
+            let (sp, rank) = species_for(s);
+            let want = if s % 32 == 0 { Rank::Boss } else if s % 8 == 0 { Rank::Elite } else { Rank::Grass };
+            assert_eq!(rank, want, "seed {s}");
+            if rank == Rank::Boss {
+                assert!(sp == Species::Warrior || sp == Species::Mage, "boss seed {s} got {sp:?}");
+            }
+            assert_ne!(sp, Species::Hero);
+        }
+    }
