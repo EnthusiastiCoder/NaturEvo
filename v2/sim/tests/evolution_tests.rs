@@ -110,3 +110,12 @@ mod species_assignment {
             assert_ne!(sp, Species::Hero);
         }
     }
+
+    #[test]
+    fn counts_over_64_seeds() {
+        let ranks: Vec<Rank> = (0..64u64).map(|s| species_for(s).1).collect();
+        assert_eq!(ranks.iter().filter(|r| **r == Rank::Boss).count(), 2);
+        assert_eq!(ranks.iter().filter(|r| **r == Rank::Elite).count(), 6);
+        assert_eq!(ranks.iter().filter(|r| **r == Rank::Grass).count(), 56);
+    }
+}
