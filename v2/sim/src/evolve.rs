@@ -111,7 +111,6 @@ impl GenStats {
 
 const HOF_CAP: usize = 256;
 const ELITES: usize = 2;
-const DRAW_PENALTY: f32 = 3.0;
 const BASELINE_N: usize = 10;
 
 /// Per-match outcome for the evaluated role.
