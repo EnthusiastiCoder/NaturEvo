@@ -5,3 +5,5 @@ use arena_sim::evolve::screen;
 use arena_sim::fighter::Role;
 use arena_sim::genome::Genome;
 use common::*;
+
+fn panel() -> Vec<Genome> { vec![idler(Role::Monster)] }
