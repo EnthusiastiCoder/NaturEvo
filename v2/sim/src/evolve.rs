@@ -149,8 +149,65 @@ pub fn species_for(seed: u64) -> (Species, Rank) {
         let sp = if (seed / 32) % 2 == 0 { Species::Warrior } else { Species::Mage };
         return (sp, Rank::Boss);
     }
-    while !mt.finished() {
-        mt.step();
+    let sp = [Species::Minion, Species::Rogue, Species::Warrior, Species::Mage][(seed % 4) as usize];
+    (sp, if seed % 8 == 0 { Rank::Elite } else { Rank::Grass })
+}
+
+/// Reward and penalty terms of one match for one role (before weighting by the config).
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Terms {
+    pub punish_hits: u32,
+    pub statuses: u32,
+    pub punish_reward: f32,
+    pub status_reward: f32,
+    pub unseen_guard_share: f32,
+    pub passivity_share: f32,
+}
+
+fn is_guard(s: CombatState) -> bool {
+    matches!(s, CombatState::GuardRaise | CombatState::Blocking | CombatState::GuardRecover)
+}
+
+pub fn terms(role: Role, res: &MatchResult, cfg: &ArenaConfig) -> Terms {
+    let ri = role.index();
+    let ft = &cfg.fitness;
+    let n = res.log.frames.len().max(1) as f32;
+    let (mut punish_hits, mut mask) = (0u32, 0u8);
+    let (mut unseen, mut passive) = (0u32, 0u32);
+    let mut since = 0u32;
+    for f in &res.log.frames {
+        let mut damaged = false;
+        for e in &f.ev {
+            match e {
+                Event::Hit { by, dmg, punish, fx, .. } => {
+                    if *dmg > 0.0 {
+                        damaged = true;
+                    }
+                    if *by == ri {
+                        if *punish {
+                            punish_hits += 1;
+                        }
+                        for k in fx {
+                            mask |= 1 << (*k as u8 & 7);
+                        }
+                    }
+                }
+                Event::Dot { dmg, .. } if *dmg > 0.0 => damaged = true,
+                _ => {}
+            }
+        }
+        if damaged {
+            since = 0;
+        } else {
+            since += 1;
+        }
+        if since > ft.passivity_ticks {
+            passive += 1;
+        }
+        let d = ((f.pos[0].0 - f.pos[1].0).powi(2) + (f.pos[0].1 - f.pos[1].1).powi(2)).sqrt();
+        if is_guard(f.state[ri]) && (!f.seen[ri] || d > ft.unseen_guard_dist) {
+            unseen += 1;
+        }
     }
     let res = MatchResult {
         outcome: mt.outcome(),
