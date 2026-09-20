@@ -51,3 +51,13 @@ fn from_dir_drops_turtle_and_keeps_normal() {
     assert_eq!(lib.len(), 1);
     assert_eq!(lib.pick(0).weights, aggressor(Role::Hero).weights);
 }
+
+#[test]
+fn from_dir_errors_with_numbers_when_all_fail() {
+    let d = tmp_dir("allbad");
+    put(&d, 1, &turtle(Role::Hero));
+    put(&d, 2, &turtle(Role::Hero));
+    let err = Library::from_dir(d.to_str().unwrap(), "hero", 5).err().expect("must fail");
+    assert!(err.contains("block_share"), "{err}");
+    assert!(err.contains("block_unseen_share"), "{err}");
+}
