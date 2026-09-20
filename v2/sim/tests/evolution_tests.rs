@@ -88,3 +88,12 @@ mod species_assignment {
             assert_eq!(species_for(s), species_for(s));
         }
     }
+
+    #[test]
+    fn species_follows_seed_mod_4_for_non_boss() {
+        for s in 1..200u64 {
+            if s % 32 == 0 { continue; }
+            let want = [Species::Minion, Species::Rogue, Species::Warrior, Species::Mage][(s % 4) as usize];
+            assert_eq!(species_for(s).0, want, "seed {s}");
+        }
+    }
