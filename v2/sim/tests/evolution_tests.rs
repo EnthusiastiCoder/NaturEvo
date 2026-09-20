@@ -76,3 +76,8 @@ fn checkpoint_resume_matches_uninterrupted() {
 fn resume_rejects_garbage() {
     assert!(Trainer::resume("nope").is_err());
 }
+
+// WS3: species/rank assignment for training matches (seed % 4; every 8th Elite; every 32nd Boss).
+mod species_assignment {
+    use arena_sim::attacks::{Rank, Species};
+    use arena_sim::evolve::species_for;
