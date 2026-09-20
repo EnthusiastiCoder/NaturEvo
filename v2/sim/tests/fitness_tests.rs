@@ -35,3 +35,13 @@ fn no_damage_loss() -> MatchResult {
 }
 /// Both fight at close range.
 fn trade() -> MatchResult { play_out(duel(1.0), fwd_atk(0), fwd_atk(0)) }
+
+#[test]
+fn fitness_defaults_match_plan() {
+    let f = cfg().fitness;
+    assert_eq!(f.draw_penalty, 6.0);
+    assert!((f.punish_reward - 0.6).abs() < 1e-6);
+    assert!((f.status_reward - 0.15).abs() < 1e-6);
+    assert_eq!(f.punish_cap as f32, 3.0);
+    assert_eq!(f.status_cap as f32, 6.0);
+}
