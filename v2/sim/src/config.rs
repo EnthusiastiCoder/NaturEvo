@@ -101,6 +101,44 @@ impl Default for CombatTuning {
     }
 }
 
+/// Fitness weights (see evolve.rs `score_result`).
+#[derive(Clone, Copy, Debug)]
+pub struct FitnessTuning {
+    pub draw_penalty: f32,
+    pub punish_reward: f32,
+    pub punish_cap: u32,
+    pub status_reward: f32,
+    pub status_cap: u32,
+    pub attack_freq_reward: f32,
+    pub attack_freq_cap: f32,
+    pub dodge_free_share: f32,
+    pub dodge_penalty: f32,
+    pub unseen_guard_weight: f32,
+    pub unseen_guard_dist: f32,
+    pub passivity_weight: f32,
+    pub passivity_ticks: u32,
+}
+
+impl Default for FitnessTuning {
+    fn default() -> Self {
+        FitnessTuning {
+            draw_penalty: 6.0,
+            punish_reward: 0.6,
+            punish_cap: 3,
+            status_reward: 0.15,
+            status_cap: 6,
+            attack_freq_reward: 0.5,
+            attack_freq_cap: 0.3,
+            dodge_free_share: 0.25,
+            dodge_penalty: 3.0,
+            unseen_guard_weight: 2.0,
+            unseen_guard_dist: 4.0,
+            passivity_weight: 1.0,
+            passivity_ticks: 300,
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct ArenaConfig {
     pub tick_hz: u32,
