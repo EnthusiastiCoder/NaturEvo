@@ -206,4 +206,13 @@ fn fight_and_run_json_carry_species_rank_and_monster_name() {
     let rj = run_json(&r, None, None).unwrap();
     for k in ["\"species\"", "\"rank\"", "\"monster_name\""] { assert!(rj.contains(k), "run json missing {k}"); }
 }
+
+fn champ_dir(name: &str, hero: &Genome, monster: &Genome) -> std::path::PathBuf {
+    let d = std::env::temp_dir().join(format!("nv_{name}_{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&d);
+    std::fs::create_dir_all(&d).unwrap();
+    std::fs::write(d.join("champion_hero_gen_0.json"), hero.to_json()).unwrap();
+    std::fs::write(d.join("champion_monster_gen_0.json"), monster.to_json()).unwrap();
+    d
+}
 }
