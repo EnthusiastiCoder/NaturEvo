@@ -84,3 +84,16 @@ fn unseen_guard_is_penalised_seen_close_guard_is_not() {
     let (su, ss) = (score(Role::Hero, &unseen), score(Role::Hero, &seen));
     assert!(ss - su >= 1.0, "seen {ss} vs unseen {su}");
 }
+
+#[test]
+fn no_free_block_bonus_block_bit_toggle_changes_nothing() {
+    let play = |a: Action| {
+        let mut m = duel(2.0);
+        m.apply_status(Role::Hero, Status::Stun, 200, 0.0, Role::Monster);
+        run(&mut m, 100, a, idle());
+        m.result()
+    };
+    let (with, without) = (play(blk()), play(idle()));
+    let d = (score(Role::Hero, &with) - score(Role::Hero, &without)).abs();
+    assert!(d < 1e-6, "block bit must not change fitness when it has no state effect (diff {d})");
+}
