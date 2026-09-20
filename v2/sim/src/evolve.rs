@@ -142,12 +142,12 @@ fn par_map<T: Send, F: Fn(usize) -> T + Sync>(n: usize, f: F) -> Vec<T> {
     out.into_iter().map(|x| x.unwrap()).collect()
 }
 
-fn score_match(role: Role, me: &Genome, opp: &Genome, seed: u64, cfg: &ArenaConfig, near: Option<f32>) -> MatchScore {
-    let (h, m) = if role == Role::Hero { (me.clone(), opp.clone()) } else { (opp.clone(), me.clone()) };
-    // `near` starts the duel at close range (curriculum: combat skills get learned before navigation).
-    let mut mt = Match::new(Arena::generate(seed, cfg), h, m, seed, cfg);
-    if let Some(d) = near {
-        mt.place_for_duel(d);
+/// Species and rank of the monster in a training match, by seed: species `seed % 4`
+/// (Minion, Rogue, Warrior, Mage), every 8th seed Elite, every 32nd Boss (Warrior or Mage).
+pub fn species_for(seed: u64) -> (Species, Rank) {
+    if seed % 32 == 0 {
+        let sp = if (seed / 32) % 2 == 0 { Species::Warrior } else { Species::Mage };
+        return (sp, Rank::Boss);
     }
     while !mt.finished() {
         mt.step();
