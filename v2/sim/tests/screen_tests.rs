@@ -7,3 +7,15 @@ use arena_sim::genome::Genome;
 use common::*;
 
 fn panel() -> Vec<Genome> { vec![idler(Role::Monster)] }
+
+fn tmp_dir(tag: &str) -> std::path::PathBuf {
+    let d = std::env::temp_dir().join(format!("arena_screen_{}_{}", tag, std::process::id()));
+    let _ = std::fs::remove_dir_all(&d);
+    std::fs::create_dir_all(&d).unwrap();
+    d
+}
+fn put(dir: &std::path::Path, gen: u32, g: &Genome) {
+    let mut g = g.clone();
+    g.generation = gen;
+    std::fs::write(dir.join(format!("champion_hero_gen_{gen}.json")), g.to_json()).unwrap();
+}
