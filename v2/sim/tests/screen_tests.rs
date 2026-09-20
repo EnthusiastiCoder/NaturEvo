@@ -19,3 +19,10 @@ fn put(dir: &std::path::Path, gen: u32, g: &Genome) {
     g.generation = gen;
     std::fs::write(dir.join(format!("champion_hero_gen_{gen}.json")), g.to_json()).unwrap();
 }
+
+#[test]
+fn turtle_fails_the_screen_thresholds() {
+    let s = screen(&turtle(Role::Hero), Role::Hero, &panel(), 4);
+    assert!(s.block_share > 0.25, "{s:?}");
+    assert!(s.block_unseen_share > 0.10, "{s:?}");
+}
