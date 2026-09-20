@@ -62,3 +62,25 @@ fn draw_strictly_worse_than_no_damage_loss() {
     assert_eq!(draw.outcome, arena_sim::matchup::Outcome::Draw);
     assert!(score(Role::Hero, &draw) < score(Role::Hero, &no_damage_loss()));
 }
+
+#[test]
+fn unseen_guard_is_penalised_seen_close_guard_is_not() {
+    // identical 240-tick draws: hero blocks throughout.
+    let unseen = {
+        let mut m = duel(13.0);
+        m.face_away(Role::Hero);
+        run(&mut m, 240, blk(), idle());
+        m.result()
+    };
+    let seen = {
+        let mut m = duel(3.0);
+        run(&mut m, 240, blk(), idle());
+        m.result()
+    };
+    let c = cfg();
+    let (tu, ts) = (terms(Role::Hero, &unseen, &c), terms(Role::Hero, &seen, &c));
+    assert!(tu.unseen_guard_share > 0.9, "unseen share {}", tu.unseen_guard_share);
+    assert_eq!(ts.unseen_guard_share, 0.0, "enemy seen within 4 tiles is not penalised");
+    let (su, ss) = (score(Role::Hero, &unseen), score(Role::Hero, &seen));
+    assert!(ss - su >= 1.0, "seen {ss} vs unseen {su}");
+}
