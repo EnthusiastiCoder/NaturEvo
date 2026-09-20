@@ -150,3 +150,12 @@ fn status_reward_caps_at_six() {
     assert_eq!(t.statuses as f32, 6.0);
     assert!((t.status_reward - 0.9).abs() < 1e-5, "{}", t.status_reward);
 }
+
+#[test]
+fn passivity_share_on_idle_draw() {
+    let r = play_out(duel(13.0), idle(), idle());
+    assert_eq!(r.outcome, arena_sim::matchup::Outcome::Draw);
+    let share = terms(Role::Hero, &r, &cfg()).passivity_share;
+    // (1800 - 300) / 1800
+    assert!((share - 0.8333).abs() < 0.01, "{share}");
+}
