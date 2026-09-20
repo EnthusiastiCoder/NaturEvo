@@ -26,3 +26,12 @@ fn turtle_fails_the_screen_thresholds() {
     assert!(s.block_share > 0.25, "{s:?}");
     assert!(s.block_unseen_share > 0.10, "{s:?}");
 }
+
+#[test]
+fn aggressor_passes_the_screen_thresholds() {
+    let s = screen(&aggressor(Role::Hero), Role::Hero, &panel(), 4);
+    assert_eq!(s.block_share, 0.0, "{s:?}");
+    assert_eq!(s.block_unseen_share, 0.0, "{s:?}");
+    assert!(s.draw_rate <= 0.25, "{s:?}");
+    assert!(s.statuses_per_fight >= 1.0, "{s:?}");
+}
