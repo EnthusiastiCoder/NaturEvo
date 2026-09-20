@@ -111,3 +111,15 @@ fn punish_reward_is_capped_at_three_hits() {
     assert!((t.punish_reward - 0.6 * 3.0).abs() < 1e-5, "{}", t.punish_reward);
     assert_eq!(terms(Role::Monster, &r, &cfg()).punish_hits, 0);
 }
+
+#[test]
+fn single_punish_hit_rewards_exactly_point_six() {
+    let mut m = duel(1.0);
+    for _ in 0..8 {
+        m.apply_status(Role::Monster, Status::Stagger, 40, 0.0, Role::Hero);
+        m.step_with(atk(0), idle());
+    }
+    let t = terms(Role::Hero, &m.result(), &cfg());
+    assert_eq!(t.punish_hits, 1);
+    assert!((t.punish_reward - 0.6).abs() < 1e-6);
+}
