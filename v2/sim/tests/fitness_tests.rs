@@ -123,3 +123,16 @@ fn single_punish_hit_rewards_exactly_point_six() {
     assert_eq!(t.punish_hits, 1);
     assert!((t.punish_reward - 0.6).abs() < 1e-6);
 }
+
+#[test]
+fn status_reward_counts_distinct_statuses() {
+    // Rogue Stab (bleed) then Dash (slowed) on an idle hero: two distinct statuses.
+    let mut m = duel_sp(Species::Rogue, Rank::Grass, 1.0);
+    m.set_hp(Role::Hero, 10_000.0);
+    run(&mut m, 20, idle(), atk(0));
+    run(&mut m, 40, idle(), atk(1));
+    let t = terms(Role::Monster, &m.result(), &cfg());
+    assert_eq!(t.statuses, 2);
+    assert!((t.status_reward - 0.3).abs() < 1e-5, "{}", t.status_reward);
+    assert_eq!(terms(Role::Hero, &m.result(), &cfg()).statuses, 0);
+}
