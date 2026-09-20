@@ -61,3 +61,12 @@ fn from_dir_errors_with_numbers_when_all_fail() {
     assert!(err.contains("block_share"), "{err}");
     assert!(err.contains("block_unseen_share"), "{err}");
 }
+
+#[test]
+fn from_dir_opts_without_screen_keeps_turtle() {
+    let d = tmp_dir("noscreen");
+    put(&d, 1, &turtle(Role::Hero));
+    let lib = Library::from_dir_opts(d.to_str().unwrap(), "hero", 5, false).unwrap();
+    assert_eq!(lib.len(), 1);
+    assert!(Library::from_dir_opts(d.to_str().unwrap(), "hero", 5, true).is_err());
+}
