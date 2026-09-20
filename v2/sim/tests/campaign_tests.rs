@@ -146,3 +146,4 @@ fn wild_monsters_are_weaker_than_elites_and_boss_is_full_strength() {
     }
     assert!(g > 0 && el > 0 && b > 0);
 }
+}
