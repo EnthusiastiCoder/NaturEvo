@@ -35,8 +35,9 @@ pub fn run(args: &[String]) -> Result<(), String> {
             let seed: u64 = opt(args, "--seed").unwrap_or("1").parse().map_err(|_| "bad --seed".to_string())?;
             let keep: usize = opt(args, "--keep").unwrap_or("20").parse().map_err(|_| "bad --keep".to_string())?;
             let permadeath = opt(args, "--permadeath").map(|v| v != "off").unwrap_or(true);
-            let heroes = crate::campaign::Library::from_dir(dir, "hero", keep)?;
-            let monsters = crate::campaign::Library::from_dir(dir, "monster", keep)?;
+            let screen = !args.iter().any(|a| a == "--no-screen");
+            let heroes = crate::campaign::Library::from_dir_opts(dir, "hero", keep, screen)?;
+            let monsters = crate::campaign::Library::from_dir_opts(dir, "monster", keep, screen)?;
             let r = crate::campaign::run(seed, crate::campaign::MapCfg::default(), &heroes, &monsters, permadeath);
             let fights = opt(args, "--fights-dir");
             let json = crate::campaign::run_json(&r, fights, Some(out))?;
