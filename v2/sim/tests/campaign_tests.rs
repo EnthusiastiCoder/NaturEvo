@@ -200,8 +200,8 @@ fn fight_and_run_json_carry_species_rank_and_monster_name() {
     let r = run(3, MapCfg::default(), &h, &m, true);
     let e = &r.encounters[0];
     let fj = fight_json(e);
-    assert!(fj.contains(&format!("\"species\":\"{}\"", e.species.as_str())), "{}", &fj[fj.len().saturating_sub(300)..]);
-    assert!(fj.contains(&format!("\"rank\":\"{}\"", e.rank.as_str())));
+    assert!(fj.contains(&format!("\"species\":[\"hero\",\"{}\"]", e.species.as_str())), "{}", &fj[..200]);
+    assert!(fj.contains(&format!("\"rank\":[\"grass\",\"{}\"]", e.rank.as_str())));
     assert!(fj.contains(&format!("\"monster_name\":\"{}\"", e.monster_name)));
     let rj = run_json(&r, None, None).unwrap();
     for k in ["\"species\"", "\"rank\"", "\"monster_name\""] { assert!(rj.contains(k), "run json missing {k}"); }
