@@ -92,10 +92,20 @@ mod species_assignment {
     #[test]
     fn species_follows_seed_mod_4_for_non_boss() {
         for s in 1..200u64 {
-            if s % 32 == 0 { continue; }
+            if s % 32 == 0 || s % 8 == 0 { continue; }
             let want = [Species::Minion, Species::Rogue, Species::Warrior, Species::Mage][(s % 4) as usize];
             assert_eq!(species_for(s).0, want, "seed {s}");
         }
+    }
+
+    #[test]
+    fn elites_cover_all_four_species() {
+        let mut seen = std::collections::HashSet::new();
+        for s in (8..=256u64).step_by(8).filter(|s| s % 32 != 0) {
+            assert_eq!(species_for(s), species_for(s));
+            seen.insert(species_for(s).0 as u8);
+        }
+        assert_eq!(seen.len(), 4);
     }
 
     #[test]
