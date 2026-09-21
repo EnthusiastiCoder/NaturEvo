@@ -47,7 +47,8 @@ impl Library {
         false
     }
     /// Load trained champions of one role ("hero" or "monster") from a `train` output dir, newest
-    /// generation first, keeping at most `keep`. Index 0 is therefore the latest champion.
+    /// generation first, keeping at most `keep`. Champions that fail the behaviour screen
+    /// (turtling, stalemating) are dropped. Index 0 is therefore the latest passing champion.
     pub fn from_dir(dir: &str, role: &str, keep: usize) -> Result<Library, String> {
         let prefix = format!("champion_{}_gen_", role);
         let mut found: Vec<(u32, std::path::PathBuf)> = Vec::new();
