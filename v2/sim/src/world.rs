@@ -141,6 +141,22 @@ impl Arena {
     /// equals plain unit stepping. The step index stays an integer so the loop-carried
     /// dependency does not go through float conversions.
     pub fn ray_dist(&self, x: f32, y: f32, dx: f32, dy: f32, range: f32) -> f32 {
+        if x >= 0.0 && y >= 0.0 && x < self.w as f32 && y < self.h as f32 && range <= 16.0 && dx.abs() <= 1.01 && dy.abs() <= 1.01 {
+            const ONE: f32 = 65536.0;
+            let pw = (self.w + 2 * PAD) as i32;
+            let (ox, oy) = (((x + PAD as f32) * ONE) as i32, ((y + PAD as f32) * ONE) as i32);
+            let (sx, sy) = ((dx * ONE) as i32, (dy * ONE) as i32);
+            // Bit r is set when the sample at distance r (1..=15) is blocked or outside.
+            let mask = ray_mask(&self.padded, pw, ox, oy, sx, sy);
+            let n = (range.ceil() as u32).min(16);
+            let mask = mask & !(u32::MAX << n);
+            return if mask == 0 { range } else { mask.trailing_zeros() as f32 };
+        }
+        self.ray_dist_step(x, y, dx, dy, range)
+    }
+
+    #[doc(hidden)]
+    pub fn ray_dist_step(&self, x: f32, y: f32, dx: f32, dy: f32, range: f32) -> f32 {
         let (wi, hi) = (self.w as u32, self.h as u32);
         let mut i = 1i32;
         while (i as f32) < range {
