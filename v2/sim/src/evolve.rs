@@ -234,6 +234,45 @@ pub fn score_result(role: Role, res: &MatchResult, cfg: &ArenaConfig) -> f32 {
         fitness += 5.0 * own / cfg.max_hp;
     }
     let n = res.log.frames.len().max(1) as f32;
+    let (mut fa, mut fd) = (0.0f32, 0.0f32);
+    for f in &res.log.frames {
+        fa += f.action[ri].attack as u8 as f32;
+        fd += f.action[ri].dodge as u8 as f32;
+    }
+    let (fa, fd) = (fa / n, fd / n);
+    if res.outcome == Outcome::Draw {
+        fitness -= ft.draw_penalty;
+    }
+    if !win {
+        fitness -= 1.0 * res.ticks as f32 / cfg.max_ticks as f32;
+    }
+    // Anti-spam: dodging most of the time is a way to avoid combat. No bonus for blocking.
+    fitness -= ft.dodge_penalty * (fd - ft.dodge_free_share).max(0.0);
+    fitness += ft.attack_freq_reward * fa.min(ft.attack_freq_cap);
+    let t = terms(role, res, cfg);
+    fitness -= ft.unseen_guard_weight * t.unseen_guard_share;
+    fitness -= ft.passivity_weight * t.passivity_share.min(1.0);
+    fitness + t.punish_reward + t.status_reward
+}
+
+fn score_match(role: Role, me: &Genome, opp: &Genome, seed: u64, cfg: &ArenaConfig, near: Option<f32>) -> MatchScore {
+    let (h, m) = if role == Role::Hero { (me.clone(), opp.clone()) } else { (opp.clone(), me.clone()) };
+    let (species, rank) = species_for(seed);
+    let setup = Setup { hp: [cfg.max_hp; 2], species: [Species::Hero, species], rank: [Rank::Grass, rank] };
+    let mut mt = Match::new_with_setup(Arena::generate(seed, cfg), h, m, seed, cfg, setup);
+    // `near` overrides the spawn distance (tests only; training uses the arena spawns).
+    if let Some(d) = near {
+        mt.place_for_duel(d);
+    }
+    while !mt.finished() {
+        mt.step();
+    }
+    let res = mt.result();
+    let arena = mt.arena().clone();
+    let ri = role.index();
+    let win = matches!((res.outcome, role), (Outcome::HeroWin, Role::Hero) | (Outcome::MonsterWin, Role::Monster));
+    let mut fitness = score_result(role, &res, cfg);
+    let n = res.log.frames.len().max(1) as f32;
     let mut c = [0.0f32; 3];
     let mut shape = 0.0f32;
     let (aw, ah) = arena.size();
