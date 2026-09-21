@@ -305,7 +305,7 @@ pub fn fight_json(e: &Encounter) -> String {
     let log = e.result.log.to_json();
     let arena = Arena::generate(e.arena_seed, &ArenaConfig::default());
     let body = log.strip_suffix('}').unwrap_or(&log);
-    format!("{},\"arena\":{},\"seed\":{},\"monster_index\":{}}}", body, arena_json(&arena), e.match_seed, e.monster_index)
+    format!("{},\"arena\":{},\"seed\":{},\"monster_index\":{},\"monster_name\":\"{}\"}}", body, arena_json(&arena), e.match_seed, e.monster_index, e.monster_name)
 }
 
 /// Run JSON for the viewer. With `fights_dir` set, fights are written there as `fight_N.json`
