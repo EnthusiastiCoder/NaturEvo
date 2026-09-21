@@ -335,8 +335,8 @@ pub fn run_json(r: &CampaignResult, fights_dir: Option<&str>, run_file: Option<&
         };
         let kind = format!("{:?}", e.kind).to_lowercase();
         encs.push(format!(
-            "{{\"kind\":\"{}\",\"zone\":{},\"tile\":[{},{}],\"monster_index\":{},\"result\":\"{:?}\",\"fight\":{}}}",
-            kind, e.zone, e.tile.0, e.tile.1, e.monster_index, e.result.outcome, fight
+            "{{\"kind\":\"{}\",\"zone\":{},\"tile\":[{},{}],\"monster_index\":{},\"species\":\"{}\",\"rank\":\"{}\",\"monster_name\":\"{}\",\"result\":\"{:?}\",\"fight\":{}}}",
+            kind, e.zone, e.tile.0, e.tile.1, e.monster_index, e.species.as_str(), e.rank.as_str(), e.monster_name, e.result.outcome, fight
         ));
     }
     let path: Vec<String> = r.path.iter().map(|p| format!("[{},{}]", p.0, p.1)).collect();
