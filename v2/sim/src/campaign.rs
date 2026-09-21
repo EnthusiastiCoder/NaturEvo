@@ -50,6 +50,11 @@ impl Library {
     /// generation first, keeping at most `keep`. Champions that fail the behaviour screen
     /// (turtling, stalemating) are dropped. Index 0 is therefore the latest passing champion.
     pub fn from_dir(dir: &str, role: &str, keep: usize) -> Result<Library, String> {
+        Library::from_dir_opts(dir, role, keep, true)
+    }
+
+    /// `from_dir` with the screen switched on or off.
+    pub fn from_dir_opts(dir: &str, role: &str, keep: usize, screen: bool) -> Result<Library, String> {
         let prefix = format!("champion_{}_gen_", role);
         let mut found: Vec<(u32, std::path::PathBuf)> = Vec::new();
         for e in std::fs::read_dir(dir).map_err(|e| format!("{}: {}", dir, e))? {
