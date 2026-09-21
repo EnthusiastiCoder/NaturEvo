@@ -303,6 +303,51 @@ fn score_match(role: Role, me: &Genome, opp: &Genome, seed: u64, cfg: &ArenaConf
     MatchScore { fitness, win, ticks: res.ticks, freq: [c[0] / n, c[1] / n, c[2] / n] }
 }
 
+/// Behaviour summary of a champion over a fixed panel, used to screen the campaign library.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Screen {
+    pub block_unseen_share: f32,
+    pub block_share: f32,
+    pub draw_rate: f32,
+    pub statuses_per_fight: f32,
+}
+
+/// Play `genome` (as `role`) against every panel opponent on arena seeds 1..=seeds and average
+/// the guard share (all and while the enemy is unseen), draw rate and statuses applied per fight.
+pub fn screen(genome: &Genome, role: Role, panel: &[Genome], seeds: u64) -> Screen {
+    let cfg = ArenaConfig::default();
+    let ri = role.index();
+    let (mut bu, mut b, mut d, mut st, mut fights) = (0.0f64, 0.0f64, 0.0f64, 0.0f64, 0usize);
+    for opp in panel {
+        for seed in 1..=seeds {
+            let (sp, rank) = species_for(seed);
+            let (h, m) = if role == Role::Hero { (genome.clone(), opp.clone()) } else { (opp.clone(), genome.clone()) };
+            let setup = Setup { hp: [cfg.max_hp; 2], species: [Species::Hero, sp], rank: [Rank::Grass, rank] };
+            let res = crate::matchup::play_with_setup(Arena::generate(seed, &cfg), h, m, seed, &cfg, setup);
+            let n = res.log.frames.len().max(1) as f64;
+            let (mut g, mut gu) = (0u32, 0u32);
+            for f in &res.log.frames {
+                if is_guard(f.state[ri]) {
+                    g += 1;
+                    if !f.seen[ri] {
+                        gu += 1;
+                    }
+                }
+            }
+            bu += gu as f64 / n;
+            b += g as f64 / n;
+            if res.outcome == Outcome::Draw {
+                d += 1.0;
+            }
+            let t = terms(role, &res, &cfg);
+            st += t.statuses as f64;
+            fights += 1;
+        }
+    }
+    let k = fights.max(1) as f64;
+    Screen { block_unseen_share: (bu / k) as f32, block_share: (b / k) as f32, draw_rate: (d / k) as f32, statuses_per_fight: (st / k) as f32 }
+}
+
 fn path_field(arena: &Arena, w: usize, h: usize, from: (f32, f32)) -> Vec<u16> {
     let mut d = vec![u16::MAX; w * h];
     let sx = (from.0.floor().max(0.0) as usize).min(w - 1);
