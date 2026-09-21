@@ -65,7 +65,9 @@ impl Library {
             }
         }
         found.sort_by(|a, b| b.0.cmp(&a.0));
-        found.truncate(keep.max(1));
+        let keep = keep.max(1);
+        let r = if role == "monster" { Role::Monster } else { Role::Hero };
+        let panel = screen_panel(r.other());
         let mut gs = Vec::new();
         for (_, p) in &found {
             let t = std::fs::read_to_string(p).map_err(|e| format!("{}: {}", p.display(), e))?;
