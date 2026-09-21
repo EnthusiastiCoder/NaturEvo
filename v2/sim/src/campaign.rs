@@ -75,7 +75,18 @@ impl Library {
                 break;
             }
             let t = std::fs::read_to_string(p).map_err(|e| format!("{}: {}", p.display(), e))?;
-            gs.push(Genome::from_json(&t)?);
+            let genome = Genome::from_json(&t)?;
+            if screen {
+                let sc = crate::evolve::screen(&genome, r, &panel, SCREEN_SEEDS);
+                if sc.block_unseen_share > MAX_BLOCK_UNSEEN || sc.block_share > MAX_BLOCK || sc.draw_rate > MAX_DRAW {
+                    report.push(format!(
+                        "gen {}: block_unseen_share {:.3} block_share {:.3} draw_rate {:.3}",
+                        g, sc.block_unseen_share, sc.block_share, sc.draw_rate
+                    ));
+                    continue;
+                }
+            }
+            gs.push(genome);
         }
         if gs.is_empty() {
             return Err(format!("no {} champions in {}", role, dir));
