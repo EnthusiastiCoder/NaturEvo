@@ -69,7 +69,11 @@ impl Library {
         let r = if role == "monster" { Role::Monster } else { Role::Hero };
         let panel = screen_panel(r.other());
         let mut gs = Vec::new();
-        for (_, p) in &found {
+        let mut report: Vec<String> = Vec::new();
+        for (g, p) in &found {
+            if gs.len() >= keep {
+                break;
+            }
             let t = std::fs::read_to_string(p).map_err(|e| format!("{}: {}", p.display(), e))?;
             gs.push(Genome::from_json(&t)?);
         }
