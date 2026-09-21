@@ -243,14 +243,16 @@ pub fn run(seed: u64, cfg: MapCfg, heroes: &Library, monsters: &Library, permade
         }
         let tier = map.zone_tier(tile);
         let monster_hp = monster_hp_for(kind);
-        let result = play_with_hp(
-            Arena::generate(arena_seed, &acfg),
-            heroes.pick(0).clone(),
-            monsters.pick(monster_index).clone(),
-            match_seed,
-            &acfg,
-            [acfg.max_hp, monster_hp],
-        );
+        let pick = rng.next_u64();
+        let four = [Species::Minion, Species::Rogue, Species::Warrior, Species::Mage];
+        let (species, rank) = match kind {
+            EncounterKind::Boss => (if pick % 2 == 0 { Species::Warrior } else { Species::Mage }, Rank::Boss),
+            EncounterKind::Elite => (four[(pick % 4) as usize], Rank::Elite),
+            EncounterKind::Grass => (four[(pick % 4) as usize], Rank::Grass),
+        };
+        let setup = Setup { hp: [acfg.max_hp, monster_hp], species: [Species::Hero, species], rank: [Rank::Grass, rank] };
+        let result = play_with_setup(Arena::generate(arena_seed, &acfg), heroes.pick(0).clone(), monsters.pick(monster_index).clone(), match_seed, &acfg, setup);
+        let monster_name = monster_name(species, rank);
         let lost = result.outcome != MOutcome::HeroWin;
         encounters.push(Encounter {
             kind,
