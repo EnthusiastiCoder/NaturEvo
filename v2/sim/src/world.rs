@@ -116,11 +116,8 @@ impl Arena {
     /// within distance < g of a point in the tile is free.
     fn compute_clear(&self) -> Vec<u8> {
         let (w, h) = (self.w as i32, self.h as i32);
-        let big = 255u8;
-        let at = |d: &Vec<u8>, x: i32, y: i32| -> u8 {
-            if x < 0 || y < 0 || x >= w || y >= h { 0 } else { d[(y * w + x) as usize] }
-        };
-        let mut d: Vec<u8> = self.blocked.iter().map(|&b| if b { 0 } else { big }).collect();
+        let mut d = vec![0u8; self.w * self.h];
+        let list: Vec<(i32, i32)> = (0..w * h).filter(|&i| self.blocked[i as usize]).map(|i| (i % w, i / w)).collect();
         for y in 0..h {
             for x in 0..w {
                 let i = (y * w + x) as usize;
