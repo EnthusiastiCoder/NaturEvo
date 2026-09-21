@@ -111,6 +111,9 @@ impl Arena {
         self.blocked[ty as usize * self.w + tx as usize]
     }
 
+    /// Per tile: 0 if blocked, else max(1, ceil(g)) with g the Euclidean gap from the tile's
+    /// rectangle to the nearest blocked tile (or the outside), capped at 255. Every point
+    /// within distance < g of a point in the tile is free.
     fn compute_clear(&self) -> Vec<u8> {
         let (w, h) = (self.w as i32, self.h as i32);
         let big = 255u8;
