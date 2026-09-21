@@ -209,15 +209,19 @@ pub fn terms(role: Role, res: &MatchResult, cfg: &ArenaConfig) -> Terms {
             unseen += 1;
         }
     }
-    let res = MatchResult {
-        outcome: mt.outcome(),
-        ticks: mt.tick(),
-        hero_hp: mt.hp(Role::Hero),
-        monster_hp: mt.hp(Role::Monster),
-        damage_dealt: mt.damage_dealt(),
-        log: mt.log().clone(),
-    };
-    let arena = mt.arena().clone();
+    let statuses = mask.count_ones();
+    Terms {
+        punish_hits,
+        statuses,
+        punish_reward: ft.punish_reward * punish_hits.min(ft.punish_cap) as f32,
+        status_reward: ft.status_reward * statuses.min(ft.status_cap) as f32,
+        unseen_guard_share: unseen as f32 / n,
+        passivity_share: passive as f32 / n,
+    }
+}
+
+/// Fitness of one finished match for `role`, without the navigation shaping term.
+pub fn score_result(role: Role, res: &MatchResult, cfg: &ArenaConfig) -> f32 {
     let ri = role.index();
     let dealt = res.damage_dealt[ri] / cfg.max_hp;
     let taken = res.damage_dealt[1 - ri] / cfg.max_hp;
