@@ -280,6 +280,16 @@ pub fn run(seed: u64, cfg: MapCfg, heroes: &Library, monsters: &Library, permade
     CampaignResult { map, path, steps, encounters, outcome, ends: 1 }
 }
 
+/// Display name such as "Minion", "Elite Rogue" or "Boss Warrior".
+pub fn monster_name(species: Species, rank: Rank) -> String {
+    let cap: String = species.as_str().chars().enumerate().map(|(i, c)| if i == 0 { c.to_ascii_uppercase() } else { c }).collect();
+    match rank {
+        Rank::Grass => cap,
+        Rank::Elite => format!("Elite {}", cap),
+        Rank::Boss => format!("Boss {}", cap),
+    }
+}
+
 /// Arena obstacles as `{"w","h","blocked":[rows of '#'/'.']}` for the viewer.
 pub fn arena_json(a: &Arena) -> String {
     let (w, h) = a.size();
