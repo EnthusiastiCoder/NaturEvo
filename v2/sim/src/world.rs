@@ -132,14 +132,6 @@ impl Arena {
                 d[(y * w + x) as usize] = ((best as f32).sqrt().ceil() as i32).clamp(1, 255) as u8;
             }
         }
-        for y in (0..h).rev() {
-            for x in (0..w).rev() {
-                let i = (y * w + x) as usize;
-                if d[i] == 0 { continue; }
-                let m = at(&d, x + 1, y).min(at(&d, x, y + 1)).min(at(&d, x + 1, y + 1)).min(at(&d, x - 1, y + 1));
-                d[i] = d[i].min(m.saturating_add(1));
-            }
-        }
         d
     }
 
