@@ -143,13 +143,13 @@ fn par_map<T: Send, F: Fn(usize) -> T + Sync>(n: usize, f: F) -> Vec<T> {
 }
 
 /// Species and rank of the monster in a training match, by seed: species `seed % 4`
-/// (Minion, Rogue, Warrior, Mage), every 8th seed Elite, every 32nd Boss (Warrior or Mage).
+/// (Minion, Rogue, Warrior, Mage), every 8th seed Elite (species cycles on seed/8 + seed/32), every 32nd Boss (Warrior or Mage).
 pub fn species_for(seed: u64) -> (Species, Rank) {
     if seed % 32 == 0 {
         let sp = if (seed / 32) % 2 == 0 { Species::Warrior } else { Species::Mage };
         return (sp, Rank::Boss);
     }
-    let sp = [Species::Minion, Species::Rogue, Species::Warrior, Species::Mage][(seed % 4) as usize];
+    let sp = [Species::Minion, Species::Rogue, Species::Warrior, Species::Mage][(if seed % 8 == 0 { seed / 8 + seed / 32 } else { seed } % 4) as usize];
     (sp, if seed % 8 == 0 { Rank::Elite } else { Rank::Grass })
 }
 
