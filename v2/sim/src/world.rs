@@ -92,6 +92,14 @@ impl Arena {
             }
         }
         a.clear = a.compute_clear();
+        let pw = w + 2 * PAD;
+        let mut padded = vec![1u8; pw * (h + 2 * PAD) + 4];
+        for y in 0..h {
+            for x in 0..w {
+                padded[(y + PAD) * pw + x + PAD] = a.blocked[y * w + x] as u8;
+            }
+        }
+        a.padded = padded;
         a
     }
 
