@@ -8,6 +8,25 @@ use crate::matchup::{play_with_setup, MatchResult, Outcome as MOutcome, Setup};
 use crate::rng::Rng;
 use crate::world::Arena;
 
+/// Library screen limits and panel size (2 opponents x 4 seeds = 8 fights).
+const MAX_BLOCK_UNSEEN: f32 = 0.10;
+const MAX_BLOCK: f32 = 0.25;
+const MAX_DRAW: f32 = 0.25;
+const SCREEN_SEEDS: u64 = 4;
+
+/// Fixed opponent panel of `role`: one that stands still and one that walks up and swings.
+fn screen_panel(role: Role) -> Vec<Genome> {
+    use crate::net::{N_OUT, N_PARAMS};
+    let bias = |v: &[(usize, f32)]| {
+        let mut w = vec![0.0f32; N_PARAMS];
+        for (i, x) in v {
+            w[N_PARAMS - N_OUT + i] = *x;
+        }
+        Genome { role, weights: w, generation: 0, fitness: 0.0 }
+    };
+    vec![bias(&[(3, -1.0), (4, -1.0), (5, -1.0)]), bias(&[(0, 1.0), (3, 1.0), (4, -1.0)])]
+}
+
 const CAMPAIGN_SALT: u64 = 0x4341_4D50_4149_474E;
 
 /// A set of genomes to draw fighters from.
