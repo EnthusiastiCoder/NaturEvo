@@ -120,10 +120,16 @@ impl Arena {
         let list: Vec<(i32, i32)> = (0..w * h).filter(|&i| self.blocked[i as usize]).map(|i| (i % w, i / w)).collect();
         for y in 0..h {
             for x in 0..w {
-                let i = (y * w + x) as usize;
-                if d[i] == 0 { continue; }
-                let m = at(&d, x - 1, y).min(at(&d, x, y - 1)).min(at(&d, x - 1, y - 1)).min(at(&d, x + 1, y - 1));
-                d[i] = d[i].min(m.saturating_add(1));
+                if self.blocked[(y * w + x) as usize] {
+                    continue;
+                }
+                let e = x.min(w - 1 - x).min(y).min(h - 1 - y);
+                let mut best = (e * e).min(255 * 255);
+                for &(ox, oy) in &list {
+                    let (gx, gy) = (((ox - x).abs() - 1).max(0), ((oy - y).abs() - 1).max(0));
+                    best = best.min(gx * gx + gy * gy);
+                }
+                d[(y * w + x) as usize] = ((best as f32).sqrt().ceil() as i32).clamp(1, 255) as u8;
             }
         }
         for y in (0..h).rev() {
