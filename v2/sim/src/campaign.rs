@@ -89,7 +89,13 @@ impl Library {
             gs.push(genome);
         }
         if gs.is_empty() {
-            return Err(format!("no {} champions in {}", role, dir));
+            if report.is_empty() {
+                return Err(format!("no {} champions in {}", role, dir));
+            }
+            return Err(format!(
+                "every {} champion in {} failed the screen (limits block_unseen_share {}, block_share {}, draw_rate {}): {}",
+                role, dir, MAX_BLOCK_UNSEEN, MAX_BLOCK, MAX_DRAW, report.join("; ")
+            ));
         }
         Ok(Library::new(gs))
     }
