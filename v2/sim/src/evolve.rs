@@ -223,6 +223,7 @@ pub fn terms(role: Role, res: &MatchResult, cfg: &ArenaConfig) -> Terms {
 /// Fitness of one finished match for `role`, without the navigation shaping term.
 pub fn score_result(role: Role, res: &MatchResult, cfg: &ArenaConfig) -> f32 {
     let ri = role.index();
+    let ft = &cfg.fitness;
     let dealt = res.damage_dealt[ri] / cfg.max_hp;
     let taken = res.damage_dealt[1 - ri] / cfg.max_hp;
     let win = matches!((res.outcome, role), (Outcome::HeroWin, Role::Hero) | (Outcome::MonsterWin, Role::Monster));
