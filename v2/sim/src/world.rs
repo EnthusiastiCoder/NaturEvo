@@ -13,6 +13,54 @@ pub struct Arena {
     spawns: [(f32, f32); 2],
 }
 
+/// Padding (tiles) of blocked border around the grid in `Arena::padded`.
+const PAD: usize = 20;
+
+fn ray_mask_scalar(padded: &[u8], pw: i32, ox: i32, oy: i32, sx: i32, sy: i32) -> u32 {
+    let mut mask = 0u32;
+    for r in 1..16i32 {
+        let (tx, ty) = ((ox + sx * r) >> 16, (oy + sy * r) >> 16);
+        mask |= (padded[(ty * pw + tx) as usize] as u32) << r;
+    }
+    mask
+}
+
+#[cfg(target_arch = "x86_64")]
+#[target_feature(enable = "avx2")]
+unsafe fn ray_mask_avx2(padded: &[u8], pw: i32, ox: i32, oy: i32, sx: i32, sy: i32) -> u32 {
+    use std::arch::x86_64::*;
+    let (vox, voy) = (_mm256_set1_epi32(ox), _mm256_set1_epi32(oy));
+    let (vsx, vsy) = (_mm256_set1_epi32(sx), _mm256_set1_epi32(sy));
+    let (vpw, lo8) = (_mm256_set1_epi32(pw), _mm256_set1_epi32(0xFF));
+    let zero = _mm256_setzero_si256();
+    let mut mask = 0u32;
+    for half in 0..2 {
+        let r = _mm256_setr_epi32(1, 2, 3, 4, 5, 6, 7, 8);
+        let r = _mm256_add_epi32(r, _mm256_set1_epi32(8 * half));
+        let tx = _mm256_srai_epi32(_mm256_add_epi32(vox, _mm256_mullo_epi32(vsx, r)), 16);
+        let ty = _mm256_srai_epi32(_mm256_add_epi32(voy, _mm256_mullo_epi32(vsy, r)), 16);
+        let idx = _mm256_add_epi32(_mm256_mullo_epi32(ty, vpw), tx);
+        // SAFETY: indices stay inside `padded` (PAD covers the largest offset; the buffer has
+        // 4 spare bytes for the 32-bit gather of the last element).
+        let g = _mm256_i32gather_epi32::<1>(padded.as_ptr() as *const i32, idx);
+        let nz = _mm256_cmpgt_epi32(_mm256_and_si256(g, lo8), zero);
+        mask |= (_mm256_movemask_ps(_mm256_castsi256_ps(nz)) as u32) << (8 * half);
+    }
+    mask << 1
+}
+
+#[inline(always)]
+fn ray_mask(padded: &[u8], pw: i32, ox: i32, oy: i32, sx: i32, sy: i32) -> u32 {
+    #[cfg(target_arch = "x86_64")]
+    {
+        if std::is_x86_feature_detected!("avx2") {
+            // SAFETY: avx2 detected at runtime.
+            return unsafe { ray_mask_avx2(padded, pw, ox, oy, sx, sy) };
+        }
+    }
+    ray_mask_scalar(padded, pw, ox, oy, sx, sy)
+}
+
 impl Arena {
     pub fn generate(seed: u64, cfg: &ArenaConfig) -> Arena {
         let w = cfg.arena_w as usize;
