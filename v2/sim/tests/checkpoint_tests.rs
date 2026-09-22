@@ -35,3 +35,15 @@ fn v2_checkpoint_round_trips() {
     assert_eq!(a.hero_champion().to_json(), b.hero_champion().to_json());
     assert_eq!(a.stats().len(), b.stats().len());
 }
+
+#[test]
+fn genstats_carry_behaviour_metrics_in_range() {
+    let mut t = Trainer::new(cfg(1));
+    t.run_generation();
+    let s = &t.stats()[0];
+    for i in 0..2 {
+        for v in [s.block_unseen_share[i], s.seen_share[i]] { assert!((0.0..=1.0).contains(&v), "{v}"); }
+        assert!(s.statuses_per_fight[i] >= 0.0 && s.punish_per_fight[i] >= 0.0);
+    }
+    assert!((0.0..=1.0).contains(&s.draw_rate));
+}
