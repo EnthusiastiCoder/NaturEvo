@@ -10,3 +10,5 @@ use crate::matchup::{play_with_setup, Outcome, Setup};
 use crate::metrics::analyze;
 use crate::world::Arena;
 use std::fmt::Write;
+
+pub const EVAL_VERSION: u32 = 1;
