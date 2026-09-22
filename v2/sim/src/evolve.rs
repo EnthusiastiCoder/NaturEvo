@@ -37,6 +37,15 @@ pub struct GenStats {
     pub win_rate_vs_random: [f32; 2],
     pub action_freq: [ActionFreq; 2],
     pub avg_ticks: f32,
+    /// Champion behaviour in the evaluation fights, per role: share of ticks blocking with the enemy unseen.
+    pub block_unseen_share: [f32; 2],
+    /// Share of ticks the enemy was seen.
+    pub seen_share: [f32; 2],
+    /// Statuses applied on the opponent per fight.
+    pub statuses_per_fight: [f32; 2],
+    pub punish_per_fight: [f32; 2],
+    /// Share of the evaluation fights (both roles) that ended in a draw.
+    pub draw_rate: f32,
 }
 
 impl GenStats {
