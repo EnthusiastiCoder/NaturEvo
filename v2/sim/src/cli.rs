@@ -28,6 +28,8 @@ pub fn run(args: &[String]) -> Result<(), String> {
             let res = play(Arena::generate(seed, &cfg), hero, monster, seed, &cfg);
             std::fs::write(out, res.log.to_json()).map_err(|e| format!("{}: {}", out, e))
         }
+        Some("eval") => crate::eval::eval_cli(args),
+        Some("compare") => crate::eval::compare_cli(args),
         Some("train") => crate::evolve::train_cli(args),
         Some("campaign") => {
             let dir = need(args, "--champions")?;
@@ -47,6 +49,6 @@ pub fn run(args: &[String]) -> Result<(), String> {
             Ok(())
         }
         Some(other) => Err(format!("unknown command: {}", other)),
-        None => Err("usage: arena-sim <train|fight|campaign> [options]".to_string()),
+        None => Err("usage: arena-sim <train|fight|eval|compare|campaign> [options]".to_string()),
     }
 }
