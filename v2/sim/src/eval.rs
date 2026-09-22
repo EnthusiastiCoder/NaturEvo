@@ -182,3 +182,28 @@ fn role_json(a: &Acc) -> String {
     s.push_str("]}");
     s
 }
+
+/// `eval --run DIR --gens 49,99 --seeds 32 --out FILE [--panel DIR,DIR]`
+pub fn eval_cli(args: &[String]) -> Result<(), String> {
+    let run = need(args, "--run")?;
+    let gens = parse_list(need(args, "--gens")?, "--gens")?;
+    let seeds: u64 = need(args, "--seeds")?.parse().map_err(|_| "bad --seeds".to_string())?;
+    let out = need(args, "--out")?;
+    let panel_dirs: Vec<&str> = opt(args, "--panel").map(|p| p.split(',').collect()).unwrap_or_default();
+    let mut s = format!("{{\"version\":{},\"run\":\"{}\",\"seeds\":{},\"gens\":[", EVAL_VERSION, run.replace('\\', "/"), seeds);
+    for (gi, g) in gens.iter().enumerate() {
+        if gi > 0 {
+            s.push(',');
+        }
+        let _ = write!(s, "{{\"gen\":{}", g);
+        for role in [Role::Hero, Role::Monster] {
+            let champ = load_gen(run, role, *g)?;
+            let panel = panel_for(run, &panel_dirs, role.other())?;
+            let acc = aggregate(role, &champ, &panel, seeds);
+            let _ = write!(s, ",\"{}\":{}", role.as_str(), role_json(&acc));
+        }
+        s.push('}');
+    }
+    s.push_str("]}");
+    std::fs::write(out, s).map_err(|e| format!("{}: {}", out, e))
+}
