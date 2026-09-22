@@ -47,3 +47,16 @@ fn genstats_carry_behaviour_metrics_in_range() {
     }
     assert!((0.0..=1.0).contains(&s.draw_rate));
 }
+
+#[test]
+fn json_and_csv_expose_the_new_columns() {
+    let mut t = Trainer::new(cfg(1));
+    t.run_generation();
+    let j = t.stats()[0].to_json();
+    for k in ["block_unseen_share", "seen_share", "statuses_per_fight", "punish_per_fight", "draw_rate"] {
+        assert!(j.contains(&format!("\"{k}\"")), "json missing {k}");
+        assert!(GenStats::csv_header().contains(k), "csv header missing {k}");
+    }
+    let cols = GenStats::csv_header().split(',').count();
+    assert_eq!(t.stats()[0].to_csv().split(',').count(), cols);
+}
