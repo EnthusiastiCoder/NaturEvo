@@ -12,3 +12,7 @@ use crate::world::Arena;
 use std::fmt::Write;
 
 pub const EVAL_VERSION: u32 = 1;
+
+fn opt<'a>(args: &'a [String], name: &str) -> Option<&'a str> {
+    args.iter().position(|a| a == name).and_then(|i| args.get(i + 1)).map(|s| s.as_str())
+}
