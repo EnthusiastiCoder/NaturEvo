@@ -207,3 +207,51 @@ pub fn eval_cli(args: &[String]) -> Result<(), String> {
     s.push_str("]}");
     std::fs::write(out, s).map_err(|e| format!("{}: {}", out, e))
 }
+
+/// `compare --run DIR --late G --early G1,G2 --seeds N --out FILE [--panel DIR,DIR]`:
+/// per role and early generation, fights the late champion wins and the early one loses (late), and the reverse (early).
+pub fn compare_cli(args: &[String]) -> Result<(), String> {
+    let run = need(args, "--run")?;
+    let late: u32 = need(args, "--late")?.parse().map_err(|_| "bad --late".to_string())?;
+    let early = parse_list(need(args, "--early")?, "--early")?;
+    let seeds: u64 = need(args, "--seeds")?.parse().map_err(|_| "bad --seeds".to_string())?;
+    let out = need(args, "--out")?;
+    let panel_dirs: Vec<&str> = opt(args, "--panel").map(|p| p.split(',').collect()).unwrap_or_default();
+    let cfg = ArenaConfig::default();
+    let mut s = format!("{{\"version\":{},\"run\":\"{}\",\"late\":{},\"early\":[", EVAL_VERSION, run.replace('\\', "/"), late);
+    let mut first = true;
+    for e in &early {
+        for role in [Role::Hero, Role::Monster] {
+            let (lg, eg) = (load_gen(run, role, late)?, load_gen(run, role, *e)?);
+            let panel = panel_for(run, &panel_dirs, role.other())?;
+            let n = panel.len() * seeds as usize;
+            let rows = par_map(n, |i| {
+                let (o, sd) = (i / seeds as usize, 1 + (i % seeds as usize) as u64);
+                let l = won(role, fight(role, &lg, &panel[o], sd, &cfg).outcome);
+                let w = won(role, fight(role, &eg, &panel[o], sd, &cfg).outcome);
+                (l, w)
+            });
+            let l = rows.iter().filter(|(l, w)| *l && !*w).count();
+            let ea = rows.iter().filter(|(l, w)| !*l && *w).count();
+            let both = rows.iter().filter(|(l, w)| *l && *w).count();
+            let share = if l + ea == 0 { 0.5 } else { l as f64 / (l + ea) as f64 };
+            if !first {
+                s.push(',');
+            }
+            first = false;
+            let _ = write!(
+                s,
+                "{{\"gen\":{},\"role\":\"{}\",\"late_only\":{},\"early_only\":{},\"both\":{},\"fights\":{},\"late_share\":{}}}",
+                e,
+                role.as_str(),
+                l,
+                ea,
+                both,
+                n,
+                share
+            );
+        }
+    }
+    s.push_str("]}");
+    std::fs::write(out, s).map_err(|e| format!("{}: {}", out, e))
+}
