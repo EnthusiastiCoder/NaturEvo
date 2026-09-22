@@ -770,7 +770,7 @@ impl Trainer {
 
     pub fn checkpoint(&self) -> String {
         let c = &self.cfg;
-        let mut s = String::from("arena-checkpoint-v1\n");
+        let mut s = format!("{}\n", CHECKPOINT_VERSION);
         let _ = writeln!(s, "cfg {} {} {} {} {}", c.seed, c.generations, c.pop, c.k_opponents, c.hof_sample);
         let _ = writeln!(s, "stats {}", self.stats.len());
         for st in &self.stats {
