@@ -120,3 +120,8 @@ fn aggregate(role: Role, champ: &Genome, panel: &[Genome], seeds: u64) -> Acc {
     }
     a
 }
+
+fn arr(v: &[f64]) -> String {
+    let p: Vec<String> = v.iter().map(|x| format!("{}", x)).collect();
+    format!("[{}]", p.join(","))
+}
