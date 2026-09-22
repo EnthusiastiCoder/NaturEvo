@@ -66,3 +66,63 @@ pub fn dist_bucket(d: f32) -> usize {
 fn is_guard(s: CombatState) -> bool {
     matches!(s, CombatState::GuardRaise | CombatState::Blocking | CombatState::GuardRecover)
 }
+
+pub fn analyze(log: &FightLog, role: Role, outcome: Outcome) -> FightMetrics {
+    let ri = role.index();
+    let mut cells = [[[0.0f32; 6]; 4]; 2];
+    let mut statuses_applied = [0u32; 7];
+    let (mut punish_hits, mut parries) = (0u32, 0u32);
+    let mut swings = [0u32; 3];
+    let mut prev_state = CombatState::Idle;
+    let n = log.frames.len();
+    for f in &log.frames {
+        let st = f.state[ri];
+        let a = &f.action[ri];
+        let d = ((f.pos[0].0 - f.pos[1].0).powi(2) + (f.pos[0].1 - f.pos[1].1).powi(2)).sqrt();
+        let act = if matches!(st, CombatState::Staggered | CombatState::Stunned | CombatState::Knocked) {
+            INVOLUNTARY
+        } else if a.attack && !is_guard(st) {
+            ATTACK
+        } else if a.block || is_guard(st) {
+            BLOCK
+        } else if a.dodge {
+            DODGE
+        } else if a.fwd.abs() > MOVE_EPS || a.strafe.abs() > MOVE_EPS {
+            MOVE
+        } else {
+            IDLE
+        };
+        cells[f.seen[ri] as usize][dist_bucket(d)][act] += 1.0;
+        if st == CombatState::Windup && prev_state != CombatState::Windup && f.atk[ri] >= 0 {
+            swings[(f.atk[ri] as usize).min(2)] += 1;
+        }
+        prev_state = st;
+        for e in &f.ev {
+            match e {
+                Event::Hit { by, punish, fx, .. } if *by == ri => {
+                    if *punish {
+                        punish_hits += 1;
+                    }
+                    for k in fx {
+                        statuses_applied[(*k).min(6)] += 1;
+                    }
+                }
+                Event::Parry { by } if *by == ri => parries += 1,
+                _ => {}
+            }
+        }
+    }
+    let inv = 1.0 / n.max(1) as f32;
+    for c in cells.iter_mut().flatten().flatten() {
+        *c *= inv;
+    }
+    let total: u32 = swings.iter().sum();
+    let mut attack_kind_share = [0.0f32; 3];
+    if total > 0 {
+        for k in 0..3 {
+            attack_kind_share[k] = swings[k] as f32 / total as f32;
+        }
+    }
+    let draw = outcome == Outcome::Draw;
+    FightMetrics { cells, statuses_applied, punish_hits, parries, attack_kind_share, draw, decisive: !draw }
+}
