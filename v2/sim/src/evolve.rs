@@ -72,7 +72,16 @@ impl GenStats {
             }
             let _ = write!(s, "\"{}\":{{\"attack\":{},\"block\":{},\"dodge\":{}}}", r[i], a.attack, a.block, a.dodge);
         }
-        s.push_str("}}");
+        s.push('}');
+        for (key, v) in [
+            ("block_unseen_share", &self.block_unseen_share),
+            ("seen_share", &self.seen_share),
+            ("statuses_per_fight", &self.statuses_per_fight),
+            ("punish_per_fight", &self.punish_per_fight),
+        ] {
+            let _ = write!(s, ",\"{}\":{{\"hero\":{},\"monster\":{}}}", key, v[0], v[1]);
+        }
+        let _ = write!(s, ",\"draw_rate\":{}}}", self.draw_rate);
         s
     }
 
