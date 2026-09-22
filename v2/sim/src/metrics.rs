@@ -50,3 +50,15 @@ impl FightMetrics {
         self.statuses_applied.iter().sum()
     }
 }
+
+pub fn dist_bucket(d: f32) -> usize {
+    if d <= DIST_CLOSE {
+        0
+    } else if d <= DIST_MID {
+        1
+    } else if d <= DIST_FAR {
+        2
+    } else {
+        3
+    }
+}
