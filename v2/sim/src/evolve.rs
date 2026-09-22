@@ -219,6 +219,7 @@ pub fn terms(role: Role, res: &MatchResult, cfg: &ArenaConfig) -> Terms {
     let (mut parries, mut evades, mut blocks, mut kinds) = (0u32, 0u32, 0u32, 0u8);
     let (mut unseen, mut passive) = (0u32, 0u32);
     let mut since = 0u32;
+    let (mut wind, mut ready) = (0u32, 0u32);
     for f in &res.log.frames {
         let mut damaged = false;
         for e in &f.ev {
