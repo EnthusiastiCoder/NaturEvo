@@ -793,8 +793,13 @@ impl Trainer {
     pub fn resume(text: &str) -> Result<Trainer, String> {
         let mut it = text.lines();
         let mut next = || it.next().ok_or_else(|| "truncated checkpoint".to_string());
-        if next()? != "arena-checkpoint-v1" {
-            return Err("not a checkpoint".into());
+        let head = next()?;
+        if head != CHECKPOINT_VERSION {
+            return Err(if head.starts_with("arena-checkpoint-") {
+                format!("checkpoint version mismatch: file is {}, this build reads {}", head, CHECKPOINT_VERSION)
+            } else {
+                "not a checkpoint".into()
+            });
         }
         let line = next()?;
         let p: Vec<&str> = line.split_whitespace().collect();
