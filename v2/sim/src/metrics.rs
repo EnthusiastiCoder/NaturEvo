@@ -10,3 +10,10 @@ pub const DODGE: usize = 2;
 pub const MOVE: usize = 3;
 pub const IDLE: usize = 4;
 pub const INVOLUNTARY: usize = 5;
+
+/// Distance bucket upper bounds (tiles): close, mid, far; anything beyond is very far.
+pub const DIST_CLOSE: f32 = 1.2;
+pub const DIST_MID: f32 = 4.0;
+pub const DIST_FAR: f32 = 12.0;
+/// Intent below this magnitude counts as standing still.
+pub const MOVE_EPS: f32 = 0.1;
