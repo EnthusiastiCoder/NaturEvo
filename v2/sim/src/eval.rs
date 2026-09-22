@@ -84,3 +84,39 @@ struct Acc {
     kinds: [f64; 3],
     kind_fights: f64,
 }
+
+fn aggregate(role: Role, champ: &Genome, panel: &[Genome], seeds: u64) -> Acc {
+    let cfg = ArenaConfig::default();
+    let n = panel.len() * seeds as usize;
+    let rows = par_map(n, |i| {
+        let (o, s) = (i / seeds as usize, 1 + (i % seeds as usize) as u64);
+        let r = fight(role, champ, &panel[o], s, &cfg);
+        (analyze(&r.log, role, r.outcome), won(role, r.outcome))
+    });
+    let mut a = Acc::default();
+    for (m, w) in &rows {
+        a.fights += 1.0;
+        a.wins += *w as u8 as f64;
+        a.draws += m.draw as u8 as f64;
+        for s in 0..2 {
+            for d in 0..4 {
+                for k in 0..6 {
+                    a.cells[s][d][k] += m.cells[s][d][k] as f64;
+                }
+            }
+        }
+        for k in 0..7 {
+            a.statuses[k] += m.statuses_applied[k] as f64;
+        }
+        a.punish += m.punish_hits as f64;
+        a.parries += m.parries as f64;
+        let sum: f32 = m.attack_kind_share.iter().sum();
+        if sum > 0.0 {
+            a.kind_fights += 1.0;
+            for k in 0..3 {
+                a.kinds[k] += m.attack_kind_share[k] as f64;
+            }
+        }
+    }
+    a
+}
