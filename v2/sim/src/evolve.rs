@@ -671,6 +671,8 @@ impl Trainer {
         }
         let mut wr_hof = [0.0f32; 2];
         let mut wr_rnd = [0.0f32; 2];
+        let mut beh = [[0.0f64; 4]; 2];
+        let (mut draws, mut beh_n) = (0.0f64, 0.0f64);
         for ri in 0..2 {
             let role = if ri == 0 { Role::Hero } else { Role::Monster };
             let oi = 1 - ri;
