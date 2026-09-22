@@ -1,3 +1,6 @@
+// Multi-seed method (plans/2026-10-23_v2-combat-depth.md WS4): train seeds 1,2,3 at smoke scale, compare the
+// final champion with early ones (gen 10 and gen 50 equivalents) on a held-out panel taken from the OTHER seeds,
+// over 8 arena seeds. Assert the MEAN late-share over seeds >= BAR and >= 2 of 3 seeds individually > 0.5.
 use arena_sim::config::ArenaConfig;
 use arena_sim::evolve::{TrainConfig, Trainer};
 use arena_sim::fighter::Role;
@@ -5,8 +8,14 @@ use arena_sim::genome::Genome;
 use arena_sim::matchup::{play, Outcome};
 use arena_sim::world::Arena;
 
-/// Share of discordant fights (one of the two same-side fighters wins, the other does not)
-/// where `late` is the one that wins. Both face the same opposing panel on the same arenas.
+const GENS: usize = 60;
+const POP: usize = 24;
+const EARLY: [usize; 2] = [6, 30]; // scaled equivalents of gen 10 and gen 50
+// BAR placeholders: the WS4 implementer sets each from the real measured mean minus a 0.10 margin and records
+// the measured numbers in the comment next to it. These are the only constants allowed to change after measuring.
+const BAR_EARLY_A: f64 = 0.65; // measured mean: TBD
+const BAR_EARLY_B: f64 = 0.65; // measured mean: TBD
+
 fn late_share(role: Role, late: &Genome, early: &Genome, panel: &[Genome], seeds: u64) -> (u32, u32) {
     let cfg = ArenaConfig::default();
     let wins = |g: &Genome, o: &Genome, s: u64| {
@@ -28,34 +37,33 @@ fn late_share(role: Role, late: &Genome, early: &Genome, panel: &[Genome], seeds
 }
 
 #[test]
-fn late_checkpoints_beat_earlier_ones_for_both_sides() {
-    let gens = 150usize;
-    let mut t = Trainer::new(TrainConfig { seed: 1, generations: gens as u32, pop: 48, k_opponents: 4, hof_sample: 8 });
-    for _ in 0..gens { t.run_generation(); }
+fn late_champions_beat_early_ones_on_held_out_panels_mean_over_three_seeds() {
+    let trainers: Vec<Trainer> = (1..=3u64)
+        .map(|seed| {
+            let mut t = Trainer::new(TrainConfig { seed, generations: GENS as u32, pop: POP, k_opponents: 4, hof_sample: 2 });
+            for _ in 0..GENS { t.run_generation(); }
+            t
+        })
+        .collect();
     for role in [Role::Hero, Role::Monster] {
-        let h = t.hall_of_fame(role);
-        let panel: Vec<Genome> = t.hall_of_fame(role.other()).iter().step_by(3).cloned().collect();
-        assert!(h.len() >= gens, "hall of fame must keep every champion");
-        let late = &h[gens - 1];
-        for early in [10usize, 50] {
-            let (l, e) = late_share(role, late, &h[early], &panel, 8);
-            eprintln!("PROGRESS {:?} late vs gen{early}: late {l} early {e}", role);
-            assert!(l + e >= 8, "{:?} too few discordant fights {l}/{e}", role);
-            assert!(l as f64 >= 0.75 * (l + e) as f64, "{:?} gen{} lost to gen{early}: {l} vs {e}", role, gens - 1);
+        let mut means = [0.0f64; 2];
+        let mut above_half = [0u32; 2];
+        for (i, t) in trainers.iter().enumerate() {
+            let h = t.hall_of_fame(role);
+            assert!(h.len() >= GENS, "hall of fame must keep every champion");
+            let panel: Vec<Genome> = trainers.iter().enumerate().filter(|(j, _)| *j != i)
+                .flat_map(|(_, o)| o.hall_of_fame(role.other()).iter().step_by(6).cloned().collect::<Vec<_>>()).collect();
+            for (k, early) in EARLY.iter().enumerate() {
+                let (l, e) = late_share(role, &h[GENS - 1], &h[*early], &panel, 8);
+                let share = if l + e == 0 { 0.5 } else { l as f64 / (l + e) as f64 };
+                eprintln!("PROGRESS {:?} seed {} late vs gen{}: late {l} early {e} share {share:.3}", role, i + 1, early);
+                means[k] += share / 3.0;
+                if share > 0.5 { above_half[k] += 1; }
+            }
         }
-    }
-}
-
-#[test]
-#[ignore]
-fn probe_saved_run_progress() {
-    let d = std::env::var("RUN_DIR").unwrap();
-    let ld = |r: &str, g: u32| Genome::from_json(&std::fs::read_to_string(format!("{d}/champion_{r}_gen_{g}.json")).unwrap()).unwrap();
-    for (role, name, other) in [(Role::Hero, "hero", "monster"), (Role::Monster, "monster", "hero")] {
-        let panel: Vec<Genome> = (0..20).map(|k| ld(other, k * 10 + 9)).collect();
-        for early in [9u32, 49] {
-            let (l, e) = late_share(role, &ld(name, 199), &ld(name, early), &panel, 8);
-            eprintln!("SAVED {name} 199 vs {early}: late {l} early {e} share {:.2}", l as f64 / (l + e).max(1) as f64);
+        for (k, bar) in [BAR_EARLY_A, BAR_EARLY_B].iter().enumerate() {
+            assert!(means[k] >= *bar, "{:?} mean late-share vs early {} = {:.3} < BAR {bar}", role, EARLY[k], means[k]);
+            assert!(above_half[k] >= 2, "{:?} only {} of 3 seeds above 0.5 vs early {}", role, above_half[k], EARLY[k]);
         }
     }
 }
