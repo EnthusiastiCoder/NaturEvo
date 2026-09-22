@@ -65,3 +65,12 @@ fn aggressor_attacks_seen_close_and_applies_stagger() {
     assert!(m.block_unseen_share() < 0.05);
     assert!(m.punish_hits >= 1, "idle target in recovery or staggered is punished");
 }
+
+#[test]
+fn statuses_are_credited_to_the_applying_role_only() {
+    let r = fight(aggressor(Role::Hero), idler(Role::Monster), 2);
+    let mh = analyze(&r.log, Role::Hero, r.outcome);
+    let mm = analyze(&r.log, Role::Monster, r.outcome);
+    assert!(mh.statuses_applied.iter().sum::<u32>() >= 1);
+    assert_eq!(mm.statuses_applied, [0u32; 7]);
+}
