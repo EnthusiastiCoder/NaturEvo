@@ -20,3 +20,7 @@ fn opt<'a>(args: &'a [String], name: &str) -> Option<&'a str> {
 fn need<'a>(args: &'a [String], name: &str) -> Result<&'a str, String> {
     opt(args, name).ok_or_else(|| format!("missing {}", name))
 }
+
+fn parse_list(s: &str, what: &str) -> Result<Vec<u32>, String> {
+    s.split(',').map(|x| x.trim().parse::<u32>().map_err(|_| format!("bad {}", what))).collect()
+}
