@@ -15,3 +15,12 @@ fn checkpoint_header_is_v2() {
     t.run_generation();
     assert!(t.checkpoint().starts_with("arena-checkpoint-v2\n"));
 }
+
+#[test]
+fn v1_checkpoint_is_rejected_with_a_version_error() {
+    let mut t = Trainer::new(cfg(7));
+    t.run_generation();
+    let v1 = t.checkpoint().replacen("arena-checkpoint-v2", "arena-checkpoint-v1", 1);
+    let e = err_of(&v1);
+    assert!(e.contains("version"), "error was: {e}");
+}
