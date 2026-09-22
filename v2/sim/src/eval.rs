@@ -67,3 +67,7 @@ fn fight(role: Role, me: &Genome, opp: &Genome, seed: u64, cfg: &ArenaConfig) ->
     let setup = Setup { hp: [cfg.max_hp; 2], species: [Species::Hero, sp], rank: [Rank::Grass, rank] };
     play_with_setup(Arena::generate(seed, cfg), h, m, seed, cfg, setup)
 }
+
+fn won(role: Role, o: Outcome) -> bool {
+    matches!((o, role), (Outcome::HeroWin, Role::Hero) | (Outcome::MonsterWin, Role::Monster))
+}
