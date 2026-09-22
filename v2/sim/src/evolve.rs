@@ -709,6 +709,9 @@ impl Trainer {
             wr_rnd[ri] = w.iter().filter(|x| **x).count() as f32 / w.len() as f32;
         }
 
+        // Per-role behaviour averages over that role's evaluation fights (an equal count per role).
+        let per_role = (beh_n / 2.0).max(1.0);
+        let bm = |k: usize| [(beh[0][k] / per_role) as f32, (beh[1][k] / per_role) as f32];
         self.stats.push(GenStats {
             gen,
             best_fitness: [pop_best[0], pop_best[1]],
