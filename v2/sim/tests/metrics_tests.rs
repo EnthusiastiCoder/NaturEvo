@@ -49,3 +49,19 @@ fn turtle_blocking_unseen_is_counted_as_unseen_block() {
     assert!(m.block_unseen_share() > 0.8, "{}", m.block_unseen_share());
     assert!(m.cells[1].iter().flatten().sum::<f32>() < 1e-4, "no seen ticks expected at 13 tiles");
 }
+
+#[test]
+fn aggressor_attacks_seen_close_and_applies_stagger() {
+    let r = fight(aggressor(Role::Hero), idler(Role::Monster), 2);
+    let m = analyze(&r.log, Role::Hero, r.outcome);
+    let seen_attack: f32 = m.cells[1].iter().map(|d| d[0]).sum();
+    assert!(seen_attack > 0.0, "no seen attack ticks");
+    assert!(m.cells[1][0][0] > 0.0, "no close-range attack ticks");
+    assert!(m.statuses_applied[1] >= 1, "Light attack staggers (index 1): {:?}", m.statuses_applied);
+    assert!((m.attack_kind_share[0] - 1.0).abs() < 1e-4, "{:?}", m.attack_kind_share);
+    assert_eq!(m.attack_kind_share[1], 0.0);
+    assert_eq!(m.attack_kind_share[2], 0.0);
+    assert!(m.decisive && !m.draw);
+    assert!(m.block_unseen_share() < 0.05);
+    assert!(m.punish_hits >= 1, "idle target in recovery or staggered is punished");
+}
