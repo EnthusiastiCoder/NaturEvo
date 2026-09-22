@@ -28,3 +28,15 @@ fn cells_sum_to_one_per_fighter() {
         assert!(m.cells.iter().flatten().flatten().all(|v| *v >= 0.0));
     }
 }
+
+#[test]
+fn idle_pair_is_all_unseen_vfar_idle_and_a_draw() {
+    let r = fight(idler(Role::Hero), idler(Role::Monster), 1);
+    let m = analyze(&r.log, Role::Hero, r.outcome);
+    assert!(m.draw && !m.decisive);
+    assert!((m.cells[0][3][4] - 1.0).abs() < 1e-4, "idle/unseen/vfar share {}", m.cells[0][3][4]);
+    assert_eq!(m.block_unseen_share(), 0.0);
+    assert_eq!(m.statuses_applied, [0u32; 7]);
+    assert_eq!(m.punish_hits, 0);
+    assert_eq!(m.parries, 0);
+}
