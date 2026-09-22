@@ -11,8 +11,8 @@ use arena_sim::world::Arena;
 const GENS: u32 = 40;
 // Placeholders: the WS4 implementer replaces these with the real measured means (comment the numbers).
 // Assertions allow measured + 0.10 (draw rate) and measured + 0.05 (unseen block share).
-const MEASURED_DRAW_RATE: f64 = 0.10; // measured mean: TBD
-const MEASURED_UNSEEN_BLOCK: f64 = 0.02; // measured mean: TBD
+const MEASURED_DRAW_RATE: f64 = 0.008; // measured mean draw rate over 3 seeds: 0.008 (0,1,0 of 40)
+const MEASURED_UNSEEN_BLOCK: f64 = 0.0005; // measured mean unseen block share over 3 seeds: 0.0005
 
 #[test]
 fn late_champions_are_decisive_and_do_not_block_unseen_mean_over_three_seeds() {
