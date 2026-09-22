@@ -69,8 +69,8 @@ fn cli_fight_writes_log() {
 const GENS: u32 = 40;
 // Placeholders: the WS4 implementer sets these from the real measured means (comment the numbers); the
 // assertions allow measured - 0.10.
-const MEASURED_BEAT_RANDOM: f64 = 0.80; // measured mean over seeds 1,2,3: TBD
-const MEASURED_BEAT_GEN0: f64 = 0.80; // measured mean over seeds 1,2,3: TBD
+const MEASURED_BEAT_RANDOM: f64 = 0.933; // measured mean over seeds 1,2,3: 47,47,46 of 50 = 0.933
+const MEASURED_BEAT_GEN0: f64 = 1.0; // measured mean over seeds 1,2,3: 50,50,50 of 50 = 1.0
 
 fn rank(o: Outcome) -> u32 { match o { Outcome::HeroWin => 2, Outcome::Draw => 1, Outcome::MonsterWin => 0 } }
 
