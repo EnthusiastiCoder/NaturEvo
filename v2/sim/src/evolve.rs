@@ -694,6 +694,14 @@ impl Trainer {
             let sc: Vec<MatchScore> = par_map(opps.len(), |i| score_match(role, champ, &opps[i].0, opps[i].1, cfg_ref, None));
             let w: Vec<bool> = sc.iter().map(|x| x.win).collect();
             wr_hof[ri] = w.iter().filter(|x| **x).count() as f32 / w.len() as f32;
+            for x in &sc {
+                beh[ri][0] += x.block_unseen as f64;
+                beh[ri][1] += x.seen as f64;
+                beh[ri][2] += x.statuses as f64;
+                beh[ri][3] += x.punish as f64;
+                draws += x.draw as u8 as f64;
+            }
+            beh_n += sc.len() as f64;
             // Fixed baseline: identical random opponents every generation.
             let mut rr = Rng::new(0xBA5E ^ ri as u64);
             let base: Vec<(Genome, u64)> = (0..BASELINE_N).map(|_| (Genome::random(opp_role, &mut rr), rr.next_u64())).collect();
