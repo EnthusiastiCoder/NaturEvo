@@ -118,7 +118,7 @@ impl GenStats {
 
     fn from_nums(s: &str) -> Result<GenStats, String> {
         let v: Vec<f32> = s.split_whitespace().map(|x| x.parse::<f32>().map_err(|e| e.to_string())).collect::<Result<_, _>>()?;
-        if v.len() != 16 {
+        if v.len() != 25 {
             return Err("bad stats line".into());
         }
         let af = |i: usize| ActionFreq { attack: v[i], block: v[i + 1], dodge: v[i + 2] };
