@@ -95,7 +95,9 @@ impl GenStats {
             "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}",
             self.gen, self.avg_ticks, self.best_fitness[0], self.best_fitness[1], self.mean_fitness[0], self.mean_fitness[1],
             self.win_rate_vs_hof[0], self.win_rate_vs_hof[1], self.win_rate_vs_random[0], self.win_rate_vs_random[1],
-            a[0].attack, a[0].block, a[0].dodge, a[1].attack, a[1].block, a[1].dodge
+            a[0].attack, a[0].block, a[0].dodge, a[1].attack, a[1].block, a[1].dodge,
+            self.block_unseen_share[0], self.block_unseen_share[1], self.seen_share[0], self.seen_share[1],
+            self.statuses_per_fight[0], self.statuses_per_fight[1], self.punish_per_fight[0], self.punish_per_fight[1], self.draw_rate
         )
     }
 
