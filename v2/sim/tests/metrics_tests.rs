@@ -40,3 +40,12 @@ fn idle_pair_is_all_unseen_vfar_idle_and_a_draw() {
     assert_eq!(m.punish_hits, 0);
     assert_eq!(m.parries, 0);
 }
+
+#[test]
+fn turtle_blocking_unseen_is_counted_as_unseen_block() {
+    let r = fight(turtle(Role::Hero), idler(Role::Monster), 1);
+    let m = analyze(&r.log, Role::Hero, r.outcome);
+    assert!(m.cells[0][3][1] > 0.8, "block/unseen/vfar {}", m.cells[0][3][1]);
+    assert!(m.block_unseen_share() > 0.8, "{}", m.block_unseen_share());
+    assert!(m.cells[1].iter().flatten().sum::<f32>() < 1e-4, "no seen ticks expected at 13 tiles");
+}
