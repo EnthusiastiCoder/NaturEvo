@@ -691,7 +691,8 @@ impl Trainer {
             }
             let champ = &champs[ri];
             let cfg_ref = &cfg;
-            let w: Vec<bool> = par_map(opps.len(), |i| score_match(role, champ, &opps[i].0, opps[i].1, cfg_ref, None).win);
+            let sc: Vec<MatchScore> = par_map(opps.len(), |i| score_match(role, champ, &opps[i].0, opps[i].1, cfg_ref, None));
+            let w: Vec<bool> = sc.iter().map(|x| x.win).collect();
             wr_hof[ri] = w.iter().filter(|x| **x).count() as f32 / w.len() as f32;
             // Fixed baseline: identical random opponents every generation.
             let mut rr = Rng::new(0xBA5E ^ ri as u64);
