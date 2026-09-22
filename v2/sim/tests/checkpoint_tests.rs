@@ -24,3 +24,14 @@ fn v1_checkpoint_is_rejected_with_a_version_error() {
     let e = err_of(&v1);
     assert!(e.contains("version"), "error was: {e}");
 }
+
+#[test]
+fn v2_checkpoint_round_trips() {
+    let mut a = Trainer::new(cfg(8));
+    a.run_generation();
+    let mut b = Trainer::resume(&a.checkpoint()).unwrap();
+    a.run_generation();
+    b.run_generation();
+    assert_eq!(a.hero_champion().to_json(), b.hero_champion().to_json());
+    assert_eq!(a.stats().len(), b.stats().len());
+}
