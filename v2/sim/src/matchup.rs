@@ -385,7 +385,7 @@ impl Match {
         let hz = self.cfg.tick_hz as f32;
         let t = self.cfg.combat;
         for f in self.fighters.iter_mut() {
-            if f.state == CombatState::Idle {
+            if matches!(f.state, CombatState::Idle | CombatState::Recovery) {
                 let mut regen = t.stamina_regen_per_sec / hz;
                 if f.status.active(Status::Poison) {
                     regen *= t.poison_regen_mult;
@@ -633,7 +633,7 @@ impl Match {
             }
             let j = 1 - i;
             let (a, v) = (snap[i], snap[j]);
-            if matches!(v.state, CombatState::Dead | CombatState::Dodging) {
+            if matches!(v.state, CombatState::Dead) {
                 continue;
             }
             let idx = self.fighters[i].move_idx;
@@ -643,6 +643,10 @@ impl Match {
                 continue;
             }
             if wrap_angle(dy.atan2(dx) - a.facing).abs() > mv.half_arc {
+                continue;
+            }
+            if v.state == CombatState::Dodging {
+                self.events.push(Event::Evade { who: j });
                 continue;
             }
             self.fighters[i].swing_hit = true;
