@@ -64,7 +64,7 @@ impl Default for CombatTuning {
             parry_window: 5,
             parry_stagger: 14,
             blocked_stun_stagger: 8,
-            dodge_stamina_cost: 30.0,
+            dodge_stamina_cost: 20.0,
             dodge_ticks: 8,
             dodge_cooldown: 45,
             stamina_regen_per_sec: 12.0,
@@ -117,6 +117,14 @@ pub struct FitnessTuning {
     pub unseen_guard_dist: f32,
     pub passivity_weight: f32,
     pub passivity_ticks: u32,
+    pub parry_reward: f32,
+    pub parry_cap: u32,
+    pub evade_reward: f32,
+    pub evade_cap: u32,
+    pub block_reward: f32,
+    pub block_cap: u32,
+    pub variety_reward: f32,
+    pub guard_ready_reward: f32,
 }
 
 impl Default for FitnessTuning {
@@ -124,7 +132,7 @@ impl Default for FitnessTuning {
         FitnessTuning {
             draw_penalty: 6.0,
             punish_reward: 0.6,
-            punish_cap: 3,
+            punish_cap: 4,
             status_reward: 0.15,
             status_cap: 6,
             attack_freq_reward: 0.5,
@@ -135,6 +143,14 @@ impl Default for FitnessTuning {
             unseen_guard_dist: 4.0,
             passivity_weight: 1.0,
             passivity_ticks: 300,
+            parry_reward: 0.8,
+            parry_cap: 3,
+            evade_reward: 0.5,
+            evade_cap: 3,
+            block_reward: 0.25,
+            block_cap: 4,
+            variety_reward: 0.5,
+            guard_ready_reward: 1.0,
         }
     }
 }
