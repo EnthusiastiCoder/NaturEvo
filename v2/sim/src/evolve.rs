@@ -197,6 +197,14 @@ pub struct Terms {
     pub status_reward: f32,
     pub unseen_guard_share: f32,
     pub passivity_share: f32,
+    /// Damage avoided by timely defence: parries, absorbed blocks and dodged swings.
+    pub parries: u32,
+    pub evades: u32,
+    pub blocks: u32,
+    pub kinds_landed: u32,
+    pub defence_reward: f32,
+    /// Share of the enemy's in-range windup ticks spent raising/holding a guard or dodging.
+    pub guard_ready_share: f32,
 }
 
 fn is_guard(s: CombatState) -> bool {
