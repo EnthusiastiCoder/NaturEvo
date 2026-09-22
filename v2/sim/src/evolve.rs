@@ -216,6 +216,7 @@ pub fn terms(role: Role, res: &MatchResult, cfg: &ArenaConfig) -> Terms {
     let ft = &cfg.fitness;
     let n = res.log.frames.len().max(1) as f32;
     let (mut punish_hits, mut mask) = (0u32, 0u8);
+    let (mut parries, mut evades, mut blocks, mut kinds) = (0u32, 0u32, 0u32, 0u8);
     let (mut unseen, mut passive) = (0u32, 0u32);
     let mut since = 0u32;
     for f in &res.log.frames {
