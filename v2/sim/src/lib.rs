@@ -3,6 +3,7 @@ pub mod attacks;
 pub mod cli;
 pub mod campaign;
 pub mod config;
+pub mod eval;
 pub mod evolve;
 pub mod fighter;
 pub mod genome;
