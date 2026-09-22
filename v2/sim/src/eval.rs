@@ -48,3 +48,15 @@ fn load_all(dir: &str, role: Role) -> Result<Vec<Genome>, String> {
         .map(|(_, p)| Genome::from_json(&std::fs::read_to_string(p).map_err(|e| format!("{}: {}", p.display(), e))?))
         .collect()
 }
+
+fn panel_for(run: &str, panel_dirs: &[&str], opp_role: Role) -> Result<Vec<Genome>, String> {
+    let dirs: Vec<&str> = if panel_dirs.is_empty() { vec![run] } else { panel_dirs.to_vec() };
+    let mut out = Vec::new();
+    for d in dirs {
+        out.extend(load_all(d, opp_role)?);
+    }
+    if out.is_empty() {
+        return Err("empty panel".into());
+    }
+    Ok(out)
+}
