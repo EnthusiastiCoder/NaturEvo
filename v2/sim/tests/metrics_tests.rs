@@ -11,3 +11,9 @@ use arena_sim::matchup::{play_with_setup, MatchResult, Setup};
 use arena_sim::metrics::analyze;
 use arena_sim::world::Arena;
 use common::*;
+
+fn fight(h: arena_sim::genome::Genome, m: arena_sim::genome::Genome, seed: u64) -> MatchResult {
+    let cfg = ArenaConfig::default();
+    let setup = Setup { hp: [cfg.max_hp, cfg.max_hp], species: [Species::Hero, Species::Minion], rank: [Rank::Grass, Rank::Grass] };
+    play_with_setup(Arena::generate(seed, &cfg), h, m, seed, &cfg, setup)
+}
