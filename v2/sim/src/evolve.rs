@@ -86,7 +86,7 @@ impl GenStats {
     }
 
     pub fn csv_header() -> &'static str {
-        "gen,avg_ticks,best_hero,best_monster,mean_hero,mean_monster,hof_wr_hero,hof_wr_monster,rnd_wr_hero,rnd_wr_monster,hero_attack,hero_block,hero_dodge,monster_attack,monster_block,monster_dodge"
+        "gen,avg_ticks,best_hero,best_monster,mean_hero,mean_monster,hof_wr_hero,hof_wr_monster,rnd_wr_hero,rnd_wr_monster,hero_attack,hero_block,hero_dodge,monster_attack,monster_block,monster_dodge,block_unseen_share_hero,block_unseen_share_monster,seen_share_hero,seen_share_monster,statuses_per_fight_hero,statuses_per_fight_monster,punish_per_fight_hero,punish_per_fight_monster,draw_rate"
     }
 
     pub fn to_csv(&self) -> String {
