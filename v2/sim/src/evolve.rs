@@ -124,7 +124,6 @@ impl GenStats {
         let af = |i: usize| ActionFreq { attack: v[i], block: v[i + 1], dodge: v[i + 2] };
         Ok(GenStats {
             gen: v[0] as u32,
-            avg_ticks: v[1],
             best_fitness: [v[2], v[3]],
             mean_fitness: [v[4], v[5]],
             win_rate_vs_hof: [v[6], v[7]],
