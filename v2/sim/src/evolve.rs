@@ -720,6 +720,11 @@ impl Trainer {
             win_rate_vs_random: wr_rnd,
             action_freq: freq,
             avg_ticks: (tick_sum / tick_n.max(1) as f64) as f32,
+            block_unseen_share: bm(0),
+            seen_share: bm(1),
+            statuses_per_fight: bm(2),
+            punish_per_fight: bm(3),
+            draw_rate: (draws / beh_n.max(1.0)) as f32,
         });
         for ri in 0..2 {
             self.hof[ri].push(champs[ri].clone());
