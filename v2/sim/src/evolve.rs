@@ -48,6 +48,9 @@ pub struct GenStats {
     pub draw_rate: f32,
 }
 
+/// Version tag on checkpoints; bump when the stats layout changes.
+pub const CHECKPOINT_VERSION: &str = "arena-checkpoint-v2";
+
 impl GenStats {
     pub fn to_json(&self) -> String {
         let r = ["hero", "monster"];
