@@ -157,7 +157,7 @@ struct MatchScore {
     draw: bool,
 }
 
-fn par_map<T: Send, F: Fn(usize) -> T + Sync>(n: usize, f: F) -> Vec<T> {
+pub(crate) fn par_map<T: Send, F: Fn(usize) -> T + Sync>(n: usize, f: F) -> Vec<T> {
     let threads = std::thread::available_parallelism().map(|x| x.get()).unwrap_or(1).min(n.max(1));
     if threads <= 1 {
         return (0..n).map(&f).collect();
