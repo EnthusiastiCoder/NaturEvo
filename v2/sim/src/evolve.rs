@@ -129,6 +129,12 @@ impl GenStats {
             win_rate_vs_hof: [v[6], v[7]],
             win_rate_vs_random: [v[8], v[9]],
             action_freq: [af(10), af(13)],
+            avg_ticks: v[1],
+            block_unseen_share: [v[16], v[17]],
+            seen_share: [v[18], v[19]],
+            statuses_per_fight: [v[20], v[21]],
+            punish_per_fight: [v[22], v[23]],
+            draw_rate: v[24],
         })
     }
 }
