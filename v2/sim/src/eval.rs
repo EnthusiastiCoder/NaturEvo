@@ -125,3 +125,60 @@ fn arr(v: &[f64]) -> String {
     let p: Vec<String> = v.iter().map(|x| format!("{}", x)).collect();
     format!("[{}]", p.join(","))
 }
+
+fn role_json(a: &Acc) -> String {
+    let f = a.fights.max(1.0);
+    let sum_cells = |s: usize, d: usize, k: usize| a.cells[s][d][k] / f;
+    let block_unseen: f64 = (0..4).map(|d| sum_cells(0, d, 1)).sum();
+    let block_all: f64 = (0..2).flat_map(|s| (0..4).map(move |d| (s, d))).map(|(s, d)| sum_cells(s, d, 1)).sum();
+    let unseen_ticks: f64 = (0..4).flat_map(|d| (0..6).map(move |k| (d, k))).map(|(d, k)| sum_cells(0, d, k)).sum();
+    let seen_ticks: f64 = (0..4).flat_map(|d| (0..6).map(move |k| (d, k))).map(|(d, k)| sum_cells(1, d, k)).sum();
+    let far_block: f64 = (0..2).flat_map(|s| (2..4).map(move |d| (s, d))).map(|(s, d)| sum_cells(s, d, 1)).sum();
+    let far_ticks: f64 = (0..2).flat_map(|s| (2..4).flat_map(move |d| (0..6).map(move |k| (s, d, k)))).map(|(s, d, k)| sum_cells(s, d, k)).sum();
+    let mut action = [0.0f64; 6];
+    for s in 0..2 {
+        for d in 0..4 {
+            for k in 0..6 {
+                action[k] += sum_cells(s, d, k);
+            }
+        }
+    }
+    let kinds: Vec<f64> = a.kinds.iter().map(|x| x / a.kind_fights.max(1.0)).collect();
+    let by_type: Vec<f64> = a.statuses.iter().map(|x| x / f).collect();
+    let mut s = String::new();
+    let _ = write!(
+        s,
+        "{{\"fights\":{},\"win_rate\":{},\"draw_rate\":{},\"block_unseen_share\":{},\"block_share\":{},\"seen_share\":{},\"statuses_per_fight\":{},\"statuses_by_type\":{},\"punish_per_fight\":{},\"parry_per_fight\":{},\"attack_kind_share\":{},\"block_rate_given_unseen\":{},\"block_rate_given_seen\":{},\"block_rate_given_far\":{},\"action_share\":{},\"cells\":[",
+        a.fights as u64,
+        a.wins / f,
+        a.draws / f,
+        block_unseen,
+        block_all,
+        seen_ticks,
+        a.statuses.iter().sum::<f64>() / f,
+        arr(&by_type),
+        a.punish / f,
+        a.parries / f,
+        arr(&kinds),
+        if unseen_ticks > 0.0 { block_unseen / unseen_ticks } else { 0.0 },
+        if seen_ticks > 0.0 { (block_all - block_unseen) / seen_ticks } else { 0.0 },
+        if far_ticks > 0.0 { far_block / far_ticks } else { 0.0 },
+        arr(&action)
+    );
+    for si in 0..2 {
+        if si > 0 {
+            s.push(',');
+        }
+        s.push('[');
+        for d in 0..4 {
+            if d > 0 {
+                s.push(',');
+            }
+            let row: Vec<f64> = (0..6).map(|k| sum_cells(si, d, k)).collect();
+            s.push_str(&arr(&row));
+        }
+        s.push(']');
+    }
+    s.push_str("]}");
+    s
+}
