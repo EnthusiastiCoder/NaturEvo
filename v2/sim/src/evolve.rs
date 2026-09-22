@@ -335,7 +335,18 @@ fn score_match(role: Role, me: &Genome, opp: &Genome, seed: u64, cfg: &ArenaConf
         c[2] += a.dodge as u8 as f32;
     }
     fitness += 0.5 * shape / n;
-    MatchScore { fitness, win, ticks: res.ticks, freq: [c[0] / n, c[1] / n, c[2] / n] }
+    let mx = crate::metrics::analyze(&res.log, role, res.outcome);
+    MatchScore {
+        fitness,
+        win,
+        ticks: res.ticks,
+        freq: [c[0] / n, c[1] / n, c[2] / n],
+        block_unseen: mx.block_unseen_share(),
+        seen: mx.seen_share(),
+        statuses: mx.statuses_total() as f32,
+        punish: mx.punish_hits as f32,
+        draw: mx.draw,
+    }
 }
 
 /// Behaviour summary of a champion over a fixed panel, used to screen the campaign library.
