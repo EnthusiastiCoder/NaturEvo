@@ -74,3 +74,12 @@ fn statuses_are_credited_to_the_applying_role_only() {
     assert!(mh.statuses_applied.iter().sum::<u32>() >= 1);
     assert_eq!(mm.statuses_applied, [0u32; 7]);
 }
+
+#[test]
+fn analyze_is_pure() {
+    let r = fight(aggressor(Role::Hero), aggressor(Role::Monster), 4);
+    let a = analyze(&r.log, Role::Hero, r.outcome);
+    let b = analyze(&r.log, Role::Hero, r.outcome);
+    assert_eq!(a.cells, b.cells);
+    assert_eq!(a.statuses_applied, b.statuses_applied);
+}
