@@ -62,3 +62,7 @@ pub fn dist_bucket(d: f32) -> usize {
         3
     }
 }
+
+fn is_guard(s: CombatState) -> bool {
+    matches!(s, CombatState::GuardRaise | CombatState::Blocking | CombatState::GuardRecover)
+}
