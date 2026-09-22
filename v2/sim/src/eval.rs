@@ -24,3 +24,9 @@ fn need<'a>(args: &'a [String], name: &str) -> Result<&'a str, String> {
 fn parse_list(s: &str, what: &str) -> Result<Vec<u32>, String> {
     s.split(',').map(|x| x.trim().parse::<u32>().map_err(|_| format!("bad {}", what))).collect()
 }
+
+fn load_gen(dir: &str, role: Role, gen: u32) -> Result<Genome, String> {
+    let p = std::path::Path::new(dir).join(format!("champion_{}_gen_{}.json", role.as_str(), gen));
+    let t = std::fs::read_to_string(&p).map_err(|e| format!("{}: {}", p.display(), e))?;
+    Genome::from_json(&t)
+}
