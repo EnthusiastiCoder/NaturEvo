@@ -60,3 +60,10 @@ fn panel_for(run: &str, panel_dirs: &[&str], opp_role: Role) -> Result<Vec<Genom
     }
     Ok(out)
 }
+
+fn fight(role: Role, me: &Genome, opp: &Genome, seed: u64, cfg: &ArenaConfig) -> crate::matchup::MatchResult {
+    let (sp, rank) = species_for(seed);
+    let (h, m) = if role == Role::Hero { (me.clone(), opp.clone()) } else { (opp.clone(), me.clone()) };
+    let setup = Setup { hp: [cfg.max_hp; 2], species: [Species::Hero, sp], rank: [Rank::Grass, rank] };
+    play_with_setup(Arena::generate(seed, cfg), h, m, seed, cfg, setup)
+}
