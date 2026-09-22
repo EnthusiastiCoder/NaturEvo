@@ -17,3 +17,17 @@ pub const DIST_MID: f32 = 4.0;
 pub const DIST_FAR: f32 = 12.0;
 /// Intent below this magnitude counts as standing still.
 pub const MOVE_EPS: f32 = 0.1;
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct FightMetrics {
+    /// Share of ticks, indexed [seen (0 unseen, 1 seen)][distance bucket][action].
+    pub cells: [[[f32; 6]; 4]; 2],
+    /// Distinct hits applying each status (index = `Status::idx`), credited to this role.
+    pub statuses_applied: [u32; 7],
+    pub punish_hits: u32,
+    pub parries: u32,
+    /// Share of swings started per move index.
+    pub attack_kind_share: [f32; 3],
+    pub draw: bool,
+    pub decisive: bool,
+}
