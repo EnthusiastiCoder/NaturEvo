@@ -3,3 +3,10 @@
 use crate::fighter::{CombatState, Role};
 use crate::log::{Event, FightLog};
 use crate::matchup::Outcome;
+
+pub const ATTACK: usize = 0;
+pub const BLOCK: usize = 1;
+pub const DODGE: usize = 2;
+pub const MOVE: usize = 3;
+pub const IDLE: usize = 4;
+pub const INVOLUNTARY: usize = 5;
