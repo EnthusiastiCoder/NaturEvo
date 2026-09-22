@@ -9,6 +9,7 @@ pub mod genome;
 pub mod jungle;
 pub mod log;
 pub mod matchup;
+pub mod metrics;
 pub mod net;
 pub mod rng;
 pub mod sense;
