@@ -71,3 +71,16 @@ fn fight(role: Role, me: &Genome, opp: &Genome, seed: u64, cfg: &ArenaConfig) ->
 fn won(role: Role, o: Outcome) -> bool {
     matches!((o, role), (Outcome::HeroWin, Role::Hero) | (Outcome::MonsterWin, Role::Monster))
 }
+
+#[derive(Default)]
+struct Acc {
+    fights: f64,
+    wins: f64,
+    draws: f64,
+    cells: [[[f64; 6]; 4]; 2],
+    statuses: [f64; 7],
+    punish: f64,
+    parries: f64,
+    kinds: [f64; 3],
+    kind_fights: f64,
+}
