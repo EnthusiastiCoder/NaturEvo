@@ -31,3 +31,22 @@ pub struct FightMetrics {
     pub draw: bool,
     pub decisive: bool,
 }
+
+impl FightMetrics {
+    /// Share of all ticks spent blocking while the enemy was not seen.
+    pub fn block_unseen_share(&self) -> f32 {
+        self.cells[0].iter().map(|d| d[BLOCK]).sum()
+    }
+    /// Share of ticks the enemy was seen.
+    pub fn seen_share(&self) -> f32 {
+        self.cells[1].iter().flatten().sum()
+    }
+    /// Share of all ticks spent blocking.
+    pub fn block_share(&self) -> f32 {
+        self.cells.iter().flatten().map(|d| d[BLOCK]).sum()
+    }
+    /// Total statuses applied (count of distinct status applications).
+    pub fn statuses_total(&self) -> u32 {
+        self.statuses_applied.iter().sum()
+    }
+}
