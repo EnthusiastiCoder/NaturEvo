@@ -4,3 +4,7 @@ use arena_sim::evolve::{GenStats, TrainConfig, Trainer};
 fn cfg(seed: u64) -> TrainConfig {
     TrainConfig { seed, generations: 2, pop: 8, k_opponents: 2, hof_sample: 1 }
 }
+
+fn err_of(text: &str) -> String {
+    match Trainer::resume(text) { Ok(_) => panic!("resume unexpectedly succeeded"), Err(e) => e }
+}
