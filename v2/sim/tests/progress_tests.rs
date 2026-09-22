@@ -13,8 +13,8 @@ const POP: usize = 24;
 const EARLY: [usize; 2] = [6, 30]; // scaled equivalents of gen 10 and gen 50
 // BAR placeholders: the WS4 implementer sets each from the real measured mean minus a 0.10 margin and records
 // the measured numbers in the comment next to it. These are the only constants allowed to change after measuring.
-const BAR_EARLY_A: f64 = 0.65; // measured mean: TBD
-const BAR_EARLY_B: f64 = 0.65; // measured mean: TBD
+const BAR_EARLY_A: f64 = 0.55; // measured means vs gen6: hero 0.779, monster 0.652 (min 0.652 minus 0.10)
+const BAR_EARLY_B: f64 = 0.49; // measured means vs gen30: hero 0.712, monster 0.588 (min 0.588 minus 0.10)
 
 fn late_share(role: Role, late: &Genome, early: &Genome, panel: &[Genome], seeds: u64) -> (u32, u32) {
     let cfg = ArenaConfig::default();
