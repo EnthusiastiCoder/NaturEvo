@@ -9,6 +9,8 @@ pub enum Event {
     Hit { by: usize, atk: usize, dmg: f32, blocked: bool, punish: bool, fx: Vec<usize> },
     Dot { who: usize, kind: &'static str, dmg: f32 },
     Parry { by: usize },
+    /// A swing that would have landed on `who` missed because `who` was dodging.
+    Evade { who: usize },
     Slam { who: usize, dmg: f32 },
     GuardBreak { who: usize },
 }
@@ -31,6 +33,9 @@ impl Event {
             }
             Event::Parry { by } => {
                 let _ = write!(s, "{{\"t\":\"parry\",\"by\":{}}}", by);
+            }
+            Event::Evade { who } => {
+                let _ = write!(s, "{{\"t\":\"evade\",\"who\":{}}}", who);
             }
             Event::Slam { who, dmg } => {
                 let _ = write!(s, "{{\"t\":\"slam\",\"who\":{},\"dmg\":{}}}", who, dmg);
