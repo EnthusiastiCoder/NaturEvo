@@ -17,3 +17,14 @@ fn fight(h: arena_sim::genome::Genome, m: arena_sim::genome::Genome, seed: u64) 
     let setup = Setup { hp: [cfg.max_hp, cfg.max_hp], species: [Species::Hero, Species::Minion], rank: [Rank::Grass, Rank::Grass] };
     play_with_setup(Arena::generate(seed, &cfg), h, m, seed, &cfg, setup)
 }
+
+#[test]
+fn cells_sum_to_one_per_fighter() {
+    let r = fight(aggressor(Role::Hero), aggressor(Role::Monster), 3);
+    for role in [Role::Hero, Role::Monster] {
+        let m = analyze(&r.log, role, r.outcome);
+        let total: f32 = m.cells.iter().flatten().flatten().sum();
+        assert!((total - 1.0).abs() < 1e-4, "{:?} total {total}", role);
+        assert!(m.cells.iter().flatten().flatten().all(|v| *v >= 0.0));
+    }
+}
