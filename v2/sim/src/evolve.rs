@@ -150,6 +150,11 @@ struct MatchScore {
     win: bool,
     ticks: u32,
     freq: [f32; 3],
+    block_unseen: f32,
+    seen: f32,
+    statuses: f32,
+    punish: f32,
+    draw: bool,
 }
 
 fn par_map<T: Send, F: Fn(usize) -> T + Sync>(n: usize, f: F) -> Vec<T> {
