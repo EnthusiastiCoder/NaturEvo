@@ -78,3 +78,22 @@ describe('loadIndex fallback chain', () => {
   const ok = (body: unknown) => ({ ok: true, json: async () => body }) as Response;
   const bad = () => ({ ok: false, status: 404, json: async () => ({}) }) as Response;
   const idx = { runs: [{ name: 'main' }] };
+
+  it('uses /api/runs first', async () => {
+    const f = vi.fn(async (u: string) => (u === '/api/runs' ? ok(idx) : bad()));
+    expect(await loadIndex(f as any)).toEqual({ runs: [{ name: 'main' }] });
+    expect(f).toHaveBeenCalledTimes(1);
+  });
+  it('falls back to /runs/index.json', async () => {
+    const f = vi.fn(async (u: string) => (u === '/runs/index.json' ? ok(idx) : bad()));
+    expect((await loadIndex(f as any)).runs).toHaveLength(1);
+    expect(f.mock.calls.map(c => c[0])).toEqual(['/api/runs', '/runs/index.json']);
+  });
+  it('returns empty index with error reason when both fail or throw', async () => {
+    const f = vi.fn(async () => { throw new Error('offline'); });
+    const r = await loadIndex(f as any);
+    expect(r.runs).toEqual([]);
+    expect(typeof r.error).toBe('string');
+    expect(r.error!.length).toBeGreaterThan(0);
+  });
+});
