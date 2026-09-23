@@ -321,7 +321,7 @@ pub fn score_result(role: Role, res: &MatchResult, cfg: &ArenaConfig) -> f32 {
     let t = terms(role, res, cfg);
     fitness -= ft.unseen_guard_weight * t.unseen_guard_share;
     fitness -= ft.passivity_weight * t.passivity_share.min(1.0);
-    fitness + t.punish_reward + t.status_reward
+    fitness + t.punish_reward + t.status_reward + t.defence_reward
 }
 
 fn score_match(role: Role, me: &Genome, opp: &Genome, seed: u64, cfg: &ArenaConfig, near: Option<f32>) -> MatchScore {
