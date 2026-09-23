@@ -50,3 +50,31 @@ describe('learningCurves', () => {
     expect(c.drawRate).toBeNull();
   });
 });
+
+describe('actionShares', () => {
+  const ticks = [
+    { action: 'attack', seen: true, dist: 1 },
+    { action: 'attack', seen: true, dist: 1 },
+    { action: 'block', seen: true, dist: 5 },
+    { action: 'dodge', seen: false, dist: 5 },
+  ] as any;
+  it('by visibility', () => {
+    const s = actionShares(ticks, { distBuckets: [3] })!;
+    expect(s.byVisibility.seen).toEqual({ n: 3, attack: 2 / 3, block: 1 / 3, dodge: 0 });
+    expect(s.byVisibility.unseen).toEqual({ n: 1, attack: 0, block: 0, dodge: 1 });
+  });
+  it('by distance bucket: <=3 near, >3 far', () => {
+    const s = actionShares(ticks, { distBuckets: [3] })!;
+    expect(s.byDistance.map(b => b.n)).toEqual([2, 2]);
+    expect(s.byDistance[0]).toMatchObject({ attack: 1, block: 0, dodge: 0 });
+    expect(s.byDistance[1]).toMatchObject({ attack: 0, block: 0.5, dodge: 0.5 });
+  });
+  it('no ticks -> n 0 and zero shares, no NaN', () => {
+    const s = actionShares([], { distBuckets: [3] })!;
+    expect(s.byVisibility.seen).toEqual({ n: 0, attack: 0, block: 0, dodge: 0 });
+    expect(s.byVisibility.unseen.n).toBe(0);
+  });
+  it('returns null when data lacks vision fields', () => {
+    expect(actionShares([{ action: 'attack' }] as any, { distBuckets: [3] })).toBeNull();
+  });
+});
