@@ -11,3 +11,15 @@ const camp = (outcome: string, results: [number, string][]) => JSON.stringify({
   encounters: results.map(([zone, result], i) => ({ kind: 'elite', zone, tile: [0, i], result, fight: `fight_${i}.json` })),
 });
 const files = (m: Record<string, string>) => ({ list: () => Object.keys(m), read: async (p: string) => m[p] });
+
+describe('parseTrainingCsv', () => {
+  it('parses rows to numbers keyed by column', () => {
+    const rows = parseTrainingCsv(CSV);
+    expect(rows).toHaveLength(2);
+    expect(rows[1]).toMatchObject({ gen: 1, avg_ticks: 1700, best_hero: 2.5, hof_wr_monster: 0.6, monster_dodge: 0.2 });
+  });
+  it('empty or header-only text gives []', () => {
+    expect(parseTrainingCsv('')).toEqual([]);
+    expect(parseTrainingCsv(CSV.split('\n')[0] + '\n')).toEqual([]);
+  });
+});
