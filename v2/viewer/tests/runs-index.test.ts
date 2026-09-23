@@ -73,3 +73,8 @@ describe('buildIndex', () => {
     expect(idx.runs[0].date).toBe('n/a');
   });
 });
+
+describe('loadIndex fallback chain', () => {
+  const ok = (body: unknown) => ({ ok: true, json: async () => body }) as Response;
+  const bad = () => ({ ok: false, status: 404, json: async () => ({}) }) as Response;
+  const idx = { runs: [{ name: 'main' }] };
