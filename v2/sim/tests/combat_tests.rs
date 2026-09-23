@@ -51,10 +51,10 @@ fn swing_cycle_is_13_ticks_when_hitting() {
 }
 
 #[test]
-fn dodge_costs_30_stamina() {
+fn dodge_costs_20_stamina() {
     let mut m = duel(1.0);
     m.step_with(idle(), dge());
-    assert!((m.stamina(Role::Monster) - 70.0).abs() < 1.5);
+    assert!((m.stamina(Role::Monster) - 80.0).abs() < 1.5);
 }
 
 #[test]
