@@ -276,6 +276,16 @@ pub fn terms(role: Role, res: &MatchResult, cfg: &ArenaConfig) -> Terms {
         status_reward: ft.status_reward * statuses.min(ft.status_cap) as f32,
         unseen_guard_share: unseen as f32 / n,
         passivity_share: passive as f32 / n,
+        parries,
+        evades,
+        blocks,
+        kinds_landed: kinds.count_ones(),
+        guard_ready_share: ready as f32 / wind.max(1) as f32,
+        defence_reward: ft.parry_reward * parries.min(ft.parry_cap) as f32
+            + ft.evade_reward * evades.min(ft.evade_cap) as f32
+            + ft.block_reward * blocks.min(ft.block_cap) as f32
+            + ft.variety_reward * kinds.count_ones().saturating_sub(1) as f32
+            + ft.guard_ready_reward * ready as f32 / wind.max(1) as f32,
     }
 }
 
