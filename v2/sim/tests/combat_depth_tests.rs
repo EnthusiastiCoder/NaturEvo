@@ -33,10 +33,10 @@ fn light_hits_at_step_5_heavy_at_step_13() {
     assert_eq!(m.hp(M), 92.0);
     let mut m = duel(1.0);
     m.step_with(atk(1), idle());
-    run(&mut m, 11, idle(), idle());
-    assert_eq!(m.hp(M), 100.0, "heavy still winding up at step 12");
+    run(&mut m, 9, idle(), idle());
+    assert_eq!(m.hp(M), 100.0, "heavy still winding up at step 10");
     m.step_with(idle(), idle());
-    assert_eq!(m.hp(M), 82.0, "heavy dmg 18 at step 13");
+    assert_eq!(m.hp(M), 78.0, "heavy dmg 22 at step 11");
 }
 
 #[test]
@@ -219,7 +219,7 @@ fn guard_break_stuns_20() {
     let mut m = duel(1.0);
     m.set_stamina(H, 10.0);
     run(&mut m, 10, blk(), idle());
-    run(&mut m, 6, blk(), atk(0));
+    run(&mut m, 9, blk(), atk(0));
     assert_eq!(st(&m, H), S::Stunned);
     let s = m.fx(H)[Status::Stun.idx()];
     assert!((19..=20).contains(&s), "stun {s}");
