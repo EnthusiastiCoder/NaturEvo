@@ -35,3 +35,41 @@ describe('summarizeCampaign', () => {
     expect(summarizeCampaign('{nope')).toBeNull();
   });
 });
+
+describe('buildIndex', () => {
+  it('derives generations, permadeath on/off, seed and n/a fields', async () => {
+    const idx = await buildIndex(files({
+      'main/training.csv': CSV,
+      'main/campaign_on.json': camp('Died', [[1, 'MonsterWin']]),
+      'main/campaign_off.json': camp('Cleared', [[1, 'HeroWin']]),
+      'main/champion_hero_gen_9.json': '{}',
+      'main/champion_hero_gen_29.json': '{}',
+      'cd/s1/training.csv': CSV,
+      'cd/s1/campaign_on.json': camp('Cleared', [[1, 'HeroWin']]),
+    }), { mtime: () => '2026-10-01' });
+    expect(idx.runs.map(r => r.name).sort()).toEqual(['cd/s1', 'main']);
+    const main = idx.runs.find(r => r.name === 'main')!;
+    expect(main.generations).toBe(2);
+    expect(main.permadeath.on?.outcome).toBe('Died');
+    expect(main.permadeath.off?.outcome).toBe('Cleared');
+    expect(main.date).toBe('2026-10-01');
+    expect(main.seed).toBe('n/a');
+    expect(main.files).toContain('champion_hero_gen_29.json');
+    const s1 = idx.runs.find(r => r.name === 'cd/s1')!;
+    expect(s1.permadeath.off).toBeUndefined();
+    expect(s1.seed).toBe('1');
+  });
+  it('skips junk folders and files without throwing', async () => {
+    const idx = await buildIndex(files({
+      '_vv/x.bin': 'zz', 'final/readme.txt': 'hi', 'tmp60/a.txt': 'a', 'notes.txt': 'n', 'py/a.py': 'x',
+      'bad/training.csv': '\u0000\u0001garbage', 'bad/campaign_on.json': '{nope',
+    }), { mtime: () => '2026-10-01' });
+    const names = idx.runs.map(r => r.name);
+    for (const junk of ['_vv', 'final', 'tmp60', 'py', 'notes.txt']) expect(names).not.toContain(junk);
+    for (const r of idx.runs) expect(r.permadeath.on).toBeUndefined();
+  });
+  it('missing mtime gives n/a date', async () => {
+    const idx = await buildIndex(files({ 'a/training.csv': CSV }), { mtime: () => undefined });
+    expect(idx.runs[0].date).toBe('n/a');
+  });
+});
