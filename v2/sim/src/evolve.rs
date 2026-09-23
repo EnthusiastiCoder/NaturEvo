@@ -258,6 +258,12 @@ pub fn terms(role: Role, res: &MatchResult, cfg: &ArenaConfig) -> Terms {
             passive += 1;
         }
         let d = ((f.pos[0].0 - f.pos[1].0).powi(2) + (f.pos[0].1 - f.pos[1].1).powi(2)).sqrt();
+        if f.state[1 - ri] == CombatState::Windup && d <= 2.5 {
+            wind += 1;
+            if matches!(f.state[ri], CombatState::GuardRaise | CombatState::Blocking | CombatState::Dodging) {
+                ready += 1;
+            }
+        }
         if is_guard(f.state[ri]) && (!f.seen[ri] || d > ft.unseen_guard_dist) {
             unseen += 1;
         }
