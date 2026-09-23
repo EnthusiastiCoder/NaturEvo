@@ -243,6 +243,8 @@ pub fn terms(role: Role, res: &MatchResult, cfg: &ArenaConfig) -> Terms {
                         }
                     }
                 }
+                Event::Parry { by } if *by == ri => parries += 1,
+                Event::Evade { who } if *who == ri => evades += 1,
                 Event::Dot { dmg, .. } if *dmg > 0.0 => damaged = true,
                 _ => {}
             }
