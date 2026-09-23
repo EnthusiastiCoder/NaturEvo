@@ -224,7 +224,7 @@ pub fn terms(role: Role, res: &MatchResult, cfg: &ArenaConfig) -> Terms {
         let mut damaged = false;
         for e in &f.ev {
             match e {
-                Event::Hit { by, dmg, punish, fx, .. } => {
+                Event::Hit { by, atk, dmg, blocked, punish, fx } => {
                     if *dmg > 0.0 {
                         damaged = true;
                     }
