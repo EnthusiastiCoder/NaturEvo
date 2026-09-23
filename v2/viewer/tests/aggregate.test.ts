@@ -25,3 +25,28 @@ describe('poolRates', () => {
     expect(poolRates([{ k: 0, n: 0 }])).toEqual({ k: 0, n: 0, rate: null });
   });
 });
+
+describe('learningCurves', () => {
+  const rows = [
+    { gen: 0, best_hero: 0.5, best_monster: 0.25, hof_wr_hero: 0, hof_wr_monster: 0 },
+    { gen: 1, best_hero: 2.5, best_monster: 1.5, hof_wr_hero: 0.4, hof_wr_monster: 0.6 },
+    { gen: 2, best_hero: 3, best_monster: 2, hof_wr_hero: 0.5, hof_wr_monster: 0.25 },
+  ] as any;
+  it('series have one point per generation', () => {
+    const c = learningCurves(rows);
+    expect(c.gens).toEqual([0, 1, 2]);
+    expect(c.heroFitness).toEqual([0.5, 2.5, 3]);
+    expect(c.monsterFitness).toEqual([0.25, 1.5, 2]);
+    expect(c.heroWinVsEarlier).toEqual([0, 0.4, 0.5]);
+    expect(c.monsterWinVsEarlier).toEqual([0, 0.6, 0.25]);
+  });
+  it('draw rate = 1 - hero - monster per generation', () => {
+    expect(learningCurves(rows).drawRate).toEqual([1, 0, 0.25]);
+  });
+  it('empty input gives empty series and no draw rate, no NaN', () => {
+    const c = learningCurves([]);
+    expect(c.gens).toEqual([]);
+    expect(c.heroFitness).toEqual([]);
+    expect(c.drawRate).toBeNull();
+  });
+});
