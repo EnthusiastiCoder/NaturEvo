@@ -42,7 +42,7 @@ fn fitness_defaults_match_plan() {
     assert_eq!(f.draw_penalty, 6.0);
     assert!((f.punish_reward - 0.6).abs() < 1e-6);
     assert!((f.status_reward - 0.15).abs() < 1e-6);
-    assert_eq!(f.punish_cap as f32, 3.0);
+    assert_eq!(f.punish_cap as f32, 4.0);
     assert_eq!(f.status_cap as f32, 6.0);
 }
 
@@ -99,7 +99,7 @@ fn no_free_block_bonus_block_bit_toggle_changes_nothing() {
 }
 
 #[test]
-fn punish_reward_is_capped_at_three_hits() {
+fn punish_reward_is_capped_at_four_hits() {
     let mut m = duel(1.0);
     for _ in 0..68 {
         m.apply_status(Role::Monster, Status::Stagger, 40, 0.0, Role::Hero); // keep victim staggered
@@ -108,7 +108,7 @@ fn punish_reward_is_capped_at_three_hits() {
     let r = m.result();
     let t = terms(Role::Hero, &r, &cfg());
     assert_eq!(t.punish_hits, 5);
-    assert!((t.punish_reward - 0.6 * 3.0).abs() < 1e-5, "{}", t.punish_reward);
+    assert!((t.punish_reward - 0.6 * 4.0).abs() < 1e-5, "{}", t.punish_reward);
     assert_eq!(terms(Role::Monster, &r, &cfg()).punish_hits, 0);
 }
 
