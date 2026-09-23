@@ -232,6 +232,9 @@ pub fn terms(role: Role, res: &MatchResult, cfg: &ArenaConfig) -> Terms {
                         blocks += 1;
                     }
                     if *by == ri {
+                        if *dmg > 0.0 && !*blocked {
+                            kinds |= 1 << (*atk as u8 & 7);
+                        }
                         if *punish {
                             punish_hits += 1;
                         }
