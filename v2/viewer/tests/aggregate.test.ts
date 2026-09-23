@@ -14,3 +14,14 @@ describe('campaignWinRate', () => {
     expect(r.off).toEqual({ k: 0, n: 0, rate: null });
   });
 });
+
+describe('poolRates', () => {
+  it('weights by counts, not by mean of means', () => {
+    // 1/1 and 1/9 -> 2/10 = 0.2 (mean of means would be 0.55)
+    expect(poolRates([{ k: 1, n: 1 }, { k: 1, n: 9 }])).toEqual({ k: 2, n: 10, rate: 0.2 });
+  });
+  it('empty or all-zero -> rate null', () => {
+    expect(poolRates([])).toEqual({ k: 0, n: 0, rate: null });
+    expect(poolRates([{ k: 0, n: 0 }])).toEqual({ k: 0, n: 0, rate: null });
+  });
+});
