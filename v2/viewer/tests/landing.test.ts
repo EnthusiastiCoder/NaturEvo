@@ -7,3 +7,22 @@ const run = (name: string, extra = {}) => ({
   permadeath: { on: { outcome: 'Died', wins: 1, losses: 1, encounters: 2, perZone: {} }, off: undefined },
   keyResult: 'Died', files: [], ...extra,
 }) as any;
+
+describe('landing empty state', () => {
+  it('lists exact CLI commands and is not an error banner', () => {
+    const vm = landingViewModel({ runs: [] });
+    expect(vm.empty).toBe(true);
+    expect(EMPTY_COMMANDS).toEqual(expect.arrayContaining([
+      expect.stringContaining('cargo run --release -- train'),
+      expect.stringContaining('cargo run --release -- campaign'),
+    ]));
+    const html = renderLandingHtml(vm);
+    for (const c of EMPTY_COMMANDS) expect(html).toContain(c);
+    expect(html).not.toMatch(/banner|error|red/i);
+  });
+  it('index error still shows empty state, not a banner', () => {
+    const html = renderLandingHtml(landingViewModel({ runs: [], error: 'offline' }));
+    for (const c of EMPTY_COMMANDS) expect(html).toContain(c);
+    expect(html).not.toMatch(/class="[^"]*banner/);
+  });
+});
