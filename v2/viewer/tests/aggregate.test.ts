@@ -78,3 +78,17 @@ describe('actionShares', () => {
     expect(actionShares([{ action: 'attack' }] as any, { distBuckets: [3] })).toBeNull();
   });
 });
+
+describe('zoneRates', () => {
+  it('per-zone win rate with counts, sorted by zone', () => {
+    const z = zoneRates([
+      { zone: 2, result: 'HeroWin' }, { zone: 1, result: 'MonsterWin' },
+      { zone: 1, result: 'HeroWin' }, { zone: 1, result: 'HeroWin' }, { zone: 2, result: 'MonsterWin' },
+    ]);
+    expect(z).toEqual([
+      { zone: 1, k: 2, n: 3, rate: 2 / 3 },
+      { zone: 2, k: 1, n: 2, rate: 0.5 },
+    ]);
+  });
+  it('empty -> []', () => expect(zoneRates([])).toEqual([]));
+});
