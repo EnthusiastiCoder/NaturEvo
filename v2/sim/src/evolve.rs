@@ -228,6 +228,9 @@ pub fn terms(role: Role, res: &MatchResult, cfg: &ArenaConfig) -> Terms {
                     if *dmg > 0.0 {
                         damaged = true;
                     }
+                    if *by != ri && *blocked {
+                        blocks += 1;
+                    }
                     if *by == ri {
                         if *punish {
                             punish_hits += 1;
