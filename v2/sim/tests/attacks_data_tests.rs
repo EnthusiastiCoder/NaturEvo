@@ -24,8 +24,8 @@ fn hero_has_three_moves_with_table_values() {
         assert_eq!(m.stamina_cost, cost);
     };
     t(0, 4, 3, 6, 8.0, 1.2, 5.0);
-    t(1, 12, 4, 14, 18.0, 1.3, 15.0);
-    t(2, 8, 3, 12, 10.0, 1.6, 12.0);
+    t(1, 10, 4, 14, 22.0, 1.3, 15.0);
+    t(2, 7, 3, 12, 10.0, 2.8, 12.0);
     assert!((v[0].half_arc - PI / 4.0).abs() < 1e-5 && (v[1].half_arc - PI / 4.0).abs() < 1e-5);
     assert!((v[2].half_arc - PI / 6.0).abs() < 1e-5);
     assert_eq!(v[0].lunge, 0.0);
@@ -52,11 +52,11 @@ fn species_have_two_distinct_moves_with_signature_values() {
     assert_eq!(eff(&w[0], Status::Stun).0, 24);
     assert!((w[1].half_arc - 70.0f32.to_radians()).abs() < 1e-3, "cleave arc 140");
     let h = moves(Species::Mage, Rank::Grass);
-    assert_eq!((h[0].windup, h[0].damage), (10, 5.0));
+    assert_eq!((h[0].windup, h[0].damage), (12, 5.0));
     assert!((h[0].range - 2.0).abs() < 1e-5);
     assert_eq!(eff(&h[0], Status::Poison).0, 240);
     assert_eq!(eff(&h[0], Status::Confused).0, 90);
-    assert_eq!(moves(Species::Rogue, Rank::Grass)[0].windup, 3);
+    assert_eq!(moves(Species::Rogue, Rank::Grass)[0].windup, 7);
 }
 
 #[test]
