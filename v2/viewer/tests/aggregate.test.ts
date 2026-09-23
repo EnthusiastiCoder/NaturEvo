@@ -92,3 +92,14 @@ describe('zoneRates', () => {
   });
   it('empty -> []', () => expect(zoneRates([])).toEqual([]));
 });
+
+describe('statusesPerFight', () => {
+  it('returns status counts per fight in order', () => {
+    const fights = [
+      { frames: [{ statuses: ['burn'] }, { statuses: ['burn', 'stun'] }] },
+      { frames: [{ statuses: [] }] },
+    ] as any;
+    expect(statusesPerFight(fights)).toEqual([{ burn: 2, stun: 1 }, {}]);
+  });
+  it('no fights -> []', () => expect(statusesPerFight([])).toEqual([]));
+});
