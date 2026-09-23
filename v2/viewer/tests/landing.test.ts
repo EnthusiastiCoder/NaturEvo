@@ -26,3 +26,26 @@ describe('landing empty state', () => {
     expect(html).not.toMatch(/class="[^"]*banner/);
   });
 });
+
+describe('landing picker', () => {
+  const vm = landingViewModel({ runs: [run('main'), run('cd/s1', { seed: 'n/a' })] });
+  it('rows carry name, seed, date, gens, permadeath on/off and key result', () => {
+    expect(vm.empty).toBe(false);
+    expect(vm.rows).toHaveLength(2);
+    expect(vm.rows[0]).toMatchObject({ name: 'main', seed: '7', date: '2026-10-01', generations: 30, permadeathOn: 'Died', permadeathOff: 'n/a', keyResult: 'Died' });
+    expect(vm.rows[1].seed).toBe('n/a');
+  });
+  it('Open link targets ?run=<encoded name>', () => {
+    expect(vm.rows[0].openHref).toBe('?run=main');
+    expect(vm.rows[1].openHref).toBe('?run=cd%2Fs1');
+  });
+  it('has a Demo button and an All runs toggle', () => {
+    const html = renderLandingHtml(vm);
+    expect(html).toMatch(/<button[^>]*data-action="demo"[^>]*>[^<]*Demo/);
+    expect(html).toContain('data-action="all-runs"');
+    expect(html).toContain('href="?run=main"');
+  });
+  it('html has no hard-coded colours', () => {
+    expect(renderLandingHtml(vm)).not.toMatch(/#[0-9a-fA-F]{3,8}\b|rgb\(/);
+  });
+});
