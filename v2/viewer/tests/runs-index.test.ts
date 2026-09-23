@@ -23,3 +23,15 @@ describe('parseTrainingCsv', () => {
     expect(parseTrainingCsv(CSV.split('\n')[0] + '\n')).toEqual([]);
   });
 });
+
+describe('summarizeCampaign', () => {
+  it('counts wins, losses, encounters and per-zone', () => {
+    const s = summarizeCampaign(camp('Died', [[1, 'HeroWin'], [1, 'MonsterWin'], [2, 'HeroWin'], [2, 'HeroWin']]))!;
+    expect(s.outcome).toBe('Died');
+    expect(s).toMatchObject({ wins: 3, losses: 1, encounters: 4 });
+    expect(s.perZone).toEqual({ 1: { wins: 1, losses: 1 }, 2: { wins: 2, losses: 0 } });
+  });
+  it('invalid JSON returns null', () => {
+    expect(summarizeCampaign('{nope')).toBeNull();
+  });
+});
