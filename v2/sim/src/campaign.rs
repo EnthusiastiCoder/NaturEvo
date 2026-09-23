@@ -157,8 +157,8 @@ pub fn monster_hp_for(kind: EncounterKind) -> f32 {
         EncounterKind::Boss => 100.0,
     }
 }
-const GRASS_HP: f32 = 85.0;
-const ELITE_HP: f32 = 96.0;
+const GRASS_HP: f32 = 70.0;
+const ELITE_HP: f32 = 60.0;
 
 #[derive(Clone, Debug)]
 pub struct Encounter {
