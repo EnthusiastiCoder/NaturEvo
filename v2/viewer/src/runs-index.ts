@@ -20,3 +20,20 @@ export function parseTrainingCsv(text: string): Row[] {
     return row;
   });
 }
+
+export function summarizeCampaign(jsonText: string): CampaignSummary | null {
+  try {
+    const j = JSON.parse(jsonText);
+    if (!j || typeof j !== 'object') return null;
+    const encs: { zone?: number; result?: string }[] = Array.isArray(j.encounters) ? j.encounters : [];
+    const perZone: CampaignSummary['perZone'] = {};
+    let wins = 0, losses = 0;
+    for (const e of encs) {
+      const win = e.result === 'HeroWin';
+      if (win) wins++; else losses++;
+      const z = (perZone[String(e.zone ?? 'n/a')] ??= { wins: 0, losses: 0 });
+      if (win) z.wins++; else z.losses++;
+    }
+    return { outcome: typeof j.outcome === 'string' ? j.outcome : 'n/a', wins, losses, encounters: encs.length, perZone };
+  } catch { return null; }
+}
