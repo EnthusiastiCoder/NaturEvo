@@ -81,3 +81,5 @@ function barChart(bars: { label: string; k: number; n: number; rate: number | nu
 
 const card = (title: string, info: string, body: string) =>
   `<article class="card"><header><h3>${esc(title)}</h3>${infoButton(info)}</header><p class="info-text" hidden>${esc(info)}</p><div class="body">${body}</div></article>`;
+
+export type RunData = { run: RunInfo; rows: Row[] };
