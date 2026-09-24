@@ -76,3 +76,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .run-row .nm { grid-column: 1; }
 .run-row span { grid-column: 1; color: var(--muted); font-size: 12px; }
 .run-row svg { grid-column: 2; grid-row: 1 / span 4; color: var(--accent); }
+.run-row:hover, .runs li.sel .run-row { border-color: var(--accent); }
