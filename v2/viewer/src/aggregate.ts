@@ -10,3 +10,14 @@ export function campaignWinRate(c: { on?: { wins: number; losses: number }; off?
 export function poolRates(parts: { k: number; n: number }[]): Rate {
   return rateOf(parts.reduce((a, p) => a + p.k, 0), parts.reduce((a, p) => a + p.n, 0));
 }
+
+type CurveRow = Record<string, number | undefined>;
+export function learningCurves(rows: CurveRow[]) {
+  const col = (c: string) => rows.map((r) => r[c] ?? 0);
+  const h = col('hof_wr_hero'), m = col('hof_wr_monster');
+  return {
+    gens: col('gen'), heroFitness: col('best_hero'), monsterFitness: col('best_monster'),
+    heroWinVsEarlier: h, monsterWinVsEarlier: m,
+    drawRate: rows.length ? h.map((v, i) => Math.max(0, 1 - v - m[i])) : null,
+  };
+}
