@@ -6,3 +6,7 @@ export function campaignWinRate(c: { on?: { wins: number; losses: number }; off?
   const f = (s?: { wins: number; losses: number }) => rateOf(s?.wins ?? 0, (s?.wins ?? 0) + (s?.losses ?? 0));
   return { on: f(c.on), off: f(c.off) };
 }
+
+export function poolRates(parts: { k: number; n: number }[]): Rate {
+  return rateOf(parts.reduce((a, p) => a + p.k, 0), parts.reduce((a, p) => a + p.n, 0));
+}
