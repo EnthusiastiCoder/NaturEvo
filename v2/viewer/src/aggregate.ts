@@ -21,3 +21,9 @@ export function learningCurves(rows: CurveRow[]) {
     drawRate: rows.length ? h.map((v, i) => Math.max(0, 1 - v - m[i])) : null,
   };
 }
+
+export type Shares = { n: number; attack: number; block: number; dodge: number };
+const shares = (xs: { action: string }[]): Shares => {
+  const n = xs.length, c = (a: string) => (n ? xs.filter((x) => x.action === a).length / n : 0);
+  return { n, attack: c('attack'), block: c('block'), dodge: c('dodge') };
+};
