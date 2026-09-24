@@ -41,3 +41,11 @@ export function zoneRates(encs: { zone: number; result: string }[]): { zone: num
   for (const e of encs) { const a = z.get(e.zone) ?? { k: 0, n: 0 }; a.n++; if (e.result === 'HeroWin') a.k++; z.set(e.zone, a); }
   return [...z].sort((a, b) => a[0] - b[0]).map(([zone, a]) => ({ zone, ...rateOf(a.k, a.n) }));
 }
+
+export function statusesPerFight(fights: { frames: { statuses: string[] }[] }[]): Record<string, number>[] {
+  return fights.map((f) => {
+    const out: Record<string, number> = {};
+    for (const fr of f.frames) for (const s of fr.statuses) out[s] = (out[s] ?? 0) + 1;
+    return out;
+  });
+}
