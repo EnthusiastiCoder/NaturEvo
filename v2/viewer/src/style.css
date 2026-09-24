@@ -55,3 +55,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .fxchip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 
 /* Landing view (data-view="landing" on <html>) */
+.btn { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius);
