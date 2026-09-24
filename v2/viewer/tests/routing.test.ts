@@ -17,3 +17,14 @@ describe('route', () => {
   });
   it('?run= with empty value is still run, not landing', () => expect(route('?run=')).toBe('run'));
 });
+
+describe('shouldShowRunError', () => {
+  it('missing file on run/fight route shows an error, never silently landing', () => {
+    expect(shouldShowRunError('run', false)).toBe(true);
+    expect(shouldShowRunError('fight', false)).toBe(true);
+  });
+  it('no error on success or on landing', () => {
+    expect(shouldShowRunError('run', true)).toBe(false);
+    expect(shouldShowRunError('landing', false)).toBe(false);
+  });
+});
