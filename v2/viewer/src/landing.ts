@@ -66,3 +66,15 @@ function lineChart(series: { cls: string; label: string; ys: number[] }[], xs: n
 <text class="tick" x="${PAD.l - 3}" y="${py(0) + 3}" text-anchor="end">0</text><text class="tick" x="${PAD.l - 3}" y="${py(yMax) + 3}" text-anchor="end">${+yMax.toFixed(1)}</text>
 <text class="tick" x="${PAD.l}" y="${H - 3}">gen ${xs[0]}</text><text class="tick" x="${W - PAD.r}" y="${H - 3}" text-anchor="end">${xs[xs.length - 1]}</text>${lines}${labels}</svg>`;
 }
+
+function barChart(bars: { label: string; k: number; n: number; rate: number | null }[]): string {
+  const bw = (W - PAD.l - PAD.r) / Math.max(1, bars.length), base = H - PAD.b - 4, top = PAD.t + 10;
+  const g = bars.map((b, i) => {
+    const h = b.rate === null ? 0 : b.rate * (base - top), x = PAD.l + i * bw + bw * 0.2;
+    return `<g><title>${esc(b.label)}: ${b.k} of ${b.n}</title><rect class="bar" x="${x}" y="${base - h}" width="${bw * 0.6}" height="${h}"/>
+<text class="lbl" x="${x + bw * 0.3}" y="${base - h - 3}" text-anchor="middle">${pct(b.rate)} (${b.k}/${b.n})</text>
+<text class="tick" x="${x + bw * 0.3}" y="${H - 3}" text-anchor="middle">${esc(b.label)}</text></g>`;
+  }).join('');
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img"><line class="axis" x1="${PAD.l}" y1="${base}" x2="${W - PAD.r}" y2="${base}"/>
+<text class="tick" x="${PAD.l - 3}" y="${base + 3}" text-anchor="end">0</text><text class="tick" x="${PAD.l - 3}" y="${top + 3}" text-anchor="end">100%</text>${g}</svg>`;
+}
