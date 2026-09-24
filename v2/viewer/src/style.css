@@ -89,3 +89,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .chart .axis { stroke: var(--line); stroke-width: 1; }
 .chart .tick { fill: var(--muted); font-size: 7px; stroke: none; }
 .chart .lbl { fill: var(--text); font-size: 7px; stroke: none; }
+.chart .bar { fill: var(--accent); stroke: none; }
