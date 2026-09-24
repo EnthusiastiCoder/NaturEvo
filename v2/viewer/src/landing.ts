@@ -120,3 +120,37 @@ ${card('Win vs earlier champions', 'Win share against earlier hall-of-fame champ
 ${card('Sees the opponent', 'Share of ticks where each side had the opponent in its vision cone, per generation.', seen)}
 ${card('Statuses per fight', 'Average status effects (stun, bleed and so on) landed per fight, per generation.', stat)}</div>`;
 }
+
+// ---- DOM controller ----
+export async function mountLanding(el: HTMLElement, index: RunIndex, onDemo: () => void): Promise<void> {
+  el.innerHTML = renderLandingHtml(landingViewModel(index));
+  el.querySelector('[data-action="demo"]')?.addEventListener('click', onDemo);
+  const results = el.querySelector<HTMLElement>('#landing-results');
+  if (!results) return;
+  const text = async (u: string) => { try { const r = await fetch(u); return r.ok ? await r.text() : ''; } catch { return ''; } };
+  const cache = new Map<string, Row[]>();
+  const rowsOf = async (r: RunInfo) => {
+    if (!cache.has(r.name)) cache.set(r.name, parseTrainingCsv(await text(`/runs/${r.name}/training.csv`)));
+    return cache.get(r.name)!;
+  };
+  let selected = index.runs[0];
+  let all = false;
+  const paint = async () => {
+    const data = all ? index.runs.map((run) => ({ run, rows: [] as Row[] })) : [{ run: selected, rows: await rowsOf(selected) }];
+    results.innerHTML = renderResultsHtml(data, all);
+    results.querySelectorAll<HTMLButtonElement>('.info-btn').forEach((b) => b.addEventListener('click', () => {
+      const p = b.closest('.card')!.querySelector<HTMLElement>('.info-text')!;
+      p.hidden = !p.hidden; b.setAttribute('aria-expanded', String(!p.hidden));
+    }));
+    el.querySelectorAll<HTMLElement>('.run-row').forEach((a) => a.parentElement!.classList.toggle('sel', !all && a.dataset.run === selected.name));
+  };
+  el.querySelectorAll<HTMLAnchorElement>('.run-row').forEach((a) => {
+    // Hover or keyboard focus previews the run in the results panel; click or Enter opens it in the replay.
+    const preview = () => { selected = index.runs.find((r) => r.name === a.dataset.run)!; all = false; el.querySelector('[data-action="all-runs"]')?.setAttribute('aria-pressed', 'false'); void paint(); };
+    a.addEventListener('focus', preview); a.addEventListener('mouseenter', preview);
+  });
+  el.querySelector('[data-action="all-runs"]')?.addEventListener('click', (e) => {
+    all = !all; (e.currentTarget as HTMLElement).setAttribute('aria-pressed', String(all)); void paint();
+  });
+  await paint();
+}
