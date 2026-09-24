@@ -73,3 +73,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 #landing .runs { list-style: none; margin: 0; padding: 0; overflow-y: auto; min-height: 0; display: flex; flex-direction: column; gap: 4px; }
 .run-row { display: grid; grid-template-columns: 1fr auto; gap: 0 var(--gap); align-items: center; padding: 6px 8px; border: 1px solid var(--line);
   border-radius: var(--radius); color: var(--text); text-decoration: none; }
+.run-row .nm { grid-column: 1; }
