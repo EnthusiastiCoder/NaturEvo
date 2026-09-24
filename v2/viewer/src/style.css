@@ -91,3 +91,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .chart .lbl { fill: var(--text); font-size: 7px; stroke: none; }
 .chart .bar { fill: var(--accent); stroke: none; }
 .chart .ln { fill: none; stroke-width: 1.5; }
+.chart .ln.hero { stroke: var(--accent); } .chart .lbl.hero { fill: var(--accent); }
