@@ -92,3 +92,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .chart .bar { fill: var(--accent); stroke: none; }
 .chart .ln { fill: none; stroke-width: 1.5; }
 .chart .ln.hero { stroke: var(--accent); } .chart .lbl.hero { fill: var(--accent); }
+.chart .ln.monster { stroke: var(--fx-bleed); stroke-dasharray: 4 2; } .chart .lbl.monster { fill: var(--fx-bleed); }
