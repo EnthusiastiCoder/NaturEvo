@@ -75,3 +75,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
   border-radius: var(--radius); color: var(--text); text-decoration: none; }
 .run-row .nm { grid-column: 1; }
 .run-row span { grid-column: 1; color: var(--muted); font-size: 12px; }
+.run-row svg { grid-column: 2; grid-row: 1 / span 4; color: var(--accent); }
