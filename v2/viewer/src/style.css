@@ -62,3 +62,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 [data-view="landing"] #landing { display: grid; grid-row: 1 / -1; grid-template-columns: minmax(260px, 2fr) 3fr; gap: var(--gap); padding: var(--gap); min-height: 0; }
 [data-view="landing"] #view, [data-view="landing"] .hud, [data-view="landing"] #banner, [data-view="landing"] footer.bar,
 [data-view="landing"] #mode-walk, [data-view="landing"] #mode-duel, [data-view="landing"] #fight-select, [data-view="landing"] #load,
+[data-view="landing"] #rays, [data-view="landing"] #runs-link, [data-view="landing"] #info { display: none; }
