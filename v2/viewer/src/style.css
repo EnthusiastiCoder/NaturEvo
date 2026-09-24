@@ -74,3 +74,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .run-row { display: grid; grid-template-columns: 1fr auto; gap: 0 var(--gap); align-items: center; padding: 6px 8px; border: 1px solid var(--line);
   border-radius: var(--radius); color: var(--text); text-decoration: none; }
 .run-row .nm { grid-column: 1; }
+.run-row span { grid-column: 1; color: var(--muted); font-size: 12px; }
