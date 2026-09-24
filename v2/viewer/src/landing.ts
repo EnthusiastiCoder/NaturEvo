@@ -12,3 +12,12 @@ export type LandingRow = {
   permadeathOn: string; permadeathOff: string; keyResult: string; openHref: string;
 };
 export type LandingVM = { empty: boolean; rows: LandingRow[] };
+
+export const landingViewModel = (index: RunIndex): LandingVM => ({
+  empty: index.runs.length === 0,
+  rows: index.runs.map((r) => ({
+    name: r.name, seed: r.seed, date: r.date, generations: r.generations,
+    permadeathOn: r.permadeath.on?.outcome ?? 'n/a', permadeathOff: r.permadeath.off?.outcome ?? 'n/a',
+    keyResult: r.keyResult, openHref: `?run=${encodeURIComponent(r.name)}`,
+  })),
+});
