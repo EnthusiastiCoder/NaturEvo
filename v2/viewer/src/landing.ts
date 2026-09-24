@@ -34,3 +34,20 @@ export const infoButton = (text: string) =>
   `<button type="button" class="info-btn" aria-label="About this chart" aria-expanded="false" title="${esc(text)}">${icon(ICON.info)}</button>`;
 
 const demoButton = `<button type="button" data-action="demo" title="Open the built-in demo fight (not a real run)">Demo${icon(ICON.play)}</button>`;
+
+export function renderLandingHtml(vm: LandingVM): string {
+  if (vm.empty) {
+    return `<section class="landing-empty"><h2>No runs yet</h2>
+<p>Train a population, then walk the jungle with its champions. Run these in <code>v2/sim</code>:</p>
+<ol class="cmds">${EMPTY_COMMANDS.map((c) => `<li><code>${esc(c)}</code></li>`).join('')}</ol>
+<p class="muted">Results appear here when the files exist. Meanwhile you can look at the built-in demo.</p>
+<div class="actions">${demoButton}</div></section>`;
+  }
+  const rows = vm.rows.map((r) => `<li><a class="run-row" href="${esc(r.openHref)}" data-run="${esc(r.name)}" title="Open ${esc(r.name)} in the replay">
+<b class="nm">${esc(r.name)}</b><span title="Seed">seed ${esc(r.seed)}</span><span title="Last modified">${esc(r.date)}</span><span title="Generations trained">${r.generations} gen</span>
+<span title="Campaign outcome with permadeath on / off">on ${esc(r.permadeathOn)} / off ${esc(r.permadeathOff)}</span>${icon(ICON.open)}</a></li>`).join('');
+  return `<section class="picker"><div class="head"><h2>Runs</h2>
+<button type="button" data-action="all-runs" aria-pressed="false" title="Pool campaign results across every run">${icon(ICON.layers)}All runs</button>${demoButton}</div>
+<ul class="runs">${rows}</ul></section>
+<section class="results" id="landing-results" aria-live="polite"></section>`;
+}
