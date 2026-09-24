@@ -94,3 +94,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .chart .ln.hero { stroke: var(--accent); } .chart .lbl.hero { fill: var(--accent); }
 .chart .ln.monster { stroke: var(--fx-bleed); stroke-dasharray: 4 2; } .chart .lbl.monster { fill: var(--fx-bleed); }
 .chart .ln.draw { stroke: var(--muted); stroke-dasharray: 1 2; } .chart .lbl.draw { fill: var(--muted); }
+.na { display: grid; place-content: center; text-align: center; color: var(--muted); font-weight: 600; }
