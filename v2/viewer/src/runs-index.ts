@@ -71,3 +71,17 @@ export async function buildIndex(src: FileSource, opts: { mtime(path: string): s
   runs.sort((a, b) => a.name.localeCompare(b.name));
   return { runs };
 }
+
+export async function loadIndex(fetchFn: typeof fetch = fetch): Promise<RunIndex> {
+  const reasons: string[] = [];
+  for (const url of ['/api/runs', '/runs/index.json']) {
+    try {
+      const r = await fetchFn(url);
+      if (!r.ok) { reasons.push(`${url}: HTTP ${r.status}`); continue; }
+      const j = await r.json();
+      if (j && Array.isArray(j.runs)) return { runs: j.runs };
+      reasons.push(`${url}: unexpected shape`);
+    } catch (e) { reasons.push(`${url}: ${e instanceof Error ? e.message : String(e)}`); }
+  }
+  return { runs: [], error: reasons.join('; ') };
+}
