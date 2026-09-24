@@ -78,3 +78,6 @@ function barChart(bars: { label: string; k: number; n: number; rate: number | nu
   return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img"><line class="axis" x1="${PAD.l}" y1="${base}" x2="${W - PAD.r}" y2="${base}"/>
 <text class="tick" x="${PAD.l - 3}" y="${base + 3}" text-anchor="end">0</text><text class="tick" x="${PAD.l - 3}" y="${top + 3}" text-anchor="end">100%</text>${g}</svg>`;
 }
+
+const card = (title: string, info: string, body: string) =>
+  `<article class="card"><header><h3>${esc(title)}</h3>${infoButton(info)}</header><p class="info-text" hidden>${esc(info)}</p><div class="body">${body}</div></article>`;
