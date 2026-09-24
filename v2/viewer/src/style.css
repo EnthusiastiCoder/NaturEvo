@@ -82,3 +82,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .card header { display: flex; align-items: center; justify-content: space-between; }
 .card h3 { font-size: 12px; margin: 0; }
 .card .body { flex: 1; min-height: 0; display: grid; }
+.info-btn { height: 22px; min-width: 22px; padding: 0; border: 0; background: transparent; color: var(--muted); }
