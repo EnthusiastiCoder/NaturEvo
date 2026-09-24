@@ -51,3 +51,8 @@ export function renderLandingHtml(vm: LandingVM): string {
 <ul class="runs">${rows}</ul></section>
 <section class="results" id="landing-results" aria-live="polite"></section>`;
 }
+
+// ---- charts (inline SVG, colours only via CSS classes and tokens) ----
+const W = 240, H = 120, PAD = { l: 28, r: 8, t: 8, b: 16 };
+const pct = (r: number | null) => (r === null ? 'n/a' : `${Math.round(r * 100)}%`);
+const na = (why: string) => `<div class="na" title="${esc(why)}">n/a<small>${esc(why)}</small></div>`;
