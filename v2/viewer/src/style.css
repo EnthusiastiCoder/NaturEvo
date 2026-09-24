@@ -97,3 +97,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .na { display: grid; place-content: center; text-align: center; color: var(--muted); font-weight: 600; }
 .na small { font-weight: 400; }
 .muted { color: var(--muted); }
+.duels { display: inline-flex; gap: var(--gap); margin-left: auto; }
