@@ -83,3 +83,40 @@ const card = (title: string, info: string, body: string) =>
   `<article class="card"><header><h3>${esc(title)}</h3>${infoButton(info)}</header><p class="info-text" hidden>${esc(info)}</p><div class="body">${body}</div></article>`;
 
 export type RunData = { run: RunInfo; rows: Row[] };
+
+export function renderResultsHtml(data: RunData[], all: boolean): string {
+  const sel = data[0];
+  const camp = (side: 'on' | 'off') => poolRates(data.map((x) => { const s = x.run.permadeath[side]; return s ? { k: s.wins, n: s.wins + s.losses } : { k: 0, n: 0 }; }));
+  const wr = all ? { on: camp('on'), off: camp('off') } : campaignWinRate({ on: sel.run.permadeath.on, off: sel.run.permadeath.off });
+  const winBars = wr.on.n + wr.off.n === 0 ? na('No campaign files for this selection')
+    : barChart([{ label: 'permadeath on', ...wr.on }, { label: 'permadeath off', ...wr.off }]);
+  const zones = new Map<string, { k: number; n: number }>();
+  for (const d of data) for (const side of ['on', 'off'] as const) for (const [z, v] of Object.entries(d.run.permadeath[side]?.perZone ?? {})) {
+    const a = zones.get(z) ?? { k: 0, n: 0 }; a.k += v.wins; a.n += v.wins + v.losses; zones.set(z, a);
+  }
+  const zr = [...zones].sort((a, b) => Number(a[0]) - Number(b[0])).map(([z, a]) => ({ label: `zone ${z}`, ...rateOf(a.k, a.n) }));
+  const rows = all ? [] : sel.rows;
+  const c = learningCurves(rows);
+  const noCsv = (body: () => string) => (all ? na('Pick a single run: curves are per training run') : rows.length ? body() : na('No training.csv for this run'));
+  const has = (col: string) => rows.some((r) => r[col] !== undefined);
+  const col = (k: string) => rows.map((r) => r[k] ?? 0);
+  const fit = noCsv(() => lineChart([{ cls: 'hero', label: 'hero', ys: c.heroFitness }, { cls: 'monster', label: 'monster', ys: c.monsterFitness }], c.gens, Math.max(1, ...c.heroFitness, ...c.monsterFitness)));
+  const vs = noCsv(() => lineChart([{ cls: 'hero', label: 'hero win', ys: c.heroWinVsEarlier }, { cls: 'monster', label: 'monster win', ys: c.monsterWinVsEarlier }, ...(c.drawRate ? [{ cls: 'draw', label: 'draw', ys: c.drawRate }] : [])], c.gens, 1));
+  const seen = noCsv(() => has('seen_share_hero')
+    ? lineChart([{ cls: 'hero', label: 'hero sees foe', ys: col('seen_share_hero') }, { cls: 'monster', label: 'monster sees foe', ys: col('seen_share_monster') }], c.gens, 1)
+    : na('This run predates the vision stats in training.csv'));
+  const stat = noCsv(() => has('statuses_per_fight_hero')
+    ? lineChart([{ cls: 'hero', label: 'on hero', ys: col('statuses_per_fight_hero') }, { cls: 'monster', label: 'on monster', ys: col('statuses_per_fight_monster') }], c.gens, Math.max(1, ...col('statuses_per_fight_hero'), ...col('statuses_per_fight_monster')))
+    : na('This run predates status stats in training.csv'));
+  const gens = sel.run.files.map((f) => /^fight_gen_(\d+)\.json$/.exec(f)).filter((m): m is RegExpExecArray => !!m).map((m) => Number(m[1])).sort((a, b) => a - b);
+  const link = (g: number, label: string) => `<a href="?fight=${encodeURIComponent(`/runs/${sel.run.name}/fight_gen_${g}.json`)}" title="Replay the ${label} fight (generation ${g})">${label} (gen ${g})</a>`;
+  const duel = !all && gens.length > 1 ? `<span class="duels">Duel: ${link(gens[0], 'early')} ${link(gens[gens.length - 1], 'late')}</span>` : '';
+  const title = all ? `All ${data.length} runs` : sel.run.name;
+  return `<div class="results-head"><h2>${esc(title)}</h2>${duel}</div><div class="grid">
+${card('Campaign win rate', 'Share of jungle encounters the hero won, with permadeath on versus off. Bars start at zero; labels show wins of encounters.', winBars)}
+${card('Win rate by zone', 'Hero win share per jungle zone, pooled over campaign files. Later zones are tougher.', zr.length ? barChart(zr) : na('No encounters recorded'))}
+${card('Best fitness', 'Best fitness per generation for each side. Rising lines mean both sides keep learning.', fit)}
+${card('Win vs earlier champions', 'Win share against earlier hall-of-fame champions; draw is what is left. Rates run from 0 to 1.', vs)}
+${card('Sees the opponent', 'Share of ticks where each side had the opponent in its vision cone, per generation.', seen)}
+${card('Statuses per fight', 'Average status effects (stun, bleed and so on) landed per fight, per generation.', stat)}</div>`;
+}
