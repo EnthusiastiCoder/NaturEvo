@@ -27,3 +27,11 @@ const shares = (xs: { action: string }[]): Shares => {
   const n = xs.length, c = (a: string) => (n ? xs.filter((x) => x.action === a).length / n : 0);
   return { n, attack: c('attack'), block: c('block'), dodge: c('dodge') };
 };
+
+export function actionShares(ticks: { action: string; seen?: boolean; dist?: number }[], opts: { distBuckets: number[] }) {
+  if (ticks.some((t) => t.seen === undefined || t.dist === undefined)) return null;
+  const b = opts.distBuckets;
+  const bucket = (d: number) => { const i = b.findIndex((x) => d <= x); return i < 0 ? b.length : i; };
+  const byDistance = Array.from({ length: b.length + 1 }, (_, i) => shares(ticks.filter((t) => bucket(t.dist!) === i)));
+  return { byVisibility: { seen: shares(ticks.filter((t) => t.seen)), unseen: shares(ticks.filter((t) => !t.seen)) }, byDistance };
+}
