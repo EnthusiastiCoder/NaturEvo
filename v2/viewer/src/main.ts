@@ -5,6 +5,9 @@ import { statusStats } from './fx';
 import { applyRecordMode, isRecordMode } from './record';
 import { Scene } from './scene';
 import { installRecorder, splitSource } from './capture';
+import { route } from './route';
+import { loadIndex } from './runs-index';
+import { mountLanding } from './landing';
 import { DEFAULT_ACCENT, type Theme, applyTheme, nextTheme, setAccent, themeIconPath } from './theme';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -161,7 +164,10 @@ async function loadFiles(files: FileList): Promise<void> {
 
 async function tryLoadDefault(): Promise<void> {
   const q = new URLSearchParams(location.search);
-  const runUrl = new URL(q.get('run') ?? '/data/run.json', location.href).href;
+  const req = q.get('run');
+  // A bare run name (as listed on the landing) maps to its campaign file; paths and URLs are used as given.
+  const runPath = req && !/\.json$|^\/|^https?:/i.test(req) ? `/runs/${req}/campaign_on.json` : req;
+  const runUrl = new URL(runPath ?? '/data/run.json', location.href).href;
   const problems: string[] = [];
   let loaded = false;
   try {
@@ -189,6 +195,8 @@ function fitNow(): void {
   if (scene.fit(st.clientWidth, st.clientHeight)) current = ''; // ground texture density follows the display size
 }
 
+let demo = false;
+
 async function main(): Promise<void> {
   let theme: Theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
   const stored = localStorage.getItem('nv-theme');
@@ -203,7 +211,9 @@ async function main(): Promise<void> {
   $<HTMLInputElement>('accent').oninput = (e) => { const v = (e.target as HTMLInputElement).value; setAccent(root, v); localStorage.setItem('nv-accent', v); };
 
   scene = await Scene.create($('view'), { record: isRecordMode(location.search) });
-  await tryLoadDefault();
+  const startViewer = async (): Promise<void> => {
+    delete root.dataset.view;
+  if (!demo) await tryLoadDefault();
   buildTimeline(); collectDuels();
   if (requestedDuel) setMode('duel'); else populateSelect();
   fitNow();
@@ -253,6 +263,14 @@ async function main(): Promise<void> {
     return;
   }
   requestAnimationFrame(loop);
+  };
+  if (route(location.search) === 'landing') {
+    root.dataset.view = 'landing';
+    const index = await loadIndex();
+    await mountLanding($('landing'), index, () => { demo = true; void startViewer(); });
+    return;
+  }
+  await startViewer();
 }
 
 function toggleRays(): void { rays = !rays; $('rays').setAttribute('aria-pressed', String(rays)); }
