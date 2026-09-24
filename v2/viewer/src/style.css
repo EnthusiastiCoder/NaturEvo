@@ -81,3 +81,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .card { position: relative; border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 8px; display: flex; flex-direction: column; min-height: 0; min-width: 0; }
 .card header { display: flex; align-items: center; justify-content: space-between; }
 .card h3 { font-size: 12px; margin: 0; }
+.card .body { flex: 1; min-height: 0; display: grid; }
