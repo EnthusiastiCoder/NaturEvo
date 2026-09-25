@@ -144,3 +144,14 @@ describe('landing glance', () => {
     expect(renderLandingHtml(landingViewModel({ runs: [] }))).toContain('v2/runs');
   });
 });
+
+describe('css', () => {
+  const css = readFileSync(resolve(__dirname, '..', 'src/style.css'), 'utf8');
+  it('chart text is at least 11px', () => {
+    for (const m of css.matchAll(/\.chart[^{]*\{[^}]*font-size:\s*(\d+)px/g)) expect(Number(m[1])).toBeGreaterThanOrEqual(11);
+  });
+  it('has hero/monster hue tokens in both themes and a themed scrollbar', () => {
+    expect(css).toMatch(/--hero:/); expect(css).toMatch(/--monster:/);
+    expect(css).toMatch(/scrollbar-color/);
+  });
+});
