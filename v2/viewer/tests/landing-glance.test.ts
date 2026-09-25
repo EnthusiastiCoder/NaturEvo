@@ -39,3 +39,17 @@ describe('run labels', () => {
     expect(formatDate('n/a')).toBe('');
   });
 });
+
+describe('aggregate helpers', () => {
+  it('smooth keeps length and flattens noise', () => {
+    const ys = [0, 10, 0, 10, 0, 10, 0];
+    const s = smooth(ys, 3);
+    expect(s).toHaveLength(7);
+    expect(Math.max(...s) - Math.min(...s)).toBeLessThan(10);
+    expect(smooth([], 5)).toEqual([]);
+  });
+  it('tailMean averages the last n', () => {
+    expect(tailMean([1, 2, 3, 4], 2)).toBe(3.5);
+    expect(tailMean([], 3)).toBeNull();
+  });
+});
