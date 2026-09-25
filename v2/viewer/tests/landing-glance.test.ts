@@ -97,3 +97,50 @@ describe('charts', () => {
     expect(b).toContain('80%'); expect(b).toContain('4/5'); expect(b).toContain('data-tip');
   });
 });
+
+describe('landing glance', () => {
+  const runs = [
+    run('cd2/s1', '2026-10-23T12:00:00Z', { permadeath: { on: camp(3, 1), off: camp(8, 2) } }),
+    run('cd/s1', '2026-10-22T12:00:00Z'),
+    run('tmp60', '2026-10-21T12:00:00Z'),
+    run('nofights', '2026-10-20T12:00:00Z', { files: ['training.csv'] }),
+  ];
+  const vm = landingViewModel({ runs });
+  const html = renderLandingHtml(vm);
+  it('rows have labels, win-rate chips, no raw Died/Won', () => {
+    expect(html).toContain('cd2 / seed 1');
+    expect(html).toContain('on 75%'); expect(html).toContain('off 80%');
+    expect(html).not.toMatch(/on Died|off Won/);
+    expect(html).toContain('Scratch runs (1)');
+    expect(html).toMatch(/<details[^>]*class="scratch"/);
+  });
+  it('seed word appears only inside known labels, not as separate n/a', () => {
+    expect(html).not.toContain('seed n/a');
+  });
+  it('Open: campaign run opens ?run=, training-only opens early/late duels, no replay files means no link', () => {
+    expect(html).toContain('href="?run=cd2%2Fs1"');
+    expect(html).toContain('href="?fight=%2Fruns%2Fcd%2Fs1%2Ffight_gen_9.json&amp;fight=%2Fruns%2Fcd%2Fs1%2Ffight_gen_199.json"');
+    expect(html).not.toContain('?run=nofights');
+  });
+  it('exactly one roving tab stop', () => {
+    expect((html.match(/class="run-row"[^>]*tabindex="0"/g) ?? []).length).toBe(1);
+  });
+  it('results: all-runs states coverage, hides empty charts, no n/a cards', () => {
+    const out = renderResultsHtml([{ run: runs[0], rows: [] }], true, { total: 20 });
+    expect(out).toContain('1 of 20 runs have campaign data');
+    expect(out).not.toContain('class="na"');
+    expect(out).not.toContain('Best fitness');
+  });
+  it('single training-only run hides zone chart; headline strip exists', () => {
+    const out = renderResultsHtml([{ run: runs[1], rows: [{ gen: 0, best_hero: 1, best_monster: 1, hof_wr_hero: 0.5, hof_wr_monster: 0.4 }] }], false, { total: 4 });
+    expect(out).not.toContain('Win rate by zone');
+    expect(out).toContain('class="stats"');
+    expect(out).toContain('Best fitness');
+  });
+  it('empty state commands point at v2/runs', () => {
+    for (const c of EMPTY_COMMANDS) expect(c).not.toMatch(/\s--out runs\//);
+    expect(EMPTY_COMMANDS.join('\n')).toContain('../runs/main');
+    expect(EMPTY_COMMANDS.join('\n')).toContain('--permadeath off');
+    expect(renderLandingHtml(landingViewModel({ runs: [] }))).toContain('v2/runs');
+  });
+});
