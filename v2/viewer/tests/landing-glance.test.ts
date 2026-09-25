@@ -69,3 +69,31 @@ describe('headline', () => {
     expect(h).toEqual({ campaign: null, lateVsEarly: null, draw: null, unseenBlock: null });
   });
 });
+
+describe('charts', () => {
+  const xs = Array.from({ length: 50 }, (_, i) => i);
+  const ys = xs.map((i) => (i % 2) * 0.5);
+  const svg = lineChart([{ key: 'hero', label: 'hero', ys }, { key: 'monster', label: 'monster', ys }], xs, 1, { w: 300, h: 150 });
+  it('sizes viewBox to pixels, has raw and smoothed lines, no legend inside', () => {
+    expect(svg).toContain('viewBox="0 0 300 150"');
+    expect((svg.match(/<polyline/g) ?? []).length).toBe(4);
+    expect(svg).toContain('class="ln raw hero"');
+    expect(svg).not.toMatch(/<text[^>]*class="lbl/);
+    expect(svg).toContain('data-tip');
+  });
+  it('legend is HTML with line-style swatches', () => {
+    const l = legendHtml([{ key: 'hero', label: 'hero' }, { key: 'monster', label: 'monster' }]);
+    expect(l).toMatch(/class="lg hero"/);
+    expect(l).toContain('monster');
+  });
+  it('tooltip finds the nearest generation', () => {
+    expect(nearestIndex(0, 50, 30, 294)).toBe(0);
+    expect(nearestIndex(1000, 50, 30, 294)).toBe(49);
+    const t = tipText({ xs: [5, 6], s: [{ l: 'hero', ys: [0.5, 0.25] }], pct: true }, 1);
+    expect(t).toContain('gen 6'); expect(t).toContain('hero'); expect(t).toContain('25%');
+  });
+  it('bar labels are two-line: rate above, counts under zone', () => {
+    const b = barChart([{ label: 'Zone 1', k: 4, n: 5, rate: 0.8 }, { label: 'Zone 2', k: 5, n: 6, rate: 5 / 6 }], { w: 240, h: 140 });
+    expect(b).toContain('80%'); expect(b).toContain('4/5'); expect(b).toContain('data-tip');
+  });
+});
