@@ -49,3 +49,19 @@ export function statusesPerFight(fights: { frames: { statuses: string[] }[] }[])
     return out;
   });
 }
+
+/** Centred moving average; the window shrinks at the edges so the length is unchanged. */
+export function smooth(ys: number[], w: number): number[] {
+  const h = Math.floor(w / 2);
+  return ys.map((_, i) => {
+    const a = Math.max(0, i - h), b = Math.min(ys.length - 1, i + h);
+    let s = 0;
+    for (let j = a; j <= b; j++) s += ys[j];
+    return s / (b - a + 1);
+  });
+}
+
+export const tailMean = (ys: number[], n: number): number | null => {
+  const t = ys.slice(-Math.max(1, n));
+  return t.length ? t.reduce((a, b) => a + b, 0) / t.length : null;
+};
