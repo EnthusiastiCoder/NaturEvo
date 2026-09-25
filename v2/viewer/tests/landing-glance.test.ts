@@ -53,3 +53,19 @@ describe('aggregate helpers', () => {
     expect(tailMean([], 3)).toBeNull();
   });
 });
+
+describe('headline', () => {
+  const rows = Array.from({ length: 20 }, (_, i) => ({ gen: i, hof_wr_hero: 0.4, hof_wr_monster: 0.6, draw_rate: 0.1, block_unseen_share_hero: 0.2, block_unseen_share_monster: 0.3 }));
+  it('gives campaign counts, late-vs-early, draw, unseen block', () => {
+    const h = headline([{ run: run('r', '2026-10-01', { permadeath: { on: camp(3, 1), off: camp(8, 2) } }), rows }]);
+    expect(h.campaign!.on).toMatchObject({ k: 3, n: 4 });
+    expect(h.campaign!.off).toMatchObject({ k: 8, n: 10 });
+    expect(h.lateVsEarly!.hero).toBeCloseTo(0.4); expect(h.lateVsEarly!.monster).toBeCloseTo(0.6);
+    expect(h.draw).toBeCloseTo(0.1);
+    expect(h.unseenBlock!.hero).toBeCloseTo(0.2); expect(h.unseenBlock!.monster).toBeCloseTo(0.3);
+  });
+  it('is null where data is missing', () => {
+    const h = headline([{ run: run('r', '2026-10-01'), rows: [] }]);
+    expect(h).toEqual({ campaign: null, lateVsEarly: null, draw: null, unseenBlock: null });
+  });
+});
