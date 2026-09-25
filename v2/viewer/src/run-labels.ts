@@ -16,3 +16,12 @@ export const isScratch = (name: string): boolean =>
 
 const time = (r: RunInfo) => { const t = Date.parse(r.date); return Number.isFinite(t) ? t : 0; };
 const newest = (a: RunInfo, b: RunInfo) => time(b) - time(a) || a.name.localeCompare(b.name);
+
+export function groupRuns(runs: RunInfo[]): { campaign: RunInfo[]; training: RunInfo[]; scratch: RunInfo[] } {
+  const live = runs.filter((r) => !isScratch(r.name));
+  return {
+    campaign: live.filter(hasCampaign).sort(newest),
+    training: live.filter((r) => !hasCampaign(r)).sort(newest),
+    scratch: runs.filter((r) => isScratch(r.name)).sort(newest),
+  };
+}
