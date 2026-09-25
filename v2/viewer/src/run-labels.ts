@@ -31,3 +31,13 @@ export function defaultRun(runs: RunInfo[]): RunInfo | undefined {
   const g = groupRuns(runs);
   return g.campaign[0] ?? runs.filter(hasCampaign).sort(newest)[0] ?? g.training[0] ?? g.scratch[0];
 }
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+export function formatDate(s: string): string {
+  const t = Date.parse(s);
+  if (!Number.isFinite(t)) return '';
+  const d = new Date(t);
+  if (!s.includes('T')) return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]}`;
+  const p = (n: number) => String(n).padStart(2, '0');
+  return `${d.getDate()} ${MONTHS[d.getMonth()]} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
