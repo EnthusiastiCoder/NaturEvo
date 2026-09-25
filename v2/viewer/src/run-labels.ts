@@ -25,3 +25,9 @@ export function groupRuns(runs: RunInfo[]): { campaign: RunInfo[]; training: Run
     scratch: runs.filter((r) => isScratch(r.name)).sort(newest),
   };
 }
+
+/** Newest run with campaign data (real runs before scratch), else the newest run. */
+export function defaultRun(runs: RunInfo[]): RunInfo | undefined {
+  const g = groupRuns(runs);
+  return g.campaign[0] ?? runs.filter(hasCampaign).sort(newest)[0] ?? g.training[0] ?? g.scratch[0];
+}
