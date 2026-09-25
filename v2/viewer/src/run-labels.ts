@@ -10,3 +10,6 @@ export function humanName(name: string): string {
     return seg.replace(/_r(\d+)$/, ' round $1').replace(/_/g, ' ');
   }).join(' / ');
 }
+
+export const isScratch = (name: string): boolean =>
+  name.split('/').some((s) => /^tmp/.test(s) || /^t200s/.test(s) || /^_v/.test(s) || /_tmp$/.test(s));
