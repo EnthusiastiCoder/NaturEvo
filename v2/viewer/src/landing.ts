@@ -187,10 +187,15 @@ export async function mountLanding(el: HTMLElement, index: RunIndex, onDemo: () 
       size = { w: Math.floor(body.clientWidth), h: Math.floor(body.clientHeight) }; void paint();
     }
   };
-  el.querySelectorAll<HTMLAnchorElement>('.run-row').forEach((a) => {
-    // Hover or keyboard focus previews the run in the results panel; click or Enter opens it in the replay.
-    const preview = () => { selected = index.runs.find((r) => r.name === a.dataset.run)!; all = false; el.querySelector('[data-action="all-runs"]')?.setAttribute('aria-pressed', 'false'); void paint(); };
-    a.addEventListener('focus', preview); a.addEventListener('mouseenter', preview);
+  const select = (name: string) => {
+    selected = index.runs.find((r) => r.name === name)!; all = false;
+    el.querySelector('[data-action="all-runs"]')?.setAttribute('aria-pressed', 'false'); void paint();
+  };
+  const rowsEls = () => Array.from(el.querySelectorAll<HTMLElement>('.run-row')).filter((r) => r.offsetParent !== null);
+  const rowList = el.querySelector<HTMLElement>('.runs');
+  rowList?.addEventListener('click', (e) => {
+    const row = (e.target as HTMLElement).closest<HTMLElement>('.run-row');
+    if (row && !(e.target as HTMLElement).closest('a.open')) { select(row.dataset.run!); row.focus(); }
   });
   el.querySelector('[data-action="all-runs"]')?.addEventListener('click', (e) => {
     all = !all; (e.currentTarget as HTMLElement).setAttribute('aria-pressed', String(all)); void paint();
