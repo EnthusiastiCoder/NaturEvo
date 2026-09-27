@@ -10,3 +10,5 @@ Date 2026-10-23. Branch feat/v2-arena. Read-only analysis: no source edited, not
 - Distance buckets: close <= 1.2 (attack range), mid 1.2-4, far 4-12, vfar > 12 (out of sensor range, always unseen).
 - The `hero_block` columns in `training.csv` are the share of ticks where the net's block BIT is on in the whole population (including while attacking). That is not the same as time spent in the Blocking state, which is much lower.
 - Uncertainty: I do not know which fights the user watched (saved gen fights, campaign fights, which run, which gen). The numbers below show that blocking at distance is common in the early gen-9 monsters and moderate in late champions, but "constantly blocking" is only reproduced for gen 9 monsters and a few mid champions.
+
+## (1) Action shares per generation (share of ticks in each state, 32 matched fights each, both sides pooled by role)
