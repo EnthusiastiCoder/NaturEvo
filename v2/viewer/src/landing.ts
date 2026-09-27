@@ -125,7 +125,8 @@ export function renderResultsHtml(data: RunData[], all: boolean, opts: { total?:
   for (const d of data) for (const side of ['on', 'off'] as const) for (const [z, v] of Object.entries(d.run.permadeath[side]?.perZone ?? {})) {
     const a = zones.get(z) ?? { k: 0, n: 0 }; a.k += v.wins; a.n += v.wins + v.losses; zones.set(z, a);
   }
-  const zr = [...zones].sort((a, b) => Number(a[0]) - Number(b[0])).map(([z, a]) => ({ label: `zone ${z}`, ...rateOf(a.k, a.n) }));
+  if (zones.size) cards.push(card('Win rate by zone', 'Hero win share per jungle zone, pooled over the campaign files. Later zones are tougher.',
+    barChart([...zones].sort((a, b) => Number(a[0]) - Number(b[0])).map(([z, a]) => ({ label: `Zone ${z}`, ...rateOf(a.k, a.n) })), size)));
   const rows = all ? [] : sel.rows;
   const c = learningCurves(rows);
   const noCsv = (body: () => string) => (all ? na('Pick a single run: curves are per training run') : rows.length ? body() : na('No training.csv for this run'));
