@@ -84,8 +84,8 @@ export function renderLandingHtml(vm: LandingVM, selectedName?: string): string 
   const scratchOpen = groups.scratch.some((r) => r.name === sel) ? ' open' : '';
   const scratch = groups.scratch.length ? `<details class="scratch"${scratchOpen}><summary>Scratch runs (${groups.scratch.length})</summary>${list(groups.scratch)}</details>` : '';
   return `<section class="picker"><div class="head"><h2>Runs</h2>
-<button type="button" data-action="all-runs" aria-pressed="false" title="Pool campaign results across every run">${icon(ICON.layers)}All runs</button>${demoButton}</div>
-<ul class="runs">${rows}</ul></section>
+<button type="button" data-action="all-runs" aria-pressed="false" title="Pool the campaign results of every run that has them">${icon(ICON.layers)}All runs</button>${demoButton}</div>
+<div class="runs" role="listbox" aria-label="Runs">${section('With campaign results', groups.campaign, 'win rate: permadeath on / off')}${section('Training only', groups.training)}${scratch}</div></section>
 <section class="results" id="landing-results" aria-live="polite"></section>`;
 }
 
