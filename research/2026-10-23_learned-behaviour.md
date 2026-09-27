@@ -33,3 +33,5 @@ Population-level block bit (training.csv, includes ticks where the fighter attac
 Draws (1800-tick timeout) in matched fights: gen 9 3/32, gen 49 2/32, gen 99 0/32, gen 149 1/32, gen 199 0/32. Late fights end in about 500 ticks (about 17 s).
 
 ## (2) Block rate seen vs unseen, and by distance
+
+Share of ticks in the Blocking state, matched pairs, 32 fights per gen (n = ticks):
