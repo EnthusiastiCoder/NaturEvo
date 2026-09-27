@@ -27,3 +27,5 @@ Date 2026-10-23. Branch feat/v2-arena. Read-only analysis: no source edited, not
 | 199 | monster | 0.49 | 0.09 | 0.03 | 0.38 | 500 |
 
 Per run the picture is very uneven (block share of ticks, matched pairs): gen 199 hero s1 0.07, s2 0.01, s3 0.11, ws5 0.24; monster s1 0.10, s2 0.02, s3 0.13, ws5 0.09. Gen 9 monster: s3 0.71, ws5_final 0.91; gen 9 hero s1 0.63. Gen 49 is the least blocky generation in every run (0.00-0.03).
+
+Population-level block bit (training.csv, includes ticks where the fighter attacks): gen 0 about 0.45-0.58 (random nets), gen 199 0.13-0.47 (hero s1 0.47, monster s1 0.47, s2 monster 0.41, ws5 hero 0.39). It never went to zero in any run. Attack share stays 0.3-0.5, dodge falls from about 0.5 (gen 0) to 0.05-0.12.
