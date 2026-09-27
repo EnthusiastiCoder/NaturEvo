@@ -126,7 +126,7 @@ export function renderResultsHtml(data: RunData[], all: boolean, opts: { total?:
     const a = zones.get(z) ?? { k: 0, n: 0 }; a.k += v.wins; a.n += v.wins + v.losses; zones.set(z, a);
   }
   if (zones.size) cards.push(card('Win rate by zone', 'Hero win share per jungle zone, pooled over the campaign files. Later zones are tougher.',
-    barChart([...zones].sort((a, b) => Number(a[0]) - Number(b[0])).map(([z, a]) => ({ label: `Zone ${z}`, ...rateOf(a.k, a.n) })), size)));
+    barChart([...zones].sort((a, b) => Number(a[0]) - Number(b[0])).map(([z, a]) => ({ label: `Z${z}`, ...rateOf(a.k, a.n) })), size)));
   const rows = all ? [] : sel.rows;
   if (rows.length) {
     const c = learningCurves(rows);
