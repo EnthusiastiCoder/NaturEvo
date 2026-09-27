@@ -105,3 +105,8 @@ Written before code by cto-orchestrator:test-writer (index returned in the plann
 5. Viewer shows statuses, attack types, recovery, guard states, knockback, DoT ticks, stats strip with statuses, verified by real screenshots.
 6. Campaign uses species movesets and the screened library; README updated.
 7. Commits small, one file each, no Co-Authored-By, on feat/v2-arena.
+
+## Open questions
+1. Hero Lunge vs Sweep: plan uses Lunge (closes distance, counters kiting; no sweep). Recommended: Lunge. Alternative: Sweep (wider arc, no gap closing).
+2. If WS4 targets fail on first retrain, which lever may the implementer pull? Recommended: raise `block_hold_drain` and unseen-block penalty weight within config, up to 2 retrains, and report. Alternative: stop and report.
+3. Training budget fallback: N_HID 24 may be cut to 16 if 200 gens at pop 64 takes over 10 minutes. Recommended: allow the cut. Alternative: relax budget to 15 minutes.
