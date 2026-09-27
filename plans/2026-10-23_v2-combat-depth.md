@@ -35,3 +35,9 @@ Campaign library screen: `evolve::screen(genome, role, panel, seeds) -> Screen {
 
 ## Workstreams
 Order and dependencies: WS1 -> WS2 -> WS3 -> WS4 -> WS6 -> WS7; WS5 (viewer) depends only on the log contract and runs in parallel with WS2-WS4 using fixtures; WS6 needs WS4 and WS5; WS7 needs WS5 and WS6. Every workstream has a verifier.
+
+### WS1 combat-rules (model: sonnet)
+Task: implement the combat contract above. Files: v2/sim/src/config.rs (CombatTuning), attacks.rs (new, tables), status.rs (new), fighter.rs (states, Action.attack_kind, status array, species/rank), matchup.rs (state machine, knockback, hit resolution, DoT, recovery, block/guard/parry, spawn constants, new_with_setup), log.rs (log contract), world.rs (spawns), lib.rs (mods). Commits (one file each, in order): config tuning; attacks tables; status module; fighter types; log fields; world spawns; matchup state machine part 1 (guard raise/hold/recover, stamina drain, arc); part 2 (typed attacks, recovery, whiff, punish); part 3 (statuses, knockback, stun DR, DoT, parry, events); test fixes for old combat/physics/fuzz/determinism tests.
+Tests that must pass: v2/sim/tests/combat_depth_tests.rs, status_tests.rs, attacks_data_tests.rs, spawn_tests.rs, updated combat_tests.rs, physics_tests.rs, determinism_tests.rs, fuzz_tests.rs.
+Acceptance: all constants only in config; scripted-action tests for each rule below pass; fuzz never panics or produces NaN; byte-identical logs for same seed.
+Verify: `cargo test --release` in v2/sim (combat/status/attacks/spawn/determinism/fuzz), grep that no gameplay literals remain in matchup.rs.
