@@ -154,7 +154,8 @@ export function renderResultsHtml(data: RunData[], all: boolean, opts: { total?:
 
 // ---- DOM controller ----
 export async function mountLanding(el: HTMLElement, index: RunIndex, onDemo: () => void): Promise<void> {
-  el.innerHTML = renderLandingHtml(landingViewModel(index));
+  const start = defaultRun(index.runs);
+  el.innerHTML = renderLandingHtml(landingViewModel(index), start?.name);
   el.querySelector('[data-action="demo"]')?.addEventListener('click', onDemo);
   const results = el.querySelector<HTMLElement>('#landing-results');
   if (!results) return;
