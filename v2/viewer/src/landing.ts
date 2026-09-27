@@ -197,6 +197,15 @@ export async function mountLanding(el: HTMLElement, index: RunIndex, onDemo: () 
     const row = (e.target as HTMLElement).closest<HTMLElement>('.run-row');
     if (row && !(e.target as HTMLElement).closest('a.open')) { select(row.dataset.run!); row.focus(); }
   });
+  rowList?.addEventListener('keydown', (e) => {
+    const row = (e.target as HTMLElement).closest<HTMLElement>('.run-row');
+    if (!row) return;
+    const rs = rowsEls(), i = rs.indexOf(row);
+    const to = e.key === 'ArrowDown' ? i + 1 : e.key === 'ArrowUp' ? i - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? rs.length - 1 : -1;
+    if (to >= 0) { e.preventDefault(); const t = rs[Math.max(0, Math.min(rs.length - 1, to))]; select(t.dataset.run!); t.focus(); }
+    else if (e.key === 'Enter' && row.dataset.open) { e.preventDefault(); location.href = row.dataset.open; }
+    else if (e.key === ' ') { e.preventDefault(); select(row.dataset.run!); }
+  });
   el.querySelector('[data-action="all-runs"]')?.addEventListener('click', (e) => {
     all = !all; (e.currentTarget as HTMLElement).setAttribute('aria-pressed', String(all)); void paint();
   });
