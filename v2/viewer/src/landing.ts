@@ -35,11 +35,15 @@ const rate = (s?: { wins: number; losses: number }) => (s ? pct(rateOf(s.wins, s
 
 export const landingViewModel = (index: RunIndex): LandingVM => ({
   empty: index.runs.length === 0,
-  rows: index.runs.map((r) => ({
-    name: r.name, seed: r.seed, date: r.date, generations: r.generations,
-    permadeathOn: r.permadeath.on?.outcome ?? 'n/a', permadeathOff: r.permadeath.off?.outcome ?? 'n/a',
-    keyResult: r.keyResult, openHref: `?run=${encodeURIComponent(r.name)}`,
-  })),
+  rows: index.runs.map((r) => {
+    const o = openFor(r);
+    return {
+      name: r.name, label: humanName(r.name), seed: r.seed, date: r.date, dateLabel: formatDate(r.date), generations: r.generations,
+      permadeathOn: r.permadeath.on?.outcome ?? 'n/a', permadeathOff: r.permadeath.off?.outcome ?? 'n/a',
+      onRate: rate(r.permadeath.on), offRate: rate(r.permadeath.off),
+      keyResult: r.keyResult, openHref: o.href, canOpen: o.ok, hasCampaign: hasCampaign(r),
+    };
+  }),
 });
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
