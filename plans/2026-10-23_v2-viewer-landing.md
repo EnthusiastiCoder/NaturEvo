@@ -50,3 +50,6 @@ Existing tests (npm test in v2/viewer) must keep passing.
 
 ## Acceptance criteria
 1. Base URL = landing with picker + aggregates, demo not shown. 2. Demo only via button. 3. Empty state with CLI commands. 4. ?run=/?fight= unchanged. 5. Fits 1282x642 and 1540x890, both themes, no scroll. 6. All vitest + `npm run typecheck` pass. 7. Browser screenshots reviewed. 8. One file per commit, no Co-Authored-By.
+
+## Open questions
+- Action shares by visibility/distance and statuses per fight need per-tick fight data; if the fight JSON lacks vision fields, WS2 shows "n/a (no data in fight logs)" for that chart. Recommended: accept that, do not change the sim in this fix.
