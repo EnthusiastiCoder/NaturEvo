@@ -41,3 +41,9 @@ Task: implement the combat contract above. Files: v2/sim/src/config.rs (CombatTu
 Tests that must pass: v2/sim/tests/combat_depth_tests.rs, status_tests.rs, attacks_data_tests.rs, spawn_tests.rs, updated combat_tests.rs, physics_tests.rs, determinism_tests.rs, fuzz_tests.rs.
 Acceptance: all constants only in config; scripted-action tests for each rule below pass; fuzz never panics or produces NaN; byte-identical logs for same seed.
 Verify: `cargo test --release` in v2/sim (combat/status/attacks/spawn/determinism/fuzz), grep that no gameplay literals remain in matchup.rs.
+
+### WS2 sense-and-net (model: sonnet; depends WS1)
+Task: sense.rs to the sensor contract (N_IN 80, idx consts), net.rs (N_OUT 9, N_HID 24, argmax attack kind), genome.rs strict length check and generation-0 priming adjusted. Files: sense.rs, net.rs, genome.rs, evolve.rs only for `prime` index updates (separate commit). Commits: sense; net; genome; prime fix.
+Tests: sense_tests.rs (updated), net_tests.rs (updated), genome_ops_tests.rs.
+Acceptance: values in [-1,1] under fuzz; enemy block zero when unseen incl. statuses and attack kind; enemy attack kind and phase visible exactly when seen; own and enemy status fractions track remaining ticks; N_PARAMS matches layout; old-length genome rejected.
+Verify: cargo test sense net genome_ops; manually print an observe for a Windup/Stunned scenario.
