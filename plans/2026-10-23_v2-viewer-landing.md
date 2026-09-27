@@ -13,3 +13,10 @@ A small Vite plugin (v2/viewer/vite-plugin-runs.ts, registered in vite.config.ts
 
 ## Workstreams (all model sonnet)
 Dependencies: WS1 -> WS2 -> WS3 -> WS4. WS1 and the pure parts of WS2 can start in parallel only after tests exist.
+
+### WS1 data-index
+Task: runs-index.ts (types RunInfo{name,seed,date,generations,permadeath:{on?:CampaignSummary,off?:CampaignSummary},keyResult,files}, parse training.csv -> rows, parse campaign json -> summary {outcome, wins, losses, encounters, perZone}), vite-plugin-runs.ts, vite.config.ts registration, client `loadIndex(fetchFn)` with /api/runs -> /runs/index.json fallback -> {runs:[],error}.
+Files: v2/viewer/src/runs-index.ts, v2/viewer/vite-plugin-runs.ts, v2/viewer/vite.config.ts.
+Tests: v2/viewer/tests/runs-index.test.ts.
+Acceptance: junk folders skipped without throw; real v2/runs/main yields generations=30 (or its CSV rows) and both permadeath summaries; fetch failure returns empty index with reason.
+Verify: `npx vitest run tests/runs-index.test.ts`; `curl localhost:5174/api/runs`.
