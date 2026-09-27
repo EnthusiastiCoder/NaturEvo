@@ -77,3 +77,12 @@ Verify: cargo test --release; run `arena-sim campaign` on the new champions.
 ### WS7 browser-verification (agent type `claude` with chrome-devtools access; model: sonnet; depends WS5, WS6)
 Read prompts/chrome-devtools-mcp.md first; follow CLAUDE.md Chrome rules (visible Brave, max 6 tabs, close unused, no account actions, stop on blocks). Start `npm run dev` in v2/viewer, load the new campaign run and 3 specific fights (one per: stun/knockback heavy, bleed/poison species, a draw-free duel). Capture real screenshots (saved under v2/runs/combat/screens/, gitignored) at 1282x642, 1366x768 and 1920x1080 and in light and dark theme: status icons with timers, tinted sprite, knockback motion across 3 consecutive frames, stagger/stun visuals, recovery arc, guard raise/recover, stats strip with statuses, no scrolling, labels not overlapping. Also check console has no errors and record mode still works. Report each check pass/fail with screenshot paths; file defects as a list for WS5 fixes.
 Acceptance: all checks pass with screenshots cited; no console errors.
+
+## Verification order (verifier per workstream, then final)
+1. WS1 verifier: cargo test (combat, status, attacks data, spawn, determinism, fuzz), review constants-only-in-config.
+2. WS2 verifier: sense/net/genome tests and a printed observation scenario.
+3. WS3 verifier: fitness/screen/campaign tests, confirm free block bonus removed (grep `1.5 * fb`).
+4. WS5 verifier (can run any time after WS5): vitest, typecheck, build.
+5. WS4 verifier: wall-clock training time for one 200-gen pop-64 run (< 10 min), eval tables vs targets, progress tests twice (different machine load) for stability.
+6. WS6 verifier: campaign run, README commands executed.
+7. WS7 browser pass, then fix loop to WS5, then final full run: `cargo test --release` and `npm test` and `npm run build`, git log shows one-file commits, no Co-Authored-By.
