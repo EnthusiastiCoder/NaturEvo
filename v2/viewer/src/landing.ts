@@ -176,7 +176,16 @@ export async function mountLanding(el: HTMLElement, index: RunIndex, onDemo: () 
       const p = b.closest('.card')!.querySelector<HTMLElement>('.info-text')!;
       p.hidden = !p.hidden; b.setAttribute('aria-expanded', String(!p.hidden));
     }));
-    el.querySelectorAll<HTMLElement>('.run-row').forEach((a) => a.parentElement!.classList.toggle('sel', !all && a.dataset.run === selected.name));
+    el.querySelectorAll<HTMLElement>('.run-row').forEach((a) => {
+      const on = !all && a.dataset.run === selected.name;
+      a.setAttribute('aria-selected', String(on)); a.tabIndex = on ? 0 : -1;
+      a.parentElement!.classList.toggle('sel', on);
+      if (on) a.scrollIntoView({ block: 'nearest' });
+    });
+    const body = results.querySelector<HTMLElement>('.card .body');
+    if (body && body.clientWidth > 40 && (Math.abs(body.clientWidth - size.w) > 6 || Math.abs(body.clientHeight - size.h) > 6)) {
+      size = { w: Math.floor(body.clientWidth), h: Math.floor(body.clientHeight) }; void paint();
+    }
   };
   el.querySelectorAll<HTMLAnchorElement>('.run-row').forEach((a) => {
     // Hover or keyboard focus previews the run in the results panel; click or Enter opens it in the replay.
