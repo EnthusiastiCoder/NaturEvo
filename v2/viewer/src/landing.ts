@@ -169,8 +169,9 @@ export async function mountLanding(el: HTMLElement, index: RunIndex, onDemo: () 
   const withCampaign = index.runs.filter(hasCampaign);
   let tip = results.querySelector<HTMLElement>('.tip');
   const paint = async () => {
-    const data = all ? index.runs.map((run) => ({ run, rows: [] as Row[] })) : [{ run: selected, rows: await rowsOf(selected) }];
-    results.innerHTML = renderResultsHtml(data, all);
+    const data = all ? await Promise.all(withCampaign.map(async (run) => ({ run, rows: await rowsOf(run) }))) : [{ run: selected, rows: await rowsOf(selected) }];
+    results.innerHTML = renderResultsHtml(data, all, { total: index.runs.length, size });
+    tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; results.appendChild(tip);
     results.querySelectorAll<HTMLButtonElement>('.info-btn').forEach((b) => b.addEventListener('click', () => {
       const p = b.closest('.card')!.querySelector<HTMLElement>('.info-text')!;
       p.hidden = !p.hidden; b.setAttribute('aria-expanded', String(!p.hidden));
