@@ -73,3 +73,7 @@ Task: campaign.rs passes species/rank per encounter (via Match::new_with_setup),
 Tests: campaign_tests.rs (species/rank recorded and deterministic, replayable log from seeds, library drops turtles), jungle_tests.rs unchanged green.
 Acceptance: campaign deterministic by seed; every encounter replayable; permadeath rules unchanged; README shows commands that actually work (executed once by the implementer).
 Verify: cargo test --release; run `arena-sim campaign` on the new champions.
+
+### WS7 browser-verification (agent type `claude` with chrome-devtools access; model: sonnet; depends WS5, WS6)
+Read prompts/chrome-devtools-mcp.md first; follow CLAUDE.md Chrome rules (visible Brave, max 6 tabs, close unused, no account actions, stop on blocks). Start `npm run dev` in v2/viewer, load the new campaign run and 3 specific fights (one per: stun/knockback heavy, bleed/poison species, a draw-free duel). Capture real screenshots (saved under v2/runs/combat/screens/, gitignored) at 1282x642, 1366x768 and 1920x1080 and in light and dark theme: status icons with timers, tinted sprite, knockback motion across 3 consecutive frames, stagger/stun visuals, recovery arc, guard raise/recover, stats strip with statuses, no scrolling, labels not overlapping. Also check console has no errors and record mode still works. Report each check pass/fail with screenshot paths; file defects as a list for WS5 fixes.
+Acceptance: all checks pass with screenshots cited; no console errors.
