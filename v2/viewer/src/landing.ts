@@ -165,8 +165,9 @@ export async function mountLanding(el: HTMLElement, index: RunIndex, onDemo: () 
     if (!cache.has(r.name)) cache.set(r.name, parseTrainingCsv(await text(`/runs/${r.name}/training.csv`)));
     return cache.get(r.name)!;
   };
-  let selected = index.runs[0];
-  let all = false;
+  let selected = start, all = false, size = DEFAULT_SIZE;
+  const withCampaign = index.runs.filter(hasCampaign);
+  let tip = results.querySelector<HTMLElement>('.tip');
   const paint = async () => {
     const data = all ? index.runs.map((run) => ({ run, rows: [] as Row[] })) : [{ run: selected, rows: await rowsOf(selected) }];
     results.innerHTML = renderResultsHtml(data, all);
