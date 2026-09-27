@@ -10,3 +10,6 @@ Base URL (no ?run=, no ?fight=) of v2/viewer shows a LANDING view (run picker + 
 
 ## Discovery decision
 A small Vite plugin (v2/viewer/vite-plugin-runs.ts, registered in vite.config.ts) serves `GET /api/runs` (index JSON built on each request by scanning v2/runs, one level deep; plus nested seed folders like cd/s1 treated as runs named "cd/s1") and `/runs/<path>` static file passthrough (via existing fs.allow / middleware) so files load without a build step. Pure scanning logic lives in v2/viewer/src/runs-index.ts (`buildIndex(entries)` taking a plain file-listing + file reader abstraction, testable without fs). Why: zero build step, always fresh, no sim change needed. Static build degrades: viewer tries `/api/runs`, then `/runs/index.json` (optional file the plugin also writes at `vite build` via generateBundle/closeBundle copy and the sim CLI may write), else shows empty state with CLI commands. Sim CLI change is optional and out of scope.
+
+## Workstreams (all model sonnet)
+Dependencies: WS1 -> WS2 -> WS3 -> WS4. WS1 and the pure parts of WS2 can start in parallel only after tests exist.
