@@ -39,3 +39,11 @@ Files: v2/viewer/src/route.ts, v2/viewer/src/main.ts.
 Tests: v2/viewer/tests/routing.test.ts.
 (b) Browser verification: spawn agent type `claude` with chrome-devtools MCP (read prompts/chrome-devtools-mcp.md first; max 6 tabs; do not touch account). Take real screenshots of http://localhost:5174 at 1282x642 and 1540x890, light and dark (4 shots) plus ?run=/api-run open, empty state (temporarily point plugin at an empty dir via env var NV_RUNS_DIR, supported by plugin), confirm no page scroll (document.scrollHeight <= innerHeight), no console errors, Tab/Enter works, tooltips present. Save screenshots under v2/viewer/shots/ (not committed) and report findings; fix-ups return to implementer.
 Acceptance: base URL shows landing, no demo chips, no orange banner.
+
+## Test cases
+vitest, written first by test-writer, all failing initially:
+- runs-index.test.ts: parse training.csv; parse campaign summary; junk skipped; seed/date/permadeath derivation; loadIndex fallback chain and error state.
+- aggregate.test.ts: win rate counts on vs off; pooled rates weighted; learning curve series lengths; action shares by visibility/distance; zero-count -> no NaN; per-zone rates; statuses per fight.
+- landing.test.ts: empty state contains exact CLI commands and no "red banner"; picker rows fields; Demo button present; Open link target.
+- routing.test.ts: '' -> landing; '?run=x' -> run; '?fight=y' -> fight; '?record&early=..' unchanged; ?run with missing file does not fall to landing silently (error shown).
+Existing tests (npm test in v2/viewer) must keep passing.
