@@ -18,7 +18,7 @@ function walk(root: string, rel = '', depth = 0, out: string[] = []): string[] {
 export function runsPlugin(dir = process.env.NV_RUNS_DIR ?? resolve(__dirname, '..', 'runs')): Plugin {
   const index = () => buildIndex(
     { list: () => walk(dir), read: async (p) => readFileSync(join(dir, p), 'utf8') },
-    { mtime: (p) => { try { return statSync(join(dir, p)).mtime.toISOString().slice(0, 10); } catch { return undefined; } } },
+    { mtime: (p) => { try { return statSync(join(dir, p)).mtime.toISOString(); } catch { return undefined; } } },
   );
   return {
     name: 'nv-runs',
