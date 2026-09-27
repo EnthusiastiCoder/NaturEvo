@@ -96,3 +96,12 @@ Written before code by cto-orchestrator:test-writer (index returned in the plann
 - WS5: fx table covers all 7 statuses with unique colours and labels; timer text formatting (seconds one decimal, "stun 0.8"); tint priority; knockback offset follows ev and fx; hudOffsets keep status row above bar and label above row; parse of fight with and without new fields; stateLabel for the 5 new states; stats strip model counts statuses and punishes from ev; vitest suites green.
 - WS6: campaign records species/rank/monster_name per encounter, deterministic, replayable; library screen applied by default and skippable.
 - WS7: manual checklist above with screenshots.
+
+## Acceptance criteria
+1. cargo test --release in v2/sim and npm test, typecheck, build in v2/viewer all green.
+2. All rules in the combat contract implemented with constants only in config; deterministic logs.
+3. Held-out evaluation of 3 trained seeds meets the WS4 targets or the shortfall is reported with numbers (not hidden by changing constants).
+4. Block while enemy unseen is below 3 percent of ticks at every evaluated generation; no free block fitness term; visible-enemy share >= 85 percent of ticks.
+5. Viewer shows statuses, attack types, recovery, guard states, knockback, DoT ticks, stats strip with statuses, verified by real screenshots.
+6. Campaign uses species movesets and the screened library; README updated.
+7. Commits small, one file each, no Co-Authored-By, on feat/v2-arena.
