@@ -20,3 +20,9 @@ Files: v2/viewer/src/runs-index.ts, v2/viewer/vite-plugin-runs.ts, v2/viewer/vit
 Tests: v2/viewer/tests/runs-index.test.ts.
 Acceptance: junk folders skipped without throw; real v2/runs/main yields generations=30 (or its CSV rows) and both permadeath summaries; fetch failure returns empty index with reason.
 Verify: `npx vitest run tests/runs-index.test.ts`; `curl localhost:5174/api/runs`.
+
+### WS2 aggregation
+Task: pure maths in v2/viewer/src/aggregate.ts: campaignWinRate(on/off with counts k/n), learning curves per generation (hero/monster best fitness, win share vs earlier champions = hof_wr, draw rate = 1 - hero_wr - monster_wr if derivable else omitted with note), actionShares(fights, by visibility {seen,unseen} and distance bucket) computed from loaded fight frames (action, pos, vision fields as available in data.ts Fight type), statuses per fight (via fx.ts statusStats), per-zone win rates from encounters[].zone/result, multi-run pooling. Empty input returns null/zero-count, never NaN.
+Files: v2/viewer/src/aggregate.ts.
+Tests: v2/viewer/tests/aggregate.test.ts.
+Acceptance: known fixtures give exact numbers; n=0 handled; pooling weights by counts not by mean of means.
