@@ -99,6 +99,7 @@ function groupRunsFromVm(vm: LandingVM): { campaign: LandingRow[]; training: Lan
 // ---- results ----
 const na = (why: string) => `<div class="na">${esc(why)}</div>`;
 export type RunData = { run: RunInfo; rows: Row[] };
+const DEFAULT_SIZE: Size = { w: 240, h: 130 };
 
 export function renderResultsHtml(data: RunData[], all: boolean): string {
   const sel = data[0];
