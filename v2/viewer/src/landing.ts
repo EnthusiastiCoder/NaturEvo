@@ -13,8 +13,9 @@ export const EMPTY_COMMANDS: string[] = [
 ];
 
 export type LandingRow = {
-  name: string; seed: string; date: string; generations: number;
-  permadeathOn: string; permadeathOff: string; keyResult: string; openHref: string;
+  name: string; label: string; seed: string; date: string; dateLabel: string; generations: number;
+  permadeathOn: string; permadeathOff: string; onRate: string; offRate: string; keyResult: string;
+  openHref: string; canOpen: boolean; hasCampaign: boolean;
 };
 export type LandingVM = { empty: boolean; rows: LandingRow[] };
 
