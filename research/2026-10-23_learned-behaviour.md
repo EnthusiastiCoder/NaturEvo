@@ -12,3 +12,16 @@ Date 2026-10-23. Branch feat/v2-arena. Read-only analysis: no source edited, not
 - Uncertainty: I do not know which fights the user watched (saved gen fights, campaign fights, which run, which gen). The numbers below show that blocking at distance is common in the early gen-9 monsters and moderate in late champions, but "constantly blocking" is only reproduced for gen 9 monsters and a few mid champions.
 
 ## (1) Action shares per generation (share of ticks in each state, 32 matched fights each, both sides pooled by role)
+
+| gen | role | attack | block | dodge | move | mean ticks |
+|---|---|---|---|---|---|---|
+| 9 | hero | 0.22 | 0.16 | 0.02 | 0.60 | 790 |
+| 9 | monster | 0.16 | 0.53 | 0.02 | 0.29 | 790 |
+| 49 | hero | 0.30 | 0.01 | 0.06 | 0.63 | 518 |
+| 49 | monster | 0.32 | 0.00 | 0.03 | 0.64 | 518 |
+| 99 | hero | 0.36 | 0.09 | 0.06 | 0.49 | 573 |
+| 99 | monster | 0.48 | 0.03 | 0.03 | 0.46 | 573 |
+| 149 | hero | 0.34 | 0.16 | 0.05 | 0.45 | 600 |
+| 149 | monster | 0.41 | 0.11 | 0.01 | 0.47 | 600 |
+| 199 | hero | 0.37 | 0.12 | 0.04 | 0.47 | 500 |
+| 199 | monster | 0.49 | 0.09 | 0.03 | 0.38 | 500 |
