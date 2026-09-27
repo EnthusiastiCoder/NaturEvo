@@ -209,5 +209,27 @@ export async function mountLanding(el: HTMLElement, index: RunIndex, onDemo: () 
   el.querySelector('[data-action="all-runs"]')?.addEventListener('click', (e) => {
     all = !all; (e.currentTarget as HTMLElement).setAttribute('aria-pressed', String(all)); void paint();
   });
+  // hover tooltip: nearest generation on line charts, text on bars
+  results.addEventListener('mousemove', (e) => {
+    const t = e.target as Element, g = t.closest<SVGGElement>('.barg'), svg = t.closest<SVGSVGElement>('svg.chart[data-tip]');
+    const cursor = svg?.querySelector<SVGLineElement>('.cursor');
+    let msg = '';
+    if (g) msg = g.dataset.tip ?? '';
+    else if (svg) {
+      const data = JSON.parse(svg.dataset.tip!) as Tip, rect = svg.getBoundingClientRect();
+      const i = nearestIndex(e.clientX - rect.left, data.xs.length, Number(svg.dataset.l), Number(svg.dataset.r));
+      msg = tipText(data, i);
+      const x = Number(svg.dataset.l) + (data.xs.length > 1 ? (i / (data.xs.length - 1)) * (Number(svg.dataset.r) - Number(svg.dataset.l)) : 0);
+      cursor?.setAttribute('x1', String(x)); cursor?.setAttribute('x2', String(x)); cursor?.removeAttribute('hidden');
+    }
+    results.querySelectorAll('.cursor').forEach((c) => { if (c !== cursor) c.setAttribute('hidden', ''); });
+    if (!tip) return;
+    tip.hidden = !msg; tip.textContent = msg;
+    const r = results.getBoundingClientRect();
+    tip.style.left = `${Math.min(e.clientX - r.left + 12, r.width - 130)}px`; tip.style.top = `${e.clientY - r.top + 12}px`;
+  });
+  results.addEventListener('mouseleave', () => { if (tip) tip.hidden = true; results.querySelectorAll('.cursor').forEach((c) => c.setAttribute('hidden', '')); });
+  let t: number | undefined;
+  new ResizeObserver(() => { clearTimeout(t); t = window.setTimeout(() => { size = DEFAULT_SIZE; void paint(); }, 120); }).observe(results);
   await paint();
 }
