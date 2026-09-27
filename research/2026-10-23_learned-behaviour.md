@@ -25,3 +25,5 @@ Date 2026-10-23. Branch feat/v2-arena. Read-only analysis: no source edited, not
 | 149 | monster | 0.41 | 0.11 | 0.01 | 0.47 | 600 |
 | 199 | hero | 0.37 | 0.12 | 0.04 | 0.47 | 500 |
 | 199 | monster | 0.49 | 0.09 | 0.03 | 0.38 | 500 |
+
+Per run the picture is very uneven (block share of ticks, matched pairs): gen 199 hero s1 0.07, s2 0.01, s3 0.11, ws5 0.24; monster s1 0.10, s2 0.02, s3 0.13, ws5 0.09. Gen 9 monster: s3 0.71, ws5_final 0.91; gen 9 hero s1 0.63. Gen 49 is the least blocky generation in every run (0.00-0.03).
