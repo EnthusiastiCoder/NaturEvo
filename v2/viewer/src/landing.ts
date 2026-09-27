@@ -59,7 +59,17 @@ export const infoButton = (text: string) =>
 
 const demoButton = `<button type="button" data-action="demo" title="Open the built-in demo fight (not a real run)">Demo${icon(ICON.play)}</button>`;
 
-export function renderLandingHtml(vm: LandingVM): string {
+function rowHtml(r: LandingRow, selected: boolean): string {
+  const chips = r.hasCampaign
+    ? `<i class="chip win" title="Campaign win rate with permadeath on">on ${esc(r.onRate)}</i><i class="chip win" title="Campaign win rate with permadeath off">off ${esc(r.offRate)}</i>`
+    : '<i class="chip" title="Trained, but no campaign has been run yet">training only</i>';
+  const open = r.canOpen ? `<a class="open" href="${esc(r.openHref)}" tabindex="-1" title="${r.hasCampaign ? 'Open the jungle campaign replay' : 'Open the early-versus-late duel'}">Open${icon(ICON.open)}</a>` : '<span class="open off" title="No replay files in this run">no replay</span>';
+  const meta = [r.dateLabel, r.generations ? `${r.generations} gen` : ''].filter(Boolean).join(' · ');
+  return `<li><div class="run-row" role="option" tabindex="${selected ? 0 : -1}" aria-selected="${selected}" data-run="${esc(r.name)}" data-open="${esc(r.openHref)}" title="${esc(r.name)}">
+<b class="nm">${esc(r.label)}</b>${open}<span class="meta">${esc(meta)}</span><span class="chips">${chips}</span></div></li>`;
+}
+
+export function renderLandingHtml(vm: LandingVM, selectedName?: string): string {
   if (vm.empty) {
     return `<section class="landing-empty"><h2>No runs yet</h2>
 <p>Train a population, then walk the jungle with its champions. Run these in <code>v2/sim</code>:</p>
