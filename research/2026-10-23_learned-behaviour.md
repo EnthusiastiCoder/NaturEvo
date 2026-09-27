@@ -31,3 +31,5 @@ Per run the picture is very uneven (block share of ticks, matched pairs): gen 19
 Population-level block bit (training.csv, includes ticks where the fighter attacks): gen 0 about 0.45-0.58 (random nets), gen 199 0.13-0.47 (hero s1 0.47, monster s1 0.47, s2 monster 0.41, ws5 hero 0.39). It never went to zero in any run. Attack share stays 0.3-0.5, dodge falls from about 0.5 (gen 0) to 0.05-0.12.
 
 Draws (1800-tick timeout) in matched fights: gen 9 3/32, gen 49 2/32, gen 99 0/32, gen 149 1/32, gen 199 0/32. Late fights end in about 500 ticks (about 17 s).
+
+## (2) Block rate seen vs unseen, and by distance
