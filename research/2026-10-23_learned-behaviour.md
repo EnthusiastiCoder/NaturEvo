@@ -35,3 +35,16 @@ Draws (1800-tick timeout) in matched fights: gen 9 3/32, gen 49 2/32, gen 99 0/3
 ## (2) Block rate seen vs unseen, and by distance
 
 Share of ticks in the Blocking state, matched pairs, 32 fights per gen (n = ticks):
+
+| gen, role | unseen overall | seen overall | unseen far-away (>12) | seen close | seen mid | seen far |
+|---|---|---|---|---|---|---|
+| 9 hero | 0.21 | 0.03 | 0.22 | 0.00 | 0.06 | 0.11 |
+| 9 monster | 0.65 | 0.18 | 0.63 | 0.00 | 0.67 | 0.58 |
+| 49 hero | 0.01 | 0.01 | 0.01 | 0.02 | 0.00 | 0.01 |
+| 49 monster | 0.01 | 0.00 | 0.01 | 0.00 | 0.01 | 0.01 |
+| 99 hero | 0.07 | 0.12 | 0.06 | 0.00 | 0.34 | 0.31 |
+| 99 monster | 0.04 | 0.01 | 0.02 | 0.00 | 0.03 | 0.03 |
+| 149 hero | 0.22 | 0.05 | 0.24 | 0.01 | 0.14 | 0.15 |
+| 149 monster | 0.15 | 0.04 | 0.15 | 0.01 | 0.12 | 0.09 |
+| 199 hero | 0.13 | 0.10 | 0.13 | 0.04 | 0.22 | 0.27 |
+| 199 monster | 0.12 | 0.05 | 0.12 | 0.01 | 0.17 | 0.16 |
