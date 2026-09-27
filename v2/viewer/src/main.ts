@@ -30,7 +30,7 @@ let current = '';
 let duelIdx = 0;
 
 const root = document.documentElement;
-let requestedDuel: { label: string; fight: Fight } | null = null;
+let requestedDuels: { label: string; fight: Fight }[] = [];
 
 function banner(msg: string): void {
   const b = $('banner');
@@ -67,7 +67,7 @@ function populateSelect(): void {
 }
 
 function collectDuels(): void {
-  duelFights = mergeDuels(run.encounters.filter((e) => e.fight).map((e, k) => ({ label: `${k + 1}. ${e.kind} vs monster ${e.monsterIndex}`, fight: e.fight! })), requestedDuel);
+  duelFights = [...requestedDuels].reverse().reduce((acc, d) => mergeDuels(acc, d), run.encounters.filter((e) => e.fight).map((e, k) => ({ label: `${k + 1}. ${e.kind} vs monster ${e.monsterIndex}`, fight: e.fight! })));
   if (!duelFights.length) duelFights = [{ label: 'Demo duel', fight: demoFight(1) }];
 }
 
@@ -178,15 +178,14 @@ async function tryLoadDefault(): Promise<void> {
       if (errs.length) problems.push(`Could not load fights: ${errs.join('; ')}`);
     } else problems.push(`No run found at ${q.get('run') ?? '/data/run.json'} (HTTP ${r.status}); showing the built-in demo.`);
   } catch (err) { problems.push(`Could not read run ${runUrl}: ${err instanceof Error ? err.message : String(err)}; showing the built-in demo.`); }
-  const fu = q.get('fight');
-  if (fu) {
+  for (const fu of q.getAll('fight')) {
     try {
       const r = await fetch(new URL(fu, location.href).href);
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      requestedDuel = { label: `Requested: ${fu}`, fight: parseFight(await r.json()) };
+      requestedDuels.push({ label: `Requested: ${fu.split('/').pop()?.replace(/\.json$/, '') ?? fu}`, fight: parseFight(await r.json()) });
     } catch (err) { problems.push(`Could not load ?fight=${fu}: ${err instanceof Error ? err.message : String(err)}`); }
   }
-  if (!loaded && !q.get('run') && requestedDuel) problems.shift(); // an explicit fight makes the missing default run expected
+  if (!loaded && !q.get('run') && requestedDuels.length) problems.shift(); // an explicit fight makes the missing default run expected
   banner(problems.join(' | '));
 }
 
@@ -210,12 +209,17 @@ async function main(): Promise<void> {
   $('theme-toggle').onclick = () => { theme = nextTheme(theme); applyTheme(root, theme); localStorage.setItem('nv-theme', theme); syncThemeIcon(); };
   $<HTMLInputElement>('accent').oninput = (e) => { const v = (e.target as HTMLInputElement).value; setAccent(root, v); localStorage.setItem('nv-accent', v); };
 
+  addEventListener('keydown', (e) => {
+    const tg = e.target as HTMLElement;
+    if (e.key !== 't' || e.ctrlKey || e.metaKey || e.altKey || tg.tagName === 'SELECT' || (tg.tagName === 'INPUT' && (tg as HTMLInputElement).type !== 'range')) return;
+    $('theme-toggle').click();
+  });
   scene = await Scene.create($('view'), { record: isRecordMode(location.search) });
   const startViewer = async (): Promise<void> => {
     delete root.dataset.view;
   if (!demo) await tryLoadDefault();
   buildTimeline(); collectDuels();
-  if (requestedDuel) setMode('duel'); else populateSelect();
+  if (requestedDuels.length) setMode('duel'); else populateSelect();
   fitNow();
   new ResizeObserver(fitNow).observe($('stage'));
 
@@ -240,7 +244,6 @@ async function main(): Promise<void> {
     if (e.key === ' ' && (e.target as HTMLElement).tagName !== 'BUTTON') { e.preventDefault(); $('play').click(); }
     else if (e.key === 'ArrowRight') t = Math.min(duration(), t + 0.5);
     else if (e.key === 'ArrowLeft') t = Math.max(0, t - 0.5);
-    else if (e.key === 't') $('theme-toggle').click();
     else if (e.key === 'v') toggleRays();
     else if (e.key === '?') $('help').click();
     else if (e.key === 'Escape') $('info').hidden = true;
