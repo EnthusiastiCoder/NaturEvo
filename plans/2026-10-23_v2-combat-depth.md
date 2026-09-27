@@ -47,3 +47,9 @@ Task: sense.rs to the sensor contract (N_IN 80, idx consts), net.rs (N_OUT 9, N_
 Tests: sense_tests.rs (updated), net_tests.rs (updated), genome_ops_tests.rs.
 Acceptance: values in [-1,1] under fuzz; enemy block zero when unseen incl. statuses and attack kind; enemy attack kind and phase visible exactly when seen; own and enemy status fractions track remaining ticks; N_PARAMS matches layout; old-length genome rejected.
 Verify: cargo test sense net genome_ops; manually print an observe for a Windup/Stunned scenario.
+
+### WS3 anti-degenerate fitness and library screen (model: sonnet; depends WS2)
+Task: fitness changes, DRAW_PENALTY, passivity, punish/status rewards (evolve.rs, config FitnessTuning), species/rank assignment in training, `screen()`, `Library::from_dir` filter (campaign.rs). Commits: fitness config; score_match changes (remove block bonus, add unseen-block penalty, draw/passivity); punish and status rewards; species assignment; screen; library filter.
+Tests: fitness_tests.rs, screen_tests.rs, campaign_tests.rs (updated), evolution_tests.rs.
+Acceptance: a scripted pure turtle scores below a no-damage loss and below a trader; free block bonus gone; a fighter that blocks only when enemy seen within 4 outscores one that blocks unseen; library drops a turtle genome fixture and keeps a normal one; deterministic.
+Verify: cargo test fitness screen campaign evolution.
