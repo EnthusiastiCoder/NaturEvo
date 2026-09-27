@@ -89,19 +89,11 @@ export function renderLandingHtml(vm: LandingVM, selectedName?: string): string 
 <section class="results" id="landing-results" aria-live="polite"></section>`;
 }
 
-// ---- charts (inline SVG, colours only via CSS classes and tokens) ----
-const W = 240, H = 120, PAD = { l: 28, r: 8, t: 8, b: 16 };
-const pct = (r: number | null) => (r === null ? 'n/a' : `${Math.round(r * 100)}%`);
-const na = (why: string) => `<div class="na" title="${esc(why)}">n/a<small>${esc(why)}</small></div>`;
-
-function lineChart(series: { cls: string; label: string; ys: number[] }[], xs: number[], yMax: number): string {
-  const px = (i: number) => PAD.l + (xs.length > 1 ? (i / (xs.length - 1)) * (W - PAD.l - PAD.r) : 0);
-  const py = (v: number) => H - PAD.b - (Math.max(0, v) / yMax) * (H - PAD.t - PAD.b);
-  const lines = series.map((s) => `<polyline class="ln ${s.cls}" points="${s.ys.map((v, i) => `${px(i).toFixed(1)},${py(v).toFixed(1)}`).join(' ')}"><title>${esc(s.label)}</title></polyline>`).join('');
-  const labels = series.map((s, i) => `<text class="lbl ${s.cls}" x="${W - PAD.r}" y="${PAD.t + 8 + i * 10}" text-anchor="end">${esc(s.label)}</text>`).join('');
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img"><line class="axis" x1="${PAD.l}" y1="${py(0)}" x2="${W - PAD.r}" y2="${py(0)}"/>
-<text class="tick" x="${PAD.l - 3}" y="${py(0) + 3}" text-anchor="end">0</text><text class="tick" x="${PAD.l - 3}" y="${py(yMax) + 3}" text-anchor="end">${+yMax.toFixed(1)}</text>
-<text class="tick" x="${PAD.l}" y="${H - 3}">gen ${xs[0]}</text><text class="tick" x="${W - PAD.r}" y="${H - 3}" text-anchor="end">${xs[xs.length - 1]}</text>${lines}${labels}</svg>`;
+function groupRunsFromVm(vm: LandingVM): { campaign: LandingRow[]; training: LandingRow[]; scratch: LandingRow[] } {
+  const stub = vm.rows.map((r) => ({ name: r.name, seed: r.seed, date: r.date, generations: r.generations, permadeath: r.hasCampaign ? { on: { outcome: '', wins: 0, losses: 0, encounters: 0, perZone: {} } } : {}, keyResult: r.keyResult, files: [] }) as RunInfo);
+  const g = groupRuns(stub), by = new Map(vm.rows.map((r) => [r.name, r]));
+  const m = (rs: RunInfo[]) => rs.map((r) => by.get(r.name)!);
+  return { campaign: m(g.campaign), training: m(g.training), scratch: m(g.scratch) };
 }
 
 function barChart(bars: { label: string; k: number; n: number; rate: number | null }[]): string {
