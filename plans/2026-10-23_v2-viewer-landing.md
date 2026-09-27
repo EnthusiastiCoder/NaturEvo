@@ -32,3 +32,10 @@ Task: v2/viewer/src/landing.ts + index.html container `#landing` + style.css tok
 Files: v2/viewer/src/landing.ts, v2/viewer/index.html, v2/viewer/src/style.css (separate commits).
 Tests: v2/viewer/tests/landing.test.ts (render to string/DOM-free view-model: empty state text, picker rows, chart specs).
 Acceptance: all landing chart/view-model tests pass; no hard-coded colours.
+
+### WS4 routing + browser verification
+Task (a, sonnet implementer): main.ts: route function `route(search)` -> 'landing' | 'run' | 'fight' (in new src/route.ts); base URL = landing, hides playback bar, does not call demoRun or tryLoadDefault banner; ?run= / ?fight= path unchanged; Demo button loads demo; landing "Open" navigates. Remove the "showing the built-in demo" banner for the base case; keep errors for explicit ?run=. Record mode (?record) unaffected. Add Back/"Runs" button in top bar to return to landing.
+Files: v2/viewer/src/route.ts, v2/viewer/src/main.ts.
+Tests: v2/viewer/tests/routing.test.ts.
+(b) Browser verification: spawn agent type `claude` with chrome-devtools MCP (read prompts/chrome-devtools-mcp.md first; max 6 tabs; do not touch account). Take real screenshots of http://localhost:5174 at 1282x642 and 1540x890, light and dark (4 shots) plus ?run=/api-run open, empty state (temporarily point plugin at an empty dir via env var NV_RUNS_DIR, supported by plugin), confirm no page scroll (document.scrollHeight <= innerHeight), no console errors, Tab/Enter works, tooltips present. Save screenshots under v2/viewer/shots/ (not committed) and report findings; fix-ups return to implementer.
+Acceptance: base URL shows landing, no demo chips, no orange banner.
