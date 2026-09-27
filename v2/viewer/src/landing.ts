@@ -158,7 +158,7 @@ export async function mountLanding(el: HTMLElement, index: RunIndex, onDemo: () 
   el.innerHTML = renderLandingHtml(landingViewModel(index), start?.name);
   el.querySelector('[data-action="demo"]')?.addEventListener('click', onDemo);
   const results = el.querySelector<HTMLElement>('#landing-results');
-  if (!results) return;
+  if (!results || !start) return;
   const text = async (u: string) => { try { const r = await fetch(u); return r.ok ? await r.text() : ''; } catch { return ''; } };
   const cache = new Map<string, Row[]>();
   const rowsOf = async (r: RunInfo) => {
