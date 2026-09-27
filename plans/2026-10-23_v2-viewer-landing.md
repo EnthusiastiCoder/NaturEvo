@@ -26,3 +26,9 @@ Task: pure maths in v2/viewer/src/aggregate.ts: campaignWinRate(on/off with coun
 Files: v2/viewer/src/aggregate.ts.
 Tests: v2/viewer/tests/aggregate.test.ts.
 Acceptance: known fixtures give exact numbers; n=0 handled; pooling weights by counts not by mean of means.
+
+### WS3 landing-ui
+Task: v2/viewer/src/landing.ts + index.html container `#landing` + style.css tokens. Picker table/list (name, seed, date, gens, permadeath on/off, key result), Open button (loads campaign into map view via existing parse path, sets ?run=), duel links (early vs late champions: champion_*_gen first/last -> duel mode), selected-run vs "All runs" toggle, charts as compact inline SVG (win-rate bars with counts, learning curves, action shares, statuses, per-zone), info buttons + tooltips, Lucide icons, keyboard focus order, Demo button, empty state with commands `cargo run --release -- train ...` / `campaign ...` (exact flags read from v2/sim/src/cli.rs and README, not guessed). Layout: CSS grid fits 100vh, no page scroll at 1282x642..1920x1080 (panels scroll internally only if run list is long).
+Files: v2/viewer/src/landing.ts, v2/viewer/index.html, v2/viewer/src/style.css (separate commits).
+Tests: v2/viewer/tests/landing.test.ts (render to string/DOM-free view-model: empty state text, picker rows, chart specs).
+Acceptance: all landing chart/view-model tests pass; no hard-coded colours.
