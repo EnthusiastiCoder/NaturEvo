@@ -67,3 +67,9 @@ Task in v2/viewer/src: data.ts and interp.ts parse atk, fx, seen, ev, species, r
 Tests: viewer/tests/fx.test.ts, record.test.ts and ui.test.ts, interpolation.test.ts (updated), data-parse test, `npm run typecheck`, `npm run build`.
 Acceptance: all vitest pass; typecheck/build clean; old fight JSON without new fields still plays; no overlapping label rules violated (unit tests on offsets); status colour table covers all 7.
 Verify: npm test, typecheck, build in v2/viewer.
+
+### WS6 campaign-integration-and-docs (model: sonnet; depends WS4, WS5)
+Task: campaign.rs passes species/rank per encounter (via Match::new_with_setup), records them in run.json and fight JSON (`species`, `rank`, `monster_name`), keeps tier_stats and hp handicap (GRASS_HP 85, ELITE_HP 96, boss 100) unchanged unless the campaign win rate leaves 0.4..0.9 (report the number); regenerate v2/runs/combat/{s1,s2,s3} champions and a campaign run with fights; viewer loads them (fightUrl paths unchanged); README.md (repo root, v2 section) and v2 docs: new rules, statuses table, attack tables, sensor and output layout, training command lines and budget, eval CLI, how to read the stats strip, known limits; update plans/2026-10-22_v2-arena-final.md API contract lines with a pointer to this plan (separate commit); CREDITS unchanged. Commits: campaign species/rank; run json fields; cli screen flags (`--no-screen`); tests; README; plan pointer.
+Tests: campaign_tests.rs (species/rank recorded and deterministic, replayable log from seeds, library drops turtles), jungle_tests.rs unchanged green.
+Acceptance: campaign deterministic by seed; every encounter replayable; permadeath rules unchanged; README shows commands that actually work (executed once by the implementer).
+Verify: cargo test --release; run `arena-sim campaign` on the new champions.
