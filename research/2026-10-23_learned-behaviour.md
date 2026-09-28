@@ -48,3 +48,10 @@ Share of ticks in the Blocking state, matched pairs, 32 fights per gen (n = tick
 | 149 monster | 0.15 | 0.04 | 0.15 | 0.01 | 0.12 | 0.09 |
 | 199 hero | 0.13 | 0.10 | 0.13 | 0.04 | 0.22 | 0.27 |
 | 199 monster | 0.12 | 0.05 | 0.12 | 0.01 | 0.17 | 0.16 |
+
+Findings:
+- Close range (<= 1.2): blocking is almost never used (0-4 percent) at any gen. Fighters trade blows instead.
+- Unseen share of a fight is large: 50-75 percent of all ticks (the duel starts 41 tiles apart, vision range is 12, FOV 120 degrees). Late fights spend about 330 of about 500 ticks closing the distance.
+- Block while unseen is the dominant place blocking happens for the weaker or turtling nets (gen 9 monster 0.65, gen 149 hero 0.22). For gen 199 the unseen and seen rates are close (0.12-0.13 vs 0.05-0.10).
+- A distinct late-gen habit: PRE-BLOCK while approaching a visible enemy at mid/far range (0.16-0.34 at gens 99/199), then drop it before contact.
+- Campaign-style mix (hero 199 vs monster gen G): monster gen 9 blocks 45 percent of all ticks (62 percent of unseen ticks); every other monster gen 19..199 blocks 1-14 percent (gen 59 14, 109 10, 159 12, 199 10 are the highest). `campaign` keeps the 20 newest champions, and grass fights (99 percent of encounters, per `v2/runs/final/campaign.txt`) pick library indices from the oldest 35 percent, i.e. gen 9..79. So the turtle gen 9 monster is in the campaign pool and is the most likely thing the user saw. This is an inference, not verified against the viewer data.
