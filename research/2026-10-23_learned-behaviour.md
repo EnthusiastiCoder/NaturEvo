@@ -61,3 +61,5 @@ Findings:
 Dodge is small and mostly tied to close range: 2 percent of ticks at gen 9 rising to 4-6 percent mid-run, 3-4 percent at gen 199. By distance (seen, matched pairs): close 3-8 percent, mid/far 0-11 percent (gen 199 hero mid 0.11, far 0.09; monster 0.08/0.04). Unseen: 0-6 percent (gen 199 hero 0.02 far-away, monster 0.03). Dodge is expensive (30 stamina, 45 tick cooldown, `DODGE_STAMINA_COST`, `DODGE_COOLDOWN`) so it cannot be spammed even without the penalty (`-3*(fd-0.25)`), and the population dodge bit decays from 0.5 (gen 0) to 0.05-0.12 (gen 199). No dodge spam in champions. The user's observation is blocking, not dodging.
 
 ## (4) Strategies seen
+
+Late champions (gen 199, 32 fights): the dominant strategy is APPROACH AND STRIKE. Mean speed about 2.1-2.2 tiles/s, 58 percent of ticks the distance is shrinking, only 7 percent growing, first contact at tick about 329 of 500, then a toe-to-toe slugfest at distance 0.8 (attack 37-49 percent of ticks). Most fights end 4 hp (one hit) from the winner, i.e. a close trade.
