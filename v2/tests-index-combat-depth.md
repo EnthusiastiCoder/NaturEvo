@@ -49,3 +49,11 @@ Files in v2/sim/tests (APIs as in plans/handoffs/2026-10-23T08-46-32_tests-v2-co
 - `evolve::screen(&Genome, Role, &[Genome], seeds:u64) -> Screen{block_unseen_share, block_share, draw_rate, statuses_per_fight}` (PartialEq, Debug).
 - `Library::from_dir` screens by default; `Library::from_dir_opts(dir, role, keep, screen:bool)`; errors list the numbers (contain "block_share" and "block_unseen_share").
 - `evolve::species_for(seed) -> (Species, Rank)`.
+
+## Assumptions to watch
+- Phase progress: test only requires (0,1] and a change after 2 more ticks, not a direction.
+- Guard states for the unseen-guard term: GuardRaise, Blocking, GuardRecover; dist <= 4 and seen is not penalised.
+- Punish test relies on `apply_status` Stagger bypassing poise and keeping the victim Staggered; hits at steps 5,18,31,44,57 (5 hits in 68 steps).
+- Status-reward tests rely on hits at 1.0 tile in range for Rogue Stab/Dash and Boss Mage Hex/Zap/Slam, all landing on an idle 10000-hp hero.
+- Screen aggressor test assumes the plan's panel (idler monster) behaves like the test panel; from_dir's internal panel must also pass the aggressor.
+- Compile check done: only missing-API errors (attacks, status, sense::idx, Setup, attack_kind, apply_status, result, set_hp, fitness, score_result/terms, screen, species_for, from_dir_opts). cargo is at ~/.cargo/bin (not on bash PATH).
