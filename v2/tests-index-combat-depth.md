@@ -75,3 +75,5 @@ Notes: metrics block assumptions (intent-bit classification) are my choice; at 1
 
 ## ws5
 # WS5 viewer tests index
+
+Run: `cd v2/viewer && npx vitest run`. Currently 11 failed / 56 passed (fx.test.ts fails to import `../src/fx`).
