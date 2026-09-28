@@ -106,3 +106,6 @@ Each item says what evidence supports it and how sure I am. None has been run.
 Suggested order if anything is changed: 8 (draw penalty), 2 (remove free bonus), 3 (context penalty), then 1 (drain) and re-run the three seeds. Then measure again with the same script: share of block-while-unseen at gens 9, 99, 199 plus draw count per 32 matched fights.
 
 ## Reproduction
+
+- Fights: `arena-sim fight --hero v2/runs/<run>/champion_hero_gen_G.json --monster v2/runs/<run>/champion_monster_gen_G.json --seed S --out <scratch>.json` (release build in `v2/sim/target/release`).
+- The saved `fight_gen_G.json` uses arena seed = G (see `evolve.rs` `train_cli`).
