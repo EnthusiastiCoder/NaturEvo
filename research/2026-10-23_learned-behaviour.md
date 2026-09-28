@@ -87,3 +87,5 @@ What the rules make free or cheap:
 8. Selection pressure that reduces blocking exists but is weak: block is almost never used at close range (0-4 percent) because attacking pays (4x dealt) and in a trade the 80 percent reduction applies to the blocker only when it is not attacking (attack takes priority over block in step 2). In the first 20-40 gens the blocking population falls from 0.45 to about 0.2-0.3, and at gen 199 it rebounds (hero s1 0.47, monster s1 0.47, ws5 hero 0.39) which suggests the fitness landscape has no gradient against the leftover block bit once nobody can exploit it.
 
 Summary of why: block while unseen is nearly free (instant, no hold cost, 0.5 speed penalty only, immediate attack from the block), is slightly rewarded by the fitness shaping term (up to +0.18 as a bit, independent of context), and there is no term that penalises it, while blocking only helps in the rare ambush case. Evolution neither selects it away nor reinforces it by context, so it appears as noise-like behaviour and in some runs as a full turtle (gen 9) or an orbit with the shield up (gen 149).
+
+## (6) Recommendations (hypotheses, not tested)
