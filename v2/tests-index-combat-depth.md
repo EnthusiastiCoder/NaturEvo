@@ -77,3 +77,11 @@ Notes: metrics block assumptions (intent-bit classification) are my choice; at 1
 # WS5 viewer tests index
 
 Run: `cd v2/viewer && npx vitest run`. Currently 11 failed / 56 passed (fx.test.ts fails to import `../src/fx`).
+
+## Files (new cases)
+- tests/fx.test.ts (new, ~20): status table, timer, tint priority, knockback, shake, stars, dotEvents, statusStats, attackName, eyeAlpha.
+- tests/parse-fight-fx.test.ts (new, 7): parseFight old and new logs, demoFight coverage.
+- tests/interpolation.test.ts (+1): sampleFight carries atk, fx, seen, ev from the earlier frame.
+- tests/camera.test.ts (+1): stateLabel for GuardRaise, GuardRecover, Staggered, Stunned, Knocked, Recovery.
+- tests/visual-fixes.test.ts (+1): hudOffsets status row ordering and linear scaling.
+- tests/ui.test.ts (+1): style.css has `--fx-{knock,stagger,stun,confused,slowed,bleed,poison}`.
