@@ -60,3 +60,5 @@ Files in v2/sim/tests (APIs as in plans/handoffs/2026-10-23T08-46-32_tests-v2-co
 
 ## ws46
 # Tests index WS4 and WS6 (v2/sim/tests)
+
+Placeholders to set by the WS4 implementer from measured numbers: progress_tests.rs BAR_EARLY_A/BAR_EARLY_B (0.65), decisiveness_tests.rs MEASURED_DRAW_RATE (0.10) and MEASURED_UNSEEN_BLOCK (0.02), train_smoke_tests.rs MEASURED_BEAT_RANDOM and MEASURED_BEAT_GEN0 (0.80). Smoke scale (gens/pop) is in each file; check total time under 90 s.
