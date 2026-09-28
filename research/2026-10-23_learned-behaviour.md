@@ -104,3 +104,5 @@ Each item says what evidence supports it and how sure I am. None has been run.
 10. Viewer/telemetry: show the sensed-enemy flag and the net's block bit next to the shield so the audience can see when a fighter "does not know where the enemy is". No effect on behaviour. High confidence it reduces confusion.
 
 Suggested order if anything is changed: 8 (draw penalty), 2 (remove free bonus), 3 (context penalty), then 1 (drain) and re-run the three seeds. Then measure again with the same script: share of block-while-unseen at gens 9, 99, 199 plus draw count per 32 matched fights.
+
+## Reproduction
