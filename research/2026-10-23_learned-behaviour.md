@@ -73,3 +73,5 @@ Other strategies found (fight files in the scratchpad, positions in tiles, 30 ti
 - KITING: no real kiting found. Receding share is 7 percent in late matched fights.
 - DODGE SPAM: not found (see 3).
 - Also note: monster gen 149 `final_s3` attacks 95 percent of ticks and moves 3 percent (`final_s3` seed 5): a stand-and-swing statue, hits only when the hero comes to it. It beats nothing special but shows attack-bit saturation.
+
+## (5) Root cause from the code
