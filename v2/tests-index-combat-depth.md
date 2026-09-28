@@ -72,3 +72,6 @@ Placeholders to set by the WS4 implementer from measured numbers: progress_tests
 - campaign_tests.rs: replay now via `play_with_setup` with `Setup{hp:[max_hp,e.monster_hp],species:[Hero,e.species],rank:[Grass,e.rank]}`; new (5): species/rank by kind (boss Warrior or Mage), determinism, all four species appear, fight_json/run_json carry species/rank/monster_name (as_str), library screen default error contains "block_share" and `Library::from_dir_opts(dir,role,keep,false)` ok, CLI `campaign` errors by default and `--no-screen` succeeds. Encounter gains `species: Species, rank: Rank, monster_name` (String); Species/Rank need Copy, PartialEq, Debug.
 
 Notes: metrics block assumptions (intent-bit classification) are my choice; at 13 tiles the enemy is unseen (range 12). Existing evolution_tests.rs untouched.
+
+## ws5
+# WS5 viewer tests index
