@@ -26,3 +26,6 @@ Added conventions: `apply_status(Knock, 6, 2.0, ..)` means magnitude = distance 
 - Confusion window sign is asserted to alternate between consecutive 15-tick windows (heading +60 then -60); turn inversion asserted on alternate windows (one normal, one inverted).
 - Wall-slam test finds the open edge x at runtime instead of hard-coding 47.
 - GuardRecover after stamina drain is asserted only as entered (not 8 vs 20); guard-break stun asserted 19..=20.
+
+## ws23
+# Test index WS2 and WS3 (combat depth)
