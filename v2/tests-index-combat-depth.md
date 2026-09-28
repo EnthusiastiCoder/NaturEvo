@@ -91,3 +91,7 @@ Run: `cd v2/viewer && npx vitest run`. Currently 11 failed / 56 passed (fx.test.
 - fx.ts: `STATUSES: {key,label,color:number,info}[]` order knock,stagger,stun,confused,slowed,bleed,poison; `statusTimer(key,remaining,hz)` = `"stun 0.8"`; `tintStatus(fx:number[])` returns key or null (stun>stagger>confused>slowed>poison>bleed, knock ignored); `KNOCK_TICKS=6`; `knockbackOffset(remaining,total,dist,dir:[x,y]) -> [x,y]` = -dir*dist*remaining/total (exact at endpoints, monotone, `[0,0]` if total 0); `staggerShake(t,remaining)` 0 when remaining<=0, |v|<=1, deterministic; `stunStarCount(remaining)` 0 or 1..5; `dotEvents(ev)` filters `t==='dot'`; `statusStats(frames,upTo) -> {hero,monster}: {statuses: Record<key,number> (all 7 keys, in order), punishes, parries}` counting hit.fx indexes by `hit.by`, `punish`, and `parry.by`, frames 0..upTo inclusive; `attackName(species,kind,rank)` species strings hero/minion/rogue/warrior/mage, '' for kind -1; `eyeAlpha(seen)` 1 / in (0,0.6).
 - layout.ts: stateLabel texts GUARD UP, GUARD DOWN, STAGGER, STUN, KNOCKED, RECOVER (all distinct); `hudOffsets(u)` adds `statusRowTop`, `statusRowBottom` with labelBottom <= top < bottom < barTop.
 - demoFight: all 7 fx indexes nonzero somewhere; a hit event with punish true.
+
+## Notes
+- Event shapes follow the plan log contract. Rust tests untouched. Nothing committed.
+
