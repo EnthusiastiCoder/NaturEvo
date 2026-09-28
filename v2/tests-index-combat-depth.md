@@ -57,3 +57,6 @@ Files in v2/sim/tests (APIs as in plans/handoffs/2026-10-23T08-46-32_tests-v2-co
 - Status-reward tests rely on hits at 1.0 tile in range for Rogue Stab/Dash and Boss Mage Hex/Zap/Slam, all landing on an idle 10000-hp hero.
 - Screen aggressor test assumes the plan's panel (idler monster) behaves like the test panel; from_dir's internal panel must also pass the aggressor.
 - Compile check done: only missing-API errors (attacks, status, sense::idx, Setup, attack_kind, apply_status, result, set_hp, fitness, score_result/terms, screen, species_for, from_dir_opts). cargo is at ~/.cargo/bin (not on bash PATH).
+
+## ws46
+# Tests index WS4 and WS6 (v2/sim/tests)
