@@ -89,3 +89,5 @@ What the rules make free or cheap:
 Summary of why: block while unseen is nearly free (instant, no hold cost, 0.5 speed penalty only, immediate attack from the block), is slightly rewarded by the fitness shaping term (up to +0.18 as a bit, independent of context), and there is no term that penalises it, while blocking only helps in the rare ambush case. Evolution neither selects it away nor reinforces it by context, so it appears as noise-like behaviour and in some runs as a full turtle (gen 9) or an orbit with the shield up (gen 149).
 
 ## (6) Recommendations (hypotheses, not tested)
+
+Each item says what evidence supports it and how sure I am. None has been run.
