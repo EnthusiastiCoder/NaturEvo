@@ -54,3 +54,11 @@ Damage: impact = 0.5*m_eff*(v.n)^2 (capped); armour reduction per part; HP per p
 Per-limb state (12): joint angle, angular velocity, target angle, max torque, health fraction, disabled flag, mass, contact flag, last-impact magnitude, last-impact direction (x,y), local tip speed, armour.
 Sensors (~70): per-limb angle/vel/health/contact, CoM margin, posture, stamina, opponent torso/hand/foot relative position and velocity, opponent striking-arm state, distance, wall distance.
 Actions (~16): target angle per joint (hips, torso twist, shoulders, elbows, knees, ankles, head), plus brace/guard bias.
+
+## Open questions (recommended answer)
+1. Side view or top-down? Side view.
+2. Full rigid-body physics or FK-driven joints? FK with PD motors, deterministic.
+3. Fixed identical morphology or evolvable body? Fixed humanoid first; vary mass/armour only.
+4. Evolve joint targets directly or discrete move menu? Direct joint control; moves are scored post hoc.
+5. Allow repair? No in-fight; reset between rounds.
+6. Abilities (Mech-X4 powers) in v3.0? No, defer to v3.1 after strikes/balance work.
