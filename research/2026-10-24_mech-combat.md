@@ -6,3 +6,15 @@ Honesty note: sections 1-5 below were first written from background knowledge. A
 - Mech-X4 (Disney XD, 2016): teen pilot bonded to a giant humanoid robot; abilities come in as unlockable "powers" (energy blasts, shields, flight-ish boosts). Source: https://en.wikipedia.org/wiki/Mech-X4
 - Distinctive: humanoid silhouette (readable head/torso/arms/legs), one signature colour per robot, glowing core/eye, power effects as bright additive glow.
 - Takeaway: keep a fixed humanoid part list; give each robot a colour + glow accent; abilities are separate from basic strikes (v3.1).
+
+## 2. Existing designs
+- Armored Core: AP (one pool) plus ACS strain/overload (stagger meter, then big damage window); part loadout dictates stats, not per-part HP. https://en.wikipedia.org/wiki/Armored_Core . Takeaway: separate "stagger/overload" meter from health.
+- MechWarrior / BattleTech: hit-location table (head, CT, side torsos, arms, legs), armour+internal structure per location, crits to components, destroyed arm loses its weapons, destroyed leg limits movement/falls, torso destruction = kill. https://en.wikipedia.org/wiki/BattleTech . Takeaway: best template for "tankiness = part HP", lethal vs non-lethal parts, cascading loss.
+- Real Steel / Rock'em Sockem: boxing robots; damage is cumulative, arm damage degrades punches. Little published model; treat as inspiration only.
+- Robot Wars / BattleBots: weapon vs armour, disabling (immobilised, drive lost) is the usual win, not destruction. https://en.wikipedia.org/wiki/Robot_Wars_(TV_series) . Takeaway: "disabled" state (part works at 0%) distinct from "destroyed".
+- Gundam battle games (e.g. Extreme VS, Battle Operation): part-break on legs/arms in some titles; mostly HP + down meter. Low confidence on specifics.
+- Absolver / Mordhau / For Honor: directional attacks and blocks, weapon swing arcs, hit location by swing; Mordhau uses swept weapon collision with per-limb damage multipliers. https://mordhau.com . Takeaway: swept segment + hit direction is the cheap, readable approach.
+- Sekiro: posture bar; blocking deflects fill the enemy's posture; full = deathblow window. https://en.wikipedia.org/wiki/Sekiro:_Shadows_Die_Twice . Takeaway: posture = stagger meter; clashes (weapon on weapon) shift posture.
+- Toribash: joint states (contract/extend/hold/relax) on a ragdoll, turn-based; damage from impact force on body parts; well-known for emergent physics. https://www.toribash.com
+- Robomaster (DJI): armour plates with hit sensors, damage by plate impact; plate = hitbox. https://www.robomaster.com . Takeaway: hitboxes as discrete plates is a clean sensing model.
+- Common pattern: part HP; thresholds (e.g. <50% degraded, 0 disabled); lethal parts (torso/core/head); repair mostly absent in fighters, present between rounds (guess: allow slow regen of disabled->degraded only for sim stability).
