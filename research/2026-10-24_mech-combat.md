@@ -78,3 +78,6 @@ Actions (~16): target angle per joint (hips, torso twist, shoulders, elbows, kne
 - Part damage disables specific moves and scales them (BattleTech kick halving); falls via balance check with per-part penalties; destroyed leg = automatic fall.
 - Consider a 4-state discrete joint command (Toribash) as an alternative output head to continuous targets; recommended: stay continuous first, compare later.
 - Shield/weapon subsystems separate from limbs (Mech-X4 crew roles).
+
+## Open questions, updated (recommended answers unchanged unless noted)
+1. Side view or top-down? Side view. 2. FK + PD motors vs full rigid body? FK + PD. 3. Fixed body? Yes, fixed humanoid. 4. Joint control: continuous targets (Recommended), try 4-state discrete later. 5. Repair? None in-fight. 6. Abilities? Defer; model shield as a subsystem in v3.1.
