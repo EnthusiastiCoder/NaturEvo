@@ -21,3 +21,9 @@ fn generate_is_deterministic_and_in_spec() {
         assert!(o.w > 0.0 && o.x - o.w / 2.0 >= 0.0 && o.x + o.w / 2.0 <= 14.0);
     }
 }
+
+#[test]
+fn different_seeds_give_different_arenas() {
+    let sig = |s: u64| Arena::generate(s).obstacles.iter().map(|o| (o.x.to_bits(), o.h.to_bits())).collect::<Vec<_>>();
+    assert!((1..20u64).any(|s| sig(s) != sig(0)));
+}
