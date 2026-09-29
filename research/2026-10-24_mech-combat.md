@@ -40,3 +40,17 @@ Honesty note: sections 1-5 below were first written from background knowledge. A
 ## 5. View and rendering
 - Side view reads articulated limbs, punch height, falls, balance far better; top-down hides limb pose and balance. For "coordinated parts" choose side view (2D platform fighter style). Top-down only if the arena's movement matters more than limb pose.
 - Rendering: vector-drawn capsules/rounded polygons per part, outline plus darker back-limbs for depth, additive glow on core/eyes (Canvas 2D `globalCompositeOperation='lighter'`, shadowBlur sparingly), spark particles on contact in impact direction, brief hit-stop (3-6 frames), screen shake scaled by impact, part damage cracks/colour desaturation, destroyed part detaches as a falling body. Canvas 2D is enough for 2 robots; WebGL not needed.
+
+## Design sketch
+Parts (roles): head (sensors; head 0% = blind-ish: noisier opponent input, lethal at 0), torso (core; lethal; twist joint), pelvis/hips (power + balance), upper arm L/R (reach, power), forearm L/R, hand/weapon L/R (damage carrier), thigh L/R, shin/foot L/R (balance, kick).
+Moves (required parts -> quality):
+- Jab: shoulder, elbow, hand; quality = reach alignment * elbow speed.
+- Cross/hook: + torso twist + hip; kinetic-chain order bonus.
+- Kick: hip, knee, foot, plus opposing leg for balance; failure if balance margin < 0.
+- Block: forearm/shield; absorbs by blocking-part HP, fills attacker posture on clash.
+- Dash/shove: legs + torso.
+Quality = mean-weighted(joint contributions each scaled by part health) * timing_order * alignment * balance_factor. Disabled required part -> move unavailable; degraded -> proportionally weaker.
+Damage: impact = 0.5*m_eff*(v.n)^2 (capped); armour reduction per part; HP per part; thresholds: <50% degraded (torque cap scaled), 0 disabled (limp joint), torso/head 0 = KO. Stagger: posture meter per robot, impact adds, over threshold -> stumble/knockdown. Reaction: impulse on struck link along hit direction.
+Per-limb state (12): joint angle, angular velocity, target angle, max torque, health fraction, disabled flag, mass, contact flag, last-impact magnitude, last-impact direction (x,y), local tip speed, armour.
+Sensors (~70): per-limb angle/vel/health/contact, CoM margin, posture, stamina, opponent torso/hand/foot relative position and velocity, opponent striking-arm state, distance, wall distance.
+Actions (~16): target angle per joint (hips, torso twist, shoulders, elbows, knees, ankles, head), plus brace/guard bias.
