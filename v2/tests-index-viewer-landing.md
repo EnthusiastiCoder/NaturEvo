@@ -12,3 +12,11 @@ Exports: `parseTrainingCsv(text): Row[]` (numbers keyed by column; header-only/e
 - buildIndex: generations=row count, on/off summaries, date from mtime, seed n/a for "main", seed "1" for "cd/s1", files list, nested names
 - junk skipped without throw; missing mtime -> "n/a"
 - loadIndex: first source, fallback, error state
+
+## v2/viewer/tests/aggregate.test.ts -> src/aggregate.ts
+Exports: `campaignWinRate({on?,off?}:{wins,losses}) -> {on,off:{k,n,rate|null}}`, `poolRates([{k,n}]) -> {k,n,rate|null}`,
+`learningCurves(rows) -> {gens,heroFitness,monsterFitness,heroWinVsEarlier,monsterWinVsEarlier,drawRate:number[]|null}` (draw = 1 - hof_wr_hero - hof_wr_monster),
+`actionShares(ticks:{action,seen,dist}[], {distBuckets:number[]}) -> {byVisibility:{seen,unseen},byDistance:[...]}` each `{n,attack,block,dodge}`; null when fields missing; bucket 0 = dist <= first bound,
+`zoneRates(encounters:{zone,result}[]) -> {zone,k,n,rate}[]` sorted by zone,
+`statusesPerFight(fights:{frames:{statuses:string[]}[]}[]) -> Record<string,number>[]`.
+- win rate on vs off; null rate at n=0; pooling weighted; curve lengths/values; draw rate; empty; action shares by visibility/distance/empty/missing; zone rates; statuses
