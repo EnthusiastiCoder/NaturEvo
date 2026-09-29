@@ -10,3 +10,12 @@ Files in v2/sim/tests (APIs as in plans/handoffs/2026-10-23T08-46-32_tests-v2-co
 | fitness_tests.rs (new) | 11 | turtle < no-damage loss < trader, draw < no-damage loss, unseen-guard penalty (seen at 3 tiles gets 0), block-bit toggle no effect, punish cap (5 hits -> 1.8), 1 hit -> 0.6, status reward 2 distinct = 0.3, 6 distinct (Boss Mage) = 0.9, passivity ~0.833, determinism, config defaults |
 | screen_tests.rs (new) | 6 | turtle fails, aggressor passes, deterministic, from_dir drops newest turtle and keeps normal (keep=1), all-fail error contains "block_share" and "block_unseen_share", from_dir_opts(..., false) keeps turtle |
 | evolution_tests.rs (appended module `species_assignment`) | 4 | species_for deterministic, seed%4 mapping, rank cadence 8/32, boss species Warrior or Mage, counts over 64 seeds (2 boss, 6 elite, 56 grass); existing tests untouched |
+
+## APIs used (beyond existing)
+- `arena_sim::attacks::{Species, Rank}` (PartialEq, Debug), `status::Status` (`ALL`, Knock..Poison), `matchup::Match::{new_with_setup, result() -> MatchResult, apply_status(role, Status, dur:u32, mag:f32, source:Role), set_hp(role, f32)}`, `matchup::Outcome` unchanged.
+- `Action.attack_kind: u8`; `sense::idx::*`; `net::N_HID`.
+- `config.fitness` (FitnessTuning): `draw_penalty`, `punish_reward`, `punish_cap`, `status_reward`, `status_cap` (caps may be int or float; test casts to f32).
+- `evolve::score_result(role, &MatchResult, &ArenaConfig) -> f32`; `evolve::terms(...) -> Terms{punish_hits, statuses, punish_reward, status_reward, unseen_guard_share, passivity_share}`.
+- `evolve::screen(&Genome, Role, &[Genome], seeds:u64) -> Screen{block_unseen_share, block_share, draw_rate, statuses_per_fight}` (PartialEq, Debug).
+- `Library::from_dir` screens by default; `Library::from_dir_opts(dir, role, keep, screen:bool)`; errors list the numbers (contain "block_share" and "block_unseen_share").
+- `evolve::species_for(seed) -> (Species, Rank)`.
