@@ -20,3 +20,8 @@ Exports: `campaignWinRate({on?,off?}:{wins,losses}) -> {on,off:{k,n,rate|null}}`
 `zoneRates(encounters:{zone,result}[]) -> {zone,k,n,rate}[]` sorted by zone,
 `statusesPerFight(fights:{frames:{statuses:string[]}[]}[]) -> Record<string,number>[]`.
 - win rate on vs off; null rate at n=0; pooling weighted; curve lengths/values; draw rate; empty; action shares by visibility/distance/empty/missing; zone rates; statuses
+
+## v2/viewer/tests/landing.test.ts -> src/landing.ts
+Exports: `EMPTY_COMMANDS: string[]` (contains `cargo run --release -- train ...`, `... campaign ...`), `landingViewModel(index) -> {empty, rows:[{name,seed,date,generations,permadeathOn,permadeathOff,keyResult,openHref}]}`, `renderLandingHtml(vm): string` (Demo `<button data-action="demo">`, `data-action="all-runs"` toggle, `<a href="?run=<encodeURIComponent(name)>">`).
+- empty state commands, no banner/error/red wording; error index still empty state
+- picker row fields; open href; Demo button; no hard-coded colours
