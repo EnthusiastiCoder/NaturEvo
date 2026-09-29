@@ -36,3 +36,7 @@ Honesty note: sections 1-5 below were first written from background knowledge. A
 - Pitfalls: flailing (reward only impact * quality, penalise energy and require alignment), turtling (stagger/stalemate damage ticking, ring shrink), stuck on ground (get-up reflex or short fall timeout), physics exploits (clamp velocities, cap impulses), fitness rewarding self-damage. Curriculum: stand -> approach -> hit static dummy -> sparring vs past champions (hall of fame, as v2 does).
 - Size: ~14 joints x 2 + senses ~ 60-80 inputs, 14-18 outputs; one hidden layer of 24-48 with tanh or small recurrent unit (guess). Per-tick cost ~ 80*32 + 32*16 mults, fine. Determinism: seeded RNG, fixed dt, no float-order variance across threads, avoid HashMap iteration.
 - Uncertainty: no source gives a definitive net size; my number is an estimate, tune empirically.
+
+## 5. View and rendering
+- Side view reads articulated limbs, punch height, falls, balance far better; top-down hides limb pose and balance. For "coordinated parts" choose side view (2D platform fighter style). Top-down only if the arena's movement matters more than limb pose.
+- Rendering: vector-drawn capsules/rounded polygons per part, outline plus darker back-limbs for depth, additive glow on core/eyes (Canvas 2D `globalCompositeOperation='lighter'`, shadowBlur sparingly), spark particles on contact in impact direction, brief hit-stop (3-6 frames), screen shake scaled by impact, part damage cracks/colour desaturation, destroyed part detaches as a falling body. Canvas 2D is enough for 2 robots; WebGL not needed.
