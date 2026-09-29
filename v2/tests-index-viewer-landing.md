@@ -25,3 +25,6 @@ Exports: `campaignWinRate({on?,off?}:{wins,losses}) -> {on,off:{k,n,rate|null}}`
 Exports: `EMPTY_COMMANDS: string[]` (contains `cargo run --release -- train ...`, `... campaign ...`), `landingViewModel(index) -> {empty, rows:[{name,seed,date,generations,permadeathOn,permadeathOff,keyResult,openHref}]}`, `renderLandingHtml(vm): string` (Demo `<button data-action="demo">`, `data-action="all-runs"` toggle, `<a href="?run=<encodeURIComponent(name)>">`).
 - empty state commands, no banner/error/red wording; error index still empty state
 - picker row fields; open href; Demo button; no hard-coded colours
+
+## v2/viewer/tests/routing.test.ts -> src/route.ts
+Exports: `route(search): 'landing'|'run'|'fight'` (fight wins over run; `?run=` empty is run), `shouldShowRunError(route, loadedOk): boolean`.
