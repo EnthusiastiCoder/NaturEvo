@@ -26,3 +26,13 @@ Honesty note: sections 1-5 below were first written from background knowledge. A
 - Coordination: timing = joint peak velocities should occur in proximal-to-distal order (hip -> torso -> shoulder -> elbow -> wrist), the real "kinetic chain". Score = product of each link's contribution times a timing term (guess). See biomechanics of punching literature (kinetic chain), not fetched.
 - Balance: centre of mass (mass-weighted FK positions) projected onto support polygon (feet span in side view; feet disc in top-down). Margin < 0 -> stumble; impulses shift the CoM; knockdown when margin stays negative or both legs disabled. Get-up costs time.
 - Collision: capsules (segment + radius) per link; hit = swept capsule of hand/weapon over the tick vs target capsules (segment-segment closest point). O(parts^2) = tiny.
+
+## 4. Neuroevolution of articulated fighters
+- Evolved virtual creatures (Sims 1994): morphology+controller coevolved; exploits physics bugs. https://www.karlsims.com/evolved-virtual-creatures.html
+- OpenAI robosumo (Bansal et al. 2018): emergent complexity via self-play with competition; used curriculum of dense shaping reward (stay in ring, near opponent) annealed to win/lose. https://arxiv.org/abs/1710.03748
+- DeepMind humanoid soccer / locomotion: https://arxiv.org/abs/2105.12196 (multi-agent soccer), https://arxiv.org/abs/1707.02286 (locomotion in rich environments). Lessons: population + self-play, reward shaping decayed over time.
+- Toribash AI: community bots exist; little published.
+- IO: joint angles and velocities (normalised), part health fractions, contact/touch flags per capsule, opponent part positions relative to own torso in own frame (not world), CoM margin, stamina/posture. Outputs: target joint angles or torque per joint in [-1,1], plus optional discrete "intent" outputs.
+- Pitfalls: flailing (reward only impact * quality, penalise energy and require alignment), turtling (stagger/stalemate damage ticking, ring shrink), stuck on ground (get-up reflex or short fall timeout), physics exploits (clamp velocities, cap impulses), fitness rewarding self-damage. Curriculum: stand -> approach -> hit static dummy -> sparring vs past champions (hall of fame, as v2 does).
+- Size: ~14 joints x 2 + senses ~ 60-80 inputs, 14-18 outputs; one hidden layer of 24-48 with tanh or small recurrent unit (guess). Per-tick cost ~ 80*32 + 32*16 mults, fine. Determinism: seeded RNG, fixed dt, no float-order variance across threads, avoid HashMap iteration.
+- Uncertainty: no source gives a definitive net size; my number is an estimate, tune empirically.
