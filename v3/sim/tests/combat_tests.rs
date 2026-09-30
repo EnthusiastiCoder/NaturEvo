@@ -8,3 +8,9 @@ use mech_sim::robot::Part;
 fn approx(a: f32, b: f32, tol: f32) {
     assert!((a - b).abs() <= tol, "{} vs {}", a, b);
 }
+
+/// Edge x of the defender torso facing the attacker, plus its centre y.
+fn torso_edge(d: &mech_sim::robot::Robot) -> (f32, f32) {
+    let tc = torso_center(d);
+    (tc[0] - d.capsule(Part::Torso).r, tc[1])
+}
