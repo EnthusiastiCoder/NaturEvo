@@ -58,3 +58,19 @@ fn disabled_leg_part_applies_half_metre_margin_penalty() {
     let after = r.balance_margin();
     assert!(((before - after) - 0.5).abs() < 0.1, "before {} after {}", before, after);
 }
+
+#[test]
+fn fallen_robot_cannot_attack_takes_extra_damage_and_gets_up_after_1_5_s() {
+    let mut r = standing(Role::Hero, 3.0, 1.0);
+    r.knock_down();
+    assert_eq!(r.state(), State::Fallen);
+    assert!(!r.can_act());
+    let base = Robot::new(Role::Hero).damage_part(Part::Torso, 10.0);
+    let hit = r.clone().damage_part(Part::Torso, 10.0);
+    assert!(((hit / base) - 1.5).abs() < 1e-3);
+    step(&mut r, 85); // 1.42 s
+    assert_eq!(r.state(), State::Fallen);
+    step(&mut r, 10); // 1.58 s
+    assert_eq!(r.state(), State::Idle);
+    assert!(r.can_act());
+}
