@@ -90,3 +90,17 @@ fn cannot_get_up_with_disabled_hip_or_both_knees() {
     step(&mut k, 240);
     assert_eq!(k.state(), State::Fallen, "needs one working knee");
 }
+
+#[test]
+fn root_height_keeps_lowest_foot_on_ground() {
+    let mut r = standing(Role::Hero, 3.0, 1.0);
+    step(&mut r, 30);
+    let low = [Part::FootL, Part::FootR]
+        .iter()
+        .map(|p| {
+            let c = r.capsule(*p);
+            c.a[1].min(c.b[1]) - c.r
+        })
+        .fold(f32::MAX, f32::min);
+    assert!(low.abs() < 0.05, "lowest foot at {}", low);
+}
