@@ -31,3 +31,11 @@ fn impulse_pushes_com_beyond_feet_negative_margin_then_fall() {
     assert!(min_margin < 0.0, "min margin {}", min_margin);
     assert!(fell, "margin < 0 for > 0.4 s must fall");
 }
+
+#[test]
+fn small_impulse_is_recovered() {
+    let mut r = standing(Role::Hero, 3.0, 1.0);
+    r.apply_impulse(0.3);
+    step(&mut r, 120);
+    assert_eq!(r.state(), State::Idle);
+}
