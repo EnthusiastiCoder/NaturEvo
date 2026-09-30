@@ -51,3 +51,13 @@ fn resolve_tick_reports_hit_part_point_and_direction() {
     approx(h.zone, 1.0, 1e-4);
     assert!(d.hp_frac(Part::Torso) < 1.0);
 }
+
+#[test]
+fn hit_adds_posture_equal_to_impact_times_0_05() {
+    let (mut a, mut d) = duel_pair();
+    let (edge, ty) = torso_edge(&d);
+    blade_sweep(&mut a, edge - 0.05, edge + 0.1, ty - 0.9, ty + 0.9);
+    let ev = resolve_tick(&mut a, &mut d, &arena());
+    let h = hits(&ev)[0];
+    approx(d.posture, h.impact * 0.05, 1e-3);
+}
