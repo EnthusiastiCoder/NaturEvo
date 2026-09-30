@@ -114,3 +114,12 @@ fn shield_setup(d: &mut mech_sim::robot::Robot, edge: f32, ty: f32) -> f32 {
     d.set_shield(seg(xp, ty - 0.6, xp, ty + 0.6, 0.05));
     xp
 }
+
+#[test]
+fn shield_between_sword_and_torso_blocks_with_85_percent_reduction() {
+    // baseline: same swing without a shield in the way
+    let (mut a0, mut d0) = duel_pair();
+    let (edge, ty) = torso_edge(&d0);
+    let xp = edge - 0.15;
+    blade_sweep(&mut a0, xp - 0.25, xp + 0.25, ty - 0.9, ty + 0.9);
+    let raw = hits(&resolve_tick(&mut a0, &mut d0, &arena()))[0].impact;
