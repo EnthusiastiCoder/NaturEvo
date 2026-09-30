@@ -74,3 +74,11 @@ fn fallen_robot_cannot_attack_takes_extra_damage_and_gets_up_after_1_5_s() {
     assert_eq!(r.state(), State::Idle);
     assert!(r.can_act());
 }
+
+#[test]
+fn cannot_get_up_with_disabled_hip_or_both_knees() {
+    let mut r = standing(Role::Hero, 3.0, 1.0);
+    r.knock_down();
+    r.set_hp(Part::ThighR, 0.0);
+    step(&mut r, 240);
+    assert_eq!(r.state(), State::Fallen);
