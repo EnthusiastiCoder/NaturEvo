@@ -139,3 +139,22 @@ fn shield_between_sword_and_torso_blocks_with_85_percent_reduction() {
     approx(a.posture, 10.0, 1e-3);
     approx(d.posture, 10.0 * (1.0 - 0.5), 1e-2); // full integrity: 10 * (1 - 1.0 * 0.5)
 }
+
+#[test]
+fn dropped_shield_or_empty_energy_means_no_block_and_hit_lands() {
+    for variant in 0..2 {
+        let (mut a, mut d) = duel_pair();
+        let (edge, ty) = torso_edge(&d);
+        let xp = shield_setup(&mut d, edge, ty);
+        if variant == 0 {
+            d.shield_integrity = 0.0;
+        } else {
+            d.energy = 0.0;
+        }
+        blade_sweep(&mut a, xp - 0.25, xp + 0.25, ty - 0.9, ty + 0.9);
+        let ev = resolve_tick(&mut a, &mut d, &arena());
+        assert_eq!(hits(&ev).len(), 1, "variant {} -> {:?}", variant, ev);
+        assert!(!ev.iter().any(|e| matches!(e, CombatEvent::Block { .. })));
+        let _ = clashes(&ev);
+    }
+}
