@@ -90,3 +90,12 @@ fn hitstop_is_3_to_6_ticks_and_monotonic() {
     }
     assert!(hitstop_ticks(IMPACT_CAP) > hitstop_ticks(0.0));
 }
+
+#[test]
+fn hit_event_carries_hitstop_in_range() {
+    let (mut a, mut d) = duel_pair();
+    let (edge, ty) = torso_edge(&d);
+    blade_sweep(&mut a, edge - 0.3, edge + 0.1, ty - 0.9, ty + 0.9);
+    let ev = resolve_tick(&mut a, &mut d, &arena());
+    assert!((3..=6).contains(&hits(&ev)[0].hitstop_ticks));
+}
