@@ -123,3 +123,19 @@ fn shield_between_sword_and_torso_blocks_with_85_percent_reduction() {
     let xp = edge - 0.15;
     blade_sweep(&mut a0, xp - 0.25, xp + 0.25, ty - 0.9, ty + 0.9);
     let raw = hits(&resolve_tick(&mut a0, &mut d0, &arena()))[0].impact;
+
+    let (mut a, mut d) = duel_pair();
+    shield_setup(&mut d, edge, ty);
+    blade_sweep(&mut a, xp - 0.25, xp + 0.25, ty - 0.9, ty + 0.9);
+    let before = d.shield_integrity;
+    let ev = resolve_tick(&mut a, &mut d, &arena());
+    assert!(hits(&ev).is_empty(), "blocked swing must not hit the body: {:?}", ev);
+    let b = ev.iter().find_map(|e| if let CombatEvent::Block { raw, reduced, .. } = e { Some((*raw, *reduced)) } else { None }).expect("block event");
+    approx(b.0, raw, raw * 0.01);
+    approx(b.1, 0.15 * b.0, 1e-3);
+    approx(d.shield_integrity, (before - 0.3 * b.0).max(0.0), 1e-2);
+    assert!(d.hp_frac(Part::FArmL) < 1.0, "shield arm takes the residual");
+    assert!(d.hp_frac(Part::Torso) == 1.0);
+    approx(a.posture, 10.0, 1e-3);
+    approx(d.posture, 10.0 * (1.0 - 0.5), 1e-2); // full integrity: 10 * (1 - 1.0 * 0.5)
+}
