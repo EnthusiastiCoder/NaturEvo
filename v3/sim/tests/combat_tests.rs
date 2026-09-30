@@ -26,3 +26,10 @@ fn swept_blade_does_not_tunnel_at_24_m_per_s() {
     assert!(c.point[0] > -0.2 && c.point[0] < 0.2);
     assert!((0.5..=1.5).contains(&c.point[1]));
 }
+
+#[test]
+fn swept_blade_that_never_reaches_misses() {
+    let target = seg(0.0, 0.0, 0.0, 2.0, 0.1);
+    assert!(swept_hit(seg(-1.0, 3.0, -1.0, 4.0, 0.05), seg(1.0, 3.0, 1.0, 4.0, 0.05), target).is_none());
+    assert!(swept_hit(seg(-1.0, 0.5, -1.0, 1.5, 0.05), seg(-0.5, 0.5, -0.5, 1.5, 0.05), target).is_none());
+}
