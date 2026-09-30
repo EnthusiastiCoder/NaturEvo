@@ -82,3 +82,11 @@ fn cannot_get_up_with_disabled_hip_or_both_knees() {
     r.set_hp(Part::ThighR, 0.0);
     step(&mut r, 240);
     assert_eq!(r.state(), State::Fallen);
+
+    let mut k = standing(Role::Hero, 3.0, 1.0);
+    k.knock_down();
+    k.set_hp(Part::ShinL, 0.0);
+    k.set_hp(Part::ShinR, 0.0);
+    step(&mut k, 240);
+    assert_eq!(k.state(), State::Fallen, "needs one working knee");
+}
