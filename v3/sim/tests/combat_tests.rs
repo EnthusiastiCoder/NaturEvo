@@ -61,3 +61,20 @@ fn hit_adds_posture_equal_to_impact_times_0_05() {
     let h = hits(&ev)[0];
     approx(d.posture, h.impact * 0.05, 1e-3);
 }
+
+#[test]
+fn knockback_follows_normal_x_and_scales_with_impact() {
+    let kb = |w: f32| {
+        let (mut a, mut d) = duel_pair();
+        let (edge, ty) = torso_edge(&d);
+        blade_sweep(&mut a, edge + 0.1 - w, edge + 0.1, ty - 0.9, ty + 0.9);
+        let ev = resolve_tick(&mut a, &mut d, &arena());
+        let h = hits(&ev)[0].clone();
+        (h.impact, h.knockback)
+    };
+    let (i_slow, k_slow) = kb(0.05); // 3 m/s
+    let (i_fast, k_fast) = kb(0.1); // 6 m/s
+    assert!(k_slow > 0.0, "attacker on the left pushes defender +x");
+    assert!(i_fast > i_slow);
+    assert!(k_fast > k_slow);
+}
