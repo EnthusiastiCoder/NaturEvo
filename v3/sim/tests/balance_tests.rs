@@ -49,3 +49,12 @@ fn destroyed_leg_part_falls_immediately() {
         assert_eq!(r.state(), State::Fallen, "{:?}", p);
     }
 }
+
+#[test]
+fn disabled_leg_part_applies_half_metre_margin_penalty() {
+    let mut r = standing(Role::Hero, 3.0, 1.0);
+    let before = r.balance_margin();
+    r.set_hp(Part::ThighL, 0.0);
+    let after = r.balance_margin();
+    assert!(((before - after) - 0.5).abs() < 0.1, "before {} after {}", before, after);
+}
