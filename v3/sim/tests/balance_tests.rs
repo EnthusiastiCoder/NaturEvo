@@ -39,3 +39,13 @@ fn small_impulse_is_recovered() {
     step(&mut r, 120);
     assert_eq!(r.state(), State::Idle);
 }
+
+#[test]
+fn destroyed_leg_part_falls_immediately() {
+    for p in [Part::ThighL, Part::ShinR, Part::FootL] {
+        let mut r = standing(Role::Hero, 3.0, 1.0);
+        r.set_hp(p, -0.5 * r.max_hp(p));
+        step(&mut r, 2);
+        assert_eq!(r.state(), State::Fallen, "{:?}", p);
+    }
+}
