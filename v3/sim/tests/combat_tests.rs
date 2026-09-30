@@ -78,3 +78,15 @@ fn knockback_follows_normal_x_and_scales_with_impact() {
     assert!(i_fast > i_slow);
     assert!(k_fast > k_slow);
 }
+
+#[test]
+fn hitstop_is_3_to_6_ticks_and_monotonic() {
+    let mut last = 0;
+    for i in 0..=20 {
+        let t = hitstop_ticks(IMPACT_CAP * i as f32 / 20.0);
+        assert!((3..=6).contains(&t), "{} at step {}", t, i);
+        assert!(t >= last);
+        last = t;
+    }
+    assert!(hitstop_ticks(IMPACT_CAP) > hitstop_ticks(0.0));
+}
