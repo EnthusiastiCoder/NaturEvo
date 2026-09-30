@@ -108,3 +108,9 @@ fn impact_is_capped() {
     let ev = resolve_tick(&mut a, &mut d, &arena());
     approx(hits(&ev)[0].impact, IMPACT_CAP, 1e-3);
 }
+
+fn shield_setup(d: &mut mech_sim::robot::Robot, edge: f32, ty: f32) -> f32 {
+    let xp = edge - 0.15;
+    d.set_shield(seg(xp, ty - 0.6, xp, ty + 0.6, 0.05));
+    xp
+}
