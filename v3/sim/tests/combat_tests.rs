@@ -99,3 +99,12 @@ fn hit_event_carries_hitstop_in_range() {
     let ev = resolve_tick(&mut a, &mut d, &arena());
     assert!((3..=6).contains(&hits(&ev)[0].hitstop_ticks));
 }
+
+#[test]
+fn impact_is_capped() {
+    let (mut a, mut d) = duel_pair();
+    let (edge, ty) = torso_edge(&d);
+    blade_sweep(&mut a, edge - 20.0, edge + 0.1, ty - 0.9, ty + 0.9); // absurd speed
+    let ev = resolve_tick(&mut a, &mut d, &arena());
+    approx(hits(&ev)[0].impact, IMPACT_CAP, 1e-3);
+}
