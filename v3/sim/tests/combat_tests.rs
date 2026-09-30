@@ -33,3 +33,21 @@ fn swept_blade_that_never_reaches_misses() {
     assert!(swept_hit(seg(-1.0, 3.0, -1.0, 4.0, 0.05), seg(1.0, 3.0, 1.0, 4.0, 0.05), target).is_none());
     assert!(swept_hit(seg(-1.0, 0.5, -1.0, 1.5, 0.05), seg(-0.5, 0.5, -0.5, 1.5, 0.05), target).is_none());
 }
+
+#[test]
+fn resolve_tick_reports_hit_part_point_and_direction() {
+    let (mut a, mut d) = duel_pair();
+    let (edge, ty) = torso_edge(&d);
+    blade_sweep(&mut a, edge - 0.5, edge + 0.1, ty - 0.9, ty + 0.9);
+    let ev = resolve_tick(&mut a, &mut d, &arena());
+    let h = hits(&ev);
+    assert_eq!(h.len(), 1, "{:?}", ev);
+    let h = h[0];
+    assert_eq!(h.part, Part::Torso);
+    assert!(h.point[0] > edge - 0.3 && h.point[0] < edge + 0.3, "point {:?} edge {}", h.point, edge);
+    assert!((ty - 0.9..=ty + 0.9).contains(&h.point[1]));
+    assert!(h.normal[0] > 0.99 && h.normal[1].abs() < 0.1, "direction = relative velocity at p, got {:?}", h.normal);
+    assert!(h.impact > 0.0 && h.damage > 0.0);
+    approx(h.zone, 1.0, 1e-4);
+    assert!(d.hp_frac(Part::Torso) < 1.0);
+}
