@@ -16,3 +16,18 @@ fn standing_margin_is_positive_and_state_idle() {
     assert!(r.balance_margin() > 0.0, "margin {}", r.balance_margin());
     assert_eq!(r.state(), State::Idle);
 }
+
+#[test]
+fn impulse_pushes_com_beyond_feet_negative_margin_then_fall() {
+    let mut r = standing(Role::Hero, 3.0, 1.0);
+    r.apply_impulse(12.0);
+    let mut min_margin = f32::MAX;
+    let mut fell = false;
+    for _ in 0..120 {
+        r.apply_targets(&STAND_TARGETS, DT);
+        min_margin = min_margin.min(r.balance_margin());
+        fell |= r.state() == State::Fallen;
+    }
+    assert!(min_margin < 0.0, "min margin {}", min_margin);
+    assert!(fell, "margin < 0 for > 0.4 s must fall");
+}
