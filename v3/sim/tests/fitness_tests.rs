@@ -77,3 +77,10 @@ fn pure_turtle_scores_below_a_fighter_that_engages() {
     assert!(turtle.idle_guard_share[0] > 0.9, "turtle holds guard all match: {}", turtle.idle_guard_share[0]);
     assert!(score_match(&turtle, 0) < score_match(&engager, 0));
 }
+
+#[test]
+fn idle_guard_applies_only_without_a_threat_in_the_last_0_6_s() {
+    let idle = Match::new(4, Brain::Fixed(GUARD_TARGETS), Brain::Dummy).run_to_end();
+    let faced = Match::new(4, Brain::Fixed(GUARD_TARGETS), Brain::Scripted).run_to_end();
+    assert!(faced.idle_guard_share[0] < idle.idle_guard_share[0]);
+}
