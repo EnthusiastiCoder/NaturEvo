@@ -59,3 +59,14 @@ fn anti_stalemate_bleed_only_after_tick_450_at_half_hp_per_second() {
         assert!((1.0..=1.5).contains(&lost), "fighter {} lost {} torso hp in 150 ticks (expect ~1.25)", i, lost);
     }
 }
+
+#[test]
+fn guard_pose_held_without_threat_is_idle_guard_and_drains_energy() {
+    let mut m = Match::new(1, Brain::Fixed(GUARD_TARGETS), Brain::Dummy);
+    for _ in 0..300 {
+        m.step();
+    }
+    assert!(m.robots[0].energy < 80.0, "energy {}", m.robots[0].energy);
+    assert!(m.idle_guard_ticks[0] > 270, "idle guard ticks {}", m.idle_guard_ticks[0]);
+    assert_eq!(m.idle_guard_ticks[1], 0);
+}
