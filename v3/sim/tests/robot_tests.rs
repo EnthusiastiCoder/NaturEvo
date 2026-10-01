@@ -79,3 +79,30 @@ fn fk_is_deterministic() {
     }
     assert_eq!(a.com(), b.com());
 }
+
+#[test]
+fn joint_limits_clamp_and_targets_map_to_range() {
+    for j in Joint::ALL {
+        let (lo, hi) = j.limits();
+        assert!(lo < hi);
+        let mut r = Robot::new(Role::Hero);
+        let mut hi_t = STAND_TARGETS;
+        hi_t[j as usize] = 5.0; // out-of-range target is clamped
+        for _ in 0..240 {
+            r.apply_targets(&hi_t, DT);
+        }
+        assert!(r.joint_angle(j) <= hi + 1e-4, "{:?} above limit", j);
+        let mut lo_t = STAND_TARGETS;
+        lo_t[j as usize] = -5.0;
+        for _ in 0..240 {
+            r.apply_targets(&lo_t, DT);
+        }
+        assert!(r.joint_angle(j) >= lo - 1e-4, "{:?} below limit", j);
+    }
+    let (lo, hi) = Joint::ElbowR.limits();
+    approx(lo, 0.0, 1e-4);
+    approx(hi, 140f32.to_radians(), 1e-3);
+    let (slo, shi) = Joint::ShoulderR.limits();
+    approx(slo, (-30f32).to_radians(), 1e-3);
+    approx(shi, 170f32.to_radians(), 1e-3);
+}
