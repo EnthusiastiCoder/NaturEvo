@@ -26,3 +26,10 @@ fn draw_is_minus_6_and_strictly_worse_than_any_loss() {
     let worst_loss = MatchStats { dmg_taken_norm: 1.0, idle_guard: 1.0, passivity: 1.0, ..Default::default() };
     assert!(score_stats(&worst_loss) > score_stats(&draw), "{} vs {}", score_stats(&worst_loss), score_stats(&draw));
 }
+
+#[test]
+fn ko_bonus_is_paid_only_on_ko() {
+    let base = MatchStats { win: true, ..Default::default() };
+    let ko = MatchStats { win: true, ko: true, ..Default::default() };
+    assert!(score_stats(&ko) > score_stats(&base));
+}
