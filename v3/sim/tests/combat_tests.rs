@@ -158,3 +158,19 @@ fn dropped_shield_or_empty_energy_means_no_block_and_hit_lands() {
         let _ = clashes(&ev);
     }
 }
+
+#[test]
+fn head_hit_does_more_damage_than_foot_hit_for_same_swing() {
+    let dmg = |part: Part| {
+        let (mut a, mut d) = duel_pair();
+        let c = d.capsule(part);
+        let (cx, cy) = ((c.a[0] + c.b[0]) * 0.5, (c.a[1] + c.b[1]) * 0.5);
+        let edge = cx - c.r;
+        blade_sweep(&mut a, edge - 0.05, edge + 0.1, cy - 0.15, cy + 0.15);
+        let ev = resolve_tick(&mut a, &mut d, &arena());
+        let h = hits(&ev);
+        assert!(!h.is_empty(), "{:?} not hit", part);
+        h[0].damage / h[0].impact
+    };
+    assert!(dmg(Part::Head) > dmg(Part::FootL));
+}
