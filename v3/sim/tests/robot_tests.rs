@@ -302,3 +302,25 @@ fn posture_decays_after_half_second() {
     }
     approx(r.posture, 55.0, 2.0);
 }
+
+#[test]
+fn posture_100_staggers_with_exposed_damage_window() {
+    let mut r = standing(Role::Hero, 3.0, 1.0);
+    r.posture = 0.0;
+    r.add_posture(100.0);
+    assert_eq!(r.state(), State::Staggered);
+    approx(r.posture, 40.0, 1e-3);
+    let base = Robot::new(Role::Hero).damage_part(Part::Torso, 10.0);
+    let hit = r.clone().damage_part(Part::Torso, 10.0);
+    approx(hit / base, 1.5, 1e-3);
+    assert!(!r.can_act());
+    for _ in 0..40 {
+        r.apply_targets(&STAND_TARGETS, DT);
+    }
+    assert_eq!(r.state(), State::Staggered, "0.8 s = 48 ticks");
+    for _ in 0..15 {
+        r.apply_targets(&STAND_TARGETS, DT);
+    }
+    assert_eq!(r.state(), State::Idle);
+    assert!(r.can_act());
+}
