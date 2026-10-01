@@ -13,3 +13,7 @@ pub fn standing(role: Role, x: f32, facing: f32) -> Robot {
     }
     r
 }
+
+pub fn seg(x1: f32, y1: f32, x2: f32, y2: f32, r: f32) -> Capsule {
+    Capsule { a: [x1, y1], b: [x2, y2], r }
+}
