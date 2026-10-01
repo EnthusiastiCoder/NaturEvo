@@ -85,3 +85,15 @@ fn opponent_points_are_in_own_frame_forward_positive() {
     let x2 = observe(&standing(Role::Hero, 10.0, -1.0), &standing(Role::Monster, 5.0, 1.0), &arena());
     assert!(x2[OPP_POINTS.start] > 0.0, "same when facing left");
 }
+
+#[test]
+fn disabled_head_zeroes_opponent_part_inputs() {
+    let mut a = standing(Role::Hero, 4.0, 1.0);
+    let b = standing(Role::Monster, 9.0, -1.0);
+    let seeing = observe(&a, &b, &arena());
+    assert!(OPP_HP.clone().any(|i| seeing[i] > 0.0));
+    a.set_hp(Part::Head, 0.0);
+    let blind = observe(&a, &b, &arena());
+    assert!(OPP_HP.clone().all(|i| blind[i] == 0.0), "opponent hp inputs zeroed");
+    assert!(OPP_POINTS.clone().all(|i| blind[i] == 0.0), "opponent key points zeroed");
+}
