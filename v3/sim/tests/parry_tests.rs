@@ -45,3 +45,9 @@ fn static_defender_sword_is_a_plain_clash() {
     approx(a.posture, 15.0, 1e-3);
     approx(d.posture, 15.0, 1e-3);
 }
+
+#[test]
+fn defender_blade_moving_away_is_a_plain_clash() {
+    let (mut a, mut d) = setup(-3.0, 0.5);
+    assert_eq!(clashes(&resolve_tick(&mut a, &mut d, &arena())), vec![ClashKind::Clash]);
+}
