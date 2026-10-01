@@ -65,3 +65,14 @@ fn balance_factor_for_kicks_and_stagger() {
     approx(balance_factor(-1.0, 0.0, false), 1.0, 1e-5);
     approx(balance_factor(1.0, 80.0, false), 0.8, 1e-5);
 }
+
+#[test]
+fn required_joints_documented_per_move() {
+    assert_eq!(required_joints(Move::Slash), &[Joint::HipR, Joint::Waist, Joint::ShoulderR, Joint::ElbowR]);
+    assert_eq!(required_joints(Move::Thrust), &[Joint::HipR, Joint::Waist, Joint::ShoulderR, Joint::ElbowR]);
+    assert_eq!(required_joints(Move::ShieldBash), &[Joint::Waist, Joint::ShoulderL, Joint::ElbowL]);
+    assert_eq!(required_joints(Move::Guard), &[Joint::ShoulderL, Joint::ElbowL]);
+    assert_eq!(required_joints(Move::Parry), &[Joint::ShoulderR, Joint::ElbowR, Joint::Waist]);
+    assert_eq!(required_joints(Move::KickR), &[Joint::HipR, Joint::KneeR, Joint::AnkleR]);
+    assert_eq!(required_joints(Move::KickL), &[Joint::HipL, Joint::KneeL, Joint::AnkleL]);
+}
