@@ -36,3 +36,12 @@ fn same_seed_gives_identical_csv() {
     let _ = std::fs::remove_dir_all(d1);
     let _ = std::fs::remove_dir_all(d2);
 }
+
+#[test]
+fn threaded_evaluation_equals_single_thread() {
+    let (d1, c1) = run("thr_1", 1);
+    let (d4, c4) = run("thr_4", 4);
+    assert_eq!(c1, c4);
+    let _ = std::fs::remove_dir_all(d1);
+    let _ = std::fs::remove_dir_all(d4);
+}
