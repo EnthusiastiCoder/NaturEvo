@@ -58,3 +58,14 @@ fn each_fighter_frame_has_13_parts_of_4_integer_cm_values() {
         assert!(j.contains(k), "missing {}", k);
     }
 }
+
+#[test]
+fn events_carry_all_required_fields() {
+    let (j, _) = logged(Brain::Scripted, Brain::Dummy, 3);
+    let hit = object_containing(&j, "\"kind\":\"hit\"").expect("scripted attacker lands at least one hit");
+    for k in ["\"t\":", "\"victim\":", "\"part\":", "\"x\":", "\"y\":", "\"dx\":", "\"dy\":", "\"impact\":", "\"zone\":", "\"dmg\":"] {
+        assert!(hit.contains(k), "hit event missing {} in {}", k, hit);
+    }
+    let stop = object_containing(&j, "\"kind\":\"hitstop\"").expect("hit-stop logged");
+    assert!(stop.contains("\"ticks\":"));
+}
