@@ -29,3 +29,8 @@ fn raw_impact_formula_exact() {
     let i = raw_impact(25.0, 2.0, 0.8, 0.9, 0.875, 1.0);
     approx(i, 0.5 * 25.0 * 4.0 * 0.9 * 0.9 * 0.875, 1e-3);
 }
+
+#[test]
+fn raw_impact_is_capped() {
+    approx(raw_impact(1000.0, 50.0, 1.0, 1.0, 1.0, 1.0), IMPACT_CAP, 1e-3);
+}
