@@ -129,3 +129,11 @@ fn recurrent_state_matters_and_reset_restores_behaviour() {
     n.reset();
     assert_eq!(n.forward(&x), first);
 }
+
+#[test]
+fn different_weights_give_different_outputs() {
+    let a = Genome::random(Role::Hero, &mut Rng::new(1));
+    let b = Genome::random(Role::Hero, &mut Rng::new(2));
+    let x = [0.5f32; N_IN];
+    assert_ne!(Net::from_genome(&a).forward(&x), Net::from_genome(&b).forward(&x));
+}
