@@ -17,3 +17,12 @@ fn score_formula() {
     // 4 + 3*0.5 - 2.5*0.2 + 2*0.5 - 1*0.1 - 1*0.2 + 0.5*0.4
     approx(score_stats(&s), 4.0 + 1.5 - 0.5 + 1.0 - 0.1 - 0.2 + 0.2, 1e-4);
 }
+
+#[test]
+fn draw_is_minus_6_and_strictly_worse_than_any_loss() {
+    assert_eq!(DRAW_SCORE, -6.0);
+    let draw = MatchStats { draw: true, dmg_dealt_norm: 1.0, ..Default::default() };
+    assert_eq!(score_stats(&draw), -6.0, "draw ignores every other term");
+    let worst_loss = MatchStats { dmg_taken_norm: 1.0, idle_guard: 1.0, passivity: 1.0, ..Default::default() };
+    assert!(score_stats(&worst_loss) > score_stats(&draw), "{} vs {}", score_stats(&worst_loss), score_stats(&draw));
+}
