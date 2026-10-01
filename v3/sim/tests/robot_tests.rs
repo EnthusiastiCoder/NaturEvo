@@ -287,3 +287,18 @@ fn zero_energy_caps_torque_and_deactivates_shield() {
     }
     assert!(!r.shield_active());
 }
+
+#[test]
+fn posture_decays_after_half_second() {
+    let mut r = standing(Role::Hero, 3.0, 1.0);
+    r.posture = 0.0;
+    r.add_posture(70.0);
+    for _ in 0..28 {
+        r.apply_targets(&STAND_TARGETS, DT);
+    }
+    approx(r.posture, 70.0, 0.5);
+    for _ in 0..62 {
+        r.apply_targets(&STAND_TARGETS, DT); // ~1.0 s of decay at 15/s
+    }
+    approx(r.posture, 55.0, 2.0);
+}
