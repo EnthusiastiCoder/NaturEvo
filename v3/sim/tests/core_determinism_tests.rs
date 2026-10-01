@@ -101,3 +101,18 @@ fn json_roundtrip_exact_and_rejects_garbage() {
     assert!(Genome::from_json("not json").is_err());
     assert!(Genome::from_json("{}").is_err());
 }
+
+#[test]
+fn forward_is_deterministic_bounded_and_13_wide() {
+    let g = Genome::random(Role::Hero, &mut Rng::new(3));
+    let (mut n1, mut n2) = (Net::from_genome(&g), Net::from_genome(&g));
+    let mut r = Rng::new(10);
+    for _ in 0..100 {
+        let mut x = [0.0f32; N_IN];
+        for v in x.iter_mut() { *v = r.range(-1.0, 1.0); }
+        let (a, b) = (n1.forward(&x), n2.forward(&x));
+        assert_eq!(a.len(), 13);
+        assert_eq!(a, b);
+        assert!(a.iter().all(|v| v.is_finite() && (-1.0..=1.0).contains(v)));
+    }
+}
