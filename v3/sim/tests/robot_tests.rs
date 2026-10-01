@@ -223,3 +223,14 @@ fn weapon_and_shield_are_dropped_with_the_forearm() {
     r.set_hp(Part::FArmL, -0.5 * r.max_hp(Part::FArmL));
     assert!(!r.has_shield());
 }
+
+#[test]
+fn destroyed_head_or_torso_is_ko() {
+    for p in [Part::Head, Part::Torso] {
+        let mut r = standing(Role::Hero, 3.0, 1.0);
+        assert_ne!(r.state(), State::Ko);
+        r.set_hp(p, -0.5 * r.max_hp(p));
+        r.apply_targets(&STAND_TARGETS, DT);
+        assert_eq!(r.state(), State::Ko, "{:?}", p);
+    }
+}
