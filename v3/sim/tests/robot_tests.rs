@@ -3,3 +3,11 @@ mod common;
 use common::standing;
 use mech_sim::config::IMPACT_CAP;
 use mech_sim::robot::{Joint, Part, Robot, Role, State, DT, GUARD_TARGETS, STAND_TARGETS};
+
+fn approx(a: f32, b: f32, tol: f32) {
+    assert!((a - b).abs() <= tol, "{} vs {}", a, b);
+}
+fn set_frac(r: &mut Robot, p: Part, f: f32) {
+    let m = r.max_hp(p);
+    r.set_hp(p, m * f);
+}
