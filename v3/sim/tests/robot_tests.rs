@@ -272,3 +272,18 @@ fn fast_motors_cost_energy_idle_regenerates() {
     }
     approx(i.energy, 58.0, 1.5);
 }
+
+#[test]
+fn zero_energy_caps_torque_and_deactivates_shield() {
+    let mut z = Robot::new(Role::Hero);
+    z.energy = 0.0;
+    for j in Joint::ALL {
+        assert!(z.torque_scale(j) <= 0.3 + 1e-5, "{:?}", j);
+    }
+    let mut r = standing(Role::Hero, 3.0, 1.0);
+    r.energy = 0.0;
+    for _ in 0..10 {
+        r.apply_targets(&GUARD_TARGETS, DT);
+    }
+    assert!(!r.shield_active());
+}
