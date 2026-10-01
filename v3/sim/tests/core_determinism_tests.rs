@@ -26,3 +26,15 @@ fn rng_f32_is_top_24_bits_in_unit_interval() {
         assert!((-2.0..3.0).contains(&w));
     }
 }
+
+#[test]
+fn rng_same_seed_same_stream_different_seed_differs() {
+    let (mut a, mut b, mut c) = (Rng::new(5), Rng::new(5), Rng::new(6));
+    let (va, vb, vc): (Vec<u64>, Vec<u64>, Vec<u64>) = (
+        (0..20).map(|_| a.next_u64()).collect(),
+        (0..20).map(|_| b.next_u64()).collect(),
+        (0..20).map(|_| c.next_u64()).collect(),
+    );
+    assert_eq!(va, vb);
+    assert_ne!(va, vc);
+}
