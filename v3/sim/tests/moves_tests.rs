@@ -84,3 +84,14 @@ fn healthy_robot_can_do_everything() {
         assert!(move_possible(&r, m), "{:?}", m);
     }
 }
+
+#[test]
+fn destroyed_right_shoulder_removes_sword_moves_but_not_kick() {
+    let mut r = Robot::new(Role::Hero);
+    r.set_hp(Part::UArmR, -0.5 * r.max_hp(Part::UArmR));
+    assert!(!move_possible(&r, Move::Slash));
+    assert!(!move_possible(&r, Move::Thrust));
+    assert!(!move_possible(&r, Move::Parry));
+    assert!(move_possible(&r, Move::KickR));
+    assert!(move_possible(&r, Move::Guard));
+}
