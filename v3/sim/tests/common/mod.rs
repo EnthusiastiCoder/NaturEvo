@@ -29,3 +29,8 @@ pub fn duel_pair() -> (Robot, Robot) {
     d.set_shield(seg(9.0, 1.0, 9.0, 2.2, 0.05));
     (a, d)
 }
+
+/// Vertical attacker blade sweeping from `x_from` to `x_to` over one tick, covering [y_lo, y_hi].
+pub fn blade_sweep(a: &mut Robot, x_from: f32, x_to: f32, y_lo: f32, y_hi: f32) {
+    a.set_sword(seg(x_from, y_lo, x_from, y_hi, 0.05), seg(x_to, y_lo, x_to, y_hi, 0.05));
+}
