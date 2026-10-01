@@ -46,3 +46,14 @@ fn sizes_are_v3_sizes() {
     assert!((90..=120).contains(&N_IN), "~100 inputs, got {}", N_IN);
     assert!((4000..=7000).contains(&N_PARAMS), "~5k weights, got {}", N_PARAMS);
 }
+
+#[test]
+fn random_genome_is_seeded_and_sized() {
+    let a = Genome::random(Role::Hero, &mut Rng::new(1));
+    let b = Genome::random(Role::Hero, &mut Rng::new(1));
+    let c = Genome::random(Role::Hero, &mut Rng::new(2));
+    assert_eq!(a.weights, b.weights);
+    assert_ne!(a.weights, c.weights);
+    assert_eq!(a.weights.len(), N_PARAMS);
+    assert!(a.weights.iter().all(|w| w.is_finite()));
+}
