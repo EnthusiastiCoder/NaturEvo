@@ -37,3 +37,24 @@ fn frame_count_is_ticks_over_two() {
     assert_eq!(ticks, 900);
     assert_eq!(j.matches("\"f\":[").count(), 450);
 }
+
+#[test]
+fn each_fighter_frame_has_13_parts_of_4_integer_cm_values() {
+    let (j, _) = logged(Brain::Dummy, Brain::Dummy, 1);
+    assert_eq!(j.matches("\"parts\":[[").count(), 900 + 0, "2 fighters x 450 frames (the header parts list is names)");
+    let at = j.find("\"parts\":[[").unwrap() + "\"parts\":[".len();
+    let end = at + j[at..].find("]]").unwrap() + 2;
+    let body = &j[at + 1..end - 1]; // strip outer brackets
+    let groups: Vec<&str> = body.split("],[").map(|g| g.trim_matches(|c| c == '[' || c == ']')).collect();
+    assert_eq!(groups.len(), 13);
+    for g in groups {
+        let nums: Vec<&str> = g.split(',').collect();
+        assert_eq!(nums.len(), 4, "{}", g);
+        for n in nums {
+            assert!(n.parse::<i32>().is_ok(), "not an integer cm value: {}", n);
+        }
+    }
+    for k in ["\"sword\":[", "\"shield\":[", "\"hp\":[", "\"energy\":", "\"posture\":", "\"state\":\"idle\"", "\"fx\":", "\"facing\":"] {
+        assert!(j.contains(k), "missing {}", k);
+    }
+}
