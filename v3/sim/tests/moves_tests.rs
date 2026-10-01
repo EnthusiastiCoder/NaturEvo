@@ -22,3 +22,10 @@ fn in_order_chain_gives_at_least_1_5x_impact_of_reversed() {
     assert!(good < IMPACT_CAP, "pick inputs below the cap");
     assert!(good / bad >= 1.5, "{} / {}", good, bad);
 }
+
+#[test]
+fn raw_impact_formula_exact() {
+    // 0.5 * m_eff * v^2 * (0.5 + 0.5 A) * Tm * H * B
+    let i = raw_impact(25.0, 2.0, 0.8, 0.9, 0.875, 1.0);
+    approx(i, 0.5 * 25.0 * 4.0 * 0.9 * 0.9 * 0.875, 1e-3);
+}
