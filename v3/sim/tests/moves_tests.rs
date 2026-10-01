@@ -103,3 +103,19 @@ fn disabled_opposite_leg_makes_kick_impossible() {
     assert!(!move_possible(&r, Move::KickR), "right kick needs the left leg grounded");
     assert!(!move_possible(&r, Move::Dodge), "dodge needs both legs");
 }
+
+#[test]
+fn guard_needs_shield_and_energy_and_sword_moves_need_the_sword() {
+    let mut r = Robot::new(Role::Hero);
+    r.energy = 0.0;
+    assert!(!move_possible(&r, Move::Guard));
+    let mut s = Robot::new(Role::Hero);
+    s.set_hp(Part::FArmL, -0.5 * s.max_hp(Part::FArmL));
+    assert!(!move_possible(&s, Move::Guard));
+    assert!(!move_possible(&s, Move::ShieldBash));
+    assert!(move_possible(&s, Move::Slash));
+    let mut t = Robot::new(Role::Hero);
+    t.set_hp(Part::FArmR, -0.5 * t.max_hp(Part::FArmR));
+    assert!(!move_possible(&t, Move::Slash));
+    assert!(!move_possible(&t, Move::Parry));
+}
