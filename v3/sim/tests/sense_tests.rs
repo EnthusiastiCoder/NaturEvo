@@ -49,3 +49,28 @@ fn inputs_stay_in_range_under_fuzzed_states() {
         }
     }
 }
+
+#[test]
+fn mirrored_facing_gives_identical_inputs() {
+    let pose = {
+        let mut t = STAND_TARGETS;
+        t[Joint::ShoulderR as usize] = 0.7;
+        t[Joint::ElbowL as usize] = 0.4;
+        t[Joint::Waist as usize] = -0.3;
+        t
+    };
+    let mk = |x: f32, f: f32| {
+        let mut r = standing(Role::Hero, x, f);
+        for _ in 0..20 {
+            r.apply_targets(&pose, DT);
+        }
+        r
+    };
+    let (a, b) = (mk(4.0, 1.0), mk(9.0, -1.0));
+    let (am, bm) = (mk(14.0 - 4.0, -1.0), mk(14.0 - 9.0, 1.0));
+    let x1 = observe(&a, &b, &arena());
+    let x2 = observe(&am, &bm, &arena());
+    for (i, (p, q)) in x1.iter().zip(x2.iter()).enumerate() {
+        assert!((p - q).abs() < 1e-4, "input {} differs: {} vs {}", i, p, q);
+    }
+}
