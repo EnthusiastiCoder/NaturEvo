@@ -41,3 +41,21 @@ fn match_ends_with_ko_or_timeout() {
         assert_ne!(r.outcome, Outcome::Draw);
     }
 }
+
+#[test]
+fn anti_stalemate_bleed_only_after_tick_450_at_half_hp_per_second() {
+    let mut m = Match::new(1, Brain::Dummy, Brain::Dummy);
+    let max = m.robots[0].max_hp(Part::Torso);
+    for _ in 0..440 {
+        m.step();
+    }
+    assert_eq!(m.robots[0].hp(Part::Torso), max);
+    assert_eq!(m.robots[1].hp(Part::Torso), max);
+    while m.tick < 600 {
+        m.step();
+    }
+    for i in 0..2 {
+        let lost = max - m.robots[i].hp(Part::Torso);
+        assert!((1.0..=1.5).contains(&lost), "fighter {} lost {} torso hp in 150 ticks (expect ~1.25)", i, lost);
+    }
+}
