@@ -16,3 +16,14 @@ fn run(name: &str, threads: usize) -> (PathBuf, String) {
     let csv = std::fs::read_to_string(dir.join("training.csv")).expect("training.csv");
     (dir, csv)
 }
+
+#[test]
+fn writes_csv_run_json_and_champions() {
+    let (dir, csv) = run("files", 1);
+    assert!(csv.lines().count() >= 4, "header + 3 generations, got {}", csv.lines().count());
+    assert!(dir.join("run.json").exists());
+    let names: Vec<String> = std::fs::read_dir(&dir).unwrap().map(|e| e.unwrap().file_name().to_string_lossy().to_string()).collect();
+    assert!(names.iter().any(|n| n.starts_with("champion_hero_gen_") && n.ends_with(".json")), "{:?}", names);
+    assert!(names.iter().any(|n| n.starts_with("champion_monster_gen_") && n.ends_with(".json")), "{:?}", names);
+    let _ = std::fs::remove_dir_all(dir);
+}
