@@ -73,3 +73,18 @@ fn mutate_rate_zero_is_identity_and_clamps() {
     assert_eq!(m1.weights, m2.weights);
     assert_ne!(m1.weights, base.weights);
 }
+
+#[test]
+fn crossover_takes_each_gene_from_a_parent_and_is_seeded() {
+    let a = Genome::random(Role::Hero, &mut Rng::new(1));
+    let mut b = Genome::random(Role::Hero, &mut Rng::new(2));
+    b.generation = 4;
+    let c1 = Genome::crossover(&a, &b, &mut Rng::new(9));
+    let c2 = Genome::crossover(&a, &b, &mut Rng::new(9));
+    assert_eq!(c1.weights, c2.weights);
+    assert_eq!(c1.weights.len(), N_PARAMS);
+    assert!(c1.weights.iter().enumerate().all(|(i, w)| *w == a.weights[i] || *w == b.weights[i]));
+    assert!(c1.weights.iter().enumerate().any(|(i, w)| *w == a.weights[i] && a.weights[i] != b.weights[i]));
+    assert!(c1.weights.iter().enumerate().any(|(i, w)| *w == b.weights[i] && a.weights[i] != b.weights[i]));
+    assert_eq!(c1.generation, 5, "max(parent generations) + 1");
+}
