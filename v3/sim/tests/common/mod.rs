@@ -3,3 +3,13 @@
 use mech_sim::arena::Arena;
 use mech_sim::combat::{CombatEvent, ClashKind, HitEvent};
 use mech_sim::robot::{Capsule, Part, Robot, Role, DT, STAND_TARGETS};
+
+pub fn standing(role: Role, x: f32, facing: f32) -> Robot {
+    let mut r = Robot::new(role);
+    r.x = x;
+    r.facing = facing;
+    for _ in 0..10 {
+        r.apply_targets(&STAND_TARGETS, DT);
+    }
+    r
+}
