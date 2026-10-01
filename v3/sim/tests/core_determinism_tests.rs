@@ -116,3 +116,16 @@ fn forward_is_deterministic_bounded_and_13_wide() {
         assert!(a.iter().all(|v| v.is_finite() && (-1.0..=1.0).contains(v)));
     }
 }
+
+#[test]
+fn recurrent_state_matters_and_reset_restores_behaviour() {
+    let g = Genome::random(Role::Hero, &mut Rng::new(4));
+    let mut n = Net::from_genome(&g);
+    let x = [0.3f32; N_IN];
+    let first = n.forward(&x);
+    for _ in 0..20 { n.forward(&[-0.7f32; N_IN]); }
+    let drifted = n.forward(&x);
+    assert_ne!(first, drifted, "context units carry state");
+    n.reset();
+    assert_eq!(n.forward(&x), first);
+}
