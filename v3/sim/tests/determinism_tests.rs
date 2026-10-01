@@ -13,3 +13,10 @@ fn run(seed: u64, gseed: u64) -> String {
     m.run_to_end();
     fight_json(&m)
 }
+
+#[test]
+fn identical_seed_gives_byte_identical_logs() {
+    for s in [1u64, 2, 3] {
+        assert_eq!(run(s, 100 + s), run(s, 100 + s));
+    }
+}
