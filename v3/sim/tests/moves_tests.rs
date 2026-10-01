@@ -76,3 +76,11 @@ fn required_joints_documented_per_move() {
     assert_eq!(required_joints(Move::KickR), &[Joint::HipR, Joint::KneeR, Joint::AnkleR]);
     assert_eq!(required_joints(Move::KickL), &[Joint::HipL, Joint::KneeL, Joint::AnkleL]);
 }
+
+#[test]
+fn healthy_robot_can_do_everything() {
+    let r = Robot::new(Role::Hero);
+    for m in [Move::Slash, Move::Thrust, Move::ShieldBash, Move::KickR, Move::KickL, Move::Guard, Move::Parry, Move::Dodge] {
+        assert!(move_possible(&r, m), "{:?}", m);
+    }
+}
