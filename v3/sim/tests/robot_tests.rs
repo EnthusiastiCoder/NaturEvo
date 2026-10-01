@@ -200,3 +200,16 @@ fn destroyed_at_minus_half_max_detaches_distal_children_and_mass() {
     approx(m0 - r.total_mass(), 130.0, 1e-3);
     assert_ne!(r.com(), c0);
 }
+
+#[test]
+fn overkill_accumulates_into_destruction() {
+    let mut r = Robot::new(Role::Hero);
+    for _ in 0..200 {
+        r.damage_part(Part::FootR, IMPACT_CAP);
+        if r.is_destroyed(Part::FootR) {
+            break;
+        }
+    }
+    assert!(r.is_destroyed(Part::FootR));
+    assert!(r.hp(Part::FootR) <= -0.5 * r.max_hp(Part::FootR) + 1e-3);
+}
