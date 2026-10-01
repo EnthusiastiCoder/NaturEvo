@@ -7,3 +7,12 @@ fn tmp(name: &str) -> PathBuf {
     let _ = std::fs::remove_dir_all(&p);
     p
 }
+
+fn run(name: &str, threads: usize) -> (PathBuf, String) {
+    let dir = tmp(name);
+    let mut cfg = TrainConfig::new(7, 8, 3, dir.clone());
+    cfg.threads = threads;
+    train(&cfg).expect("train");
+    let csv = std::fs::read_to_string(dir.join("training.csv")).expect("training.csv");
+    (dir, csv)
+}
