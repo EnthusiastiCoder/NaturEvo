@@ -46,3 +46,11 @@ fn scripted_attacker_against_a_held_guard_records_blocked() {
     assert!(r.defence[1].block >= 1, "{:?}", r.defence[1]);
     assert!(m.threats.iter().any(|t| t.resolution == Some(Resolution::Blocked)));
 }
+
+#[test]
+fn standing_dummy_takes_hits_not_blocks() {
+    let mut m = Match::new(11, Brain::Scripted, Brain::Dummy);
+    let r = m.run_to_end();
+    assert!(r.defence[1].hit >= 1);
+    assert_eq!(r.defence[1].block + r.defence[1].parry, 0);
+}
