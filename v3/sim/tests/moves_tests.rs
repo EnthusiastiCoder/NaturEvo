@@ -56,3 +56,12 @@ fn alignment_is_clamped_cosine() {
     approx(alignment([1.0, 1.0], [1.0, 0.0]), 0.70710678, 1e-4);
     approx(alignment([-2.0, 0.0], [1.0, 0.0]), 0.0, 1e-6);
 }
+
+#[test]
+fn balance_factor_for_kicks_and_stagger() {
+    approx(balance_factor(0.1, 0.0, true), 0.7, 1e-5);
+    approx(balance_factor(-1.0, 0.0, true), 0.5, 1e-5);
+    approx(balance_factor(1.0, 0.0, true), 1.0, 1e-5);
+    approx(balance_factor(-1.0, 0.0, false), 1.0, 1e-5);
+    approx(balance_factor(1.0, 80.0, false), 0.8, 1e-5);
+}
