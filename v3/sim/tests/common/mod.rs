@@ -39,3 +39,11 @@ pub fn torso_center(d: &Robot) -> [f32; 2] {
     let c = d.capsule(Part::Torso);
     [(c.a[0] + c.b[0]) * 0.5, (c.a[1] + c.b[1]) * 0.5]
 }
+
+pub fn hits(ev: &[CombatEvent]) -> Vec<&HitEvent> {
+    ev.iter().filter_map(|e| if let CombatEvent::Hit(h) = e { Some(h) } else { None }).collect()
+}
+pub fn clashes(ev: &[CombatEvent]) -> Vec<ClashKind> {
+    ev.iter().filter_map(|e| if let CombatEvent::Clash { kind, .. } = e { Some(*kind) } else { None }).collect()
+}
+pub fn arena() -> Arena { Arena::flat(14.0) }
