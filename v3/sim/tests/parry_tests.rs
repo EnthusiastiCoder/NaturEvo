@@ -34,3 +34,14 @@ fn defender_blade_moving_toward_attacker_deflects() {
     approx(a.posture, 25.0, 1e-3); // 25 x quality
     approx(d.posture, 5.0, 1e-3);
 }
+
+#[test]
+fn static_defender_sword_is_a_plain_clash() {
+    let (mut a, mut d) = setup(0.0, 0.0);
+    let ev = resolve_tick(&mut a, &mut d, &arena());
+    assert_eq!(clashes(&ev), vec![ClashKind::Clash], "{:?}", ev);
+    approx(a.sword_ang_vel, 5.0, 1e-3); // lose 50% speed
+    approx(d.sword_ang_vel, 4.0, 1e-3);
+    approx(a.posture, 15.0, 1e-3);
+    approx(d.posture, 15.0, 1e-3);
+}
