@@ -59,3 +59,13 @@ fn credit_is_halved_when_a_follow_up_hit_lands_within_half_a_second() {
     approx(defence_credit(&[th(Resolution::Parried, IMPACT_REF, true)]), 0.5, 1e-4);
     approx(defence_credit(&[th(Resolution::Blocked, IMPACT_REF, true)]), 0.35, 1e-4);
 }
+
+#[test]
+fn zone_weights_head_over_core_over_limbs() {
+    approx(zone_weight(Part::Head), 1.5, 1e-5);
+    approx(zone_weight(Part::Torso), 1.0, 1e-5);
+    approx(zone_weight(Part::Pelvis), 1.0, 1e-5);
+    for p in [Part::UArmL, Part::FArmR, Part::ThighL, Part::ShinR, Part::FootL] {
+        approx(zone_weight(p), 0.7, 1e-5);
+    }
+}
