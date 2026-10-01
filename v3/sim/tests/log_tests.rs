@@ -30,3 +30,10 @@ fn header_and_result_fields() {
         assert!(j.contains(&format!("\"{}\"", name)), "part name {}", name);
     }
 }
+
+#[test]
+fn frame_count_is_ticks_over_two() {
+    let (j, ticks) = logged(Brain::Dummy, Brain::Dummy, 1);
+    assert_eq!(ticks, 900);
+    assert_eq!(j.matches("\"f\":[").count(), 450);
+}
