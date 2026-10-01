@@ -74,3 +74,14 @@ fn mirrored_facing_gives_identical_inputs() {
         assert!((p - q).abs() < 1e-4, "input {} differs: {} vs {}", i, p, q);
     }
 }
+
+#[test]
+fn opponent_points_are_in_own_frame_forward_positive() {
+    let a = standing(Role::Hero, 4.0, 1.0);
+    let b = standing(Role::Monster, 9.0, -1.0);
+    let x = observe(&a, &b, &arena());
+    let first_x = x[OPP_POINTS.start];
+    assert!(first_x > 0.0, "opponent head is in front of me (+x), got {}", first_x);
+    let x2 = observe(&standing(Role::Hero, 10.0, -1.0), &standing(Role::Monster, 5.0, 1.0), &arena());
+    assert!(x2[OPP_POINTS.start] > 0.0, "same when facing left");
+}
