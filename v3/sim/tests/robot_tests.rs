@@ -234,3 +234,19 @@ fn destroyed_head_or_torso_is_ko() {
         assert_eq!(r.state(), State::Ko, "{:?}", p);
     }
 }
+
+#[test]
+fn guard_drains_energy_about_5_per_second() {
+    let mut r = standing(Role::Hero, 3.0, 1.0);
+    r.energy = 100.0;
+    for _ in 0..30 {
+        r.apply_targets(&GUARD_TARGETS, DT);
+    }
+    assert!(r.guard_raised());
+    let e = r.energy;
+    for _ in 0..60 {
+        r.apply_targets(&GUARD_TARGETS, DT);
+    }
+    let drop = e - r.energy;
+    assert!((4.0..=6.0).contains(&drop), "guard drains ~5/s, got {}", drop);
+}
