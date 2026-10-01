@@ -33,3 +33,14 @@ fn ko_bonus_is_paid_only_on_ko() {
     let ko = MatchStats { win: true, ko: true, ..Default::default() };
     assert!(score_stats(&ko) > score_stats(&base));
 }
+
+#[test]
+fn defence_credit_values_per_resolution() {
+    approx(defence_credit(&[th(Resolution::Parried, IMPACT_REF, false)]), 1.0, 1e-4);
+    approx(defence_credit(&[th(Resolution::Parried, IMPACT_REF * 0.5, false)]), 0.5, 1e-4);
+    approx(defence_credit(&[th(Resolution::Parried, IMPACT_REF * 5.0, false)]), 1.0, 1e-4);
+    approx(defence_credit(&[th(Resolution::Blocked, IMPACT_REF, false)]), 0.7, 1e-4);
+    approx(defence_credit(&[th(Resolution::Dodged, IMPACT_REF, false)]), 0.7, 1e-4);
+    assert_eq!(defence_credit(&[th(Resolution::Hit, IMPACT_REF, false)]), 0.0);
+    assert_eq!(defence_credit(&[th(Resolution::Miss, IMPACT_REF, false)]), 0.0);
+}
