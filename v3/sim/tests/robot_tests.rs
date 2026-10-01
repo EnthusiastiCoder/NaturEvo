@@ -40,3 +40,26 @@ fn standing_mass_and_height() {
         .fold(f32::MAX, f32::min);
     approx(bottom, 0.0, 0.1);
 }
+
+#[test]
+fn part_masses_hp_and_zones_match_table() {
+    let r = Robot::new(Role::Hero);
+    let rows = [
+        (Part::Head, 40.0, 60.0, 0.30, 1.6),
+        (Part::Torso, 300.0, 220.0, 0.45, 1.0),
+        (Part::Pelvis, 180.0, 140.0, 0.40, 1.0),
+        (Part::UArmL, 70.0, 80.0, 0.30, 0.8),
+        (Part::FArmR, 50.0, 70.0, 0.30, 1.2),
+        (Part::ThighL, 120.0, 110.0, 0.35, 0.9),
+        (Part::ShinR, 90.0, 90.0, 0.30, 1.2),
+        (Part::FootL, 40.0, 60.0, 0.30, 0.6),
+    ];
+    for (p, mass, hp, arm, zone) in rows {
+        approx(r.part_mass(p), mass, 1e-3);
+        approx(r.max_hp(p), hp, 1e-3);
+        approx(r.armour(p), arm, 1e-4);
+        approx(r.zone_mult(p), zone, 1e-4);
+    }
+    assert!(r.zone_mult(Part::Head) > r.zone_mult(Part::Torso));
+    assert!(r.zone_mult(Part::Torso) > r.zone_mult(Part::FootL));
+}
