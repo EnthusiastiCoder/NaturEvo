@@ -57,3 +57,19 @@ fn random_genome_is_seeded_and_sized() {
     assert_eq!(a.weights.len(), N_PARAMS);
     assert!(a.weights.iter().all(|w| w.is_finite()));
 }
+
+#[test]
+fn mutate_rate_zero_is_identity_and_clamps() {
+    let base = Genome::random(Role::Hero, &mut Rng::new(3));
+    let mut same = base.clone();
+    same.mutate(&mut Rng::new(1), 0.0, 0.5);
+    assert_eq!(same.weights, base.weights);
+    let mut wild = base.clone();
+    wild.mutate(&mut Rng::new(1), 1.0, 1000.0);
+    assert!(wild.weights.iter().all(|w| w.abs() <= W_CLAMP));
+    let (mut m1, mut m2) = (base.clone(), base.clone());
+    m1.mutate(&mut Rng::new(77), 0.3, 0.1);
+    m2.mutate(&mut Rng::new(77), 0.3, 0.1);
+    assert_eq!(m1.weights, m2.weights);
+    assert_ne!(m1.weights, base.weights);
+}
