@@ -53,3 +53,9 @@ fn credit_is_paid_once_per_threat_and_capped_at_6_threats() {
     let ten = defence_credit(&vec![th(Resolution::Parried, IMPACT_REF, false); 10]);
     approx(ten, 6.0, 1e-4);
 }
+
+#[test]
+fn credit_is_halved_when_a_follow_up_hit_lands_within_half_a_second() {
+    approx(defence_credit(&[th(Resolution::Parried, IMPACT_REF, true)]), 0.5, 1e-4);
+    approx(defence_credit(&[th(Resolution::Blocked, IMPACT_REF, true)]), 0.35, 1e-4);
+}
