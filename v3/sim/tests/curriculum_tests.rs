@@ -21,3 +21,10 @@ fn hof_only_in_stage_c() {
     assert!(!hof_enabled(Stage::B));
     assert!(hof_enabled(Stage::C));
 }
+
+#[test]
+fn opponents_per_individual_is_2_in_a_then_3() {
+    assert_eq!(opponents_per_individual(Stage::A), 2);
+    assert_eq!(opponents_per_individual(Stage::B), 3);
+    assert_eq!(opponents_per_individual(Stage::C), 3);
+}
