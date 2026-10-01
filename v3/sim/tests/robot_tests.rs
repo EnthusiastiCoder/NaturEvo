@@ -130,3 +130,11 @@ fn torque_scale_follows_hp() {
     approx(r.torque_scale(Joint::ElbowR), 1.0, 1e-5);
     approx(r.hp_frac(Part::FArmR), 0.6, 1e-5);
 }
+
+#[test]
+fn armour_eff_and_tankiness() {
+    let mut r = Robot::new(Role::Hero);
+    approx(r.armour_eff(Part::Torso), 0.45, 1e-5);
+    set_frac(&mut r, Part::Torso, 0.25);
+    approx(r.armour_eff(Part::Torso), 0.45 * 0.55, 1e-4);
+}
