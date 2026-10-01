@@ -213,3 +213,13 @@ fn overkill_accumulates_into_destruction() {
     assert!(r.is_destroyed(Part::FootR));
     assert!(r.hp(Part::FootR) <= -0.5 * r.max_hp(Part::FootR) + 1e-3);
 }
+
+#[test]
+fn weapon_and_shield_are_dropped_with_the_forearm() {
+    let mut r = Robot::new(Role::Hero);
+    assert!(r.has_sword() && r.has_shield());
+    r.set_hp(Part::FArmR, -0.5 * r.max_hp(Part::FArmR));
+    assert!(!r.has_sword() && r.has_shield());
+    r.set_hp(Part::FArmL, -0.5 * r.max_hp(Part::FArmL));
+    assert!(!r.has_shield());
+}
