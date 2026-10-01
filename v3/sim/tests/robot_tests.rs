@@ -264,3 +264,11 @@ fn fast_motors_cost_energy_idle_regenerates() {
         s.apply_targets(&t, DT);
     }
     assert!(s.energy < 95.0, "fast motors cost energy, got {}", s.energy);
+
+    let mut i = standing(Role::Hero, 3.0, 1.0);
+    i.energy = 50.0;
+    for _ in 0..60 {
+        i.apply_targets(&STAND_TARGETS, DT);
+    }
+    approx(i.energy, 58.0, 1.5);
+}
