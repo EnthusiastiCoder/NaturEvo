@@ -34,3 +34,8 @@ pub fn duel_pair() -> (Robot, Robot) {
 pub fn blade_sweep(a: &mut Robot, x_from: f32, x_to: f32, y_lo: f32, y_hi: f32) {
     a.set_sword(seg(x_from, y_lo, x_from, y_hi, 0.05), seg(x_to, y_lo, x_to, y_hi, 0.05));
 }
+
+pub fn torso_center(d: &Robot) -> [f32; 2] {
+    let c = d.capsule(Part::Torso);
+    [(c.a[0] + c.b[0]) * 0.5, (c.a[1] + c.b[1]) * 0.5]
+}
