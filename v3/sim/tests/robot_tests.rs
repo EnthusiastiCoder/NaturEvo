@@ -191,3 +191,12 @@ fn destroyed_at_minus_half_max_detaches_distal_children_and_mass() {
     r.set_hp(Part::FootR, -0.5 * r.max_hp(Part::FootR));
     assert!(r.is_destroyed(Part::FootR));
     approx(m0 - r.total_mass(), 40.0, 1e-3);
+
+    let mut r = Robot::new(Role::Hero);
+    let (m0, c0) = (r.total_mass(), r.com());
+    r.set_hp(Part::ShinL, -0.5 * r.max_hp(Part::ShinL));
+    assert!(r.is_destroyed(Part::ShinL));
+    assert!(r.is_detached(Part::ShinL) && r.is_detached(Part::FootL), "distal child detaches too");
+    approx(m0 - r.total_mass(), 130.0, 1e-3);
+    assert_ne!(r.com(), c0);
+}
