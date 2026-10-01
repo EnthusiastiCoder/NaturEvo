@@ -183,3 +183,11 @@ fn disabled_at_zero_hp_joint_goes_limp() {
         "limp joint ignores target"
     );
 }
+
+#[test]
+fn destroyed_at_minus_half_max_detaches_distal_children_and_mass() {
+    let mut r = Robot::new(Role::Hero);
+    let m0 = r.total_mass();
+    r.set_hp(Part::FootR, -0.5 * r.max_hp(Part::FootR));
+    assert!(r.is_destroyed(Part::FootR));
+    approx(m0 - r.total_mass(), 40.0, 1e-3);
