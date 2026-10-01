@@ -14,3 +14,11 @@ fn timing_in_order_is_1_reversed_is_0_6() {
     approx(chain_quality(&[0.40, 0.30, 0.20, 0.10]), 0.6, 1e-5);
     approx(chain_quality(&[0.1, 0.2, 0.4, 0.3]), 0.6 + 0.4 * 2.0 / 3.0, 1e-5);
 }
+
+#[test]
+fn in_order_chain_gives_at_least_1_5x_impact_of_reversed() {
+    let good = raw_impact(25.0, 1.5, 1.0, chain_quality(&[0.1, 0.2, 0.3, 0.4]), 1.0, 1.0);
+    let bad = raw_impact(25.0, 1.5, 1.0, chain_quality(&[0.4, 0.3, 0.2, 0.1]), 1.0, 1.0);
+    assert!(good < IMPACT_CAP, "pick inputs below the cap");
+    assert!(good / bad >= 1.5, "{} / {}", good, bad);
+}
