@@ -69,3 +69,12 @@ fn events_carry_all_required_fields() {
     let stop = object_containing(&j, "\"kind\":\"hitstop\"").expect("hit-stop logged");
     assert!(stop.contains("\"ticks\":"));
 }
+
+#[test]
+fn block_and_clash_events_have_their_fields() {
+    let (j, _) = logged(Brain::Scripted, Brain::Fixed(mech_sim::robot::GUARD_TARGETS), 11);
+    let block = object_containing(&j, "\"kind\":\"block\"").expect("block event");
+    for k in ["\"x\":", "\"y\":", "\"impact\":"] {
+        assert!(block.contains(k), "{}", block);
+    }
+}
