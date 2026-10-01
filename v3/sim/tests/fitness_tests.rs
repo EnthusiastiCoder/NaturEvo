@@ -44,3 +44,12 @@ fn defence_credit_values_per_resolution() {
     assert_eq!(defence_credit(&[th(Resolution::Hit, IMPACT_REF, false)]), 0.0);
     assert_eq!(defence_credit(&[th(Resolution::Miss, IMPACT_REF, false)]), 0.0);
 }
+
+#[test]
+fn credit_is_paid_once_per_threat_and_capped_at_6_threats() {
+    let one = defence_credit(&[th(Resolution::Parried, IMPACT_REF, false)]);
+    let three = defence_credit(&vec![th(Resolution::Parried, IMPACT_REF, false); 3]);
+    approx(three, 3.0 * one, 1e-4);
+    let ten = defence_credit(&vec![th(Resolution::Parried, IMPACT_REF, false); 10]);
+    approx(ten, 6.0, 1e-4);
+}
