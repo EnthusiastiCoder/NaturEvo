@@ -38,3 +38,11 @@ fn every_live_threat_resolves_exactly_once() {
         assert_eq!(t.parry + t.block + t.dodge + t.hit + t.miss, count, "tally of fighter {}", who);
     }
 }
+
+#[test]
+fn scripted_attacker_against_a_held_guard_records_blocked() {
+    let mut m = Match::new(11, Brain::Scripted, Brain::Fixed(GUARD_TARGETS));
+    let r = m.run_to_end();
+    assert!(r.defence[1].block >= 1, "{:?}", r.defence[1]);
+    assert!(m.threats.iter().any(|t| t.resolution == Some(Resolution::Blocked)));
+}
