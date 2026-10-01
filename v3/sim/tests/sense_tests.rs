@@ -97,3 +97,16 @@ fn disabled_head_zeroes_opponent_part_inputs() {
     assert!(OPP_HP.clone().all(|i| blind[i] == 0.0), "opponent hp inputs zeroed");
     assert!(OPP_POINTS.clone().all(|i| blind[i] == 0.0), "opponent key points zeroed");
 }
+
+#[test]
+fn damaged_head_adds_noise_deterministically() {
+    let mut a = standing(Role::Hero, 4.0, 1.0);
+    let b = standing(Role::Monster, 9.0, -1.0);
+    let clean = observe(&a, &b, &arena());
+    let m = a.max_hp(Part::Head);
+    a.set_hp(Part::Head, 0.3 * m);
+    let n1 = observe(&a, &b, &arena());
+    let n2 = observe(&a, &b, &arena());
+    assert_eq!(n1, n2, "noise must be deterministic");
+    assert!(OPP_POINTS.clone().any(|i| n1[i] != clean[i]), "head < 50% perturbs opponent inputs");
+}
