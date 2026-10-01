@@ -20,3 +20,14 @@ fn identical_seed_gives_byte_identical_logs() {
         assert_eq!(run(s, 100 + s), run(s, 100 + s));
     }
 }
+
+#[test]
+fn scripted_matches_are_deterministic_too() {
+    let go = || {
+        let mut m = Match::new(8, Brain::Scripted, Brain::Dummy);
+        m.enable_log();
+        m.run_to_end();
+        fight_json(&m)
+    };
+    assert_eq!(go(), go());
+}
