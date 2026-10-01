@@ -54,3 +54,11 @@ fn standing_dummy_takes_hits_not_blocks() {
     assert!(r.defence[1].hit >= 1);
     assert_eq!(r.defence[1].block + r.defence[1].parry, 0);
 }
+
+#[test]
+fn no_threats_and_no_credit_when_nobody_swings() {
+    let mut m = Match::new(2, Brain::Fixed(GUARD_TARGETS), Brain::Dummy);
+    let r = m.run_to_end();
+    assert!(m.threats.is_empty());
+    assert_eq!(r.defence_credit, [0.0, 0.0]);
+}
