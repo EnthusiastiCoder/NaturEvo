@@ -31,3 +31,8 @@ fn scripted_matches_are_deterministic_too() {
     };
     assert_eq!(go(), go());
 }
+
+#[test]
+fn different_match_seed_changes_the_log() {
+    assert_ne!(run(1, 5), run(2, 5));
+}
