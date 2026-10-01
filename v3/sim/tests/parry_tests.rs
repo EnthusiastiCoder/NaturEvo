@@ -61,3 +61,13 @@ fn parallel_blades_do_not_deflect() {
     let k = clashes(&resolve_tick(&mut a, &mut d, &arena()));
     assert_eq!(k, vec![ClashKind::Clash], "not within 35 deg of perpendicular");
 }
+
+#[test]
+fn perfect_parry_when_defender_started_moving_within_quarter_second() {
+    let (mut a, mut d) = setup(3.0, 0.1);
+    let ev = resolve_tick(&mut a, &mut d, &arena());
+    assert_eq!(clashes(&ev), vec![ClashKind::PerfectParry], "{:?}", ev);
+    assert!(a.posture >= 40.0, "attacker stagger +40, got {}", a.posture);
+    approx(d.free_regen_time, 0.3, 1e-3);
+    approx(a.sword_ang_vel, -4.0, 1e-3);
+}
