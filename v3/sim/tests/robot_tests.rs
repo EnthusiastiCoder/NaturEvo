@@ -250,3 +250,17 @@ fn guard_drains_energy_about_5_per_second() {
     let drop = e - r.energy;
     assert!((4.0..=6.0).contains(&drop), "guard drains ~5/s, got {}", drop);
 }
+
+#[test]
+fn fast_motors_cost_energy_idle_regenerates() {
+    let mut s = standing(Role::Hero, 3.0, 1.0);
+    s.energy = 100.0;
+    for i in 0..60 {
+        let mut t = STAND_TARGETS;
+        let v = if (i / 10) % 2 == 0 { 1.0 } else { -1.0 };
+        t[Joint::ShoulderR as usize] = v;
+        t[Joint::ElbowR as usize] = v;
+        t[Joint::Waist as usize] = v;
+        s.apply_targets(&t, DT);
+    }
+    assert!(s.energy < 95.0, "fast motors cost energy, got {}", s.energy);
