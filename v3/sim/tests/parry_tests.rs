@@ -51,3 +51,13 @@ fn defender_blade_moving_away_is_a_plain_clash() {
     let (mut a, mut d) = setup(-3.0, 0.5);
     assert_eq!(clashes(&resolve_tick(&mut a, &mut d, &arena())), vec![ClashKind::Clash]);
 }
+
+#[test]
+fn parallel_blades_do_not_deflect() {
+    let (mut a, mut d) = duel_pair();
+    a.set_sword(seg(1.8, 3.4, 4.0, 3.4, 0.05), seg(1.8, 2.8, 4.0, 2.8, 0.05));
+    d.set_sword(seg(2.0, 3.05, 4.2, 3.05, 0.05), seg(2.0, 3.1, 4.2, 3.1, 0.05));
+    d.sword_moving_since = 0.5;
+    let k = clashes(&resolve_tick(&mut a, &mut d, &arena()));
+    assert_eq!(k, vec![ClashKind::Clash], "not within 35 deg of perpendicular");
+}
