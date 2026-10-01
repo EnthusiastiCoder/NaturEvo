@@ -106,3 +106,14 @@ fn joint_limits_clamp_and_targets_map_to_range() {
     approx(slo, (-30f32).to_radians(), 1e-3);
     approx(shi, 170f32.to_radians(), 1e-3);
 }
+
+#[test]
+fn joint_to_part_mapping() {
+    assert_eq!(Joint::ElbowR.part(), Part::FArmR);
+    assert_eq!(Joint::ShoulderR.part(), Part::UArmR);
+    assert_eq!(Joint::HipL.part(), Part::ThighL);
+    assert_eq!(Joint::KneeR.part(), Part::ShinR);
+    assert_eq!(Joint::AnkleL.part(), Part::FootL);
+    assert_eq!(Joint::Waist.part(), Part::Torso);
+    assert_eq!(Joint::Neck.part(), Part::Head);
+}
