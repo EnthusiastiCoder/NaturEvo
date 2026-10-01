@@ -23,3 +23,14 @@ fn setup(vy: f32, moving_since: f32) -> (Robot, Robot) {
     d.posture = 0.0;
     (a, d)
 }
+
+#[test]
+fn defender_blade_moving_toward_attacker_deflects() {
+    let (mut a, mut d) = setup(3.0, 0.5);
+    let ev = resolve_tick(&mut a, &mut d, &arena());
+    assert_eq!(clashes(&ev), vec![ClashKind::Deflect], "{:?}", ev);
+    assert!(hits(&ev).is_empty());
+    approx(a.sword_ang_vel, -4.0, 1e-3); // reversed x0.4
+    approx(a.posture, 25.0, 1e-3); // 25 x quality
+    approx(d.posture, 5.0, 1e-3);
+}
