@@ -28,3 +28,17 @@ fn opponents_per_individual_is_2_in_a_then_3() {
     assert_eq!(opponents_per_individual(Stage::B), 3);
     assert_eq!(opponents_per_individual(Stage::C), 3);
 }
+
+#[test]
+fn hof_saves_every_10_gens_and_keeps_last_8() {
+    let mut h = HallOfFame::new(8);
+    assert!(h.should_save(10) && h.should_save(120));
+    assert!(!h.should_save(9) && !h.should_save(15));
+    for gen in (10..=120).step_by(10) {
+        let mut g = Genome::random(Role::Hero, &mut Rng::new(gen as u64));
+        g.generation = gen;
+        h.push(g);
+    }
+    assert_eq!(h.len(), 8);
+    assert_eq!(h.generations(), vec![50, 60, 70, 80, 90, 100, 110, 120]);
+}
