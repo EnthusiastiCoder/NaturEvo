@@ -38,3 +38,11 @@ fn rng_same_seed_same_stream_different_seed_differs() {
     assert_eq!(va, vb);
     assert_ne!(va, vc);
 }
+
+#[test]
+fn sizes_are_v3_sizes() {
+    assert_eq!(N_OUT, 13, "12 joint targets + drive");
+    assert_eq!(N_HID, 32);
+    assert!((90..=120).contains(&N_IN), "~100 inputs, got {}", N_IN);
+    assert!((4000..=7000).contains(&N_PARAMS), "~5k weights, got {}", N_PARAMS);
+}
