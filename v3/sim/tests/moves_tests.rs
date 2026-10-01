@@ -34,3 +34,18 @@ fn raw_impact_formula_exact() {
 fn raw_impact_is_capped() {
     approx(raw_impact(1000.0, 50.0, 1.0, 1.0, 1.0, 1.0), IMPACT_CAP, 1e-3);
 }
+
+#[test]
+fn damaged_elbow_lowers_health_factor_and_impact_by_chain_mean() {
+    // Section 2 formula: H = mean torque_scale over the chain joints; ElbowR at 25% hp (scale 0.5) in a 4-joint
+    // chain gives 0.875 (the W2 prose says "halves": see plan issues in tests-index.md).
+    let mut r = Robot::new(Role::Hero);
+    approx(health_factor(&r, Move::Slash), 1.0, 1e-5);
+    let m = r.max_hp(Part::FArmR);
+    r.set_hp(Part::FArmR, 0.25 * m);
+    let h = health_factor(&r, Move::Slash);
+    approx(h, 0.875, 1e-4);
+    let full = raw_impact(25.0, 1.5, 1.0, 1.0, 1.0, 1.0);
+    let worn = raw_impact(25.0, 1.5, 1.0, 1.0, h, 1.0);
+    approx(worn / full, 0.875, 1e-4);
+}
