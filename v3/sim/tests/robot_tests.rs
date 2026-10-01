@@ -138,3 +138,16 @@ fn armour_eff_and_tankiness() {
     set_frac(&mut r, Part::Torso, 0.25);
     approx(r.armour_eff(Part::Torso), 0.45 * 0.55, 1e-4);
 }
+
+#[test]
+fn damage_formula_exact_and_more_on_damaged_part() {
+    let mut fresh = Robot::new(Role::Hero);
+    let d0 = fresh.damage_part(Part::Torso, 10.0); // impact * zone * (1 - armour_eff)
+    approx(d0, 10.0 * 1.0 * (1.0 - 0.45), 1e-3);
+    approx(fresh.hp(Part::Torso), 220.0 - d0, 1e-3);
+    let mut worn = Robot::new(Role::Hero);
+    set_frac(&mut worn, Part::Torso, 0.25);
+    let d1 = worn.damage_part(Part::Torso, 10.0);
+    approx(d1, 10.0 * (1.0 - 0.45 * 0.55), 1e-3);
+    assert!(d1 > d0);
+}
