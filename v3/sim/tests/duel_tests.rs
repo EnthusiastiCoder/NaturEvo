@@ -30,3 +30,14 @@ fn scripted_attacker_damages_a_standing_fighter_who_does_nothing() {
     assert!(total_hp(&m, 1) < before - 1.0, "dummy lost hp: {} -> {}", before, total_hp(&m, 1));
     assert!(r.ticks <= 900);
 }
+
+#[test]
+fn match_ends_with_ko_or_timeout() {
+    let mut m = Match::new(5, Brain::Scripted, Brain::Dummy);
+    let r = m.run_to_end();
+    let ko = m.robots.iter().any(|x| x.is_ko());
+    assert!(ko || r.ticks == 900, "ended at {} without KO", r.ticks);
+    if ko {
+        assert_ne!(r.outcome, Outcome::Draw);
+    }
+}
