@@ -117,3 +117,16 @@ fn joint_to_part_mapping() {
     assert_eq!(Joint::Waist.part(), Part::Torso);
     assert_eq!(Joint::Neck.part(), Part::Head);
 }
+
+#[test]
+fn torque_scale_follows_hp() {
+    let mut r = Robot::new(Role::Hero);
+    approx(r.torque_scale(Joint::ElbowR), 1.0, 1e-5);
+    set_frac(&mut r, Part::FArmR, 0.25);
+    approx(r.torque_scale(Joint::ElbowR), 0.5, 1e-4);
+    set_frac(&mut r, Part::FArmR, 0.1);
+    approx(r.torque_scale(Joint::ElbowR), 0.25, 1e-5);
+    set_frac(&mut r, Part::FArmR, 0.6);
+    approx(r.torque_scale(Joint::ElbowR), 1.0, 1e-5);
+    approx(r.hp_frac(Part::FArmR), 0.6, 1e-5);
+}
