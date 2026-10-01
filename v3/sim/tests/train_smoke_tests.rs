@@ -27,3 +27,12 @@ fn writes_csv_run_json_and_champions() {
     assert!(names.iter().any(|n| n.starts_with("champion_monster_gen_") && n.ends_with(".json")), "{:?}", names);
     let _ = std::fs::remove_dir_all(dir);
 }
+
+#[test]
+fn same_seed_gives_identical_csv() {
+    let (d1, c1) = run("det_a", 1);
+    let (d2, c2) = run("det_b", 1);
+    assert_eq!(c1, c2);
+    let _ = std::fs::remove_dir_all(d1);
+    let _ = std::fs::remove_dir_all(d2);
+}
