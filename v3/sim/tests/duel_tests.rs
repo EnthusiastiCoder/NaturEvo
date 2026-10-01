@@ -14,3 +14,10 @@ fn start_distance_is_5_m_in_14_m_arena() {
     assert_eq!(m.robots[0].facing, 1.0);
     assert_eq!(m.robots[1].facing, -1.0);
 }
+
+#[test]
+fn dummy_vs_dummy_times_out_as_draw_at_900_ticks() {
+    let r = Match::new(1, Brain::Dummy, Brain::Dummy).run_to_end();
+    assert_eq!(r.ticks, 900);
+    assert_eq!(r.outcome, Outcome::Draw);
+}
