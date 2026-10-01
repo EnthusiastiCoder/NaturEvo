@@ -164,3 +164,22 @@ fn zone_multiplier_scales_damage_and_impact_is_capped() {
     let over = Robot::new(Role::Hero).damage_part(Part::Torso, IMPACT_CAP * 10.0);
     approx(capped, over, 1e-3);
 }
+
+#[test]
+fn disabled_at_zero_hp_joint_goes_limp() {
+    let mut r = Robot::new(Role::Hero);
+    set_frac(&mut r, Part::FArmR, 0.0);
+    assert!(r.is_disabled(Part::FArmR));
+    assert!(!r.is_destroyed(Part::FArmR));
+    let mut healthy = Robot::new(Role::Hero);
+    let mut t = STAND_TARGETS;
+    t[Joint::ElbowR as usize] = 1.0;
+    for _ in 0..90 {
+        r.apply_targets(&t, DT);
+        healthy.apply_targets(&t, DT);
+    }
+    assert!(
+        (r.joint_angle(Joint::ElbowR) - healthy.joint_angle(Joint::ElbowR)).abs() > 0.3,
+        "limp joint ignores target"
+    );
+}
