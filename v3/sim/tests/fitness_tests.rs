@@ -69,3 +69,11 @@ fn zone_weights_head_over_core_over_limbs() {
         approx(zone_weight(p), 0.7, 1e-5);
     }
 }
+
+#[test]
+fn pure_turtle_scores_below_a_fighter_that_engages() {
+    let turtle = Match::new(4, Brain::Fixed(GUARD_TARGETS), Brain::Dummy).run_to_end();
+    let engager = Match::new(4, Brain::Scripted, Brain::Dummy).run_to_end();
+    assert!(turtle.idle_guard_share[0] > 0.9, "turtle holds guard all match: {}", turtle.idle_guard_share[0]);
+    assert!(score_match(&turtle, 0) < score_match(&engager, 0));
+}
