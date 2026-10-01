@@ -84,3 +84,11 @@ fn idle_guard_applies_only_without_a_threat_in_the_last_0_6_s() {
     let faced = Match::new(4, Brain::Fixed(GUARD_TARGETS), Brain::Scripted).run_to_end();
     assert!(faced.idle_guard_share[0] < idle.idle_guard_share[0]);
 }
+
+#[test]
+fn credit_never_paid_when_nothing_live_was_swung_at_the_fighter() {
+    let r = Match::new(4, Brain::Dummy, Brain::Dummy).run_to_end();
+    assert_eq!(r.defence_credit, [0.0, 0.0]);
+    let g = Match::new(4, Brain::Fixed(GUARD_TARGETS), Brain::Dummy).run_to_end();
+    assert_eq!(g.defence_credit, [0.0, 0.0]);
+}
