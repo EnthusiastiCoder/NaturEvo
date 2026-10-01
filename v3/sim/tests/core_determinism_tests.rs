@@ -88,3 +88,16 @@ fn crossover_takes_each_gene_from_a_parent_and_is_seeded() {
     assert!(c1.weights.iter().enumerate().any(|(i, w)| *w == b.weights[i] && a.weights[i] != b.weights[i]));
     assert_eq!(c1.generation, 5, "max(parent generations) + 1");
 }
+
+#[test]
+fn json_roundtrip_exact_and_rejects_garbage() {
+    let mut g = Genome::random(Role::Monster, &mut Rng::new(5));
+    g.generation = 17;
+    g.fitness = 3.5;
+    let back = Genome::from_json(&g.to_json()).unwrap();
+    assert_eq!(back.weights, g.weights);
+    assert_eq!((back.generation, back.fitness, back.role), (17, 3.5, Role::Monster));
+    assert_eq!(back.to_json(), g.to_json());
+    assert!(Genome::from_json("not json").is_err());
+    assert!(Genome::from_json("{}").is_err());
+}
