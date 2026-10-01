@@ -49,3 +49,10 @@ fn damaged_elbow_lowers_health_factor_and_impact_by_chain_mean() {
     let worn = raw_impact(25.0, 1.5, 1.0, 1.0, h, 1.0);
     approx(worn / full, 0.875, 1e-4);
 }
+
+#[test]
+fn alignment_is_clamped_cosine() {
+    approx(alignment([3.0, 0.0], [1.0, 0.0]), 1.0, 1e-5);
+    approx(alignment([1.0, 1.0], [1.0, 0.0]), 0.70710678, 1e-4);
+    approx(alignment([-2.0, 0.0], [1.0, 0.0]), 0.0, 1e-6);
+}
