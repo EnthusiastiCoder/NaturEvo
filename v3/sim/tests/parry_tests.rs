@@ -71,3 +71,10 @@ fn perfect_parry_when_defender_started_moving_within_quarter_second() {
     approx(d.free_regen_time, 0.3, 1e-3);
     approx(a.sword_ang_vel, -4.0, 1e-3);
 }
+
+#[test]
+fn clash_kind_log_names() {
+    assert_eq!(ClashKind::Deflect.log_name(), "parry");
+    assert_eq!(ClashKind::Clash.log_name(), "clash");
+    assert_eq!(ClashKind::PerfectParry.log_name(), "perfect_parry");
+}
