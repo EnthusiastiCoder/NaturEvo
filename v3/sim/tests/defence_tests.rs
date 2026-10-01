@@ -20,3 +20,21 @@ fn slow_away_far_or_off_target_blades_are_not_threats() {
     assert!(!is_live_threat([tc[0] - 4.0, tc[1]], [6.0, 0.0], &d), "contact later than 0.4 s");
     assert!(!is_live_threat([tc[0] - 1.0, tc[1] + 3.0], [6.0, 0.0], &d), "passes 3 m above the body");
 }
+
+#[test]
+fn every_live_threat_resolves_exactly_once() {
+    let mut m = Match::new(11, Brain::Scripted, Brain::Fixed(GUARD_TARGETS));
+    let r = m.run_to_end();
+    assert!(!m.threats.is_empty(), "scripted attacker must create live threats");
+    let mut ids: Vec<u32> = m.threats.iter().map(|t| t.id).collect();
+    let n = ids.len();
+    ids.sort();
+    ids.dedup();
+    assert_eq!(ids.len(), n, "threat ids unique");
+    assert!(m.threats.iter().all(|t| t.resolution.is_some()), "no unresolved threats after the match");
+    for who in 0..2 {
+        let t = &r.defence[who];
+        let count = m.threats.iter().filter(|x| x.defender == who).count() as u32;
+        assert_eq!(t.parry + t.block + t.dodge + t.hit + t.miss, count, "tally of fighter {}", who);
+    }
+}
