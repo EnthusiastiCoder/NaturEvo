@@ -95,3 +95,11 @@ fn destroyed_right_shoulder_removes_sword_moves_but_not_kick() {
     assert!(move_possible(&r, Move::KickR));
     assert!(move_possible(&r, Move::Guard));
 }
+
+#[test]
+fn disabled_opposite_leg_makes_kick_impossible() {
+    let mut r = Robot::new(Role::Hero);
+    r.set_hp(Part::ThighL, 0.0);
+    assert!(!move_possible(&r, Move::KickR), "right kick needs the left leg grounded");
+    assert!(!move_possible(&r, Move::Dodge), "dodge needs both legs");
+}
