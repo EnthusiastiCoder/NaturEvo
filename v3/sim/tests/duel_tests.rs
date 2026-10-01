@@ -21,3 +21,12 @@ fn dummy_vs_dummy_times_out_as_draw_at_900_ticks() {
     assert_eq!(r.ticks, 900);
     assert_eq!(r.outcome, Outcome::Draw);
 }
+
+#[test]
+fn scripted_attacker_damages_a_standing_fighter_who_does_nothing() {
+    let mut m = Match::new(3, Brain::Scripted, Brain::Dummy);
+    let before = total_hp(&m, 1);
+    let r = m.run_to_end();
+    assert!(total_hp(&m, 1) < before - 1.0, "dummy lost hp: {} -> {}", before, total_hp(&m, 1));
+    assert!(r.ticks <= 900);
+}
