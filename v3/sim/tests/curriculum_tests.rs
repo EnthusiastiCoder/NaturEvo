@@ -14,3 +14,10 @@ fn stage_by_generation() {
     assert_eq!(stage_for_gen(80), Stage::C);
     assert_eq!(stage_for_gen(200), Stage::C);
 }
+
+#[test]
+fn hof_only_in_stage_c() {
+    assert!(!hof_enabled(Stage::A));
+    assert!(!hof_enabled(Stage::B));
+    assert!(hof_enabled(Stage::C));
+}
