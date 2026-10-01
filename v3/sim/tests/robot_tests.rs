@@ -63,3 +63,19 @@ fn part_masses_hp_and_zones_match_table() {
     assert!(r.zone_mult(Part::Head) > r.zone_mult(Part::Torso));
     assert!(r.zone_mult(Part::Torso) > r.zone_mult(Part::FootL));
 }
+
+#[test]
+fn fk_is_deterministic() {
+    let t = [0.3, -0.2, 0.5, 0.1, 0.7, -0.4, 0.2, 0.2, 0.6, 0.1, -0.3, 0.3];
+    let (mut a, mut b) = (Robot::new(Role::Hero), Robot::new(Role::Hero));
+    for _ in 0..30 {
+        a.apply_targets(&t, DT);
+        b.apply_targets(&t, DT);
+    }
+    a.fk();
+    b.fk();
+    for p in Part::ALL {
+        assert_eq!(a.capsule(p), b.capsule(p));
+    }
+    assert_eq!(a.com(), b.com());
+}
