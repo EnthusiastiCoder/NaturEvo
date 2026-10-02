@@ -43,3 +43,13 @@ Fixture: tests/fixtures/fight_small.json (12 frames t=0..22, 13 parts per fighte
 | ui.test.ts | 2 | src/style.css |
 
 How they fail now (verified): `cd v2/viewer; npx vitest run --root ../../v3/viewer` gives 9 failed files. Eight fail with `Cannot find module '../src/<x>'`; ui.test.ts fails with ENOENT on v3/viewer/src/style.css. No syntax errors.
+
+## Invented API (the plan contract is vague; implementers must match or tell the CTO)
+Rust:
+- robot: Role{Hero,Monster}; Robot::new(role); pub fields x, facing, energy, posture, sword_ang_vel, sword_moving_since, strike_quality, free_regen_time, shield_integrity; Clone; Capsule{a,b:[f32;2],r}; consts DT, STAND_TARGETS, GUARD_TARGETS; Part::ALL, Joint::ALL, Joint::limits()/part(); methods apply_targets (full physics step), fk, capsule, com, total_mass, part_mass, max_hp, hp, hp_frac, set_hp, armour, armour_eff, zone_mult, torque_scale, joint_angle, is_disabled/is_destroyed/is_detached, has_sword/has_shield, shield_active, guard_raised, add_posture, apply_impulse, knock_down, can_act, state() -> State{Idle,Staggered,Fallen,Ko}, is_ko, balance_margin, set_sword, set_shield, damage_part.
+- config: IMPACT_CAP, IMPACT_REF, DRAW_SCORE.
+- combat: swept_hit, resolve_tick(att, def, &Arena) -> Vec<CombatEvent{Hit(HitEvent{part,point,normal,impact,damage,zone,knockback,hitstop_ticks}),Clash{kind,..},Block{raw,reduced,..}}>, ClashKind{Deflect,Clash,PerfectParry} with log_name(), hitstop_ticks.
+- moves: Move (incl KickR/KickL), chain_quality, raw_impact(m_eff,v_n,A,Tm,H,B), health_factor, alignment, balance_factor, required_joints, move_possible.
+- arena: Arena::flat/generate, width, obstacles, biome. sense: observe, N_IN, OPP_HP, OPP_POINTS.
+- duel: Brain{Net,Dummy,Scripted,Fixed([f32;12])}, Match::new/step/run_to_end/enable_log, fields robots/arena/tick/threats/idle_guard_ticks, MatchResult{outcome,ticks,defence,idle_guard_share,defence_credit}, Outcome{WinA,WinB,Draw}, Resolution, is_live_threat.
+- log::fight_json(&Match). fitness: MatchStats, score_stats, ThreatOutcome, defence_credit, zone_weight, score_match. curriculum: Stage, stage_for_gen, hof_enabled, opponents_per_individual. evolve: HallOfFame, TrainConfig::new, train.
