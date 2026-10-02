@@ -42,3 +42,17 @@ describe('hudModel', () => {
     expect(m.fighters[0].parts[0].color).toBe(partHealthColor(100));
   });
 });
+
+describe('defenceTallyModel', () => {
+  it('shows parry/block/dodge counts with tooltips', () => {
+    const m: any = defenceTallyModel({ parry: 3, block: 2, dodge: 1, hit: 5 });
+    const byKey = (k: string) => m.items.find((i: any) => i.key === k);
+    expect(byKey('parry').count).toBe(3);
+    expect(byKey('block').count).toBe(2);
+    expect(byKey('dodge').count).toBe(1);
+    for (const k of ['parry', 'block', 'dodge']) {
+      expect(typeof byKey(k).tooltip).toBe('string');
+      expect(byKey(k).tooltip.length).toBeGreaterThan(5);
+    }
+  });
+});
