@@ -75,3 +75,5 @@ TypeScript:
 10. Test-support APIs (set_hp, set_sword, set_shield, add_posture, apply_impulse, knock_down, Brain::Fixed) are not in the contract.
 11. Perfect parry "+40" is ambiguous (stagger meter vs posture). Test asserts >= 40.
 12. The knockback-scales-with-impact test could saturate if IMPACT_CAP is small.
+
+Open question for the CTO: accept the invented signatures, and resolve issues 3 to 7 before WS1 starts.
