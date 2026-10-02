@@ -53,3 +53,11 @@ Rust:
 - arena: Arena::flat/generate, width, obstacles, biome. sense: observe, N_IN, OPP_HP, OPP_POINTS.
 - duel: Brain{Net,Dummy,Scripted,Fixed([f32;12])}, Match::new/step/run_to_end/enable_log, fields robots/arena/tick/threats/idle_guard_ticks, MatchResult{outcome,ticks,defence,idle_guard_share,defence_credit}, Outcome{WinA,WinB,Draw}, Resolution, is_live_threat.
 - log::fight_json(&Match). fitness: MatchStats, score_stats, ThreatOutcome, defence_credit, zone_weight, score_match. curriculum: Stage, stage_for_gen, hof_enabled, opponents_per_individual. evolve: HallOfFame, TrainConfig::new, train.
+
+TypeScript:
+- data.parseFight(json) -> {version, arena, parts, dt, frames, events, result}; throws on version != 3.
+- camera.cameraFor(frame, w, h) -> {scale, tx, ty}; screen = (x*scale+tx, ty-y*scale).
+- fx.hitstopTicks(events, t); fx.sparkSpec(event) -> null | {kind:'cone'|'radial'|'ring', count, color (0xRRGGBB number), spread, dirAngle}.
+- damage-style.partDamageStyle(hp, destroyed) -> {scratches, desaturate, cracks, limp, detached}.
+- hud.partHealthColor(hp), hud.hudModel(frame) -> {fighters:[{parts:[{color}], energy, posture, coreHp}]}, hud.defenceTallyModel(def) -> {items:[{key,count,tooltip}]}.
+- renderer.rendererOptions(dpr). landing.landingViewModel/renderLandingHtml (run: {name,seed,date,generations,fightGens}; vm {empty, rows[{name,openHref}]}). aggregate.aggregateSeries(number[][]) -> {gens,mean,min,max}; aggregateEval(evals) -> per metric {mean,min,max} (keys defence_rate, idle_guard, draw_share, win_rate_hof). record.planFilmSequence(maxGen) -> [{gen, caption}].
