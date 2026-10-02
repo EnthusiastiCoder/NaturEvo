@@ -61,3 +61,17 @@ TypeScript:
 - damage-style.partDamageStyle(hp, destroyed) -> {scratches, desaturate, cracks, limp, detached}.
 - hud.partHealthColor(hp), hud.hudModel(frame) -> {fighters:[{parts:[{color}], energy, posture, coreHp}]}, hud.defenceTallyModel(def) -> {items:[{key,count,tooltip}]}.
 - renderer.rendererOptions(dpr). landing.landingViewModel/renderLandingHtml (run: {name,seed,date,generations,fightGens}; vm {empty, rows[{name,openHref}]}). aggregate.aggregateSeries(number[][]) -> {gens,mean,min,max}; aggregateEval(evals) -> per metric {mean,min,max} (keys defence_rate, idle_guard, draw_share, win_rate_hof). record.planFilmSequence(maxGen) -> [{gen, caption}].
+
+## Plan issues found
+1. Plan says 11 joints, then lists 12 (Neck, Waist, Shoulder x2, Elbow x2, Hip x2, Knee x2, Ankle x2). Tests use 12.
+2. Part masses sum to 1260 kg, not "~1100". Tests accept 1100..=1300.
+3. W2 "ElbowR at 25% hp halves slash impact" contradicts H = mean of chain torque_scale (gives 0.875). Tests lock 0.875.
+4. "Loss is -4 at worst" has no formula term; the worst case is about -4.5.
+5. defence_credit normalisation is unspecified. Tests use the raw sum.
+6. Curriculum boundaries ambiguous. Tests use B from gen 30, C from gen 80.
+7. damage_part semantics (raw impact vs final damage, return value) unspecified. Tests assume raw impact in, hp lost out.
+8. result.defence "x2" and event part formats were unspecified. Tests and fixture: array of two {parry,block,dodge,hit}; part is a name string.
+9. The hip belongs to the thigh part, so a disabled thigh also blocks get-up.
+10. Test-support APIs (set_hp, set_sword, set_shield, add_posture, apply_impulse, knock_down, Brain::Fixed) are not in the contract.
+11. Perfect parry "+40" is ambiguous (stagger meter vs posture). Test asserts >= 40.
+12. The knockback-scales-with-impact test could saturate if IMPACT_CAP is small.
