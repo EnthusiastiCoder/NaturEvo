@@ -63,3 +63,14 @@ describe('renderer options', () => {
     expect(rendererOptions(1.5)).toEqual({ resolution: 1.5, autoDensity: true, antialias: true });
   });
 });
+
+describe('robot-draw is vector only', () => {
+  const p = resolve(__dirname, '../src/robot-draw.ts');
+  it('exists', () => {
+    expect(existsSync(p)).toBe(true);
+  });
+  it('uses no Sprite or Texture', () => {
+    const src = readFileSync(p, 'utf8');
+    expect(src).not.toMatch(/Sprite|Texture/);
+  });
+});
