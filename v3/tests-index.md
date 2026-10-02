@@ -29,3 +29,15 @@ How they fail now: `cargo test --no-run` in v3/sim stops with `can't find lib me
 
 ## Viewer: v3/viewer/tests (vitest, 46 tests)
 Fixture: tests/fixtures/fight_small.json (12 frames t=0..22, 13 parts per fighter, one event of every kind, result win_a, ticks 24).
+
+| File | Cases | Module under test |
+|---|---|---|
+| parse.test.ts | 5 | src/data (parseFight) |
+| camera.test.ts | 6 (3 x 2 sizes) | src/camera (cameraFor) |
+| fx.test.ts | 8 | src/fx (hitstopTicks, sparkSpec) |
+| damage-style.test.ts | 7 (6 it blocks, one it.each of 2) | src/damage-style (partDamageStyle) |
+| hud.test.ts | 7 | src/hud, src/renderer, src/robot-draw |
+| landing.test.ts | 5 | src/landing |
+| aggregate.test.ts | 3 | src/aggregate |
+| record.test.ts | 3 | src/record (planFilmSequence) |
+| ui.test.ts | 2 | src/style.css |
