@@ -22,3 +22,18 @@ describe('aggregateSeries', () => {
     expect(a.mean).toEqual([]);
   });
 });
+
+describe('aggregateEval', () => {
+  it('gives mean and range per metric', () => {
+    const r: any = aggregateEval([
+      { defence_rate: 0.2, idle_guard: 0.05, draw_share: 0.1, win_rate_hof: 0.5 },
+      { defence_rate: 0.3, idle_guard: 0.07, draw_share: 0.0, win_rate_hof: 0.6 },
+      { defence_rate: 0.4, idle_guard: 0.03, draw_share: 0.2, win_rate_hof: 0.4 },
+    ] as any);
+    expect(r.defence_rate.mean).toBeCloseTo(0.3, 9);
+    expect(r.defence_rate.min).toBe(0.2);
+    expect(r.defence_rate.max).toBe(0.4);
+    expect(r.idle_guard.min).toBe(0.03);
+    expect(r.draw_share.max).toBe(0.2);
+  });
+});
