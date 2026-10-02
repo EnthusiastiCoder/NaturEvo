@@ -21,3 +21,24 @@ describe('partHealthColor', () => {
     expect(new Set([tiers[0], tiers[2], tiers[4], tiers[6]]).size).toBe(4);
   });
 });
+
+describe('hudModel', () => {
+  it('has per-fighter bars and a 13-part silhouette', () => {
+    const m: any = hudModel(fight().frames[0]);
+    expect(m.fighters).toHaveLength(2);
+    for (const f of m.fighters) {
+      expect(f.parts).toHaveLength(13);
+      expect(typeof f.energy).toBe('number');
+      expect(typeof f.posture).toBe('number');
+      expect(typeof f.coreHp).toBe('number');
+      for (const p of f.parts) expect(typeof p.color).toBe('string');
+    }
+  });
+  it('silhouette colour follows part hp', () => {
+    const fr: any = JSON.parse(JSON.stringify(fight().frames[0]));
+    fr.f[0].hp[6] = 0;
+    const m: any = hudModel(fr);
+    expect(m.fighters[0].parts[6].color).toBe(partHealthColor(0));
+    expect(m.fighters[0].parts[0].color).toBe(partHealthColor(100));
+  });
+});
