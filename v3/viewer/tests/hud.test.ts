@@ -56,3 +56,10 @@ describe('defenceTallyModel', () => {
     }
   });
 });
+
+describe('renderer options', () => {
+  it('uses devicePixelRatio, autoDensity and antialias', () => {
+    expect(rendererOptions(2)).toEqual({ resolution: 2, autoDensity: true, antialias: true });
+    expect(rendererOptions(1.5)).toEqual({ resolution: 1.5, autoDensity: true, antialias: true });
+  });
+});
