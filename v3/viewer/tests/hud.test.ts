@@ -8,3 +8,5 @@ import { resolve } from 'node:path';
 import { partHealthColor, hudModel, defenceTallyModel } from '../src/hud';
 import { rendererOptions } from '../src/renderer';
 import { parseFight } from '../src/data';
+
+const fight = () => parseFight(JSON.parse(readFileSync(resolve(__dirname, 'fixtures/fight_small.json'), 'utf8')));
