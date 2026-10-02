@@ -41,3 +41,5 @@ Fixture: tests/fixtures/fight_small.json (12 frames t=0..22, 13 parts per fighte
 | aggregate.test.ts | 3 | src/aggregate |
 | record.test.ts | 3 | src/record (planFilmSequence) |
 | ui.test.ts | 2 | src/style.css |
+
+How they fail now (verified): `cd v2/viewer; npx vitest run --root ../../v3/viewer` gives 9 failed files. Eight fail with `Cannot find module '../src/<x>'`; ui.test.ts fails with ENOENT on v3/viewer/src/style.css. No syntax errors.
