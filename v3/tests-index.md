@@ -26,3 +26,6 @@ Support: v3/sim/Cargo.toml (package mech-sim, lib mech_sim at src/lib.rs, no dep
 | perf_tests.rs | 1 (ignored in debug builds) | WS4 |
 
 How they fail now: `cargo test --no-run` in v3/sim stops with `can't find lib mech_sim at path v3/sim/src/lib.rs` (cargo is at ~/.cargo/bin, not on PATH in the bash tool). Once src/lib.rs exists, expect unresolved-import errors for the modules below. The tests could not be compile-checked against real code, so minor syntax slips are possible and should be fixed when the first module lands.
+
+## Viewer: v3/viewer/tests (vitest, 46 tests)
+Fixture: tests/fixtures/fight_small.json (12 frames t=0..22, 13 parts per fighter, one event of every kind, result win_a, ticks 24).
