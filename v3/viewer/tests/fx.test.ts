@@ -20,3 +20,40 @@ describe('hitstopTicks', () => {
     expect(hitstopTicks([], 8)).toBe(0);
   });
 });
+
+describe('sparkSpec', () => {
+  it('hit is a cone along (dx,dy) with spread <= PI/2', () => {
+    const s: any = sparkSpec(hit(100, 0.6, 0.8));
+    expect(s.kind).toBe('cone');
+    expect(s.dirAngle).toBeCloseTo(Math.atan2(0.8, 0.6), 6);
+    expect(s.spread).toBeLessThanOrEqual(Math.PI / 2);
+    expect(s.spread).toBeGreaterThan(0);
+  });
+  it('hit direction angle follows a leftward hit', () => {
+    const s: any = sparkSpec(hit(100, -1, 0));
+    expect(Math.abs(s.dirAngle)).toBeCloseTo(Math.PI, 6);
+  });
+  it('spark count grows with impact', () => {
+    const lo: any = sparkSpec(hit(20));
+    const hi: any = sparkSpec(hit(200));
+    expect(hi.count).toBeGreaterThan(lo.count);
+    expect(lo.count).toBeGreaterThan(0);
+  });
+  it('clash is a radial burst over 2*PI in white-gold', () => {
+    const s: any = sparkSpec({ t: 4, kind: 'clash', x: 700, y: 310, dx: 1, dy: 0, type: 'clash' } as any);
+    expect(s.kind).toBe('radial');
+    expect(s.spread).toBeCloseTo(2 * Math.PI, 6);
+    const c = s.color as number;
+    const r = (c >> 16) & 255, g = (c >> 8) & 255, b = c & 255;
+    expect(r).toBeGreaterThanOrEqual(0xf0);
+    expect(g).toBeGreaterThanOrEqual(0xc0);
+    expect(b).toBeGreaterThanOrEqual(0x60);
+  });
+  it('block is a ring', () => {
+    const s: any = sparkSpec({ t: 6, kind: 'block', x: 720, y: 280, impact: 60 } as any);
+    expect(s.kind).toBe('ring');
+  });
+  it('dodge has no sparks', () => {
+    expect(sparkSpec({ t: 12, kind: 'dodge', who: 0 } as any)).toBeNull();
+  });
+});
