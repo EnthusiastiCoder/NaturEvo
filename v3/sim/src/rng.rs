@@ -22,3 +22,14 @@ impl Rng {
     pub fn f32(&mut self) -> f32 {
         (self.next_u64() >> 40) as f32 / 16_777_216.0
     }
+
+    /// Uniform in [lo, hi).
+    pub fn range(&mut self, lo: f32, hi: f32) -> f32 {
+        let v = lo + self.f32() * (hi - lo);
+        if v >= hi {
+            lo
+        } else {
+            v
+        }
+    }
+}
