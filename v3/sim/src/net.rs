@@ -28,3 +28,17 @@ pub struct Net {
     b2: Vec<f32>,
     ctx: [f32; N_CTX],
 }
+
+impl Net {
+    pub fn from_genome(g: &Genome) -> Net {
+        assert_eq!(g.weights.len(), N_PARAMS, "weights length");
+        let w = &g.weights;
+        let n1 = N_HID * (N_IN + N_CTX);
+        Net {
+            w1: w[..n1].to_vec(),
+            b1: w[n1..n1 + N_HID].to_vec(),
+            w2: w[n1 + N_HID..n1 + N_HID + N_OUT * N_HID].to_vec(),
+            b2: w[n1 + N_HID + N_OUT * N_HID..].to_vec(),
+            ctx: [0.0; N_CTX],
+        }
+    }
