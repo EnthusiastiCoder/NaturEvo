@@ -14,3 +14,30 @@ function walk(root: string, rel = '', depth = 0, out: string[] = []): string[] {
   }
   return out;
 }
+
+export function runsPlugin(dir = process.env.NV_RUNS_DIR ?? resolve(__dirname, '..', 'runs')): Plugin {
+  const index = () => buildIndex(
+    { list: () => walk(dir), read: async (p) => readFileSync(join(dir, p), 'utf8') },
+    { mtime: (p) => { try { return statSync(join(dir, p)).mtime.toISOString(); } catch { return undefined; } } },
+  );
+  return {
+    name: 'nv-runs',
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        const url = (req.url ?? '').split('?')[0];
+        if (url === '/api/runs') {
+          res.setHeader('content-type', 'application/json'); res.setHeader('cache-control', 'no-store');
+          res.end(JSON.stringify(await index()));
+        } else if (url.startsWith('/runs/')) {
+          const file = resolve(dir, decodeURIComponent(url.slice(6)));
+          if (!file.startsWith(resolve(dir) + sep) || !existsSync(file) || !statSync(file).isFile()) { res.statusCode = 404; res.end('not found'); return; }
+          res.setHeader('content-type', file.endsWith('.json') ? 'application/json' : 'text/plain');
+          createReadStream(file).pipe(res);
+        } else next();
+      });
+    },
+    async generateBundle() {
+      this.emitFile({ type: 'asset', fileName: 'runs/index.json', source: JSON.stringify(await index()) });
+    },
+  };
+}
