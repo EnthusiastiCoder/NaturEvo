@@ -10,3 +10,6 @@ pub struct Genome {
     pub generation: u32,
     pub fitness: f32,
 }
+
+pub const N_WEIGHTS: usize = N_PARAMS;
+pub const W_CLAMP: f32 = 8.0;
