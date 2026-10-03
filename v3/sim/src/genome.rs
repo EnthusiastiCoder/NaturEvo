@@ -86,3 +86,16 @@ impl Genome {
         Ok(Genome { role, weights, generation, fitness })
     }
 }
+
+/// Raw value text of a top-level key (flat object, array values contain no nesting).
+fn field<'a>(s: &'a str, key: &str) -> Result<&'a str, String> {
+    let pat = format!("\"{key}\":");
+    let start = s.find(&pat).ok_or_else(|| format!("missing {key}"))? + pat.len();
+    let rest = s[start..].trim_start();
+    let end = if rest.starts_with('[') {
+        rest.find(']').ok_or("unterminated array")? + 1
+    } else {
+        rest.find(|c| c == ',' || c == '}').unwrap_or(rest.len())
+    };
+    Ok(rest[..end].trim())
+}
