@@ -4,3 +4,8 @@
 pub struct Rng {
     state: u64,
 }
+
+impl Rng {
+    pub fn new(seed: u64) -> Rng {
+        Rng { state: seed }
+    }
