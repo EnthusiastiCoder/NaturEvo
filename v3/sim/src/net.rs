@@ -46,3 +46,30 @@ impl Net {
     pub fn reset(&mut self) {
         self.ctx = [0.0; N_CTX];
     }
+
+    pub fn forward(&mut self, x: &[f32; N_IN]) -> [f32; N_OUT] {
+        let mut h = [0.0f32; N_HID];
+        for (j, hj) in h.iter_mut().enumerate() {
+            let row = &self.w1[j * (N_IN + N_CTX)..(j + 1) * (N_IN + N_CTX)];
+            let mut s = self.b1[j];
+            for i in 0..N_IN {
+                s += row[i] * x[i];
+            }
+            for k in 0..N_CTX {
+                s += row[N_IN + k] * self.ctx[k];
+            }
+            *hj = fast_tanh(s);
+        }
+        self.ctx.copy_from_slice(&h[..N_CTX]);
+        let mut out = [0.0f32; N_OUT];
+        for (o, ov) in out.iter_mut().enumerate() {
+            let row = &self.w2[o * N_HID..(o + 1) * N_HID];
+            let mut s = self.b2[o];
+            for j in 0..N_HID {
+                s += row[j] * h[j];
+            }
+            *ov = fast_tanh(s);
+        }
+        out
+    }
+}
