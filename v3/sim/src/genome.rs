@@ -29,3 +29,17 @@ impl Genome {
             }
         }
     }
+
+    /// Uniform crossover; child takes a's role and generation = max + 1.
+    pub fn crossover(a: &Genome, b: &Genome, rng: &mut Rng) -> Genome {
+        let n = a.weights.len().min(b.weights.len());
+        let weights = (0..n)
+            .map(|i| if rng.f32() < 0.5 { a.weights[i] } else { b.weights[i] })
+            .collect();
+        Genome {
+            role: a.role,
+            weights,
+            generation: a.generation.max(b.generation) + 1,
+            fitness: 0.0,
+        }
+    }
