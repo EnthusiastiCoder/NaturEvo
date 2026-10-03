@@ -23,3 +23,26 @@ describe('landing empty state', () => {
     expect(html).not.toMatch(/class="[^"]*banner/);
   });
 });
+
+describe('landing with runs', () => {
+  const runs = [run('slice_s1'), run('slice s2', [0, 50])];
+  it('lists every run and never mentions demo', () => {
+    const vm: any = landingViewModel({ runs });
+    expect(vm.empty).toBe(false);
+    expect(vm.rows).toHaveLength(2);
+    const html = renderLandingHtml(vm);
+    expect(html).toContain('slice_s1');
+    expect(html).not.toMatch(/demo/i);
+  });
+  it('openHref points to the latest fight generation with encoded name', () => {
+    const vm: any = landingViewModel({ runs });
+    expect(vm.rows[0].openHref).toBe('#/fight/slice_s1/200');
+    expect(vm.rows[1].openHref).toBe(`#/fight/${encodeURIComponent('slice s2')}/50`);
+  });
+  it('has exactly one primary Watch fight action', () => {
+    const html = renderLandingHtml(landingViewModel({ runs }));
+    const n = (html.match(/data-action="watch"/g) ?? []).length;
+    expect(n).toBe(1);
+    expect(html).toContain('Watch fight');
+  });
+});
