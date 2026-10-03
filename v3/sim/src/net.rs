@@ -42,3 +42,7 @@ impl Net {
             ctx: [0.0; N_CTX],
         }
     }
+
+    pub fn reset(&mut self) {
+        self.ctx = [0.0; N_CTX];
+    }
