@@ -19,3 +19,12 @@ pub fn fast_tanh(x: f32) -> f32 {
     let q = 135135.0 + x2 * (62370.0 + x2 * (3150.0 + x2 * 28.0));
     (p / q).clamp(-1.0, 1.0)
 }
+
+#[derive(Clone, Debug)]
+pub struct Net {
+    w1: Vec<f32>,
+    b1: Vec<f32>,
+    w2: Vec<f32>,
+    b2: Vec<f32>,
+    ctx: [f32; N_CTX],
+}
