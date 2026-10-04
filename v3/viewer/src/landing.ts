@@ -95,3 +95,8 @@ function groupRunsFromVm(vm: LandingVM): { campaign: LandingRow[]; training: Lan
   const m = (rs: RunInfo[]) => rs.map((r) => by.get(r.name)!);
   return { campaign: m(g.campaign), training: m(g.training), scratch: m(g.scratch) };
 }
+
+// ---- results ----
+const na = (why: string) => `<div class="na">${esc(why)}</div>`;
+export type RunData = { run: RunInfo; rows: Row[] };
+const DEFAULT_SIZE: Size = { w: 240, h: 130 };
