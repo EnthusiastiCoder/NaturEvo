@@ -151,3 +151,85 @@ export function renderResultsHtml(data: RunData[], all: boolean, opts: { total?:
   const body = cards.length ? `<div class="grid">${cards.join('')}</div>` : na('Nothing to chart for this selection yet');
   return `<div class="results-head"><h2>${esc(title)}</h2><span class="sub">${esc(sub)}</span>${duel}</div>${tiles.length ? `<div class="stats">${tiles.join('')}</div>` : ''}${body}`;
 }
+
+// ---- DOM controller ----
+export async function mountLanding(el: HTMLElement, index: RunIndex, onDemo: () => void): Promise<void> {
+  const start = defaultRun(index.runs);
+  el.innerHTML = renderLandingHtml(landingViewModel(index), start?.name);
+  el.querySelector('[data-action="demo"]')?.addEventListener('click', onDemo);
+  const results = el.querySelector<HTMLElement>('#landing-results');
+  if (!results || !start) return;
+  const text = async (u: string) => { try { const r = await fetch(u); return r.ok ? await r.text() : ''; } catch { return ''; } };
+  const cache = new Map<string, Row[]>();
+  const rowsOf = async (r: RunInfo) => {
+    if (!cache.has(r.name)) cache.set(r.name, parseTrainingCsv(await text(`/runs/${r.name}/training.csv`)));
+    return cache.get(r.name)!;
+  };
+  let selected = start, all = false, size = DEFAULT_SIZE;
+  const withCampaign = index.runs.filter(hasCampaign);
+  let tip = results.querySelector<HTMLElement>('.tip');
+  const paint = async () => {
+    const data = all ? await Promise.all(withCampaign.map(async (run) => ({ run, rows: await rowsOf(run) }))) : [{ run: selected, rows: await rowsOf(selected) }];
+    results.innerHTML = renderResultsHtml(data, all, { total: index.runs.length, size });
+    tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; results.appendChild(tip);
+    results.querySelectorAll<HTMLButtonElement>('.info-btn').forEach((b) => b.addEventListener('click', () => {
+      const p = b.closest('.card')!.querySelector<HTMLElement>('.info-text')!;
+      p.hidden = !p.hidden; b.setAttribute('aria-expanded', String(!p.hidden));
+    }));
+    el.querySelectorAll<HTMLElement>('.run-row').forEach((a) => {
+      const on = !all && a.dataset.run === selected.name;
+      a.setAttribute('aria-selected', String(on)); a.tabIndex = on ? 0 : -1;
+      a.parentElement!.classList.toggle('sel', on);
+      if (on) a.scrollIntoView({ block: 'nearest' });
+    });
+    const body = results.querySelector<HTMLElement>('.card .body');
+    if (body && body.clientWidth > 40 && (Math.abs(body.clientWidth - size.w) > 6 || Math.abs(body.clientHeight - size.h) > 6)) {
+      size = { w: Math.floor(body.clientWidth), h: Math.floor(body.clientHeight) }; void paint();
+    }
+  };
+  const select = (name: string) => {
+    selected = index.runs.find((r) => r.name === name)!; all = false;
+    el.querySelector('[data-action="all-runs"]')?.setAttribute('aria-pressed', 'false'); void paint();
+  };
+  const rowsEls = () => Array.from(el.querySelectorAll<HTMLElement>('.run-row')).filter((r) => r.offsetParent !== null);
+  const rowList = el.querySelector<HTMLElement>('.runs');
+  rowList?.addEventListener('click', (e) => {
+    const row = (e.target as HTMLElement).closest<HTMLElement>('.run-row');
+    if (row && !(e.target as HTMLElement).closest('a.open')) { select(row.dataset.run!); row.focus(); }
+  });
+  rowList?.addEventListener('keydown', (e) => {
+    const row = (e.target as HTMLElement).closest<HTMLElement>('.run-row');
+    if (!row) return;
+    const rs = rowsEls(), i = rs.indexOf(row);
+    const to = e.key === 'ArrowDown' ? i + 1 : e.key === 'ArrowUp' ? i - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? rs.length - 1 : -1;
+    if (to >= 0) { e.preventDefault(); const t = rs[Math.max(0, Math.min(rs.length - 1, to))]; select(t.dataset.run!); t.focus(); }
+    else if (e.key === 'Enter' && row.dataset.open) { e.preventDefault(); location.href = row.dataset.open; }
+    else if (e.key === ' ') { e.preventDefault(); select(row.dataset.run!); }
+  });
+  el.querySelector('[data-action="all-runs"]')?.addEventListener('click', (e) => {
+    all = !all; (e.currentTarget as HTMLElement).setAttribute('aria-pressed', String(all)); void paint();
+  });
+  // hover tooltip: nearest generation on line charts, text on bars
+  results.addEventListener('mousemove', (e) => {
+    const t = e.target as Element, g = t.closest<SVGGElement>('.barg'), svg = t.closest<SVGSVGElement>('svg.chart[data-tip]');
+    const cursor = svg?.querySelector<SVGLineElement>('.cursor');
+    let msg = '';
+    if (g) msg = g.dataset.tip ?? '';
+    else if (svg) {
+      const data = JSON.parse(svg.dataset.tip!) as Tip, rect = svg.getBoundingClientRect();
+      const i = nearestIndex(e.clientX - rect.left, data.xs.length, Number(svg.dataset.l), Number(svg.dataset.r));
+      msg = tipText(data, i);
+      const x = Number(svg.dataset.l) + (data.xs.length > 1 ? (i / (data.xs.length - 1)) * (Number(svg.dataset.r) - Number(svg.dataset.l)) : 0);
+      cursor?.setAttribute('x1', String(x)); cursor?.setAttribute('x2', String(x)); cursor?.removeAttribute('hidden');
+    }
+    results.querySelectorAll('.cursor').forEach((c) => { if (c !== cursor) c.setAttribute('hidden', ''); });
+    if (!tip) return;
+    tip.hidden = !msg; tip.textContent = msg;
+    const r = results.getBoundingClientRect();
+    tip.style.left = `${Math.min(e.clientX - r.left + 12, r.width - 130)}px`; tip.style.top = `${e.clientY - r.top + 12}px`;
+  });
+  results.addEventListener('mouseleave', () => { if (tip) tip.hidden = true; results.querySelectorAll('.cursor').forEach((c) => c.setAttribute('hidden', '')); });
+  let t: number | undefined;
+  new ResizeObserver(() => { clearTimeout(t); t = window.setTimeout(() => { size = DEFAULT_SIZE; void paint(); }, 120); }).observe(results);
+  await paint();
+}
