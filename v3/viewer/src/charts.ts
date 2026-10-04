@@ -23,3 +23,19 @@ export function tipText(t: Tip, i: number): string {
   const f = (v: number) => (t.pct ? pct(v) : num(v));
   return `gen ${t.xs[i]}\n${t.s.map((s) => `${s.l}: ${f(s.ys[i] ?? 0)}`).join('\n')}`;
 }
+
+export function lineChart(series: Series[], xs: number[], yMax: number, size: Size, opts: { pct?: boolean } = {}): string {
+  const { w, h } = size, n = xs.length;
+  const px = (i: number) => PAD.l + (n > 1 ? (i / (n - 1)) * (w - PAD.l - PAD.r) : 0);
+  const py = (v: number) => h - PAD.b - (Math.min(yMax, Math.max(0, v)) / yMax) * (h - PAD.t - PAD.b);
+  const pts = (ys: number[]) => ys.map((v, i) => `${px(i).toFixed(1)},${py(v).toFixed(1)}`).join(' ');
+  const win = Math.max(3, Math.round(n / 20) | 1);
+  const lines = series.map((s) => `<polyline class="ln raw ${s.key}" points="${pts(s.ys)}"/>`).join('')
+    + series.map((s) => `<polyline class="ln ${s.key}" points="${pts(smooth(s.ys, win))}"/>`).join('');
+  const fmt = (v: number) => (opts.pct ? pct(v) : num(v));
+  const tip: Tip = { xs, s: series.map((s) => ({ l: s.label, ys: s.ys.map((v) => +v.toFixed(3)) })), pct: opts.pct };
+  const grid = [0, 0.5, 1].map((f) => `<line class="grid" x1="${PAD.l}" y1="${py(yMax * f)}" x2="${w - PAD.r}" y2="${py(yMax * f)}"/><text class="tick" x="${PAD.l - 4}" y="${py(yMax * f) + 4}" text-anchor="end">${fmt(yMax * f)}</text>`).join('');
+  return `<svg class="chart" viewBox="0 0 ${w} ${h}" role="img" data-l="${PAD.l}" data-r="${w - PAD.r}" data-tip="${esc(JSON.stringify(tip))}">${grid}
+<text class="tick" x="${PAD.l}" y="${h - 4}">gen ${xs[0]}</text><text class="tick" x="${w - PAD.r}" y="${h - 4}" text-anchor="end">${xs[n - 1]}</text>${lines}
+<line class="cursor" y1="${PAD.t}" y2="${h - PAD.b}" hidden/></svg>`;
+}
