@@ -67,3 +67,8 @@ export function fitCamera(arena: { w: number; h: number }, stage: { w: number; h
 
 /** Fighter-related overlay scale: keeps fighters at least ~1.5 screen px per sprite px when the camera is zoomed out. */
 export function uiScale(camScale: number): number { return Math.max(1, 1.5 / Math.max(0.01, camScale)); }
+
+/** Offsets (world px, y down, relative to the fighter's feet) of the HP bar and the state label; the label is always above the bar. */
+export function hudOffsets(u: number): { barTop: number; labelBottom: number; statusRowTop: number; statusRowBottom: number } {
+  return { barTop: -92 * u, labelBottom: -118 * u, statusRowTop: -114 * u, statusRowBottom: -100 * u };
+}
