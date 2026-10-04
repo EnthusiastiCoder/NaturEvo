@@ -11,3 +11,9 @@ export interface FighterFrame {
   seen: boolean;
 }
 export interface Frame { hero: FighterFrame; monster: FighterFrame; ev: { t: string; [k: string]: unknown }[] }
+
+export function lerpAngle(a: number, b: number, t: number): number {
+  const d = ((((b - a + Math.PI) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)) - Math.PI;
+  return a + d * t;
+}
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
