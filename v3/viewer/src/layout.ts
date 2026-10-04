@@ -52,3 +52,9 @@ export function stateLabel(state: string): StateLabel | null {
   }
 }
 export const STAGE_W = 1920, STAGE_H = 1080;
+
+/** Backing-store plan: render at the displayed size times dpr, and scale the logical stage into it (no css resampling). */
+export function displayPlan(hostW: number, hostH: number, stageW: number, stageH: number, dpr: number) {
+  const f = fitStage(hostW, hostH, stageW, stageH);
+  return { cssW: f.w, cssH: f.h, resolution: dpr, stageScale: f.w / stageW };
+}
