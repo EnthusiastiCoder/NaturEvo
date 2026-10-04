@@ -68,3 +68,23 @@ function rowHtml(r: LandingRow, selected: boolean): string {
   return `<li><div class="run-row" role="option" tabindex="${selected ? 0 : -1}" aria-selected="${selected}" data-run="${esc(r.name)}" data-open="${esc(r.openHref)}" title="${esc(r.name)}">
 <b class="nm">${esc(r.label)}</b>${open}<span class="meta">${esc(meta)}</span><span class="chips">${chips}</span></div></li>`;
 }
+
+export function renderLandingHtml(vm: LandingVM, selectedName?: string): string {
+  if (vm.empty) {
+    return `<section class="landing-empty"><h2>No runs yet</h2>
+<p>Train a population, then walk the jungle with its champions. Run these from the <code>v2/sim</code> folder; they write into <code>v2/runs/</code>, which is where this viewer looks.</p>
+<ol class="cmds">${EMPTY_COMMANDS.map((c) => `<li><code>${esc(c)}</code></li>`).join('')}</ol>
+<p class="muted">Results appear here when the files exist. Meanwhile you can look at the built-in demo.</p>
+<div class="actions">${demoButton}</div></section>`;
+  }
+  const groups = groupRunsFromVm(vm);
+  const sel = selectedName ?? groups.campaign[0]?.name ?? groups.training[0]?.name ?? groups.scratch[0]?.name;
+  const list = (rs: LandingRow[]) => `<ul>${rs.map((r) => rowHtml(r, r.name === sel)).join('')}</ul>`;
+  const section = (title: string, rs: LandingRow[], hint = '') => (rs.length ? `<h3 class="grp">${esc(title)}${hint ? `<small>${esc(hint)}</small>` : ''}</h3>${list(rs)}` : '');
+  const scratchOpen = groups.scratch.some((r) => r.name === sel) ? ' open' : '';
+  const scratch = groups.scratch.length ? `<details class="scratch"${scratchOpen}><summary>Scratch runs (${groups.scratch.length})</summary>${list(groups.scratch)}</details>` : '';
+  return `<section class="picker"><div class="head"><h2>Runs</h2>
+<button type="button" data-action="all-runs" aria-pressed="false" title="Pool the campaign results of every run that has them">${icon(ICON.layers)}All runs</button>${demoButton}</div>
+<div class="runs" role="listbox" aria-label="Runs">${section('With campaign results', groups.campaign, 'win rate: permadeath on / off')}${section('Training only', groups.training)}${scratch}</div></section>
+<section class="results" id="landing-results" aria-live="polite"></section>`;
+}
