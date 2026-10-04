@@ -35,3 +35,9 @@ export function actionShares(ticks: { action: string; seen?: boolean; dist?: num
   const byDistance = Array.from({ length: b.length + 1 }, (_, i) => shares(ticks.filter((t) => bucket(t.dist!) === i)));
   return { byVisibility: { seen: shares(ticks.filter((t) => t.seen)), unseen: shares(ticks.filter((t) => !t.seen)) }, byDistance };
 }
+
+export function zoneRates(encs: { zone: number; result: string }[]): { zone: number; k: number; n: number; rate: number | null }[] {
+  const z = new Map<number, { k: number; n: number }>();
+  for (const e of encs) { const a = z.get(e.zone) ?? { k: 0, n: 0 }; a.n++; if (e.result === 'HeroWin') a.k++; z.set(e.zone, a); }
+  return [...z].sort((a, b) => a[0] - b[0]).map(([zone, a]) => ({ zone, ...rateOf(a.k, a.n) }));
+}
