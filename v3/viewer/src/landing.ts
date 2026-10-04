@@ -30,3 +30,5 @@ function openFor(r: RunInfo): { href: string; ok: boolean } {
   const urls = g.length > 1 ? [g[0], g[g.length - 1]] : [g[0]];
   return { href: '?' + urls.map((x) => `fight=${encodeURIComponent(fightUrl(r, x))}`).join('&'), ok: true };
 }
+
+const rate = (s?: { wins: number; losses: number }) => (s ? pct(rateOf(s.wins, s.wins + s.losses).rate) : 'n/a');
