@@ -39,3 +39,17 @@ export function lineChart(series: Series[], xs: number[], yMax: number, size: Si
 <text class="tick" x="${PAD.l}" y="${h - 4}">gen ${xs[0]}</text><text class="tick" x="${w - PAD.r}" y="${h - 4}" text-anchor="end">${xs[n - 1]}</text>${lines}
 <line class="cursor" y1="${PAD.t}" y2="${h - PAD.b}" hidden/></svg>`;
 }
+
+export type Bar = { label: string; k: number; n: number; rate: number | null };
+export function barChart(bars: Bar[], size: Size): string {
+  const { w, h } = size, b2 = 30, top = 22;
+  const bw = (w - PAD.l - PAD.r) / Math.max(1, bars.length), base = h - b2;
+  const g = bars.map((b, i) => {
+    const bh = b.rate === null ? 0 : b.rate * (base - top), x = PAD.l + i * bw + bw * 0.18, cx = x + bw * 0.32;
+    return `<g class="barg" data-tip="${esc(`${b.label}\n${b.k} of ${b.n} won (${pct(b.rate)})`)}"><rect class="bar" x="${x.toFixed(1)}" y="${(base - bh).toFixed(1)}" width="${(bw * 0.64).toFixed(1)}" height="${bh.toFixed(1)}"/>
+<text class="lbl" x="${cx.toFixed(1)}" y="${(base - bh - 4).toFixed(1)}" text-anchor="middle">${pct(b.rate)}</text>
+<text class="tick" x="${cx.toFixed(1)}" y="${base + 13}" text-anchor="middle">${esc(b.label)}</text><text class="tick" x="${cx.toFixed(1)}" y="${base + 26}" text-anchor="middle">${b.k}/${b.n}</text></g>`;
+  }).join('');
+  return `<svg class="chart" viewBox="0 0 ${w} ${h}" role="img"><line class="axis" x1="${PAD.l}" y1="${base}" x2="${w - PAD.r}" y2="${base}"/>
+<text class="tick" x="${PAD.l - 4}" y="${base + 4}" text-anchor="end">0</text><text class="tick" x="${PAD.l - 4}" y="${top + 4}" text-anchor="end">100%</text>${g}</svg>`;
+}
