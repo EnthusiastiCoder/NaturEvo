@@ -17,3 +17,15 @@ export function lerpAngle(a: number, b: number, t: number): number {
   return a + d * t;
 }
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+function mix(a: FighterFrame, b: FighterFrame, t: number): FighterFrame {
+  return {
+    pos: [lerp(a.pos[0], b.pos[0], t), lerp(a.pos[1], b.pos[1], t)],
+    facing: lerpAngle(a.facing, b.facing, t),
+    hp: lerp(a.hp, b.hp, t),
+    stamina: lerp(a.stamina, b.stamina, t),
+    action: a.action, // discrete values snap to the earlier tick
+    state: a.state,
+    atk: a.atk, fx: a.fx, seen: a.seen,
+  };
+}
