@@ -29,3 +29,14 @@ function mix(a: FighterFrame, b: FighterFrame, t: number): FighterFrame {
     atk: a.atk, fx: a.fx, seen: a.seen,
   };
 }
+
+export function sampleFight(frames: Frame[], tSeconds: number, tickHz: number): Frame {
+  const last = frames.length - 1;
+  const s = Math.round(Math.max(0, tSeconds) * tickHz * 1e9) / 1e9;
+  if (s >= last) return frames[last];
+  const i = Math.floor(s);
+  const f = s - i;
+  if (f === 0) return frames[i];
+  const a = frames[i], b = frames[i + 1];
+  return { hero: mix(a.hero, b.hero, f), monster: mix(a.monster, b.monster, f), ev: a.ev };
+}
