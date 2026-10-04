@@ -64,3 +64,6 @@ export function fitCamera(arena: { w: number; h: number }, stage: { w: number; h
   const scale = Math.min(stage.w / arena.w, stage.h / arena.h);
   return { scale, x: (stage.w - arena.w * scale) / 2, y: (stage.h - arena.h * scale) / 2 };
 }
+
+/** Fighter-related overlay scale: keeps fighters at least ~1.5 screen px per sprite px when the camera is zoomed out. */
+export function uiScale(camScale: number): number { return Math.max(1, 1.5 / Math.max(0.01, camScale)); }
