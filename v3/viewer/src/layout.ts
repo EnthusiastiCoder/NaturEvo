@@ -17,3 +17,9 @@ export function fightCamera(arena: { w: number; h: number }, a: V, b: V, stage: 
   const cx = (a[0] + b[0]) / 2, cy = (a[1] + b[1]) / 2;
   return { scale, x: clamp(stage.w / 2 - cx * scale, stage.w - arena.w * scale, 0), y: clamp(stage.h / 2 - cy * scale, stage.h - arena.h * scale, 0) };
 }
+
+/** Campaign camera: zoomed around the hero (like v1), clamped to the map. */
+export function mapCamera(map: { w: number; h: number }, hero: V, stage: { w: number; h: number }, zoom = 1.6): Cam {
+  const scale = Math.max(zoom, stage.w / map.w, stage.h / map.h);
+  return { scale, x: clamp(stage.w / 2 - hero[0] * scale, stage.w - map.w * scale, 0), y: clamp(stage.h / 2 - hero[1] * scale, stage.h - map.h * scale, 0) };
+}
