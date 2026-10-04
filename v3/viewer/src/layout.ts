@@ -58,3 +58,9 @@ export function displayPlan(hostW: number, hostH: number, stageW: number, stageH
   const f = fitStage(hostW, hostH, stageW, stageH);
   return { cssW: f.w, cssH: f.h, resolution: dpr, stageScale: f.w / stageW };
 }
+
+/** Whole arena inside the stage, centred (split-screen halves). */
+export function fitCamera(arena: { w: number; h: number }, stage: { w: number; h: number }): Cam {
+  const scale = Math.min(stage.w / arena.w, stage.h / arena.h);
+  return { scale, x: (stage.w - arena.w * scale) / 2, y: (stage.h - arena.h * scale) / 2 };
+}
