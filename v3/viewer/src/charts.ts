@@ -18,3 +18,8 @@ export function nearestIndex(x: number, n: number, l: number, r: number): number
   if (n <= 1) return 0;
   return Math.min(n - 1, Math.max(0, Math.round(((x - l) / Math.max(1, r - l)) * (n - 1))));
 }
+
+export function tipText(t: Tip, i: number): string {
+  const f = (v: number) => (t.pct ? pct(v) : num(v));
+  return `gen ${t.xs[i]}\n${t.s.map((s) => `${s.l}: ${f(s.ys[i] ?? 0)}`).join('\n')}`;
+}
