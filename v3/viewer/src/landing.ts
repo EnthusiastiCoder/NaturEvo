@@ -11,3 +11,10 @@ export const EMPTY_COMMANDS: string[] = [
   'cargo run --release -- campaign --champions ../runs/main --out ../runs/main/campaign_on.json --fights-dir ../runs/main/fights_on --seed 1',
   'cargo run --release -- campaign --champions ../runs/main --out ../runs/main/campaign_off.json --fights-dir ../runs/main/fights_off --permadeath off --seed 1',
 ];
+
+export type LandingRow = {
+  name: string; label: string; seed: string; date: string; dateLabel: string; generations: number;
+  permadeathOn: string; permadeathOff: string; onRate: string; offRate: string; keyResult: string;
+  openHref: string; canOpen: boolean; hasCampaign: boolean;
+};
+export type LandingVM = { empty: boolean; rows: LandingRow[] };
