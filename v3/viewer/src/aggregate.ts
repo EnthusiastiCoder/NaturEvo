@@ -60,3 +60,8 @@ export function smooth(ys: number[], w: number): number[] {
     return s / (b - a + 1);
   });
 }
+
+export const tailMean = (ys: number[], n: number): number | null => {
+  const t = ys.slice(-Math.max(1, n));
+  return t.length ? t.reduce((a, b) => a + b, 0) / t.length : null;
+};
