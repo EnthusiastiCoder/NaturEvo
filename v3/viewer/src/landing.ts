@@ -119,3 +119,35 @@ export function renderResultsHtml(data: RunData[], all: boolean, opts: { total?:
   if (hl.lateVsEarly) tiles.push(tile('Late vs early champions', 'Win share of current champions against earlier hall-of-fame champions (mean of the last 10 generations)', duo(pct(hl.lateVsEarly.hero), pct(hl.lateVsEarly.monster)), 'hero / monster win share'));
   if (hl.draw !== null) tiles.push(tile('Draw rate', 'Share of duels that end without a winner (last 10 generations)', pct(hl.draw), 'duels with no winner'));
   if (hl.unseenBlock) tiles.push(tile('Blocks at an unseen foe', 'Share of blocks started while the opponent was outside the vision cone (last 10 generations). Low is good.', duo(pct(hl.unseenBlock.hero), pct(hl.unseenBlock.monster)), 'hero / monster, lower is smarter'));
+
+  const cards: string[] = [];
+  const zones = new Map<string, { k: number; n: number }>();
+  for (const d of data) for (const side of ['on', 'off'] as const) for (const [z, v] of Object.entries(d.run.permadeath[side]?.perZone ?? {})) {
+    const a = zones.get(z) ?? { k: 0, n: 0 }; a.k += v.wins; a.n += v.wins + v.losses; zones.set(z, a);
+  }
+  if (zones.size) cards.push(card('Win rate by zone', 'Hero win share per jungle zone, pooled over the campaign files. Later zones are tougher.',
+    barChart([...zones].sort((a, b) => Number(a[0]) - Number(b[0])).map(([z, a]) => ({ label: `Z${z}`, ...rateOf(a.k, a.n) })), size)));
+  const rows = all ? [] : sel.rows;
+  if (rows.length) {
+    const c = learningCurves(rows);
+    const has = (col: string) => rows.some((r) => r[col] !== undefined);
+    const col = (k: string) => rows.map((r) => r[k] ?? 0);
+    const hm = (a: string, b: string) => legendHtml([{ key: 'hero', label: a }, { key: 'monster', label: b }]);
+    cards.push(card('Best fitness', 'Best fitness per generation for each side. Rising lines mean both sides keep learning. Faint line is raw, bold is smoothed.',
+      lineChart([{ key: 'hero', label: 'hero', ys: c.heroFitness }, { key: 'monster', label: 'monster', ys: c.monsterFitness }], c.gens, Math.max(1, ...c.heroFitness, ...c.monsterFitness), size), hm('hero', 'monster')));
+    cards.push(card('Win vs earlier champions', 'Win share against earlier hall-of-fame champions; draw is what is left. Faint line is raw, bold is smoothed.',
+      lineChart([{ key: 'hero', label: 'hero win', ys: c.heroWinVsEarlier }, { key: 'monster', label: 'monster win', ys: c.monsterWinVsEarlier }, ...(c.drawRate ? [{ key: 'draw' as const, label: 'draw', ys: c.drawRate }] : [])], c.gens, 1, size, { pct: true }),
+      legendHtml([{ key: 'hero', label: 'hero' }, { key: 'monster', label: 'monster' }, { key: 'draw', label: 'draw' }])));
+    if (has('seen_share_hero')) cards.push(card('Sees the opponent', 'Share of ticks where each side had the opponent in its vision cone, per generation.',
+      lineChart([{ key: 'hero', label: 'hero sees foe', ys: col('seen_share_hero') }, { key: 'monster', label: 'monster sees foe', ys: col('seen_share_monster') }], c.gens, 1, size, { pct: true }), hm('hero', 'monster')));
+    if (has('statuses_per_fight_hero')) cards.push(card('Statuses per fight', 'Average status effects (stun, bleed and so on) landed per fight, per generation. "on hero" means suffered by the hero.',
+      lineChart([{ key: 'hero', label: 'on hero', ys: col('statuses_per_fight_hero') }, { key: 'monster', label: 'on monster', ys: col('statuses_per_fight_monster') }], c.gens, Math.max(1, ...col('statuses_per_fight_hero'), ...col('statuses_per_fight_monster')), size), hm('on hero', 'on monster')));
+  }
+  const gens = fightGens(sel.run);
+  const link = (g: number, label: string) => `<a href="?fight=${encodeURIComponent(fightUrl(sel.run, g))}" title="Replay the ${label} fight (generation ${g})">${label} (gen ${g})</a>`;
+  const duel = !all && gens.length > 1 ? `<span class="duels">Replay: ${link(gens[0], 'early')} ${link(gens[gens.length - 1], 'late')}</span>` : '';
+  const title = all ? 'All runs' : humanName(sel.run.name);
+  const sub = all ? `${data.length} of ${opts.total ?? data.length} runs have campaign data; only those are pooled` : [formatDate(sel.run.date), sel.run.generations ? `${sel.run.generations} generations` : ''].filter(Boolean).join(' · ');
+  const body = cards.length ? `<div class="grid">${cards.join('')}</div>` : na('Nothing to chart for this selection yet');
+  return `<div class="results-head"><h2>${esc(title)}</h2><span class="sub">${esc(sub)}</span>${duel}</div>${tiles.length ? `<div class="stats">${tiles.join('')}</div>` : ''}${body}`;
+}
