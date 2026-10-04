@@ -18,3 +18,6 @@ export type LandingRow = {
   openHref: string; canOpen: boolean; hasCampaign: boolean;
 };
 export type LandingVM = { empty: boolean; rows: LandingRow[] };
+
+const fightGens = (r: RunInfo) => r.files.map((f) => /^fight_gen_(\d+)\.json$/.exec(f)).filter((m): m is RegExpExecArray => !!m).map((m) => Number(m[1])).sort((a, b) => a - b);
+const fightUrl = (r: RunInfo, g: number) => `/runs/${r.name}/fight_gen_${g}.json`;
