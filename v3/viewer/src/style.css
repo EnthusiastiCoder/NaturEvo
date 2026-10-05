@@ -104,3 +104,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .legend { order: 3; flex-basis: 100%; display: flex; gap: 10px; font-size: 11px; color: var(--muted); }
 .legend .lg { display: inline-flex; align-items: center; gap: 4px; } .legend .sw { width: 22px; height: 10px; }
 .info-btn { height: 22px; min-width: 22px; padding: 0; border: 0; background: transparent; color: var(--muted); }
+.info-text { position: absolute; inset: 30px 6px auto 6px; z-index: 2; margin: 0; padding: 6px 8px; background: var(--panel); border: 1px solid var(--accent); border-radius: var(--radius); font-size: 12px; }
