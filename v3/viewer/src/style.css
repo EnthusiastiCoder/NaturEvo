@@ -108,3 +108,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .info-text[hidden] { display: none; }
 .chart { width: 100%; height: 100%; display: block; min-height: 0; }
 .chart .axis { stroke: var(--line); stroke-width: 1; } .chart .grid { stroke: var(--line); stroke-width: 1; opacity: .6; }
+.chart .tick { fill: var(--muted); font-size: 11px; stroke: none; }
