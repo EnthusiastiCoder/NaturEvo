@@ -27,3 +27,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
   border: 1px solid var(--line); border-radius: var(--radius); background: var(--stage); }
 #view { grid-row: 3; position: relative; min-height: 0; display: grid; place-items: center; overflow: hidden; }
 #stage canvas { display: block; }
+#banner { grid-row: 2; margin: 6px 8px 0; padding: 6px 10px; border-radius: var(--radius); background: #b4441f; color: #fff; font-weight: 600; }
