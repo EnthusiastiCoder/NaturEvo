@@ -82,3 +82,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .run-row .nm, .run-row .meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .run-row .meta { color: var(--muted); font-size: 12px; }
 .run-row .chips { display: flex; gap: 4px; justify-content: flex-end; }
+.chip.win { font-style: normal; font-size: 12px; padding: 0 6px; }
