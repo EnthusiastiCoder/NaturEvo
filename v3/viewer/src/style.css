@@ -35,3 +35,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 #scrub::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -5px; border-radius: 50%; background: var(--accent); border: 2px solid var(--panel); }
 #scrub::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid var(--panel); }
 #scrub { flex: 1; accent-color: var(--accent); min-width: 80px; }
+#clock { font-variant-numeric: tabular-nums; color: var(--muted); min-width: 92px; text-align: right; }
