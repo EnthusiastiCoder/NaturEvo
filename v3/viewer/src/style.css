@@ -113,3 +113,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .chart .bar { fill: var(--hero); stroke: none; }
 .chart .cursor { stroke: var(--muted); stroke-width: 1; }
 .ln { fill: none; stroke-width: 2; } .ln.raw { stroke-width: 1; opacity: .3; }
+.ln.hero { stroke: var(--hero); } .ln.monster { stroke: var(--monster); stroke-dasharray: 6 3; } .ln.draw { stroke: var(--muted); stroke-dasharray: 1.5 3; }
