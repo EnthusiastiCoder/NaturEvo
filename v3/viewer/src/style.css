@@ -112,3 +112,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .chart .lbl { fill: var(--text); font-size: 12px; font-weight: 600; stroke: none; }
 .chart .bar { fill: var(--hero); stroke: none; }
 .chart .cursor { stroke: var(--muted); stroke-width: 1; }
+.ln { fill: none; stroke-width: 2; } .ln.raw { stroke-width: 1; opacity: .3; }
