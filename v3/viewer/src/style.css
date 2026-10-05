@@ -44,3 +44,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 #info h2 { font-size: 13px; margin: 0 0 4px; }
 #info ul { margin: 4px 0 0; padding-left: 16px; }
 [data-record="1"] .bar, [data-record="1"] .hud, [data-record="1"] #info { display: none; }
+[data-record="1"] #app { padding: 0; gap: 0; grid-template-rows: 1fr; }
