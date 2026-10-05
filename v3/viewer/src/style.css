@@ -103,3 +103,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .card .body { flex: 1; min-height: 0; overflow: hidden; display: grid; }
 .legend { order: 3; flex-basis: 100%; display: flex; gap: 10px; font-size: 11px; color: var(--muted); }
 .legend .lg { display: inline-flex; align-items: center; gap: 4px; } .legend .sw { width: 22px; height: 10px; }
+.info-btn { height: 22px; min-width: 22px; padding: 0; border: 0; background: transparent; color: var(--muted); }
