@@ -84,3 +84,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .run-row .chips { display: flex; gap: 4px; justify-content: flex-end; }
 .chip.win { font-style: normal; font-size: 12px; padding: 0 6px; }
 .run-row .open { display: inline-flex; align-items: center; gap: 2px; color: var(--accent); text-decoration: none; font-size: 12px; }
+.run-row .open.off { color: var(--muted); }
