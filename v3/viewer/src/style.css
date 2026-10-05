@@ -78,3 +78,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .grp { font-size: 12px; margin: 4px 0 4px; color: var(--muted); font-weight: 600; } .grp small { font-weight: 400; margin-left: 6px; }
 .scratch summary { cursor: pointer; color: var(--muted); font-size: 12px; padding: 4px 0; }
 .run-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; align-items: center; padding: 5px 8px; border: 1px solid var(--line);
+  border-radius: var(--radius); color: var(--text); cursor: pointer; }
