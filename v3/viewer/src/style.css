@@ -48,3 +48,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 [data-record="1"] #stage { border: 0; border-radius: 0; grid-template-rows: 1fr; }
 [data-record="1"] #view { grid-row: 1; }
 [data-record="1"] #banner { display: none; }
+.chip[hidden] { display: none; }
