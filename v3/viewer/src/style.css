@@ -73,3 +73,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 #landing .runs { list-style: none; margin: 0; padding: 0; overflow-y: auto; min-height: 0; display: flex; flex-direction: column; gap: 4px; }
 .runs { scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
 .runs::-webkit-scrollbar { width: 8px; } .runs::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+#landing .runs { overflow-y: auto; min-height: 0; flex: 1; padding: 2px; }
