@@ -37,3 +37,8 @@ export function summarizeCampaign(jsonText: string): CampaignSummary | null {
     return { outcome: typeof j.outcome === 'string' ? j.outcome : 'n/a', wins, losses, encounters: encs.length, perZone };
   } catch { return null; }
 }
+
+export function seedOf(name: string): string {
+  const m = /(?:^|\/)s(\d+)$/.exec(name);
+  return m ? m[1] : 'n/a';
+}
