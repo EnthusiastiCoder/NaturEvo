@@ -13,3 +13,6 @@ export function humanName(name: string): string {
 
 export const isScratch = (name: string): boolean =>
   name.split('/').some((s) => /^tmp/.test(s) || /^t200s/.test(s) || /^_v/.test(s) || /_tmp$/.test(s));
+
+const time = (r: RunInfo) => { const t = Date.parse(r.date); return Number.isFinite(t) ? t : 0; };
+const newest = (a: RunInfo, b: RunInfo) => time(b) - time(a) || a.name.localeCompare(b.name);
