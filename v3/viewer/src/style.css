@@ -5,3 +5,4 @@
   --hero: #0072b2; --monster: #c04e00; --stage: #dfe8d8; --radius: 8px; --gap: 8px; --bar: 44px;
 }
 [data-theme="dark"] {
+  --hero: #56b4e9; --monster: #e69f00; --stage: #0c120b; --bg: #11170f; --panel: #1b241a; --text: #e6efe3; --muted: #93a38f; --line: #2d3a2b;
