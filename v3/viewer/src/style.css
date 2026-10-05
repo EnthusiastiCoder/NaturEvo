@@ -88,3 +88,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .run-row:hover { border-color: var(--accent); }
 .runs li.sel .run-row { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
 #landing .results { position: relative; overflow: hidden; }
+.results-head { flex-wrap: wrap; } .results-head .sub { color: var(--muted); font-size: 12px; }
