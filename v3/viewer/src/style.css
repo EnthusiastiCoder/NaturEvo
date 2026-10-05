@@ -64,3 +64,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 [data-view="landing"] #mode-walk, [data-view="landing"] #mode-duel, [data-view="landing"] #fight-select, [data-view="landing"] #load,
 [data-view="landing"] #rays, [data-view="landing"] #runs-link, [data-view="landing"] #info { display: none; }
 [data-view="landing"] #app { grid-template-rows: var(--bar) 1fr; }
+:root:not([data-view="landing"]) #landing { display: none; }
