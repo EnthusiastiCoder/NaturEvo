@@ -49,3 +49,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 [data-record="1"] #view { grid-row: 1; }
 [data-record="1"] #banner { display: none; }
 .chip[hidden] { display: none; }
+:root, [data-theme="light"] { --fx-knock: #868e96; --fx-stagger: #f08c00; --fx-stun: #e6b800; --fx-confused: #ae3ec9; --fx-slowed: #1c7ed6; --fx-bleed: #e03131; --fx-poison: #66a80f; }
