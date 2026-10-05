@@ -31,3 +31,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 #banner[hidden] { display: none; }
 #scrub { -webkit-appearance: none; appearance: none; background: transparent; height: 20px; }
 #scrub::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--line); }
+#scrub::-moz-range-track { height: 6px; border-radius: 3px; background: var(--line); }
