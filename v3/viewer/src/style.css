@@ -2,3 +2,4 @@
 :root, [data-theme="light"] {
   --accent: #2f9e44;
   --bg: #eef2ea; --panel: #ffffff; --text: #1d2a1f; --muted: #5c6b5e; --line: #cfd8cb;
+  --hero: #0072b2; --monster: #c04e00; --stage: #dfe8d8; --radius: 8px; --gap: 8px; --bar: 44px;
