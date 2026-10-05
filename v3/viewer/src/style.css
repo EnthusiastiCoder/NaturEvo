@@ -114,3 +114,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .chart .cursor { stroke: var(--muted); stroke-width: 1; }
 .ln { fill: none; stroke-width: 2; } .ln.raw { stroke-width: 1; opacity: .3; }
 .ln.hero { stroke: var(--hero); } .ln.monster { stroke: var(--monster); stroke-dasharray: 6 3; } .ln.draw { stroke: var(--muted); stroke-dasharray: 1.5 3; }
+.tip { position: absolute; z-index: 5; pointer-events: none; white-space: pre; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; font-size: 12px; box-shadow: 0 4px 16px #0005; }
