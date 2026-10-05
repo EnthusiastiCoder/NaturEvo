@@ -52,3 +52,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 :root, [data-theme="light"] { --fx-knock: #868e96; --fx-stagger: #f08c00; --fx-stun: #e6b800; --fx-confused: #ae3ec9; --fx-slowed: #1c7ed6; --fx-bleed: #e03131; --fx-poison: #66a80f; }
 [data-theme="dark"] { --fx-knock: #ced4da; --fx-stagger: #ffa94d; --fx-stun: #ffd43b; --fx-confused: #da77f2; --fx-slowed: #4dabf7; --fx-bleed: #ff6b6b; --fx-poison: #94d82d; }
 .fxchip { display: inline-flex; align-items: center; gap: 3px; }
+.fxchip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
