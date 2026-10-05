@@ -86,3 +86,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .run-row .open { display: inline-flex; align-items: center; gap: 2px; color: var(--accent); text-decoration: none; font-size: 12px; }
 .run-row .open.off { color: var(--muted); }
 .run-row:hover { border-color: var(--accent); }
+.runs li.sel .run-row { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
