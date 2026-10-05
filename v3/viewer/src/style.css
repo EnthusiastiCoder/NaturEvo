@@ -1,2 +1,3 @@
 /* One token system: themes switch via [data-theme], accent via --accent (set from JS). */
 :root, [data-theme="light"] {
+  --accent: #2f9e44;
