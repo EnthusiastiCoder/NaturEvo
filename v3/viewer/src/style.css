@@ -30,3 +30,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 #banner { grid-row: 2; margin: 6px 8px 0; padding: 6px 10px; border-radius: var(--radius); background: #b4441f; color: #fff; font-weight: 600; }
 #banner[hidden] { display: none; }
 #scrub { -webkit-appearance: none; appearance: none; background: transparent; height: 20px; }
+#scrub::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--line); }
