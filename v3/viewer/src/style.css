@@ -32,3 +32,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 #scrub { -webkit-appearance: none; appearance: none; background: transparent; height: 20px; }
 #scrub::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--line); }
 #scrub::-moz-range-track { height: 6px; border-radius: 3px; background: var(--line); }
+#scrub::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -5px; border-radius: 50%; background: var(--accent); border: 2px solid var(--panel); }
