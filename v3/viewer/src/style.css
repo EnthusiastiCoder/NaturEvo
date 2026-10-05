@@ -59,3 +59,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
   height: 30px; padding: 0 8px; display: inline-flex; align-items: center; gap: 4px; text-decoration: none; }
 .btn:hover { border-color: var(--accent); }
 #landing { display: none; }
+[data-view="landing"] #landing { display: grid; grid-row: 1 / -1; grid-template-columns: minmax(260px, 2fr) 3fr; gap: var(--gap); padding: var(--gap); min-height: 0; }
