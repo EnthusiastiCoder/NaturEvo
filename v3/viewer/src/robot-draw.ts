@@ -29,3 +29,8 @@ function capsule(g: Graphics, s: Seg, r: number, sc: number, fill: number, line:
     .arc(x1, y1, rr, ang - Math.PI / 2, ang + Math.PI / 2, true)
     .closePath().fill(fill).stroke({ width: lw, color: line, alignment: 0.5 });
 }
+
+export interface DrawOpts {
+  color: number; accent: number; scale: number; time: number; // scale = px per cm; time in s for flicker
+  detached: boolean[]; flash: number; // flash 0..1 white overlay on struck robot
+}
