@@ -34,3 +34,40 @@ export interface DrawOpts {
   color: number; accent: number; scale: number; time: number; // scale = px per cm; time in s for flicker
   detached: boolean[]; flash: number; // flash 0..1 white overlay on struck robot
 }
+
+/** Draw one fighter into g (world px = cm * scale, y flipped; caller positions the container). */
+export function drawRobot(g: Graphics, f: FighterFrame, o: DrawOpts): void {
+  g.clear();
+  const sc = o.scale, lw = Math.max(1.5, Math.min(2, 1.5 * sc * 2));
+  const order = PART_Z.map((z, i) => [z, i]).sort((a, b) => a[0] - b[0]).map((p) => p[1]);
+  const swordBack = f.facing; void swordBack;
+  for (const i of order) {
+    if (o.detached[i]) continue;
+    const hp = f.hp[i];
+    const st = partDamageStyle(hp, false);
+    if (st.limp && Math.floor(o.time * 14) % 3 === 0) continue; // flicker
+    let fill = BACK.has(i) ? shade(o.color, 0.62) : o.color;
+    fill = desat(fill, st.desaturate);
+    if (o.flash > 0) fill = shade(fill, 1 + o.flash * 1.2);
+    capsule(g, f.parts[i], RADIUS_CM[i], sc, fill, shade(o.color, 0.35), lw);
+    drawDamage(g, f.parts[i], RADIUS_CM[i], sc, st, i, o.time);
+    if (i === 0) { // visor
+      const p = f.parts[0], vx = (p[0] + p[2]) / 2 + f.facing * 6, vy = (p[1] + p[3]) / 2 + 2;
+      g.roundRect(vx * sc - 5 * sc, -vy * sc - 2 * sc, 10 * sc, 4 * sc, 2).fill({ color: o.accent, alpha: 0.95 });
+    }
+    if (i === 1) { // core glow
+      const p = f.parts[1], cx = (p[0] + p[2]) / 2, cy = (p[1] + p[3]) / 2 + 8;
+      g.circle(cx * sc, -cy * sc, 7 * sc).fill({ color: o.accent, alpha: 0.35 });
+      g.circle(cx * sc, -cy * sc, 3.5 * sc).fill({ color: o.accent, alpha: 0.95 });
+    }
+  }
+  // shield plate then sword
+  if (f.hp[5] > 0 && !o.detached[5]) {
+    capsule(g, f.shield, 5, sc, shade(o.color, 0.8), o.accent, lw);
+  }
+  if (f.hp[6] > 0 && !o.detached[6]) {
+    const s = f.sword;
+    g.moveTo(s[0] * sc, -s[1] * sc).lineTo(s[2] * sc, -s[3] * sc).stroke({ width: 5 * sc, color: 0x9aa7b3, cap: 'round' });
+    g.moveTo(s[0] * sc, -s[1] * sc).lineTo(s[2] * sc, -s[3] * sc).stroke({ width: Math.max(1.5, 1.5 * sc), color: 0xffffff, cap: 'round' });
+  }
+}
