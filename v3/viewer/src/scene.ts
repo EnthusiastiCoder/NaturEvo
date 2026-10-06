@@ -23,3 +23,25 @@ export function sampleFrame(fight: Fight, tick: number): Frame {
   });
   return { t: tick, f: [mix(a.f[0], b.f[0]), mix(a.f[1], b.f[1])] };
 }
+
+export class FightScene {
+  app = new Application();
+  tick = 0; playing = true; speed = 1; showNumbers = false;
+  private fight!: Fight;
+  private world = new Container();
+  private ground = new Graphics();
+  private robots = [new Graphics(), new Graphics()];
+  private debris = new Graphics();
+  private fxg = new Graphics();
+  private particles: Particle[] = [];
+  private rings: { x: number; y: number; age: number; color: number; r: number }[] = [];
+  private flash = [0, 0];
+  private freeze = 0;
+  private shake = 0;
+  private fired = -1;
+  private cam!: Camera;
+  private detachedAt: (number | null)[][] = [new Array(13).fill(null), new Array(13).fill(null)];
+  private host!: HTMLElement;
+  private time = 0;
+  onFrame: (fr: Frame, tick: number) => void = () => {};
+  onEnd: () => void = () => {};
