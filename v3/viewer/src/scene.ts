@@ -65,3 +65,21 @@ export class FightScene {
   destroy(): void { this.app.destroy(true, { children: true }); }
 
   private css(v: string): string { return getComputedStyle(document.documentElement).getPropertyValue(v); }
+
+  private update(dt: number): void {
+    this.time += dt;
+    const ticksPerSec = 60;
+    if (this.playing) {
+      if (this.freeze > 0) this.freeze = Math.max(0, this.freeze - dt * ticksPerSec);
+      else {
+        const prev = this.tick;
+        this.tick = Math.min(this.lastTick, this.tick + dt * ticksPerSec * this.speed);
+        for (const e of this.fight.events) {
+          if (e.t > this.fired && e.t <= this.tick) this.fire(e);
+        }
+        this.fired = Math.floor(this.tick);
+        if (prev < this.lastTick && this.tick >= this.lastTick) this.onEnd();
+      }
+    }
+    this.render(dt);
+  }
