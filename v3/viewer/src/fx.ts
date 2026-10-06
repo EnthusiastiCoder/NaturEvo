@@ -20,3 +20,8 @@ export function sparkSpec(e: FightEvent): SparkSpec | null {
       return null;
   }
 }
+
+/** Screen shake amplitude in px for an event (0 if none). */
+export function shakeFor(e: FightEvent): number {
+  return e.kind === 'hit' ? Math.min(10, 1 + e.impact * 0.05) : e.kind === 'clash' ? 2 : 0;
+}
