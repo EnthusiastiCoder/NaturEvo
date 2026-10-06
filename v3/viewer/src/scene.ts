@@ -55,3 +55,11 @@ export class FightScene {
     this.cam = cameraFor(fight.frames[0], this.app.screen.width, this.app.screen.height);
     this.app.ticker.add((tk) => this.update(tk.deltaMS / 1000));
   }
+
+  seek(tick: number): void {
+    this.tick = Math.max(0, tick); this.fired = Math.ceil(this.tick) - 1; this.particles = []; this.rings = [];
+    this.detachedAt = [new Array(13).fill(null), new Array(13).fill(null)];
+    for (const e of this.fight.events) if (e.kind === 'destroyed' && e.t <= this.tick) this.detachedAt[e.who][this.fight.parts.indexOf(e.part)] = e.t;
+  }
+  get lastTick(): number { return this.fight.frames[this.fight.frames.length - 1].t; }
+  destroy(): void { this.app.destroy(true, { children: true }); }
