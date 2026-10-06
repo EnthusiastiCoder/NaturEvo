@@ -71,3 +71,18 @@ export function drawRobot(g: Graphics, f: FighterFrame, o: DrawOpts): void {
     g.moveTo(s[0] * sc, -s[1] * sc).lineTo(s[2] * sc, -s[3] * sc).stroke({ width: Math.max(1.5, 1.5 * sc), color: 0xffffff, cap: 'round' });
   }
 }
+
+function drawDamage(g: Graphics, s: Seg, r: number, sc: number, st: ReturnType<typeof partDamageStyle>, i: number, time: number) {
+  if (!st.scratches) return;
+  const mx = (s[0] + s[2]) / 2, my = (s[1] + s[3]) / 2;
+  const w = Math.max(1, sc);
+  g.moveTo((mx - r * 0.5) * sc, -(my + r * 0.3) * sc).lineTo((mx + r * 0.2) * sc, -(my - r * 0.1) * sc).stroke({ width: w, color: 0x000000, alpha: 0.4 });
+  if (st.cracks) {
+    g.moveTo(mx * sc, -(my + r * 0.6) * sc).lineTo((mx + r * 0.3) * sc, -my * sc).lineTo((mx - r * 0.2) * sc, -(my - r * 0.5) * sc)
+      .stroke({ width: w * 1.3, color: 0x111111, alpha: 0.85 });
+    if (Math.floor(time * 12 + i * 3) % 4 === 0) { // spark leak
+      g.circle((mx + r * 0.3) * sc, -my * sc, 2 * sc).fill({ color: 0xffd36a, alpha: 0.9 });
+    }
+    if (st.desaturate > 0.6) g.circle(mx * sc, -(my + r + 6) * sc - (time * 30 % 12) * sc, 3 * sc).fill({ color: 0x555555, alpha: 0.35 });
+  }
+}
