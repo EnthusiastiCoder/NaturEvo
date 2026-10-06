@@ -7,3 +7,12 @@ export function partHealthColor(hp: number): string {
   if (hp >= 1) return '#e0701a';
   return '#7a2f2f';
 }
+
+export function hudModel(frame: Frame) {
+  return {
+    fighters: frame.f.map((g) => ({
+      parts: g.hp.map((hp) => ({ color: partHealthColor(hp) })),
+      energy: g.energy, posture: g.posture, coreHp: g.hp[1] ?? 0,
+    })),
+  };
+}
