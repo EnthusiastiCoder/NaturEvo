@@ -16,3 +16,13 @@ export function hudModel(frame: Frame) {
     })),
   };
 }
+
+export function defenceTallyModel(d: Tally) {
+  return {
+    items: [
+      { key: 'parry', count: d.parry, tooltip: 'Parries: incoming blade deflected with the sword' },
+      { key: 'block', count: d.block, tooltip: 'Blocks: incoming blow absorbed by the shield' },
+      { key: 'dodge', count: d.dodge, tooltip: 'Dodges: attack evaded by moving or ducking' },
+    ],
+  };
+}
