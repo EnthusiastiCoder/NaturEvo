@@ -121,3 +121,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .muted { color: var(--muted); }
 .duels { display: inline-flex; gap: var(--gap); margin-left: auto; }
 .duels a { color: var(--accent); }
+.landing-empty { grid-column: 1 / -1; align-self: center; justify-self: center; max-width: 720px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
