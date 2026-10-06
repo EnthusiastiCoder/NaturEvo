@@ -63,3 +63,5 @@ export class FightScene {
   }
   get lastTick(): number { return this.fight.frames[this.fight.frames.length - 1].t; }
   destroy(): void { this.app.destroy(true, { children: true }); }
+
+  private css(v: string): string { return getComputedStyle(document.documentElement).getPropertyValue(v); }
