@@ -83,3 +83,18 @@ export class FightScene {
     }
     this.render(dt);
   }
+
+  private fire(e: Fight['events'][number]): void {
+    const spec = sparkSpec(e);
+    if (spec) {
+      this.particles.push(...spawnParticles(spec, e.x, e.y, e.t * 31 + 7));
+      if (spec.kind === 'ring') this.rings.push({ x: e.x, y: e.y, age: 0, color: spec.color, r: 30 });
+      if (e.kind === 'clash' && e.type !== 'clash') this.rings.push({ x: e.x, y: e.y, age: 0, color: 0xfff2b0, r: 60 });
+    }
+    this.shake = Math.max(this.shake, shakeFor(e));
+    if (e.kind === 'hit') this.flash[e.victim] = 1;
+    if (e.kind === 'stagger') this.rings.push({ x: this.sampleNow().f[e.who].fx, y: 330, age: 0, color: 0xffe14a, r: 70 });
+    if (e.kind === 'destroyed') this.detachedAt[e.who][this.fight.parts.indexOf(e.part)] = e.t;
+    const hs = hitstopTicks(this.fight.events, e.t);
+    if (e.kind === 'hit' && hs > 0) this.freeze = Math.max(this.freeze, hs);
+  }
