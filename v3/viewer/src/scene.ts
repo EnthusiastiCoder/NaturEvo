@@ -98,3 +98,5 @@ export class FightScene {
     const hs = hitstopTicks(this.fight.events, e.t);
     if (e.kind === 'hit' && hs > 0) this.freeze = Math.max(this.freeze, hs);
   }
+
+  private sampleNow(): Frame { return sampleFrame(this.fight, this.tick); }
