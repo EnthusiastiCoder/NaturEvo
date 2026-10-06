@@ -27,3 +27,16 @@ export function shakeFor(e: FightEvent): number {
 }
 
 export interface Particle { x: number; y: number; vx: number; vy: number; life: number; max: number; color: number; size: number }
+
+/** Deterministic particle burst (seeded by tick) for a spark spec at world point (cm). */
+export function spawnParticles(spec: SparkSpec, x: number, y: number, seed: number): Particle[] {
+  let s = (seed * 2654435761) >>> 0;
+  const rnd = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+  const out: Particle[] = [];
+  for (let i = 0; i < spec.count; i++) {
+    const a = spec.kind === 'ring' ? (i / spec.count) * 2 * Math.PI : spec.dirAngle + (rnd() - 0.5) * spec.spread;
+    const sp = spec.kind === 'ring' ? 120 : 150 + rnd() * 350;
+    out.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0, max: 0.2 + rnd() * 0.3, color: spec.color, size: 1 + rnd() * 1.5 });
+  }
+  return out;
+}
