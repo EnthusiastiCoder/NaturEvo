@@ -13,3 +13,5 @@ export interface Fight {
   version: 3; arena: Arena; parts: string[]; dt: number; frames: Frame[]; events: FightEvent[];
   result: { outcome: string; ticks: number; defence: [Tally, Tally] };
 }
+
+const fail = (m: string): never => { throw new Error(`bad fight log: ${m}`); };
