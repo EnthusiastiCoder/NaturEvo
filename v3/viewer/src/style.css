@@ -117,3 +117,4 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .tip { position: absolute; z-index: 5; pointer-events: none; white-space: pre; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; font-size: 12px; box-shadow: 0 4px 16px #0005; }
 .tip[hidden] { display: none; }
 .na { display: grid; place-content: center; text-align: center; color: var(--muted); font-weight: 600; }
+.na small { font-weight: 400; }
