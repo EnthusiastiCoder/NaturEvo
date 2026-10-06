@@ -45,3 +45,13 @@ export class FightScene {
   private time = 0;
   onFrame: (fr: Frame, tick: number) => void = () => {};
   onEnd: () => void = () => {};
+
+  async mount(host: HTMLElement, fight: Fight): Promise<void> {
+    this.host = host; this.fight = fight;
+    await this.app.init({ ...rendererOptions(window.devicePixelRatio || 1), resizeTo: host, background: 0x000000 });
+    host.appendChild(this.app.canvas);
+    this.app.stage.addChild(this.ground, this.world);
+    this.world.addChild(this.debris, this.robots[0], this.robots[1], this.fxg);
+    this.cam = cameraFor(fight.frames[0], this.app.screen.width, this.app.screen.height);
+    this.app.ticker.add((tk) => this.update(tk.deltaMS / 1000));
+  }
