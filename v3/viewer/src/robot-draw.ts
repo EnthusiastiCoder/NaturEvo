@@ -86,3 +86,12 @@ function drawDamage(g: Graphics, s: Seg, r: number, sc: number, st: ReturnType<t
     if (st.desaturate > 0.6) g.circle(mx * sc, -(my + r + 6) * sc - (time * 30 % 12) * sc, 3 * sc).fill({ color: 0x555555, alpha: 0.35 });
   }
 }
+
+/** Debris body for a destroyed part: simple spinning capsule falling under gravity. */
+export function debrisPose(seg: Seg, since: number, i: number): Seg {
+  const t = Math.max(0, since), fall = Math.max(0, seg[1] - 9 - 490 * t * t), fall2 = Math.max(0, seg[3] - 9 - 490 * t * t);
+  const mx = (seg[0] + seg[2]) / 2 + (i % 2 ? 30 : -30) * t, my = (fall + fall2) / 2;
+  const a = Math.atan2(seg[3] - seg[1], seg[2] - seg[0]) + t * (i % 2 ? 6 : -6);
+  const h = Math.hypot(seg[2] - seg[0], seg[3] - seg[1]) / 2;
+  return [mx - Math.cos(a) * h, Math.max(0, my - Math.sin(a) * h), mx + Math.cos(a) * h, Math.max(0, my + Math.sin(a) * h)];
+}
