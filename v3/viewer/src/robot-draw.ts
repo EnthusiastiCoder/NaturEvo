@@ -18,3 +18,14 @@ export function desat(hex: number, k: number): number {
   const m = (c: number) => Math.round(c + (y - c) * k);
   return (m(r) << 16) | (m(g) << 8) | m(b);
 }
+
+function capsule(g: Graphics, s: Seg, r: number, sc: number, fill: number, line: number, lw: number) {
+  const [x1, y1, x2, y2] = [s[0] * sc, -s[1] * sc, s[2] * sc, -s[3] * sc];
+  const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1;
+  const rr = r * sc, nx = -dy / len * rr, ny = dx / len * rr, ang = Math.atan2(dy, dx);
+  g.moveTo(x1 + nx, y1 + ny).lineTo(x2 + nx, y2 + ny)
+    .arc(x2, y2, rr, ang + Math.PI / 2, ang - Math.PI / 2, true)
+    .lineTo(x1 - nx, y1 - ny)
+    .arc(x1, y1, rr, ang - Math.PI / 2, ang + Math.PI / 2, true)
+    .closePath().fill(fill).stroke({ width: lw, color: line, alignment: 0.5 });
+}
