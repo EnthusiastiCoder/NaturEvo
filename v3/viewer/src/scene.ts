@@ -100,3 +100,35 @@ export class FightScene {
   }
 
   private sampleNow(): Frame { return sampleFrame(this.fight, this.tick); }
+
+  private render(dt: number): void {
+    const w = this.app.screen.width, h = this.app.screen.height;
+    const fr = this.sampleNow();
+    const target = cameraFor(fr, w, h);
+    this.cam = lerpCamera(this.cam, target, Math.min(1, dt * 6));
+    const c = this.cam;
+    const sx = this.shake > 0.1 ? (Math.sin(this.time * 90) * this.shake) : 0, sy = this.shake > 0.1 ? (Math.cos(this.time * 77) * this.shake) : 0;
+    this.shake *= Math.pow(0.001, dt);
+    drawGround(this.ground, this.fight.arena, c.scale, w, h, c.tx, c.ty);
+    this.world.position.set(Math.round(c.tx + sx), Math.round(c.ty + sy));
+    const col = [hexNum(this.css('--hero'), 0x56b4e9), hexNum(this.css('--monster'), 0xe69f00)];
+    const accent = hexNum(this.css('--accent'), 0x2f9e44);
+    this.debris.clear();
+    for (let i = 0; i < 2; i++) {
+      this.flash[i] = Math.max(0, this.flash[i] - dt * 5);
+      const det = this.detachedAt[i].map((t) => t !== null && this.tick >= t);
+      drawRobot(this.robots[i], fr.f[i], { color: col[i], accent, scale: c.scale, time: this.time, detached: det, flash: this.flash[i] });
+      this.detachedAt[i].forEach((t, p) => {
+        if (t === null || this.tick < t) return;
+        const last = sampleFrame(this.fight, Math.max(0, t - 2)).f[i].parts[p];
+        const d = debrisPose(last, (this.tick - t) / 60, p);
+        const sc = c.scale;
+        this.debris.moveTo(d[0] * sc, -d[1] * sc).lineTo(d[2] * sc, -d[3] * sc).stroke({ width: 14 * sc, color: col[i], cap: 'round', alpha: 0.9 });
+      });
+      this.robots[i].scale.set(1);
+      if (fr.f[i].state === 'staggered') this.rings.push({ x: fr.f[i].fx, y: 330, age: 0.85, color: 0xffe14a, r: 70 });
+    }
+    void PART_Z;
+    this.drawFx(dt);
+    this.onFrame(fr, this.tick);
+  }
