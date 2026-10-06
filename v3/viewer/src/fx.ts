@@ -25,3 +25,5 @@ export function sparkSpec(e: FightEvent): SparkSpec | null {
 export function shakeFor(e: FightEvent): number {
   return e.kind === 'hit' ? Math.min(10, 1 + e.impact * 0.05) : e.kind === 'clash' ? 2 : 0;
 }
+
+export interface Particle { x: number; y: number; vx: number; vy: number; life: number; max: number; color: number; size: number }
