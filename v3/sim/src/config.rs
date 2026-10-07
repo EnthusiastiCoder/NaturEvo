@@ -28,3 +28,4 @@ pub const MOTOR_COST: f32 = 0.5;
 pub const EMPTY_ENERGY_TORQUE: f32 = 0.3;
 /// Posture decay per second (after `POSTURE_DECAY_DELAY` without a hit).
 pub const POSTURE_DECAY: f32 = 15.0;
+pub const POSTURE_DECAY_DELAY: f32 = 0.5;
