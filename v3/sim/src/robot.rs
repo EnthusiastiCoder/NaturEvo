@@ -420,6 +420,19 @@ impl Robot {
         }
         s
     }
+
+    /// Apply a raw impact to a part: cap, zone multiplier, armour, exposed bonus. Returns hp actually lost.
+    pub fn damage_part(&mut self, p: Part, raw_impact: f32) -> f32 {
+        if self.detached[p as usize] {
+            return 0.0;
+        }
+        let impact = raw_impact.min(IMPACT_CAP).max(0.0);
+        let exposed = if matches!(self.state(), State::Staggered | State::Fallen) { EXPOSED_MULT } else { 1.0 };
+        let dmg = impact * self.zone_mult(p) * (1.0 - self.armour_eff(p)) * exposed;
+        let before = self.hp[p as usize];
+        self.set_hp(p, before - dmg);
+        before - self.hp[p as usize]
+    }
         }
     }
 }
