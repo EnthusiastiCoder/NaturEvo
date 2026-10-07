@@ -784,6 +784,11 @@ impl Robot {
             e += ENERGY_REGEN * dt;
         }
         self.energy = e.clamp(0.0, ENERGY_MAX);
+
+        // Posture.
+        if self.since_hit > POSTURE_DECAY_DELAY && self.stagger_timer <= 0.0 {
+            self.posture = (self.posture - POSTURE_DECAY * dt).max(0.0);
+        }
         }
     }
 }
