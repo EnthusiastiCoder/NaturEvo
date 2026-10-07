@@ -433,6 +433,40 @@ impl Robot {
         self.set_hp(p, before - dmg);
         before - self.hp[p as usize]
     }
+
+    // ---- weapon and shield ----
+    pub fn has_sword(&self) -> bool {
+        !self.detached[Part::FArmR as usize]
+    }
+    pub fn has_shield(&self) -> bool {
+        !self.detached[Part::FArmL as usize] && self.shield_integrity > 0.0
+    }
+    /// The shield can block: present, intact and powered.
+    pub fn shield_active(&self) -> bool {
+        self.has_shield() && self.energy > 0.0
+    }
+    /// Shield arm pose raised in front (shoulder and elbow above thresholds).
+    pub fn guard_raised(&self) -> bool {
+        self.has_shield()
+            && self.angles[Joint::ShoulderL as usize] >= GUARD_SHOULDER
+            && self.angles[Joint::ElbowL as usize] >= GUARD_ELBOW
+    }
+    pub fn sword_capsule(&self) -> Capsule {
+        self.sword
+    }
+    pub fn sword_prev_capsule(&self) -> Capsule {
+        self.sword_prev
+    }
+    pub fn shield_capsule(&self) -> Capsule {
+        self.shield
+    }
+    pub fn set_sword(&mut self, prev: Capsule, cur: Capsule) {
+        self.sword_prev = prev;
+        self.sword = cur;
+    }
+    pub fn set_shield(&mut self, cap: Capsule) {
+        self.shield = cap;
+    }
         }
     }
 }
