@@ -264,6 +264,12 @@ const IMPULSE_TO_VEL: f32 = 0.5;
 const BAL_K: f32 = 20.0;
 const BAL_C: f32 = 6.3;
 const BAL_FALL: f32 = 10.0;
+
+#[derive(Clone, Debug)]
+struct Debris {
+    cap: Capsule,
+    vy: f32,
+}
         }
     }
 }
