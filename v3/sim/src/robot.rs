@@ -742,6 +742,13 @@ impl Robot {
                 self.neg_margin_time = 0.0;
             }
         }
+
+        // Choose targets.
+        let staggered = self.stagger_timer > 0.0;
+        let eff: [f32; 12] = if staggered && !down { RECOIL_TARGETS } else { *targets };
+        let intent_sh = Joint::ShoulderL.to_angle(eff[Joint::ShoulderL as usize]) >= GUARD_SHOULDER;
+        let intent_el = Joint::ElbowL.to_angle(eff[Joint::ElbowL as usize]) >= GUARD_ELBOW;
+        self.guard_intent = !down && !staggered && self.has_shield() && intent_sh && intent_el;
         }
     }
 }
