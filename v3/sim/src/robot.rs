@@ -467,6 +467,19 @@ impl Robot {
     pub fn set_shield(&mut self, cap: Capsule) {
         self.shield = cap;
     }
+
+    // ---- posture / state ----
+    pub fn add_posture(&mut self, v: f32) {
+        self.since_hit = 0.0;
+        if self.stagger_timer > 0.0 {
+            return;
+        }
+        self.posture += v;
+        if self.posture >= 100.0 {
+            self.stagger_timer = STAGGER_TIME;
+            self.posture = STAGGER_RESET;
+        }
+    }
         }
     }
 }
