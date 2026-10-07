@@ -34,3 +34,4 @@ pub const STAGGER_RESET: f32 = 40.0;
 pub const FALL_TIME: f32 = 1.5;
 /// Seconds of negative balance margin before the robot falls.
 pub const FALL_MARGIN_TIME: f32 = 0.4;
+/// Damage multiplier while staggered (exposed) or fallen.
