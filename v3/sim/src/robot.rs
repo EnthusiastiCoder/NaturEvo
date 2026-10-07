@@ -789,6 +789,26 @@ impl Robot {
         if self.since_hit > POSTURE_DECAY_DELAY && self.stagger_timer <= 0.0 {
             self.posture = (self.posture - POSTURE_DECAY * dt).max(0.0);
         }
+
+        // Balance.
+        if !down {
+            let margin = self.balance_margin();
+            let acc = if margin >= 0.0 {
+                -BAL_K * self.com_off - BAL_C * self.com_vel
+            } else {
+                BAL_FALL * self.com_off
+            };
+            self.com_vel += acc * dt;
+            self.com_off += self.com_vel * dt;
+            if margin < 0.0 {
+                self.neg_margin_time += dt;
+                if self.neg_margin_time > FALL_MARGIN_TIME {
+                    self.knock_down();
+                }
+            } else {
+                self.neg_margin_time = 0.0;
+            }
+        }
         }
     }
 }
