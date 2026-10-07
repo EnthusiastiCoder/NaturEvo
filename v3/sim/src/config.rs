@@ -8,3 +8,5 @@ pub const DECISION_TICKS: u32 = 3;
 pub const MAX_TICKS: u32 = 900;
 /// Arena width in metres.
 pub const ARENA_WIDTH: f32 = 14.0;
+
+// ---- Robot body (WS1) ----
