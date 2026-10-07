@@ -5,6 +5,8 @@
 //! direction. Elbow flexes forward (adds to the shoulder angle), knee flexes backward (subtracts from
 //! the hip angle), the foot stays flat when hip - knee + ankle... see `fk`.
 
+use crate::config::*;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Role {
     Hero,
