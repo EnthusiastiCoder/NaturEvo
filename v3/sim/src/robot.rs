@@ -69,6 +69,22 @@ impl Part {
         ["Head", "Torso", "Pelvis", "UArmL", "UArmR", "FArmL", "FArmR", "ThighL", "ThighR", "ShinL", "ShinR", "FootL", "FootR"]
             [*self as usize]
     }
+
+    /// Kinematic parent (None for the pelvis root).
+    pub fn parent(&self) -> Option<Part> {
+        use Part::*;
+        match self {
+            Pelvis => None,
+            Torso | ThighL | ThighR => Some(Pelvis),
+            Head | UArmL | UArmR => Some(Torso),
+            FArmL => Some(UArmL),
+            FArmR => Some(UArmR),
+            ShinL => Some(ThighL),
+            ShinR => Some(ThighR),
+            FootL => Some(ShinL),
+            FootR => Some(ShinR),
+        }
+    }
         }
     }
 }
