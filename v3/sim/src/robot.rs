@@ -596,6 +596,24 @@ impl Robot {
             caps[ft as usize] =
                 Capsule { a: add(ankle, fd, -FOOT_BACK), b: add(ankle, fd, FOOT_FRONT), r: FOOT_R };
         }
+
+        // Fallen: rotate the whole body to lie on its back about the root.
+        if self.fallen || self.is_ko() {
+            let phi = f * std::f32::consts::FRAC_PI_2;
+            let (s, c) = phi.sin_cos();
+            let rot = |p: [f32; 2]| -> [f32; 2] {
+                let (dx, dy) = (p[0] - root[0], p[1] - root[1]);
+                [root[0] + dx * c - dy * s, root[1] + dx * s + dy * c]
+            };
+            for cp in caps.iter_mut() {
+                cp.a = rot(cp.a);
+                cp.b = rot(cp.b);
+            }
+            self.sword.a = rot(self.sword.a);
+            self.sword.b = rot(self.sword.b);
+            self.shield.a = rot(self.shield.a);
+            self.shield.b = rot(self.shield.b);
+        }
         }
     }
 }
