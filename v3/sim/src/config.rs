@@ -23,3 +23,4 @@ pub const ENERGY_REGEN: f32 = 8.0;
 /// Energy drained per second while the shield guard is held.
 pub const GUARD_DRAIN: f32 = 5.0;
 /// Energy cost per radian of joint motion.
+pub const MOTOR_COST: f32 = 0.5;
