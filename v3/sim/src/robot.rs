@@ -484,6 +484,18 @@ impl Robot {
     pub fn is_ko(&self) -> bool {
         self.is_destroyed(Part::Head) || self.is_destroyed(Part::Torso)
     }
+
+    pub fn state(&self) -> State {
+        if self.is_ko() {
+            State::Ko
+        } else if self.fallen {
+            State::Fallen
+        } else if self.stagger_timer > 0.0 {
+            State::Staggered
+        } else {
+            State::Idle
+        }
+    }
         }
     }
 }
