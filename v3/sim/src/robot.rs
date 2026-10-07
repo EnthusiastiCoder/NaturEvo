@@ -230,6 +230,31 @@ const TABLE: [(f32, f32, f32, f32); 13] = [
     (40.0, 60.0, 0.30, 0.6),   // FootL
     (40.0, 60.0, 0.30, 0.6),   // FootR
 ];
+
+// Geometry (metres).
+const PELVIS_LEN: f32 = 0.3;
+const PELVIS_R: f32 = 0.25;
+const TORSO_LEN: f32 = 1.0;
+const TORSO_R: f32 = 0.3;
+const SHOULDER_UP: f32 = 0.8; // along torso from its base
+const HEAD_NEAR: f32 = 0.25;
+const HEAD_FAR: f32 = 0.4;
+const HEAD_R: f32 = 0.25;
+const UARM_LEN: f32 = 0.8;
+const UARM_R: f32 = 0.14;
+const FARM_LEN: f32 = 0.8;
+const FARM_R: f32 = 0.12;
+const THIGH_LEN: f32 = 0.9;
+const THIGH_R: f32 = 0.17;
+const SHIN_LEN: f32 = 0.9;
+const SHIN_R: f32 = 0.12;
+const FOOT_BACK: f32 = 0.15;
+const FOOT_FRONT: f32 = 0.35;
+const FOOT_R: f32 = 0.1;
+const SWORD_LEN: f32 = 2.2;
+const SWORD_R: f32 = 0.05;
+const SHIELD_LEN: f32 = 1.2;
+const SHIELD_R: f32 = 0.05;
         }
     }
 }
