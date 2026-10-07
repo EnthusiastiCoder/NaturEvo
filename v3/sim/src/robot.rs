@@ -283,6 +283,8 @@ pub struct Robot {
     pub strike_quality: f32,
     pub free_regen_time: f32,
     pub shield_integrity: f32,
+    /// Signed joint angular velocity of the last physics tick, rad/s (sensing).
+    pub joint_vel: [f32; 12],
     hp: [f32; 13],
     detached: [bool; 13],
     angles: [f32; 12],
@@ -336,6 +338,7 @@ impl Robot {
             strike_quality: 1.0,
             free_regen_time: 0.0,
             shield_integrity: 100.0,
+            joint_vel: [0.0; 12],
             hp,
             detached: [false; 13],
             angles,
@@ -763,6 +766,7 @@ impl Robot {
             };
             let step = (target - self.angles[i]).clamp(-speed * dt, speed * dt);
             self.angles[i] = (self.angles[i] + step).clamp(lo, hi);
+            self.joint_vel[i] = step / dt;
             let omega = step.abs() / dt;
             cost += omega * MOTOR_COST * dt;
             if omega > 0.5 * j.max_speed() {
