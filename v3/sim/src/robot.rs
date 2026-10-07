@@ -21,6 +21,8 @@ impl Role {
         }
     }
 }
+
+pub const DT: f32 = PHYS_DT;
         }
     }
 }
