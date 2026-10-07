@@ -527,6 +527,13 @@ impl Robot {
             None => self.caps[p as usize],
         }
     }
+
+    /// Recompute all capsules, sword and shield from joint angles, root x and the ground constraint.
+    pub fn fk(&mut self) {
+        let f = self.facing;
+        let g = |j: Joint| self.angles[j as usize];
+        let root = [self.x, 0.0];
+        let mut caps = [ZERO_CAP; 13];
         }
     }
 }
