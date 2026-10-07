@@ -103,6 +103,22 @@ impl Part {
         matches!(self, ThighL | ThighR | ShinL | ShinR | FootL | FootR)
     }
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Joint {
+    Neck,
+    Waist,
+    ShoulderL,
+    ShoulderR,
+    ElbowL,
+    ElbowR,
+    HipL,
+    HipR,
+    KneeL,
+    KneeR,
+    AnkleL,
+    AnkleR,
+}
         }
     }
 }
