@@ -125,3 +125,20 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .landing-empty code { background: var(--bg); padding: 2px 6px; border-radius: 4px; word-break: break-all; }
 .landing-empty .cmds li { margin: 6px 0; }
 @media (max-width: 900px) { [data-view="landing"] #landing { grid-template-columns: 1fr; } }
+
+/* fight view (WS5) */
+.fv { display: grid; grid-template-rows: var(--bar) 1fr; gap: var(--gap); height: 100%; min-height: 0; padding: var(--gap); }
+.fv .btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; color: var(--text); border: 1px solid var(--line); border-radius: var(--radius); }
+.fv-stage { position: relative; min-height: 0; overflow: hidden; border-radius: var(--radius); }
+#fv-canvas { position: absolute; inset: 0; }
+.fv-hud { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; justify-content: space-between; pointer-events: none; gap: 8px; }
+.fv-side { background: color-mix(in srgb, var(--panel) 85%, transparent); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 8px; width: 190px; pointer-events: auto; }
+.fv-name { font-weight: 600; } .fv-state { color: var(--accent); font-weight: 400; }
+.fv-bar-row { height: 6px; background: var(--line); border-radius: 3px; margin: 4px 44px 4px 0; overflow: hidden; }
+.fv-bar-row .b { display: block; height: 100%; }
+.b.hp { background: #3fb950; } .b.en { background: #4aa3ff; } .b.po { background: #e6c229; }
+.fv-sil { position: absolute; right: 8px; top: 8px; width: 34px; height: 61px; } .fv-sil rect { stroke: var(--bg); stroke-width: 0.6; }
+.fv-side { position: relative; }
+.fv-tally { display: flex; gap: 8px; color: var(--muted); font-size: 12px; }
+.fv-help, .fv-result { position: absolute; left: 50%; transform: translateX(-50%); background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 12px; max-width: 70%; }
+.fv-help { bottom: 8px; } .fv-result { top: 12px; font-weight: 600; }
