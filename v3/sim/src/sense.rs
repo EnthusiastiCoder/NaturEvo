@@ -7,5 +7,5 @@ use crate::rng::Rng;
 use crate::robot::{Capsule, Joint, Part, Robot, State};
 use std::ops::Range;
 
-/// Number of normalised network inputs (plan section 3: about 100).
+/// Number of normalised network inputs.
 pub const N_IN: usize = 104;
