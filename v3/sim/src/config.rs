@@ -36,3 +36,4 @@ pub const FALL_TIME: f32 = 1.5;
 pub const FALL_MARGIN_TIME: f32 = 0.4;
 /// Damage multiplier while staggered (exposed) or fallen.
 pub const EXPOSED_MULT: f32 = 1.5;
+/// Maximum walking speed, m/s.
