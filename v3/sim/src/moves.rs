@@ -69,3 +69,7 @@ pub fn balance_factor(margin: f32, posture: f32, kick: bool) -> f32 {
 pub fn raw_impact(m_eff: f32, v_n: f32, a: f32, tm: f32, h: f32, b: f32) -> f32 {
     (0.5 * m_eff * v_n * v_n * (0.5 + 0.5 * a) * tm * h * b).min(IMPACT_CAP)
 }
+
+fn parts_ok(r: &Robot, parts: &[Part]) -> bool {
+    parts.iter().all(|p| !r.is_disabled(*p))
+}
