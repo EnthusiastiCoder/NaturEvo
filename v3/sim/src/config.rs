@@ -12,3 +12,4 @@ pub const ARENA_WIDTH: f32 = 14.0;
 // ---- Robot body (WS1) ----
 /// Cap applied to a raw impact before zone damage and posture.
 pub const IMPACT_CAP: f32 = 200.0;
+/// Reference impact for defence credit normalisation.
