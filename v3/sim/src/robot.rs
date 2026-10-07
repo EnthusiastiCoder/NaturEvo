@@ -310,6 +310,10 @@ fn dir(f: f32, theta: f32) -> [f32; 2] {
 fn add(p: [f32; 2], d: [f32; 2], s: f32) -> [f32; 2] {
     [p[0] + d[0] * s, p[1] + d[1] * s]
 }
+
+fn cap_bottom(c: &Capsule) -> f32 {
+    c.a[1].min(c.b[1]) - c.r
+}
         }
     }
 }
