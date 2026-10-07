@@ -34,3 +34,14 @@ pub fn health_factor(r: &Robot, m: Move) -> f32 {
     let js = required_joints(m);
     js.iter().map(|j| r.torque_scale(*j)).sum::<f32>() / js.len() as f32
 }
+
+/// Timing: fraction of consecutive proximal->distal pairs whose peak times are in order.
+/// Returns Tm = 0.6 + 0.4 * frac.
+pub fn chain_quality(peak_times: &[f32]) -> f32 {
+    if peak_times.len() < 2 {
+        return 1.0;
+    }
+    let pairs = peak_times.len() - 1;
+    let ok = peak_times.windows(2).filter(|w| w[0] <= w[1]).count();
+    0.6 + 0.4 * ok as f32 / pairs as f32
+}
