@@ -270,6 +270,36 @@ struct Debris {
     cap: Capsule,
     vy: f32,
 }
+
+#[derive(Clone, Debug)]
+pub struct Robot {
+    pub role: Role,
+    pub x: f32,
+    pub facing: f32,
+    pub energy: f32,
+    pub posture: f32,
+    pub sword_ang_vel: f32,
+    pub sword_moving_since: f32,
+    pub strike_quality: f32,
+    pub free_regen_time: f32,
+    pub shield_integrity: f32,
+    hp: [f32; 13],
+    detached: [bool; 13],
+    angles: [f32; 12],
+    caps: [Capsule; 13],
+    sword: Capsule,
+    sword_prev: Capsule,
+    shield: Capsule,
+    debris: Vec<Option<Debris>>,
+    com_off: f32,
+    com_vel: f32,
+    neg_margin_time: f32,
+    since_hit: f32,
+    stagger_timer: f32,
+    fallen: bool,
+    fall_timer: f32,
+    guard_intent: bool,
+}
         }
     }
 }
