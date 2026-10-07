@@ -614,6 +614,27 @@ impl Robot {
             self.shield.a = rot(self.shield.a);
             self.shield.b = rot(self.shield.b);
         }
+
+        // Ground solve: lowest attached part touches y = 0.
+        let mut low = f32::MAX;
+        for p in Part::ALL {
+            if !self.detached[p as usize] {
+                low = low.min(cap_bottom(&caps[p as usize]));
+            }
+        }
+        if low == f32::MAX {
+            low = 0.0;
+        }
+        for cp in caps.iter_mut() {
+            cp.a[1] -= low;
+            cp.b[1] -= low;
+        }
+        for cp in [&mut self.sword, &mut self.shield] {
+            cp.a[1] -= low;
+            cp.b[1] -= low;
+        }
+        self.caps = caps;
+    }
         }
     }
 }
