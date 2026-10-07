@@ -28,3 +28,9 @@ pub fn required_joints(m: Move) -> &'static [Joint] {
         Move::Dodge => &[HipL, HipR, KneeL, KneeR, AnkleL, AnkleR],
     }
 }
+
+/// Mean torque scale over the move's chain joints.
+pub fn health_factor(r: &Robot, m: Move) -> f32 {
+    let js = required_joints(m);
+    js.iter().map(|j| r.torque_scale(*j)).sum::<f32>() / js.len() as f32
+}
