@@ -357,6 +357,20 @@ impl Robot {
         r.sword_prev = r.sword;
         r
     }
+
+    // ---- static part data ----
+    pub fn part_mass(&self, p: Part) -> f32 {
+        TABLE[p as usize].0
+    }
+    pub fn max_hp(&self, p: Part) -> f32 {
+        TABLE[p as usize].1
+    }
+    pub fn armour(&self, p: Part) -> f32 {
+        TABLE[p as usize].2
+    }
+    pub fn zone_mult(&self, p: Part) -> f32 {
+        TABLE[p as usize].3
+    }
         }
     }
 }
