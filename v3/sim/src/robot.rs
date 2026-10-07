@@ -150,6 +150,25 @@ impl Joint {
         };
         (lo.to_radians(), hi.to_radians())
     }
+
+    /// The part this joint moves (the distal part).
+    pub fn part(&self) -> Part {
+        use Joint::*;
+        match self {
+            Neck => Part::Head,
+            Waist => Part::Torso,
+            ShoulderL => Part::UArmL,
+            ShoulderR => Part::UArmR,
+            ElbowL => Part::FArmL,
+            ElbowR => Part::FArmR,
+            HipL => Part::ThighL,
+            HipR => Part::ThighR,
+            KneeL => Part::ShinL,
+            KneeR => Part::ShinR,
+            AnkleL => Part::FootL,
+            AnkleR => Part::FootR,
+        }
+    }
         }
     }
 }
