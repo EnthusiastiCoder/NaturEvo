@@ -102,3 +102,18 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
   });
   return scene;
 }
+
+/** Running defence tally up to tick. Dodge and hit events carry the fighter; parry/block scale the final tally by progress. */
+export function tallyAt(fight: Fight, who: number, tick: number) {
+  const t = { parry: 0, block: 0, dodge: 0, hit: 0 };
+  const final = fight.result.defence[who];
+  for (const e of fight.events) {
+    if (e.t > tick) continue;
+    if (e.kind === 'dodge' && e.who === who) t.dodge++;
+    if (e.kind === 'hit' && e.victim === who) t.hit++;
+  }
+  const p = Math.min(1, tick / (fight.result.ticks || 1));
+  t.parry = Math.round(final.parry * p);
+  t.block = Math.round(final.block * p);
+  return t;
+}
