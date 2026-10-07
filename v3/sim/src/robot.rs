@@ -255,6 +255,15 @@ const SWORD_LEN: f32 = 2.2;
 const SWORD_R: f32 = 0.05;
 const SHIELD_LEN: f32 = 1.2;
 const SHIELD_R: f32 = 0.05;
+
+const GUARD_SHOULDER: f32 = 60.0 * std::f32::consts::PI / 180.0;
+const GUARD_ELBOW: f32 = 50.0 * std::f32::consts::PI / 180.0;
+/// Impulse (N s equivalent, test and combat unit) to CoM velocity (m/s).
+const IMPULSE_TO_VEL: f32 = 0.5;
+// Inverted-pendulum recovery: spring, damping (about zeta 0.7) and falling rate.
+const BAL_K: f32 = 20.0;
+const BAL_C: f32 = 6.3;
+const BAL_FALL: f32 = 10.0;
         }
     }
 }
