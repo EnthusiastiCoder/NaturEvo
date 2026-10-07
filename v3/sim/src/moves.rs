@@ -45,3 +45,13 @@ pub fn chain_quality(peak_times: &[f32]) -> f32 {
     let ok = peak_times.windows(2).filter(|w| w[0] <= w[1]).count();
     0.6 + 0.4 * ok as f32 / pairs as f32
 }
+
+/// Clamped cosine between strike velocity and contact normal.
+pub fn alignment(v: [f32; 2], n: [f32; 2]) -> f32 {
+    let lv = (v[0] * v[0] + v[1] * v[1]).sqrt();
+    let ln = (n[0] * n[0] + n[1] * n[1]).sqrt();
+    if lv < 1e-9 || ln < 1e-9 {
+        return 0.0;
+    }
+    ((v[0] * n[0] + v[1] * n[1]) / (lv * ln)).max(0.0)
+}
