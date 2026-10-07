@@ -10,3 +10,4 @@ pub const MAX_TICKS: u32 = 900;
 pub const ARENA_WIDTH: f32 = 14.0;
 
 // ---- Robot body (WS1) ----
+/// Cap applied to a raw impact before zone damage and posture.
