@@ -515,6 +515,10 @@ impl Robot {
     pub fn apply_impulse(&mut self, imp: f32) {
         self.com_vel += imp * IMPULSE_TO_VEL;
     }
+
+    pub fn joint_angle(&self, j: Joint) -> f32 {
+        self.angles[j as usize]
+    }
         }
     }
 }
