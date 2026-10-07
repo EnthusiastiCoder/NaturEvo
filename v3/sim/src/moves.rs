@@ -73,3 +73,20 @@ pub fn raw_impact(m_eff: f32, v_n: f32, a: f32, tm: f32, h: f32, b: f32) -> f32 
 fn parts_ok(r: &Robot, parts: &[Part]) -> bool {
     parts.iter().all(|p| !r.is_disabled(*p))
 }
+
+pub fn move_possible(r: &Robot, m: Move) -> bool {
+    if matches!(r.state(), State::Ko) {
+        return false;
+    }
+    if !required_joints(m).iter().all(|j| !r.is_disabled(j.part())) {
+        return false;
+    }
+    match m {
+        Move::Slash | Move::Thrust | Move::Parry => r.has_sword(),
+        Move::ShieldBash => r.has_shield(),
+        Move::Guard => r.shield_active(),
+        Move::KickR => parts_ok(r, &[Part::ThighL, Part::ShinL, Part::FootL, Part::Pelvis]) && r.balance_margin() > -0.05,
+        Move::KickL => parts_ok(r, &[Part::ThighR, Part::ShinR, Part::FootR, Part::Pelvis]) && r.balance_margin() > -0.05,
+        Move::Dodge => parts_ok(r, &[Part::Pelvis]),
+    }
+}
