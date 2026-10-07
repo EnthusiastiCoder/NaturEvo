@@ -14,3 +14,4 @@ pub const ARENA_WIDTH: f32 = 14.0;
 pub const IMPACT_CAP: f32 = 200.0;
 /// Reference impact for defence credit normalisation.
 pub const IMPACT_REF: f32 = 60.0;
+/// Fitness score of a draw (strictly worse than any loss).
