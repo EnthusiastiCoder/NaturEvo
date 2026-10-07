@@ -27,3 +27,4 @@ pub const MOTOR_COST: f32 = 0.5;
 /// Torque scale cap when the energy pool is empty.
 pub const EMPTY_ENERGY_TORQUE: f32 = 0.3;
 /// Posture decay per second (after `POSTURE_DECAY_DELAY` without a hit).
+pub const POSTURE_DECAY: f32 = 15.0;
