@@ -580,6 +580,22 @@ impl Robot {
             let sd = dir(f, fore_ang[1] + std::f32::consts::FRAC_PI_4);
             self.sword = Capsule { a: hand[1], b: add(hand[1], sd, SWORD_LEN), r: SWORD_R };
         }
+
+        for (hj, kj, aj, th, sh, ft) in [
+            (Joint::HipL, Joint::KneeL, Joint::AnkleL, Part::ThighL, Part::ShinL, Part::FootL),
+            (Joint::HipR, Joint::KneeR, Joint::AnkleR, Part::ThighR, Part::ShinR, Part::FootR),
+        ] {
+            let th_ang = g(hj);
+            let knee = add(root, dir(f, th_ang), THIGH_LEN);
+            caps[th as usize] = Capsule { a: root, b: knee, r: THIGH_R };
+            let sh_ang = th_ang - g(kj);
+            let ankle = add(knee, dir(f, sh_ang), SHIN_LEN);
+            caps[sh as usize] = Capsule { a: knee, b: ankle, r: SHIN_R };
+            let e = sh_ang + g(aj);
+            let fd = [f * e.cos(), e.sin()];
+            caps[ft as usize] =
+                Capsule { a: add(ankle, fd, -FOOT_BACK), b: add(ankle, fd, FOOT_FRONT), r: FOOT_R };
+        }
         }
     }
 }
