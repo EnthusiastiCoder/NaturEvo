@@ -197,6 +197,14 @@ impl Joint {
         lo + (t.clamp(-1.0, 1.0) + 1.0) * 0.5 * (hi - lo)
     }
 }
+
+// Normalised targets (-1..1 over the joint range).
+// Order: Neck, Waist, ShoulderL, ShoulderR, ElbowL, ElbowR, HipL, HipR, KneeL, KneeR, AnkleL, AnkleR.
+pub const STAND_TARGETS: [f32; 12] = [0.0, 0.0, -0.4, -0.4, 0.0, 0.0, -0.2, -0.2, -1.0, -1.0, 0.0, 0.0];
+/// Left (shield) arm raised: shoulder 80 deg, elbow ~90 deg, forearm nearly vertical in front of the head.
+pub const GUARD_TARGETS: [f32; 12] = [0.0, 0.0, 0.1, -0.4, 0.29, 0.0, -0.2, -0.2, -1.0, -1.0, 0.0, 0.0];
+/// Staggered recoil: lean back, head back, arms flung out.
+pub const RECOIL_TARGETS: [f32; 12] = [-0.6, -0.8, -0.8, -0.8, -0.3, -0.3, -0.2, -0.2, -1.0, -1.0, 0.0, 0.0];
         }
     }
 }
