@@ -182,6 +182,15 @@ impl Joint {
             AnkleL | AnkleR => 5.0,
         }
     }
+
+    /// Angle (rad) the joint relaxes to when its part is disabled or the robot is down.
+    fn relaxed(&self) -> f32 {
+        use Joint::*;
+        match self {
+            ElbowL | ElbowR => 0.3,
+            _ => 0.0,
+        }
+    }
         }
     }
 }
