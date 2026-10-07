@@ -205,6 +205,14 @@ pub const STAND_TARGETS: [f32; 12] = [0.0, 0.0, -0.4, -0.4, 0.0, 0.0, -0.2, -0.2
 pub const GUARD_TARGETS: [f32; 12] = [0.0, 0.0, 0.1, -0.4, 0.29, 0.0, -0.2, -0.2, -1.0, -1.0, 0.0, 0.0];
 /// Staggered recoil: lean back, head back, arms flung out.
 pub const RECOIL_TARGETS: [f32; 12] = [-0.6, -0.8, -0.8, -0.8, -0.3, -0.3, -0.2, -0.2, -1.0, -1.0, 0.0, 0.0];
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum State {
+    Idle,
+    Staggered,
+    Fallen,
+    Ko,
+}
         }
     }
 }
