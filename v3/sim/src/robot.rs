@@ -30,6 +30,23 @@ pub struct Capsule {
     pub b: [f32; 2],
     pub r: f32,
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Part {
+    Head,
+    Torso,
+    Pelvis,
+    UArmL,
+    UArmR,
+    FArmL,
+    FArmR,
+    ThighL,
+    ThighR,
+    ShinL,
+    ShinR,
+    FootL,
+    FootR,
+}
         }
     }
 }
