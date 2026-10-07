@@ -685,6 +685,17 @@ impl Robot {
         }
         m
     }
+
+    fn can_get_up(&self) -> bool {
+        use Part::*;
+        if Part::ALL.iter().any(|p| p.is_leg() && self.is_destroyed(*p)) {
+            return false;
+        }
+        !self.is_disabled(Pelvis)
+            && !self.is_disabled(ThighL)
+            && !self.is_disabled(ThighR)
+            && !(self.is_disabled(ShinL) && self.is_disabled(ShinR))
+    }
         }
     }
 }
