@@ -519,6 +519,14 @@ impl Robot {
     pub fn joint_angle(&self, j: Joint) -> f32 {
         self.angles[j as usize]
     }
+
+    // ---- kinematics ----
+    pub fn capsule(&self, p: Part) -> Capsule {
+        match &self.debris[p as usize] {
+            Some(d) => d.cap,
+            None => self.caps[p as usize],
+        }
+    }
         }
     }
 }
