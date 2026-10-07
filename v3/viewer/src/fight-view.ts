@@ -77,3 +77,28 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
   };
   const res = $('fv-result');
   scene.onEnd = () => { res.hidden = false; res.textContent = `Result: ${fight.result.outcome.replace('_', ' ')} after ${(fight.result.ticks / 60).toFixed(1)} s`; };
+
+  const root = document.documentElement;
+  let theme: Theme = (root.dataset.theme as Theme) || 'dark';
+  const syncTheme = () => { applyTheme(root, theme); $('fv-theme').innerHTML = svg(themeIconPath(theme)); };
+  syncTheme();
+  const play = $('fv-play');
+  const syncPlay = () => { play.innerHTML = svg(scene.playing ? ICON.pause : ICON.play); };
+  const toggle = () => { scene.playing = !scene.playing; syncPlay(); };
+  const restart = () => { scene.seek(0); res.hidden = true; scene.playing = true; syncPlay(); };
+  play.onclick = toggle;
+  $('fv-restart').onclick = restart;
+  $<HTMLSelectElement>('fv-speed').onchange = (e) => { scene.speed = Number((e.target as HTMLSelectElement).value); };
+  $<HTMLInputElement>('fv-accent').oninput = (e) => setAccent(root, (e.target as HTMLInputElement).value);
+  $('fv-theme').onclick = () => { theme = nextTheme(theme); syncTheme(); };
+  $('fv-info').onclick = () => { const h = $('fv-help'); h.hidden = !h.hidden; };
+  window.addEventListener('keydown', (e) => {
+    if ((e.target as HTMLElement).matches?.('input,select')) return;
+    if (e.key === ' ') { e.preventDefault(); toggle(); }
+    else if (e.key === 'r' || e.key === 'R') restart();
+    else if (e.key === 't' || e.key === 'T') { theme = nextTheme(theme); syncTheme(); }
+    else if (e.key === 'ArrowRight') { scene.playing = false; syncPlay(); scene.seek(scene.tick + 2); }
+    else if (e.key === 'ArrowLeft') { scene.playing = false; syncPlay(); scene.seek(scene.tick - 2); }
+  });
+  return scene;
+}
