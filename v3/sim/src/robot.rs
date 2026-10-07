@@ -811,6 +811,19 @@ impl Robot {
         }
 
         self.fk();
+
+        // Debris falls.
+        for d in self.debris.iter_mut().flatten() {
+            d.vy -= 9.8 * dt;
+            let mut dy = d.vy * dt;
+            let bottom = cap_bottom(&d.cap);
+            if bottom + dy < 0.0 {
+                dy = -bottom;
+                d.vy = 0.0;
+            }
+            d.cap.a[1] += dy;
+            d.cap.b[1] += dy;
+        }
         }
     }
 }
