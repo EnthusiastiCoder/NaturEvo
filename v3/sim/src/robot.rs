@@ -659,6 +659,32 @@ impl Robot {
         }
         [sx / m + self.com_off, sy / m]
     }
+
+    /// Distance of the CoM x inside the grounded-foot span (negative outside).
+    pub fn balance_margin(&self) -> f32 {
+        let (mut lo, mut hi) = (f32::MAX, f32::MIN);
+        for p in [Part::FootL, Part::FootR] {
+            if self.detached[p as usize] {
+                continue;
+            }
+            let c = &self.caps[p as usize];
+            if cap_bottom(c) <= 0.08 {
+                lo = lo.min(c.a[0].min(c.b[0]) - c.r);
+                hi = hi.max(c.a[0].max(c.b[0]) + c.r);
+            }
+        }
+        if lo > hi {
+            return -1.0;
+        }
+        let cx = self.com()[0];
+        let mut m = (cx - lo).min(hi - cx);
+        for p in [Part::ThighL, Part::ThighR, Part::ShinL, Part::ShinR] {
+            if self.is_disabled(p) {
+                m -= 0.5;
+            }
+        }
+        m
+    }
         }
     }
 }
