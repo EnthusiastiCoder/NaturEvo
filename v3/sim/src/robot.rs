@@ -314,6 +314,49 @@ fn add(p: [f32; 2], d: [f32; 2], s: f32) -> [f32; 2] {
 fn cap_bottom(c: &Capsule) -> f32 {
     c.a[1].min(c.b[1]) - c.r
 }
+
+impl Robot {
+    pub fn new(role: Role) -> Robot {
+        let mut angles = [0.0; 12];
+        for j in Joint::ALL {
+            angles[j as usize] = j.to_angle(STAND_TARGETS[j as usize]);
+        }
+        let mut hp = [0.0; 13];
+        for p in Part::ALL {
+            hp[p as usize] = TABLE[p as usize].1;
+        }
+        let mut r = Robot {
+            role,
+            x: 0.0,
+            facing: 1.0,
+            energy: ENERGY_MAX,
+            posture: 0.0,
+            sword_ang_vel: 0.0,
+            sword_moving_since: 0.0,
+            strike_quality: 1.0,
+            free_regen_time: 0.0,
+            shield_integrity: 100.0,
+            hp,
+            detached: [false; 13],
+            angles,
+            caps: [ZERO_CAP; 13],
+            sword: ZERO_CAP,
+            sword_prev: ZERO_CAP,
+            shield: ZERO_CAP,
+            debris: vec![None; 13],
+            com_off: 0.0,
+            com_vel: 0.0,
+            neg_margin_time: 0.0,
+            since_hit: 10.0,
+            stagger_timer: 0.0,
+            fallen: false,
+            fall_timer: 0.0,
+            guard_intent: false,
+        };
+        r.fk();
+        r.sword_prev = r.sword;
+        r
+    }
         }
     }
 }
