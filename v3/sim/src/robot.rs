@@ -824,6 +824,22 @@ impl Robot {
             d.cap.a[1] += dy;
             d.cap.b[1] += dy;
         }
+
+        // Sword kinematics.
+        let s = self.sword;
+        let ang = (s.b[1] - s.a[1]).atan2((s.b[0] - s.a[0]) * self.facing);
+        let mut dang = ang - prev_sword_angle;
+        while dang > std::f32::consts::PI {
+            dang -= 2.0 * std::f32::consts::PI;
+        }
+        while dang < -std::f32::consts::PI {
+            dang += 2.0 * std::f32::consts::PI;
+        }
+        self.sword_ang_vel = dang / dt;
+        if self.sword_ang_vel.abs() > 1.0 {
+            self.sword_moving_since += dt;
+        } else {
+            self.sword_moving_since = 0.0;
         }
     }
 }
