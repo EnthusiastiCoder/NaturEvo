@@ -47,6 +47,23 @@ pub enum Part {
     FootL,
     FootR,
 }
+
+impl Part {
+    pub const ALL: [Part; 13] = [
+        Part::Head,
+        Part::Torso,
+        Part::Pelvis,
+        Part::UArmL,
+        Part::UArmR,
+        Part::FArmL,
+        Part::FArmR,
+        Part::ThighL,
+        Part::ThighR,
+        Part::ShinL,
+        Part::ShinR,
+        Part::FootL,
+        Part::FootR,
+    ];
         }
     }
 }
