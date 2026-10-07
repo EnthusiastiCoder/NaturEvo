@@ -85,6 +85,18 @@ impl Part {
             FootR => Some(ShinR),
         }
     }
+
+    /// True if `self` is `anc` or below it in the chain.
+    pub fn is_under(&self, anc: Part) -> bool {
+        let mut p = Some(*self);
+        while let Some(c) = p {
+            if c == anc {
+                return true;
+            }
+            p = c.parent();
+        }
+        false
+    }
         }
     }
 }
