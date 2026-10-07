@@ -49,3 +49,31 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
   const $ = <T extends HTMLElement>(id: string) => view.querySelector<T>('#' + id)!;
   const scene = new FightScene();
   await scene.mount($('fv-canvas'), fight);
+
+  const hud = $('fv-hud');
+  const sideHtml = (i: number) => `<div class="fv-side" id="fv-side${i}">
+    <div class="fv-name">${i === 0 ? 'Hero' : 'Monster'} <span class="fv-state"></span></div>
+    <div class="fv-bar-row" title="Core (torso) health"><i class="b hp"></i></div>
+    <div class="fv-bar-row" title="Energy: spent by movement and guarding"><i class="b en"></i></div>
+    <div class="fv-bar-row" title="Posture: full means staggered"><i class="b po"></i></div>
+    <svg class="fv-sil" viewBox="0 0 40 72">${SIL.map(([x, y, w, h], k) => `<rect x="${x - w}" y="${y - h / 2}" width="${w * 2}" height="${h}" rx="2"><title>${PART_NAMES[k]}</title></rect>`).join('')}</svg>
+    <div class="fv-tally"></div></div>`;
+  hud.innerHTML = sideHtml(0) + sideHtml(1);
+  const sides = [0, 1].map((i) => hud.querySelector<HTMLElement>(`#fv-side${i}`)!);
+  const setBar = (el: HTMLElement, cls: string, v: number) => { el.querySelector<HTMLElement>('.' + cls)!.style.width = `${Math.max(0, Math.min(100, v))}%`; };
+  let lastKey = '';
+  scene.onFrame = (fr, tick) => {
+    const key = `${fr.t}|${Math.round(tick)}`;
+    if (key === lastKey) return;
+    lastKey = key;
+    const m = hudModel(fr);
+    m.fighters.forEach((f, i) => {
+      setBar(sides[i], 'hp', f.coreHp); setBar(sides[i], 'en', f.energy); setBar(sides[i], 'po', f.posture);
+      sides[i].querySelectorAll<SVGRectElement>('rect').forEach((r, k) => { r.style.fill = f.parts[k].color; });
+      sides[i].querySelector('.fv-state')!.textContent = fr.f[i].state === 'idle' ? '' : fr.f[i].state;
+      const items = defenceTallyModel(tallyAt(fight, i, tick)).items;
+      sides[i].querySelector('.fv-tally')!.innerHTML = items.map((x) => `<span title="${esc(x.tooltip)}">${x.key} ${x.count}</span>`).join('');
+    });
+  };
+  const res = $('fv-result');
+  scene.onEnd = () => { res.hidden = false; res.textContent = `Result: ${fight.result.outcome.replace('_', ' ')} after ${(fight.result.ticks / 60).toFixed(1)} s`; };
