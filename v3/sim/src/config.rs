@@ -19,3 +19,4 @@ pub const DRAW_SCORE: f32 = -6.0;
 /// Energy pool maximum.
 pub const ENERGY_MAX: f32 = 100.0;
 /// Energy regenerated per second when idle.
+pub const ENERGY_REGEN: f32 = 8.0;
