@@ -397,6 +397,15 @@ impl Robot {
     pub fn is_detached(&self, p: Part) -> bool {
         self.detached[p as usize]
     }
+
+    fn detach(&mut self, root: Part) {
+        for p in Part::ALL {
+            if p.is_under(root) && !self.detached[p as usize] {
+                self.detached[p as usize] = true;
+                self.debris[p as usize] = Some(Debris { cap: self.caps[p as usize], vy: 0.0 });
+            }
+        }
+    }
         }
     }
 }
