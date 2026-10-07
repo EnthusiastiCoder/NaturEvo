@@ -545,6 +545,41 @@ impl Robot {
         let hdir = [f * hang.sin(), hang.cos()];
         caps[Part::Head as usize] =
             Capsule { a: add(neck, hdir, HEAD_NEAR), b: add(neck, hdir, HEAD_FAR), r: HEAD_R };
+
+        let shoulder = add(base, tdir, SHOULDER_UP);
+        let mut hand = [[0.0; 2]; 2];
+        let mut fore_ang = [0.0f32; 2];
+        let mut fore_start = [[0.0; 2]; 2];
+        for (i, (sj, ej, up, fo)) in [
+            (Joint::ShoulderL, Joint::ElbowL, Part::UArmL, Part::FArmL),
+            (Joint::ShoulderR, Joint::ElbowR, Part::UArmR, Part::FArmR),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let tu = g(sj) + w;
+            let elbow = add(shoulder, dir(f, tu), UARM_LEN);
+            caps[up as usize] = Capsule { a: shoulder, b: elbow, r: UARM_R };
+            let tf = tu + g(ej);
+            let h = add(elbow, dir(f, tf), FARM_LEN);
+            caps[fo as usize] = Capsule { a: elbow, b: h, r: FARM_R };
+            hand[i] = h;
+            fore_ang[i] = tf;
+            fore_start[i] = elbow;
+        }
+        // Left forearm carries the shield plate: along the forearm, offset forward of it.
+        {
+            let tf = fore_ang[0];
+            let n = dir(f, tf - std::f32::consts::FRAC_PI_2);
+            let c = add(add(fore_start[0], dir(f, tf), 0.5), n, 0.3);
+            let d = dir(f, tf);
+            self.shield = Capsule { a: add(c, d, -SHIELD_LEN * 0.5), b: add(c, d, SHIELD_LEN * 0.5), r: SHIELD_R };
+        }
+        // Right forearm carries the sword, pointing forward-up of the forearm.
+        {
+            let sd = dir(f, fore_ang[1] + std::f32::consts::FRAC_PI_4);
+            self.sword = Capsule { a: hand[1], b: add(hand[1], sd, SWORD_LEN), r: SWORD_R };
+        }
         }
     }
 }
