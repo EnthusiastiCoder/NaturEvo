@@ -302,6 +302,10 @@ pub struct Robot {
 }
 
 const ZERO_CAP: Capsule = Capsule { a: [0.0, 0.0], b: [0.0, 0.0], r: 0.0 };
+
+fn dir(f: f32, theta: f32) -> [f32; 2] {
+    [f * theta.sin(), -theta.cos()]
+}
         }
     }
 }
