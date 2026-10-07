@@ -55,3 +55,12 @@ pub fn alignment(v: [f32; 2], n: [f32; 2]) -> f32 {
     }
     ((v[0] * n[0] + v[1] * n[1]) / (lv * ln)).max(0.0)
 }
+
+/// Balance factor: kicks scale with margin; others 1.0, times 0.8 when posture > 70.
+pub fn balance_factor(margin: f32, posture: f32, kick: bool) -> f32 {
+    let mut b = if kick { (0.5 + margin / 0.5).clamp(0.5, 1.0) } else { 1.0 };
+    if posture > 70.0 {
+        b *= 0.8;
+    }
+    b
+}
