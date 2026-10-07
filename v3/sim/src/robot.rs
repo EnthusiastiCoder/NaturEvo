@@ -119,6 +119,22 @@ pub enum Joint {
     AnkleL,
     AnkleR,
 }
+
+impl Joint {
+    pub const ALL: [Joint; 12] = [
+        Joint::Neck,
+        Joint::Waist,
+        Joint::ShoulderL,
+        Joint::ShoulderR,
+        Joint::ElbowL,
+        Joint::ElbowR,
+        Joint::HipL,
+        Joint::HipR,
+        Joint::KneeL,
+        Joint::KneeR,
+        Joint::AnkleL,
+        Joint::AnkleR,
+    ];
         }
     }
 }
