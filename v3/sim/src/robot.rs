@@ -191,6 +191,12 @@ impl Joint {
             _ => 0.0,
         }
     }
+
+    fn to_angle(&self, t: f32) -> f32 {
+        let (lo, hi) = self.limits();
+        lo + (t.clamp(-1.0, 1.0) + 1.0) * 0.5 * (hi - lo)
+    }
+}
         }
     }
 }
