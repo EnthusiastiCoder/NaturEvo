@@ -640,6 +640,25 @@ impl Robot {
     pub fn total_mass(&self) -> f32 {
         Part::ALL.iter().filter(|p| !self.detached[**p as usize]).map(|p| self.part_mass(*p)).sum()
     }
+
+    /// Mass-weighted centre of the surviving parts (plus the balance offset in x).
+    pub fn com(&self) -> [f32; 2] {
+        let (mut sx, mut sy, mut m) = (0.0, 0.0, 0.0);
+        for p in Part::ALL {
+            if self.detached[p as usize] {
+                continue;
+            }
+            let c = &self.caps[p as usize];
+            let pm = self.part_mass(p);
+            sx += pm * (c.a[0] + c.b[0]) * 0.5;
+            sy += pm * (c.a[1] + c.b[1]) * 0.5;
+            m += pm;
+        }
+        if m <= 0.0 {
+            return [self.x, 0.0];
+        }
+        [sx / m + self.com_off, sy / m]
+    }
         }
     }
 }
