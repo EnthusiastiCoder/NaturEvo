@@ -5,6 +5,7 @@ pub mod combat;
 pub mod config;
 pub mod genome;
 pub mod metrics;
+pub mod moves;
 pub mod net;
 pub mod rng;
 pub mod robot;
