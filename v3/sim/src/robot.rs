@@ -97,6 +97,12 @@ impl Part {
         }
         false
     }
+
+    fn is_leg(&self) -> bool {
+        use Part::*;
+        matches!(self, ThighL | ThighR | ShinL | ShinR | FootL | FootR)
+    }
+}
         }
     }
 }
