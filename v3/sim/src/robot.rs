@@ -135,6 +135,21 @@ impl Joint {
         Joint::AnkleL,
         Joint::AnkleR,
     ];
+
+    /// Joint range in radians.
+    pub fn limits(&self) -> (f32, f32) {
+        use Joint::*;
+        let (lo, hi): (f32, f32) = match self {
+            Neck => (-35.0, 35.0),
+            Waist => (-30.0, 30.0),
+            ShoulderL | ShoulderR => (-30.0, 170.0),
+            ElbowL | ElbowR => (0.0, 140.0),
+            HipL | HipR => (-60.0, 90.0),
+            KneeL | KneeR => (0.0, 130.0),
+            AnkleL | AnkleR => (-30.0, 30.0),
+        };
+        (lo.to_radians(), hi.to_radians())
+    }
         }
     }
 }
