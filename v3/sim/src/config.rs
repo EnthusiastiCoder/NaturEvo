@@ -16,3 +16,4 @@ pub const IMPACT_CAP: f32 = 200.0;
 pub const IMPACT_REF: f32 = 60.0;
 /// Fitness score of a draw (strictly worse than any loss).
 pub const DRAW_SCORE: f32 = -6.0;
+/// Energy pool maximum.
