@@ -809,6 +809,8 @@ impl Robot {
                 self.neg_margin_time = 0.0;
             }
         }
+
+        self.fk();
         }
     }
 }
