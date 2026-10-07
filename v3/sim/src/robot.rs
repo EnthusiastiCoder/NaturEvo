@@ -300,6 +300,8 @@ pub struct Robot {
     fall_timer: f32,
     guard_intent: bool,
 }
+
+const ZERO_CAP: Capsule = Capsule { a: [0.0, 0.0], b: [0.0, 0.0], r: 0.0 };
         }
     }
 }
