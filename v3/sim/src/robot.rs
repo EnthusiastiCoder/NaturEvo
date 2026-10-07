@@ -718,6 +718,30 @@ impl Robot {
             let s = self.sword;
             (s.b[1] - s.a[1]).atan2((s.b[0] - s.a[0]) * self.facing)
         };
+
+        // Timers and state transitions.
+        self.since_hit += dt;
+        if self.stagger_timer > 0.0 {
+            self.stagger_timer = (self.stagger_timer - dt).max(0.0);
+        }
+        let down = self.fallen || self.is_ko();
+        if !self.fallen
+            && !self.is_ko()
+            && (self.is_disabled(Part::Pelvis) || Part::ALL.iter().any(|p| p.is_leg() && self.is_destroyed(*p)))
+        {
+            self.knock_down();
+        }
+        if self.fallen && !self.is_ko() {
+            if self.fall_timer > 0.0 {
+                self.fall_timer -= dt;
+            }
+            if self.fall_timer <= 0.0 && self.can_get_up() {
+                self.fallen = false;
+                self.com_off = 0.0;
+                self.com_vel = 0.0;
+                self.neg_margin_time = 0.0;
+            }
+        }
         }
     }
 }
