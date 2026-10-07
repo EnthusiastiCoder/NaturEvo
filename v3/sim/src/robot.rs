@@ -696,6 +696,19 @@ impl Robot {
             && !self.is_disabled(ThighR)
             && !(self.is_disabled(ShinL) && self.is_disabled(ShinR))
     }
+
+    /// Walk: `drive` in -1..1 (world x), scaled by leg torque, clamped to the arena. Costs energy.
+    pub fn apply_drive(&mut self, drive: f32, dt: f32, arena_width: f32) {
+        if !self.can_act() {
+            return;
+        }
+        let legs = [Joint::HipL, Joint::HipR, Joint::KneeL, Joint::KneeR];
+        let scale = legs.iter().map(|j| self.torque_scale(*j)).sum::<f32>() / 4.0;
+        let d = drive.clamp(-1.0, 1.0);
+        self.x = (self.x + d * DRIVE_SPEED * scale * dt).clamp(0.5, arena_width - 0.5);
+        self.energy = (self.energy - d.abs() * 1.0 * dt).max(0.0);
+        self.fk();
+    }
         }
     }
 }
