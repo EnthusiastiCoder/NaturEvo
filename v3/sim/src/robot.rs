@@ -410,6 +410,16 @@ impl Robot {
     pub fn armour_eff(&self, p: Part) -> f32 {
         self.armour(p) * (0.4 + 0.6 * self.hp_frac(p))
     }
+
+    /// Joint torque scale from part health (and energy). 0 if the part is disabled.
+    pub fn torque_scale(&self, j: Joint) -> f32 {
+        let p = j.part();
+        let mut s = if self.is_disabled(p) { 0.0 } else { (self.hp_frac(p) / 0.5).clamp(0.25, 1.0) };
+        if self.energy <= 0.0 {
+            s = s.min(EMPTY_ENERGY_TORQUE);
+        }
+        s
+    }
         }
     }
 }
