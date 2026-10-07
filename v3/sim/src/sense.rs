@@ -9,3 +9,10 @@ use std::ops::Range;
 
 /// Number of normalised network inputs.
 pub const N_IN: usize = 104;
+
+/// Opponent key points (8 points, x then y each) in own frame, relative to own torso centre.
+pub const OPP_POINTS: Range<usize> = 64..80;
+/// Opponent sword tip velocity (2), speed toward me, time to contact, threat height.
+pub const OPP_SWORD: Range<usize> = 80..85;
+/// Opponent part hp fractions (13).
+pub const OPP_HP: Range<usize> = 85..98;
