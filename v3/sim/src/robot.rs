@@ -169,6 +169,19 @@ impl Joint {
             AnkleR => Part::FootR,
         }
     }
+
+    /// Nominal maximum angular velocity, rad/s.
+    pub fn max_speed(&self) -> f32 {
+        use Joint::*;
+        match self {
+            Neck => 6.0,
+            Waist => 5.0,
+            ShoulderL | ShoulderR | ElbowL | ElbowR => 9.0,
+            HipL | HipR => 5.0,
+            KneeL | KneeR => 6.0,
+            AnkleL | AnkleR => 5.0,
+        }
+    }
         }
     }
 }
