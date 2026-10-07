@@ -534,6 +534,17 @@ impl Robot {
         let g = |j: Joint| self.angles[j as usize];
         let root = [self.x, 0.0];
         let mut caps = [ZERO_CAP; 13];
+
+        caps[Part::Pelvis as usize] = Capsule { a: root, b: [root[0], root[1] + PELVIS_LEN], r: PELVIS_R };
+        let base = [root[0], root[1] + PELVIS_LEN];
+        let w = g(Joint::Waist);
+        let tdir = [f * w.sin(), w.cos()];
+        let neck = add(base, tdir, TORSO_LEN);
+        caps[Part::Torso as usize] = Capsule { a: base, b: neck, r: TORSO_R };
+        let hang = w + g(Joint::Neck);
+        let hdir = [f * hang.sin(), hang.cos()];
+        caps[Part::Head as usize] =
+            Capsule { a: add(neck, hdir, HEAD_NEAR), b: add(neck, hdir, HEAD_FAR), r: HEAD_R };
         }
     }
 }
