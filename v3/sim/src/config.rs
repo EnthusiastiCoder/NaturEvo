@@ -24,3 +24,4 @@ pub const ENERGY_REGEN: f32 = 8.0;
 pub const GUARD_DRAIN: f32 = 5.0;
 /// Energy cost per radian of joint motion.
 pub const MOTOR_COST: f32 = 0.5;
+/// Torque scale cap when the energy pool is empty.
