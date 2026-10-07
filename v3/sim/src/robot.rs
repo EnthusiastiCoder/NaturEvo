@@ -769,6 +769,21 @@ impl Robot {
                 fast = true;
             }
         }
+
+        // Energy.
+        let guarding = self.guard_intent || self.guard_raised();
+        let mut e = self.energy - cost;
+        if guarding && !down && self.energy > 0.0 {
+            e -= GUARD_DRAIN * dt;
+        }
+        let free = self.free_regen_time > 0.0;
+        if free {
+            self.free_regen_time = (self.free_regen_time - dt).max(0.0);
+        }
+        if free || (!fast && !guarding) {
+            e += ENERGY_REGEN * dt;
+        }
+        self.energy = e.clamp(0.0, ENERGY_MAX);
         }
     }
 }
