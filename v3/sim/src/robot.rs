@@ -64,6 +64,11 @@ impl Part {
         Part::FootL,
         Part::FootR,
     ];
+
+    pub fn name(&self) -> &'static str {
+        ["Head", "Torso", "Pelvis", "UArmL", "UArmR", "FArmL", "FArmR", "ThighL", "ThighR", "ShinL", "ShinR", "FootL", "FootR"]
+            [*self as usize]
+    }
         }
     }
 }
