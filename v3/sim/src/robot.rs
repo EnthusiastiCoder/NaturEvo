@@ -371,6 +371,32 @@ impl Robot {
     pub fn zone_mult(&self, p: Part) -> f32 {
         TABLE[p as usize].3
     }
+
+    // ---- health ----
+    pub fn hp(&self, p: Part) -> f32 {
+        self.hp[p as usize]
+    }
+    /// Health fraction 0..1 (overkill below zero reads as 0).
+    pub fn hp_frac(&self, p: Part) -> f32 {
+        (self.hp[p as usize] / self.max_hp(p)).clamp(0.0, 1.0)
+    }
+    /// Test and combat hook: set a part's HP directly, applying the disabled/destroyed thresholds.
+    pub fn set_hp(&mut self, p: Part, hp: f32) {
+        let floor = -0.5 * self.max_hp(p);
+        self.hp[p as usize] = hp.min(self.max_hp(p)).max(floor);
+        if self.is_destroyed(p) {
+            self.detach(p);
+        }
+    }
+    pub fn is_disabled(&self, p: Part) -> bool {
+        self.hp[p as usize] <= 0.0 || self.detached[p as usize]
+    }
+    pub fn is_destroyed(&self, p: Part) -> bool {
+        self.hp[p as usize] <= -0.5 * self.max_hp(p) + 1e-4
+    }
+    pub fn is_detached(&self, p: Part) -> bool {
+        self.detached[p as usize]
+    }
         }
     }
 }
