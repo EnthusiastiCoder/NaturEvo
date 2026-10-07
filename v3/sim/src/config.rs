@@ -21,3 +21,4 @@ pub const ENERGY_MAX: f32 = 100.0;
 /// Energy regenerated per second when idle.
 pub const ENERGY_REGEN: f32 = 8.0;
 /// Energy drained per second while the shield guard is held.
+pub const GUARD_DRAIN: f32 = 5.0;
