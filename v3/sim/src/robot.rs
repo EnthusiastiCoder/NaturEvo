@@ -749,6 +749,26 @@ impl Robot {
         let intent_sh = Joint::ShoulderL.to_angle(eff[Joint::ShoulderL as usize]) >= GUARD_SHOULDER;
         let intent_el = Joint::ElbowL.to_angle(eff[Joint::ElbowL as usize]) >= GUARD_ELBOW;
         self.guard_intent = !down && !staggered && self.has_shield() && intent_sh && intent_el;
+
+        // Motors: rate-limited toward the target, scaled by health.
+        let mut cost = 0.0;
+        let mut fast = false;
+        for j in Joint::ALL {
+            let i = j as usize;
+            let (lo, hi) = j.limits();
+            let (target, speed) = if down || self.is_disabled(j.part()) {
+                (j.relaxed(), j.max_speed() * if down { 0.5 } else { 0.1 })
+            } else {
+                (j.to_angle(eff[i]), j.max_speed() * self.torque_scale(j))
+            };
+            let step = (target - self.angles[i]).clamp(-speed * dt, speed * dt);
+            self.angles[i] = (self.angles[i] + step).clamp(lo, hi);
+            let omega = step.abs() / dt;
+            cost += omega * MOTOR_COST * dt;
+            if omega > 0.5 * j.max_speed() {
+                fast = true;
+            }
+        }
         }
     }
 }
