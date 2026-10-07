@@ -480,6 +480,10 @@ impl Robot {
             self.posture = STAGGER_RESET;
         }
     }
+
+    pub fn is_ko(&self) -> bool {
+        self.is_destroyed(Part::Head) || self.is_destroyed(Part::Torso)
+    }
         }
     }
 }
