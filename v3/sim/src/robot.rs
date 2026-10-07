@@ -496,6 +496,10 @@ impl Robot {
             State::Idle
         }
     }
+
+    pub fn can_act(&self) -> bool {
+        self.state() == State::Idle
+    }
         }
     }
 }
