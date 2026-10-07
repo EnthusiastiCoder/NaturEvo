@@ -31,3 +31,4 @@ pub const POSTURE_DECAY: f32 = 15.0;
 pub const POSTURE_DECAY_DELAY: f32 = 0.5;
 pub const STAGGER_TIME: f32 = 0.8;
 pub const STAGGER_RESET: f32 = 40.0;
+pub const FALL_TIME: f32 = 1.5;
