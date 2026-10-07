@@ -500,6 +500,16 @@ impl Robot {
     pub fn can_act(&self) -> bool {
         self.state() == State::Idle
     }
+
+    pub fn knock_down(&mut self) {
+        if !self.fallen {
+            self.fallen = true;
+            self.fall_timer = FALL_TIME;
+            self.com_off = 0.0;
+            self.com_vel = 0.0;
+            self.neg_margin_time = 0.0;
+        }
+    }
         }
     }
 }
