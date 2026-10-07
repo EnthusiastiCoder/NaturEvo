@@ -635,6 +635,11 @@ impl Robot {
         }
         self.caps = caps;
     }
+
+    // ---- mass, CoM, balance ----
+    pub fn total_mass(&self) -> f32 {
+        Part::ALL.iter().filter(|p| !self.detached[**p as usize]).map(|p| self.part_mass(*p)).sum()
+    }
         }
     }
 }
