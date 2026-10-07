@@ -406,6 +406,10 @@ impl Robot {
             }
         }
     }
+
+    pub fn armour_eff(&self, p: Part) -> f32 {
+        self.armour(p) * (0.4 + 0.6 * self.hp_frac(p))
+    }
         }
     }
 }
