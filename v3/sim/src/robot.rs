@@ -23,6 +23,13 @@ impl Role {
 }
 
 pub const DT: f32 = PHYS_DT;
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Capsule {
+    pub a: [f32; 2],
+    pub b: [f32; 2],
+    pub r: f32,
+}
         }
     }
 }
