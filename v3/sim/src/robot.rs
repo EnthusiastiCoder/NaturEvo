@@ -709,6 +709,15 @@ impl Robot {
         self.energy = (self.energy - d.abs() * 1.0 * dt).max(0.0);
         self.fk();
     }
+
+    // ---- physics step ----
+    /// Advance one physics tick: motors toward targets, energy, posture, balance, falling.
+    pub fn apply_targets(&mut self, targets: &[f32; 12], dt: f32) {
+        self.sword_prev = self.sword;
+        let prev_sword_angle = {
+            let s = self.sword;
+            (s.b[1] - s.a[1]).atan2((s.b[0] - s.a[0]) * self.facing)
+        };
         }
     }
 }
