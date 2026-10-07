@@ -18,3 +18,34 @@ const PART_NAMES = ['Head', 'Torso', 'Pelvis', 'Upper arm L', 'Upper arm R', 'Fo
 const SPEEDS = [0.25, 0.5, 1, 2];
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
+export async function mountFightView(view: HTMLElement, url: string, title: string): Promise<FightScene | null> {
+  let fight: Fight;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    fight = parseFight(await res.json());
+  } catch (e) {
+    view.innerHTML = `<p role="alert" style="padding:16px">Could not load fight (${esc(String(e))}). <a href="#/">Back to start</a></p>`;
+    return null;
+  }
+  view.innerHTML = `
+  <div class="fv">
+    <div class="fv-bar bar">
+      <a href="#/" class="btn" title="Back to the run list" aria-label="Back">${svg(ICON.home)}</a>
+      <h1>${esc(title)}</h1><span class="spacer"></span>
+      <button id="fv-play" title="Play or pause (Space)" aria-label="Play or pause">${svg(ICON.pause)}</button>
+      <button id="fv-restart" title="Restart the fight (R)" aria-label="Restart">${svg(ICON.rotate)}</button>
+      <select id="fv-speed" title="Playback speed" aria-label="Speed">${SPEEDS.map((s) => `<option value="${s}"${s === 1 ? ' selected' : ''}>${s}x</option>`).join('')}</select>
+      <input id="fv-accent" type="color" value="${DEFAULT_ACCENT}" title="Accent colour" aria-label="Accent colour">
+      <button id="fv-theme" title="Toggle light or dark theme (T)" aria-label="Toggle theme"></button>
+      <button id="fv-info" title="What the HUD shows" aria-label="Info">${svg(ICON.info)}</button>
+    </div>
+    <div class="fv-stage"><div id="fv-canvas"></div>
+      <div class="fv-hud" id="fv-hud"></div>
+      <div id="fv-help" class="fv-help" hidden>Bars: core HP (green), energy (blue), posture (yellow; full means staggered). Silhouette: each of 13 parts coloured by health; dark red is disabled. Keys: Space pause, R restart, T theme, arrows step.</div>
+      <div id="fv-result" class="fv-result" hidden></div></div>
+  </div>`;
+  const $ = <T extends HTMLElement>(id: string) => view.querySelector<T>('#' + id)!;
+  const scene = new FightScene();
+  await scene.mount($('fv-canvas'), fight);
