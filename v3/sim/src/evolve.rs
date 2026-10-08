@@ -36,3 +36,4 @@ impl HallOfFame {
     pub fn generations(&self) -> Vec<u32> {
         self.members.iter().map(|g| g.generation).collect()
     }
+    pub fn pick(&self, rng: &mut Rng) -> &Genome {
