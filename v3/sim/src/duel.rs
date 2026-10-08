@@ -35,3 +35,13 @@ pub enum Outcome {
     WinB,
     Draw,
 }
+
+/// How a live threat ended.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Resolution {
+    Hit,
+    Parried,
+    Blocked,
+    Dodged,
+    Miss,
+}
