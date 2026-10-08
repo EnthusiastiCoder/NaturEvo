@@ -296,3 +296,48 @@ impl Match {
         let p = self.robots[att].sword_prev_capsule();
         (s.b, [(s.b[0] - p.b[0]) / PHYS_DT, (s.b[1] - p.b[1]) / PHYS_DT])
     }
+
+    fn update_threats_pre(&mut self) {
+        for att in 0..2 {
+            let def = 1 - att;
+            if !self.robots[att].has_sword() || !self.robots[att].can_act() {
+                continue;
+            }
+            let (tip, vel) = self.tip_state(att);
+            let live = is_live_threat(tip, vel, &self.robots[def]);
+            if live {
+                self.last_live[def] = Some(self.tick);
+            }
+            let speed = (vel[0] * vel[0] + vel[1] * vel[1]).sqrt();
+            let pot = raw_impact(35.0, speed, 1.0, 1.0, 1.0, 1.0);
+            let active = self.threats.iter().position(|t| t.attacker == att && t.resolution.is_none());
+            match active {
+                None => {
+                    if live && self.cooldown[att] == 0 {
+                        self.create_threat(att, pot);
+                    }
+                }
+                Some(k) => {
+                    let (dx, angles) = {
+                        let d = &self.robots[def];
+                        let mut a = [0.0f32; 12];
+                        for j in Joint::ALL {
+                            a[j as usize] = d.joint_angle(j);
+                        }
+                        (d.x, a)
+                    };
+                    let t = &mut self.threats[k];
+                    t.potential = t.potential.max(pot);
+                    t.moved = t.moved.max((dx - t.start_x).abs());
+                    for j in 0..12 {
+                        t.flexed = t.flexed.max((angles[j] - t.start_angles[j]).abs());
+                    }
+                    if live {
+                        t.quiet = 0;
+                    } else {
+                        t.quiet += 1;
+                    }
+                }
+            }
+        }
+    }
