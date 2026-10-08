@@ -50,3 +50,4 @@ pub struct TrainConfig {
     pub out: PathBuf,
     pub threads: usize,
     pub elites: usize,
+    pub tournament: usize,
