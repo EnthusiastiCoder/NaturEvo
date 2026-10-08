@@ -28,3 +28,8 @@ fn norm_angle(r: &Robot, j: Joint) -> f32 {
     let (lo, hi) = j.limits();
     ((r.joint_angle(j) - lo) / (hi - lo) * 2.0 - 1.0).clamp(-1.0, 1.0)
 }
+
+struct W {
+    x: [f32; N_IN],
+    i: usize,
+}
