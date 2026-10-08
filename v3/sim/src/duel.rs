@@ -467,3 +467,13 @@ impl Match {
             r.set_hp(Part::Torso, hp - BLEED_PER_SEC * PHYS_DT);
         }
     }
+
+    fn track_idle_guard(&mut self) {
+        for i in 0..2 {
+            let recent = self.last_live[i].map_or(false, |t| self.tick.saturating_sub(t) <= IDLE_GUARD_WINDOW);
+            let active = self.threats.iter().any(|t| t.defender == i && t.resolution.is_none());
+            if self.robots[i].guard_raised() && !recent && !active {
+                self.idle_guard_ticks[i] += 1;
+            }
+        }
+    }
