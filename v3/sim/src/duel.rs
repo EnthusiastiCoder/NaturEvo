@@ -189,3 +189,9 @@ impl Match {
             ended: false,
         }
     }
+
+    pub fn enable_log(&mut self) {
+        if self.log.is_none() {
+            self.log = Some(FightLog::default());
+        }
+    }
