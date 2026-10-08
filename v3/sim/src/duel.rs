@@ -91,3 +91,11 @@ const BLEED_START: u32 = 450;
 const BLEED_PER_SEC: f32 = 0.5;
 const SPAWN_A: f32 = 4.5;
 const SPAWN_B: f32 = 9.5;
+
+fn seg_point_dist(a: [f32; 2], b: [f32; 2], p: [f32; 2]) -> f32 {
+    let d = [b[0] - a[0], b[1] - a[1]];
+    let l2 = d[0] * d[0] + d[1] * d[1];
+    let t = if l2 < 1e-9 { 0.0 } else { (((p[0] - a[0]) * d[0] + (p[1] - a[1]) * d[1]) / l2).clamp(0.0, 1.0) };
+    let c = [a[0] + d[0] * t, a[1] + d[1] * t];
+    ((c[0] - p[0]).powi(2) + (c[1] - p[1]).powi(2)).sqrt()
+}
