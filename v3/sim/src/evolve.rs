@@ -58,3 +58,4 @@ pub struct TrainConfig {
 }
 
 impl TrainConfig {
+    pub fn new(seed: u64, pop: usize, gens: u32, out: PathBuf) -> TrainConfig {
