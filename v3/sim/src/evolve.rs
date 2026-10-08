@@ -41,3 +41,5 @@ impl HallOfFame {
         &self.members[i]
     }
 }
+
+#[derive(Clone, Debug)]
