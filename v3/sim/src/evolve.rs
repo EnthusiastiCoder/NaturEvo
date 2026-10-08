@@ -7,3 +7,5 @@ use crate::metrics::csv_header;
 use crate::rng::Rng;
 use crate::robot::Role;
 use std::path::PathBuf;
+
+/// Last champions kept for self-play, saved every 10 generations.
