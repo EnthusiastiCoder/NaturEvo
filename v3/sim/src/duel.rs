@@ -341,3 +341,28 @@ impl Match {
             }
         }
     }
+
+    fn create_threat(&mut self, att: usize, potential: f32) -> usize {
+        let def = 1 - att;
+        let d = &self.robots[def];
+        let mut a = [0.0f32; 12];
+        for j in Joint::ALL {
+            a[j as usize] = d.joint_angle(j);
+        }
+        let t = Threat {
+            id: self.next_threat,
+            attacker: att,
+            defender: def,
+            start_tick: self.tick,
+            resolution: None,
+            potential,
+            start_x: d.x,
+            start_angles: a,
+            moved: 0.0,
+            flexed: 0.0,
+            quiet: 0,
+        };
+        self.next_threat += 1;
+        self.threats.push(t);
+        self.threats.len() - 1
+    }
