@@ -72,3 +72,52 @@ impl Scripted {
             lerp4(s, rest, (t - WINDUP - STRIKE) / RECOVER)
         }
     }
+
+    pub fn act(&mut self, me: &Robot, opp: &Robot, dt: f32) -> Action {
+        let mut a = Action { targets: STAND_TARGETS, drive: 0.0 };
+        // Ready pose: sword arm lowered so the blade rests clear of the opponent's shield.
+        set(&mut a.targets, Joint::ShoulderR, -1.0);
+        set(&mut a.targets, Joint::ElbowR, 0.0);
+        let dx = opp.x - me.x;
+        let dist = dx.abs();
+        let dir = if dx >= 0.0 { 1.0 } else { -1.0 };
+        if let Some((kind, t)) = self.swing {
+            let t = t + dt;
+            if t >= WINDUP + STRIKE + RECOVER {
+                self.swing = None;
+                self.wait = self.rng.range(0.8, 2.0);
+            } else {
+                self.swing = Some((kind, t));
+                let (sh, el, wa, hi) = Self::pose(kind, t);
+                set(&mut a.targets, Joint::ShoulderR, sh);
+                set(&mut a.targets, Joint::ElbowR, el);
+                set(&mut a.targets, Joint::Waist, wa);
+                set(&mut a.targets, Joint::HipR, hi);
+                return a;
+            }
+        }
+        if (me.x - self.last_x).abs() < 1e-4 {
+            self.still += dt;
+        } else {
+            self.still = 0.0;
+        }
+        self.last_x = me.x;
+        let stuck = self.still > STUCK_S && dist < REACH + 0.7;
+        if dist > REACH + 0.2 && !stuck {
+            a.drive = dir;
+        } else if dist < REACH - 0.8 {
+            a.drive = -dir;
+        } else {
+            self.wait -= dt;
+            if self.wait <= 0.0 {
+                let kind = match self.rng.next_u64() % 3 {
+                    0 => Swing::SlashHigh,
+                    1 => Swing::SlashLow,
+                    _ => Swing::Thrust,
+                };
+                self.swing = Some((kind, 0.0));
+            }
+        }
+        a
+    }
+}
