@@ -27,3 +27,4 @@ impl HallOfFame {
             self.members.remove(0);
         }
     }
+    pub fn len(&self) -> usize {
