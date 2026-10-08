@@ -25,3 +25,4 @@ impl HallOfFame {
         self.members.push(g);
         if self.members.len() > self.cap {
             self.members.remove(0);
+        }
