@@ -43,3 +43,4 @@ impl HallOfFame {
 }
 
 #[derive(Clone, Debug)]
+pub struct TrainConfig {
