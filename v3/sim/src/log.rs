@@ -86,3 +86,42 @@ pub fn outcome_name(o: Outcome) -> &'static str {
         Outcome::Draw => "draw",
     }
 }
+
+/// Full fight JSON for a match run with `enable_log()`.
+pub fn fight_json(m: &Match) -> String {
+    let empty = FightLog::default();
+    let log = m.log.as_ref().unwrap_or(&empty);
+    let mut s = String::with_capacity(log.frames.len() * 1100 + 4096);
+    let _ = write!(s, "{{\"version\":3,\"arena\":{{\"width\":{},\"height\":6,\"obstacles\":[", m.arena.width);
+    for (i, o) in m.arena.obstacles.iter().enumerate() {
+        if i > 0 {
+            s.push(',');
+        }
+        let _ = write!(s, "{{\"x\":{},\"w\":{},\"h\":{}}}", f2(o.x), f2(o.w), f2(o.h));
+    }
+    let _ = write!(s, "],\"biome\":\"{}\"}},\"parts\":[", m.arena.biome.name());
+    for (i, p) in Part::ALL.iter().enumerate() {
+        if i > 0 {
+            s.push(',');
+        }
+        let _ = write!(s, "\"{}\"", p.name());
+    }
+    s.push_str("],\"dt\":0.0333,\"frames\":[");
+    s.push_str(&log.frames.join(","));
+    s.push_str("],\"events\":[");
+    s.push_str(&log.events.join(","));
+    let r = m.result();
+    let _ = write!(s, "],\"result\":{{\"outcome\":\"{}\",\"ticks\":{},\"defence\":[", outcome_name(r.outcome), r.ticks);
+    for (i, d) in r.defence.iter().enumerate() {
+        if i > 0 {
+            s.push(',');
+        }
+        let _ = write!(
+            s,
+            "{{\"parry\":{},\"block\":{},\"dodge\":{},\"hit\":{},\"miss\":{}}}",
+            d.parry, d.block, d.dodge, d.hit, d.miss
+        );
+    }
+    s.push_str("]}}");
+    s
+}
