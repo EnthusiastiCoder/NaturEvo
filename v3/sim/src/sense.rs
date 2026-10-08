@@ -19,3 +19,7 @@ pub const OPP_HP: Range<usize> = 85..98;
 
 const POS_SCALE: f32 = 4.0;
 const VEL_SCALE: f32 = 10.0;
+
+fn mid(c: &Capsule) -> [f32; 2] {
+    [(c.a[0] + c.b[0]) * 0.5, (c.a[1] + c.b[1]) * 0.5]
+}
