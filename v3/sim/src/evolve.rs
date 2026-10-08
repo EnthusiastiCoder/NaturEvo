@@ -22,3 +22,4 @@ impl HallOfFame {
         gen > 0 && gen % 10 == 0
     }
     pub fn push(&mut self, g: Genome) {
+        self.members.push(g);
