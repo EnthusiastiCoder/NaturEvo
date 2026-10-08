@@ -40,3 +40,4 @@ impl HallOfFame {
         let i = (rng.next_u64() % self.members.len() as u64) as usize;
         &self.members[i]
     }
+}
