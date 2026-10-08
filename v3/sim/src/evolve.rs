@@ -45,3 +45,4 @@ impl HallOfFame {
 #[derive(Clone, Debug)]
 pub struct TrainConfig {
     pub seed: u64,
+    pub pop: usize,
