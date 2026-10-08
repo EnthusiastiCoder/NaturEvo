@@ -43,3 +43,22 @@ impl W {
         self.i += 1;
     }
 }
+
+/// Distance ahead of and behind the fighter to the nearest obstacle edge or wall.
+fn wall_distances(me: &Robot, arena: &Arena) -> (f32, f32) {
+    let (mut right, mut left) = (arena.width - me.x, me.x);
+    for o in &arena.obstacles {
+        let lo = o.x - o.w * 0.5;
+        let hi = o.x + o.w * 0.5;
+        if lo >= me.x {
+            right = right.min(lo - me.x);
+        } else if hi <= me.x {
+            left = left.min(me.x - hi);
+        }
+    }
+    if me.facing >= 0.0 {
+        (right, left)
+    } else {
+        (left, right)
+    }
+}
