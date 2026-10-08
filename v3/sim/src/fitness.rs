@@ -32,3 +32,12 @@ pub struct ThreatOutcome {
     pub i_potential: f32,
     pub followup_hit: bool,
 }
+
+/// Zone weight of a part in damage dealt: head 1.5, core 1.0, limbs 0.7.
+pub fn zone_weight(p: Part) -> f32 {
+    match p {
+        Part::Head => 1.5,
+        Part::Torso | Part::Pelvis => 1.0,
+        _ => 0.7,
+    }
+}
