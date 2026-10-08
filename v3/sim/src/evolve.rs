@@ -71,3 +71,5 @@ struct Job {
     b: Brain,
     seed: u64,
 }
+
+fn run_jobs(jobs: &[Job], threads: usize) -> Vec<MatchResult> {
