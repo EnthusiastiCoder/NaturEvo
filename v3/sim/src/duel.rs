@@ -439,3 +439,13 @@ impl Match {
             }
         }
     }
+
+    fn expire(&mut self, k: usize) {
+        let t = &self.threats[k];
+        let dodged = t.moved >= 0.3 || t.flexed >= 20f32.to_radians();
+        let (who, tick) = (t.defender, self.tick);
+        self.threats[k].resolution = Some(if dodged { Resolution::Dodged } else { Resolution::Miss });
+        if dodged {
+            self.emit(format!("{{\"t\":{},\"kind\":\"dodge\",\"who\":{}}}", tick, who));
+        }
+    }
