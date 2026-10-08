@@ -199,3 +199,9 @@ impl Match {
     pub fn is_over(&self) -> bool {
         self.ended || self.tick >= MAX_TICKS || self.robots.iter().any(|r| r.is_ko())
     }
+
+    fn emit(&mut self, e: String) {
+        if let Some(l) = self.log.as_mut() {
+            l.events.push(e);
+        }
+    }
