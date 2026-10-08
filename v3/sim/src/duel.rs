@@ -21,3 +21,10 @@ pub enum Brain {
     /// Holds the given normalised joint targets.
     Fixed([f32; 12]),
 }
+
+enum Ctl {
+    Net(Box<Net>, Action),
+    Dummy,
+    Scripted(Box<Scripted>),
+    Fixed(Action),
+}
