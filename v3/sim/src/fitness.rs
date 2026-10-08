@@ -12,3 +12,16 @@ pub const W_PASSIVITY: f32 = 1.0;
 pub const W_CHAIN: f32 = 0.5;
 pub const KO_BONUS: f32 = 1.0;
 pub const MAX_CREDITED_THREATS: usize = 6;
+
+#[derive(Clone, Copy, Debug, Default)]
+pub struct MatchStats {
+    pub win: bool,
+    pub draw: bool,
+    pub ko: bool,
+    pub dmg_dealt_norm: f32,
+    pub dmg_taken_norm: f32,
+    pub defence_credit: f32,
+    pub idle_guard: f32,
+    pub passivity: f32,
+    pub chain_quality: f32,
+}
