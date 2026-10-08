@@ -37,3 +37,7 @@ const RECOVER: f32 = 0.35;
 const REACH: f32 = 2.4;
 /// Ticks without progress after which the attacker swings from where it is (an obstacle is in the way).
 const STUCK_S: f32 = 0.5;
+
+fn set(t: &mut [f32; 12], j: Joint, v: f32) {
+    t[j as usize] = v;
+}
