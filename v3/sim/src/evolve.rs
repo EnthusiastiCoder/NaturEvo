@@ -73,3 +73,4 @@ struct Job {
 }
 
 fn run_jobs(jobs: &[Job], threads: usize) -> Vec<MatchResult> {
+    let n = jobs.len();
