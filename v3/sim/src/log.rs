@@ -70,3 +70,11 @@ pub fn frame_json(m: &Match) -> String {
     s.push_str("]}");
     s
 }
+
+pub fn f2(v: f32) -> String {
+    if v.is_finite() {
+        format!("{:.2}", v)
+    } else {
+        "0.00".to_string()
+    }
+}
