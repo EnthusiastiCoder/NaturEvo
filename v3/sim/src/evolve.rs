@@ -69,3 +69,4 @@ struct Job {
     mon: Option<usize>,
     a: Brain,
     b: Brain,
+    seed: u64,
