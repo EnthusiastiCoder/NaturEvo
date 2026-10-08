@@ -65,3 +65,4 @@ impl TrainConfig {
 }
 
 struct Job {
+    hero: Option<usize>,
