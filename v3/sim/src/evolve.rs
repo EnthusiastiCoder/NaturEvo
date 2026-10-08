@@ -74,3 +74,4 @@ struct Job {
 
 fn run_jobs(jobs: &[Job], threads: usize) -> Vec<MatchResult> {
     let n = jobs.len();
+    let mut out: Vec<Option<MatchResult>> = (0..n).map(|_| None).collect();
