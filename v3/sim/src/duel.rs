@@ -260,3 +260,33 @@ impl Match {
             self.finish_threats();
         }
     }
+
+    fn advance_fighters(&mut self) {
+        for i in 0..2 {
+            // Turn to face the opponent (costs 0.25 s, not while swinging or down).
+            let want = if self.robots[1 - i].x >= self.robots[i].x { 1.0 } else { -1.0 };
+            let r = &mut self.robots[i];
+            if r.facing != want && r.can_act() && r.sword_moving_since == 0.0 {
+                self.turn[i] += 1;
+                if self.turn[i] >= TURN_TICKS {
+                    r.facing = want;
+                    r.fk();
+                    self.turn[i] = 0;
+                }
+            } else {
+                self.turn[i] = 0;
+            }
+        }
+        for i in 0..2 {
+            let act = self.decide(i);
+            let old_x = self.robots[i].x;
+            let r = &mut self.robots[i];
+            r.apply_targets(&act.targets, PHYS_DT);
+            r.apply_drive(act.drive, PHYS_DT, self.arena.width);
+            let nx = self.robots[i].x;
+            if nx != old_x && self.blocked_by_obstacle(nx) && !self.blocked_by_obstacle(old_x) {
+                self.robots[i].x = old_x;
+                self.robots[i].fk();
+            }
+        }
+    }
