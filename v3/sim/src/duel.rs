@@ -477,3 +477,31 @@ impl Match {
             }
         }
     }
+
+    fn track_states(&mut self) {
+        for i in 0..2 {
+            let st = self.robots[i].state();
+            let t = self.tick;
+            if st != self.prev_state[i] {
+                match st {
+                    State::Staggered => self.emit(format!("{{\"t\":{},\"kind\":\"stagger\",\"who\":{}}}", t, i)),
+                    State::Fallen => self.emit(format!("{{\"t\":{},\"kind\":\"fall\",\"who\":{}}}", t, i)),
+                    State::Ko => self.emit(format!("{{\"t\":{},\"kind\":\"ko\",\"who\":{}}}", t, i)),
+                    State::Idle => {}
+                }
+                self.prev_state[i] = st;
+            }
+            for p in Part::ALL {
+                let d = self.robots[i].is_destroyed(p);
+                if d && !self.prev_destroyed[i][p as usize] {
+                    self.emit(format!(
+                        "{{\"t\":{},\"kind\":\"destroyed\",\"who\":{},\"part\":\"{}\"}}",
+                        t,
+                        i,
+                        p.name()
+                    ));
+                }
+                self.prev_destroyed[i][p as usize] = d;
+            }
+        }
+    }
