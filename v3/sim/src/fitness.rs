@@ -41,3 +41,22 @@ pub fn zone_weight(p: Part) -> f32 {
         _ => 0.7,
     }
 }
+
+/// Raw sum of per-threat credits; each threat paid once, at most 6 threats, halved after a follow-up hit.
+pub fn defence_credit(threats: &[ThreatOutcome]) -> f32 {
+    let mut sum = 0.0;
+    let mut n = 0;
+    for t in threats {
+        let base = match t.resolution {
+            Resolution::Parried => (t.i_potential / IMPACT_REF).clamp(0.0, 1.0),
+            Resolution::Blocked | Resolution::Dodged => 0.7,
+            Resolution::Hit | Resolution::Miss => 0.0,
+        };
+        if base <= 0.0 || n >= MAX_CREDITED_THREATS {
+            continue;
+        }
+        n += 1;
+        sum += if t.followup_hit { base * 0.5 } else { base };
+    }
+    sum
+}
