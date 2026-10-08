@@ -45,3 +45,10 @@ fn set(t: &mut [f32; 12], j: Joint, v: f32) {
 fn lerp(a: f32, b: f32, s: f32) -> f32 {
     a + (b - a) * s.clamp(0.0, 1.0)
 }
+
+impl Scripted {
+    pub fn new(seed: u64) -> Scripted {
+        let mut rng = Rng::new(seed ^ 0x5C21_97ED);
+        let wait = rng.range(0.4, 1.2);
+        Scripted { rng, swing: None, wait, last_x: f32::NAN, still: 0.0 }
+    }
