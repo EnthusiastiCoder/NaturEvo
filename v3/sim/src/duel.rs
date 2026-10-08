@@ -9,3 +9,15 @@ use crate::net::Net;
 use crate::robot::{Capsule, Joint, Part, Robot, Role, State, STAND_TARGETS};
 use crate::scripted::{self, Action, Scripted};
 use crate::sense::observe;
+
+/// Who controls a fighter.
+#[derive(Clone, Debug)]
+pub enum Brain {
+    Net(Genome),
+    /// Stands still.
+    Dummy,
+    /// Approaches and swings at random intervals.
+    Scripted,
+    /// Holds the given normalised joint targets.
+    Fixed([f32; 12]),
+}
