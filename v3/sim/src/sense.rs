@@ -33,3 +33,13 @@ struct W {
     x: [f32; N_IN],
     i: usize,
 }
+
+impl W {
+    fn put(&mut self, v: f32) {
+        if self.i < N_IN {
+            let v = if v.is_finite() { v } else { 0.0 };
+            self.x[self.i] = v.clamp(-3.0, 3.0);
+        }
+        self.i += 1;
+    }
+}
