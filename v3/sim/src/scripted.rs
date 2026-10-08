@@ -20,3 +20,12 @@ enum Swing {
     SlashLow,
     Thrust,
 }
+
+#[derive(Clone, Debug)]
+pub struct Scripted {
+    rng: Rng,
+    swing: Option<(Swing, f32)>,
+    wait: f32,
+    last_x: f32,
+    still: f32,
+}
