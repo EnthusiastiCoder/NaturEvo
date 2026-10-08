@@ -17,3 +17,4 @@ pub struct HallOfFame {
 impl HallOfFame {
     pub fn new(cap: usize) -> HallOfFame {
         HallOfFame { cap, members: Vec::new() }
+    }
