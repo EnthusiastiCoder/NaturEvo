@@ -23,3 +23,8 @@ const VEL_SCALE: f32 = 10.0;
 fn mid(c: &Capsule) -> [f32; 2] {
     [(c.a[0] + c.b[0]) * 0.5, (c.a[1] + c.b[1]) * 0.5]
 }
+
+fn norm_angle(r: &Robot, j: Joint) -> f32 {
+    let (lo, hi) = j.limits();
+    ((r.joint_angle(j) - lo) / (hi - lo) * 2.0 - 1.0).clamp(-1.0, 1.0)
+}
