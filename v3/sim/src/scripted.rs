@@ -13,3 +13,10 @@ pub struct Action {
 pub fn dummy() -> Action {
     Action { targets: STAND_TARGETS, drive: 0.0 }
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Swing {
+    SlashHigh,
+    SlashLow,
+    Thrust,
+}
