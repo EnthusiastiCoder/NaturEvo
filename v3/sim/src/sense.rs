@@ -116,3 +116,76 @@ pub fn observe(me: &Robot, opp: &Robot, arena: &Arena) -> [f32; N_IN] {
     w.put(me.sword_ang_vel / 20.0);
     w.put(me.sword_moving_since);
     debug_assert_eq!(w.i, OPP_POINTS.start);
+
+    // Opponent.
+    let head = me.hp_frac(Part::Head);
+    let blind = me.is_disabled(Part::Head);
+    let noise = if blind { 0.0 } else if head < 0.5 { (1.0 - head * 2.0) * 0.3 } else { 0.0 };
+    let mut rng = Rng::new(me.hp(Part::Head).to_bits() as u64 ^ ((opp.x * 1000.0) as i64 as u64).rotate_left(17));
+    let mut opp_in = [0.0f32; 34];
+    {
+        let (fa, fb) = (opp.capsule(Part::FootL), opp.capsule(Part::FootR));
+        let (ma, mb) = (mid(&fa), mid(&fb));
+        let (front, rear) = if (ma[0] * opp.facing) >= (mb[0] * opp.facing) { (ma, mb) } else { (mb, ma) };
+        let pts = [
+            mid(&opp.capsule(Part::Head)),
+            mid(&opp.capsule(Part::Torso)),
+            mid(&opp.capsule(Part::Pelvis)),
+            opp.sword_capsule().b,
+            opp.sword_capsule().a,
+            mid(&opp.shield_capsule()),
+            front,
+            rear,
+        ];
+        for (k, pt) in pts.iter().enumerate() {
+            let r = rel(*pt);
+            opp_in[k * 2] = r[0];
+            opp_in[k * 2 + 1] = r[1];
+        }
+        // Sword block (5 values) at 16..21.
+        let osw = opp.sword_capsule();
+        let ospv = opp.sword_prev_capsule();
+        let tv = [(osw.b[0] - ospv.b[0]) / PHYS_DT, (osw.b[1] - ospv.b[1]) / PHYS_DT];
+        let rv = relv(tv);
+        opp_in[16] = rv[0];
+        opp_in[17] = rv[1];
+        let to_me = [o[0] - osw.b[0], o[1] - osw.b[1]];
+        let dist = (to_me[0] * to_me[0] + to_me[1] * to_me[1]).sqrt().max(1e-3);
+        let closing = (tv[0] * to_me[0] + tv[1] * to_me[1]) / dist;
+        opp_in[18] = closing / VEL_SCALE;
+        opp_in[19] = if closing > 0.5 { (dist / closing).min(2.0) / 2.0 } else { 1.0 };
+        opp_in[20] = (osw.b[1] - o[1]) / POS_SCALE;
+        // Opponent hp (13) at 21..34.
+        for pt in Part::ALL {
+            opp_in[21 + pt as usize] = opp.hp_frac(pt);
+        }
+    }
+    let hp_start = 21;
+    for k in 0..34 {
+        let mut v = opp_in[k];
+        if blind {
+            v = 0.0;
+        } else if noise > 0.0 && k < hp_start {
+            v += (rng.f32() * 2.0 - 1.0) * noise;
+        }
+        opp_in[k] = v;
+    }
+    for k in 0..21 {
+        w.put(opp_in[k]);
+    }
+    debug_assert_eq!(w.i, OPP_HP.start);
+    for k in 21..34 {
+        w.put(opp_in[k]);
+    }
+    // Opponent posture, stagger flag, distance (3).
+    w.put(if blind { 0.0 } else { opp.posture / 100.0 });
+    w.put(if !blind && opp.state() == State::Staggered { 1.0 } else { 0.0 });
+    w.put((opp.x - me.x).abs() / 14.0);
+    // Walls (2) and line of sight (1).
+    let (ahead, behind) = wall_distances(me, arena);
+    w.put(ahead / 14.0);
+    w.put(behind / 14.0);
+    w.put(if line_of_sight_blocked(o[0], mid(&opp.capsule(Part::Torso))[0], arena) { 1.0 } else { 0.0 });
+    debug_assert_eq!(w.i, N_IN);
+    w.x
+}
