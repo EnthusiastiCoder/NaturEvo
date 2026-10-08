@@ -31,3 +31,31 @@ fn state_name(r: &Robot) -> &'static str {
         State::Ko => "ko",
     }
 }
+
+fn fighter_json(out: &mut String, r: &Robot) {
+    let _ = write!(out, "{{\"fx\":{:.2},\"facing\":{},\"parts\":[", r.x, if r.facing >= 0.0 { 1 } else { -1 });
+    for (i, p) in Part::ALL.iter().enumerate() {
+        if i > 0 {
+            out.push(',');
+        }
+        cap_json(out, &r.capsule(*p));
+    }
+    out.push_str("],\"sword\":");
+    cap_json(out, &r.sword_capsule());
+    out.push_str(",\"shield\":");
+    cap_json(out, &r.shield_capsule());
+    out.push_str(",\"hp\":[");
+    for (i, p) in Part::ALL.iter().enumerate() {
+        if i > 0 {
+            out.push(',');
+        }
+        let _ = write!(out, "{}", (r.hp_frac(*p) * 100.0).round() as i32);
+    }
+    let _ = write!(
+        out,
+        "],\"energy\":{},\"posture\":{},\"state\":\"{}\"}}",
+        r.energy.round() as i32,
+        r.posture.round() as i32,
+        state_name(r)
+    );
+}
