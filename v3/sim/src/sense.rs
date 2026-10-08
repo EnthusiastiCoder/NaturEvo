@@ -16,3 +16,6 @@ pub const OPP_POINTS: Range<usize> = 64..80;
 pub const OPP_SWORD: Range<usize> = 80..85;
 /// Opponent part hp fractions (13).
 pub const OPP_HP: Range<usize> = 85..98;
+
+const POS_SCALE: f32 = 4.0;
+const VEL_SCALE: f32 = 10.0;
