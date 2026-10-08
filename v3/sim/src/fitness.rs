@@ -92,3 +92,7 @@ pub fn stats_for(r: &MatchResult, who: usize) -> MatchStats {
         chain_quality: r.chain_quality[who],
     }
 }
+
+pub fn score_match(r: &MatchResult, who: usize) -> f32 {
+    score_stats(&stats_for(r, who))
+}
