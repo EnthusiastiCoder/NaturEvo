@@ -8,3 +8,13 @@ pub enum Stage {
     /// Gens 80 and up: self-play, hall of fame and one scripted attacker.
     C,
 }
+
+pub fn stage_for_gen(gen: u32) -> Stage {
+    if gen < 30 {
+        Stage::A
+    } else if gen < 80 {
+        Stage::B
+    } else {
+        Stage::C
+    }
+}
