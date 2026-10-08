@@ -60,3 +60,20 @@ pub fn defence_credit(threats: &[ThreatOutcome]) -> f32 {
     }
     sum
 }
+
+pub fn score_stats(s: &MatchStats) -> f32 {
+    if s.draw {
+        return DRAW_SCORE;
+    }
+    let mut v = W_DEALT * s.dmg_dealt_norm - W_TAKEN * s.dmg_taken_norm + W_DEFENCE * s.defence_credit
+        - W_IDLE_GUARD * s.idle_guard
+        - W_PASSIVITY * s.passivity
+        + W_CHAIN * s.chain_quality;
+    if s.win {
+        v += W_WIN;
+    }
+    if s.ko {
+        v += KO_BONUS;
+    }
+    v
+}
