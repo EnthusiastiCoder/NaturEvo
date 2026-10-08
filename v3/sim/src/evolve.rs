@@ -18,3 +18,4 @@ impl HallOfFame {
     pub fn new(cap: usize) -> HallOfFame {
         HallOfFame { cap, members: Vec::new() }
     }
+    pub fn should_save(&self, gen: u32) -> bool {
