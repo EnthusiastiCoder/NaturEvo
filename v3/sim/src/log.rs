@@ -22,3 +22,12 @@ fn cm(v: f32) -> i32 {
 fn cap_json(out: &mut String, c: &Capsule) {
     let _ = write!(out, "[{},{},{},{}]", cm(c.a[0]), cm(c.a[1]), cm(c.b[0]), cm(c.b[1]));
 }
+
+fn state_name(r: &Robot) -> &'static str {
+    match r.state() {
+        State::Idle => "idle",
+        State::Staggered => "staggered",
+        State::Fallen => "fallen",
+        State::Ko => "ko",
+    }
+}
