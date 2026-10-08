@@ -12,3 +12,4 @@ use std::path::PathBuf;
 pub struct HallOfFame {
     cap: usize,
     members: Vec<Genome>,
+}
