@@ -41,3 +41,7 @@ const STUCK_S: f32 = 0.5;
 fn set(t: &mut [f32; 12], j: Joint, v: f32) {
     t[j as usize] = v;
 }
+
+fn lerp(a: f32, b: f32, s: f32) -> f32 {
+    a + (b - a) * s.clamp(0.0, 1.0)
+}
