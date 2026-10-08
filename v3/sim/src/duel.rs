@@ -110,3 +110,21 @@ fn seg_seg_dist(a: [f32; 2], b: [f32; 2], c: &Capsule) -> f32 {
     }
     best
 }
+
+/// A blade tip at `tip` moving at `vel` is a live threat to `def`: faster than 2.5 m/s and its
+/// predicted path comes within 0.4 m of a defender body capsule within 0.4 s.
+pub fn is_live_threat(tip: [f32; 2], vel: [f32; 2], def: &Robot) -> bool {
+    let speed = (vel[0] * vel[0] + vel[1] * vel[1]).sqrt();
+    if speed <= THREAT_SPEED || !speed.is_finite() {
+        return false;
+    }
+    let end = [tip[0] + vel[0] * THREAT_HORIZON, tip[1] + vel[1] * THREAT_HORIZON];
+    Part::ALL.iter().any(|p| {
+        if def.is_detached(*p) {
+            return false;
+        }
+        let c = def.capsule(*p);
+        let mid = [(c.a[0] + c.b[0]) * 0.5 - tip[0], (c.a[1] + c.b[1]) * 0.5 - tip[1]];
+        mid[0] * vel[0] + mid[1] * vel[1] > 0.0 && seg_seg_dist(tip, end, &c) <= THREAT_RANGE
+    })
+}
