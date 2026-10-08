@@ -224,3 +224,7 @@ impl Match {
             }
         }
     }
+
+    fn blocked_by_obstacle(&self, x: f32) -> bool {
+        self.arena.obstacles.iter().any(|o| (x - o.x).abs() < o.w * 0.5 + 0.35)
+    }
