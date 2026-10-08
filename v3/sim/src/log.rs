@@ -59,3 +59,14 @@ fn fighter_json(out: &mut String, r: &Robot) {
         state_name(r)
     );
 }
+
+/// One frame object for the current state of the match.
+pub fn frame_json(m: &Match) -> String {
+    let mut s = String::with_capacity(2048);
+    let _ = write!(s, "{{\"t\":{},\"f\":[", m.tick);
+    fighter_json(&mut s, &m.robots[0]);
+    s.push(',');
+    fighter_json(&mut s, &m.robots[1]);
+    s.push_str("]}");
+    s
+}
