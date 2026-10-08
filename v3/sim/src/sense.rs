@@ -68,3 +68,10 @@ fn line_of_sight_blocked(a: f32, b: f32, arena: &Arena) -> bool {
     let (lo, hi) = (a.min(b), a.max(b));
     arena.obstacles.iter().any(|o| o.x > lo && o.x < hi)
 }
+
+pub fn observe(me: &Robot, opp: &Robot, arena: &Arena) -> [f32; N_IN] {
+    let mut w = W { x: [0.0; N_IN], i: 0 };
+    let f = if me.facing >= 0.0 { 1.0 } else { -1.0 };
+    let o = mid(&me.capsule(Part::Torso));
+    let rel = |p: [f32; 2]| -> [f32; 2] { [(p[0] - o[0]) * f / POS_SCALE, (p[1] - o[1]) / POS_SCALE] };
+    let relv = |v: [f32; 2]| -> [f32; 2] { [v[0] * f / VEL_SCALE, v[1] / VEL_SCALE] };
