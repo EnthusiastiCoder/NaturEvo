@@ -78,3 +78,11 @@ pub fn f2(v: f32) -> String {
         "0.00".to_string()
     }
 }
+
+pub fn outcome_name(o: Outcome) -> &'static str {
+    match o {
+        Outcome::WinA => "win_a",
+        Outcome::WinB => "win_b",
+        Outcome::Draw => "draw",
+    }
+}
