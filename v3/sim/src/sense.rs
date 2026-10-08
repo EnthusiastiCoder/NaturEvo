@@ -75,3 +75,44 @@ pub fn observe(me: &Robot, opp: &Robot, arena: &Arena) -> [f32; N_IN] {
     let o = mid(&me.capsule(Part::Torso));
     let rel = |p: [f32; 2]| -> [f32; 2] { [(p[0] - o[0]) * f / POS_SCALE, (p[1] - o[1]) / POS_SCALE] };
     let relv = |v: [f32; 2]| -> [f32; 2] { [v[0] * f / VEL_SCALE, v[1] / VEL_SCALE] };
+
+    // Own joints (24).
+    for j in Joint::ALL {
+        w.put(norm_angle(me, j));
+    }
+    for j in Joint::ALL {
+        w.put(me.joint_vel[j as usize] / j.max_speed());
+    }
+    // Own part hp (13) and disabled flags (13).
+    for p in Part::ALL {
+        w.put(me.hp_frac(p));
+    }
+    // Scalars (6).
+    w.put(me.energy / 100.0);
+    w.put(me.posture / 100.0);
+    w.put(me.balance_margin());
+    let st = me.state();
+    w.put(if st == State::Fallen || st == State::Ko { 0.0 } else { 1.0 });
+    w.put(if st == State::Fallen { 1.0 } else { 0.0 });
+    w.put(if st == State::Staggered { 1.0 } else { 0.0 });
+    // Own sword tip position and velocity (4), shield centre (2).
+    let sw = me.sword_capsule();
+    let swp = me.sword_prev_capsule();
+    let p = rel(sw.b);
+    w.put(p[0]);
+    w.put(p[1]);
+    let v = relv([(sw.b[0] - swp.b[0]) / PHYS_DT, (sw.b[1] - swp.b[1]) / PHYS_DT]);
+    w.put(v[0]);
+    w.put(v[1]);
+    let sh = me.shield_capsule();
+    let p = rel(mid(&sh));
+    w.put(p[0]);
+    w.put(p[1]);
+    // Own disabled flags (13).
+    for pt in Part::ALL {
+        w.put(if me.is_disabled(pt) { 1.0 } else { 0.0 });
+    }
+    // Sword angular state (2).
+    w.put(me.sword_ang_vel / 20.0);
+    w.put(me.sword_moving_since);
+    debug_assert_eq!(w.i, OPP_POINTS.start);
