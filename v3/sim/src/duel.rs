@@ -427,3 +427,15 @@ impl Match {
             }
         }
     }
+
+    fn update_threats_post(&mut self) {
+        for k in 0..self.threats.len() {
+            let t = &self.threats[k];
+            if t.resolution.is_some() {
+                continue;
+            }
+            if t.quiet >= 8 || self.tick.saturating_sub(t.start_tick) > 60 {
+                self.expire(k);
+            }
+        }
+    }
