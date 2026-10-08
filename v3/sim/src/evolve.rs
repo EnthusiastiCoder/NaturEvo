@@ -37,3 +37,4 @@ impl HallOfFame {
         self.members.iter().map(|g| g.generation).collect()
     }
     pub fn pick(&self, rng: &mut Rng) -> &Genome {
+        let i = (rng.next_u64() % self.members.len() as u64) as usize;
