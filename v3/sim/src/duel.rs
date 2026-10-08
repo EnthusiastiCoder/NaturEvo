@@ -575,3 +575,13 @@ impl Match {
             defence_credit: credit,
         }
     }
+
+    pub fn run_to_end(&mut self) -> MatchResult {
+        while !self.is_over() {
+            self.step();
+        }
+        self.ended = true;
+        self.finish_threats();
+        self.result()
+    }
+}
