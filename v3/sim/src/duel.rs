@@ -290,3 +290,9 @@ impl Match {
             }
         }
     }
+
+    fn tip_state(&self, att: usize) -> ([f32; 2], [f32; 2]) {
+        let s = self.robots[att].sword_capsule();
+        let p = self.robots[att].sword_prev_capsule();
+        (s.b, [(s.b[0] - p.b[0]) / PHYS_DT, (s.b[1] - p.b[1]) / PHYS_DT])
+    }
