@@ -28,3 +28,10 @@ enum Ctl {
     Scripted(Box<Scripted>),
     Fixed(Action),
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Outcome {
+    WinA,
+    WinB,
+    Draw,
+}
