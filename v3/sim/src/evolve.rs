@@ -24,3 +24,4 @@ impl HallOfFame {
     pub fn push(&mut self, g: Genome) {
         self.members.push(g);
         if self.members.len() > self.cap {
+            self.members.remove(0);
