@@ -70,3 +70,4 @@ struct Job {
     a: Brain,
     b: Brain,
     seed: u64,
+}
