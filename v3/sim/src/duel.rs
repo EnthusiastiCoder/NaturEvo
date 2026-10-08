@@ -128,3 +128,21 @@ pub fn is_live_threat(tip: [f32; 2], vel: [f32; 2], def: &Robot) -> bool {
         mid[0] * vel[0] + mid[1] * vel[1] > 0.0 && seg_seg_dist(tip, end, &c) <= THREAT_RANGE
     })
 }
+
+pub struct Match {
+    pub robots: [Robot; 2],
+    pub arena: Arena,
+    pub tick: u32,
+    pub threats: Vec<Threat>,
+    pub idle_guard_ticks: [u32; 2],
+    pub log: Option<FightLog>,
+    ctl: [Ctl; 2],
+    hitstop: u32,
+    cooldown: [u32; 2],
+    turn: [u32; 2],
+    last_live: [Option<u32>; 2],
+    prev_state: [State; 2],
+    prev_destroyed: [[bool; 13]; 2],
+    next_threat: u32,
+    ended: bool,
+}
