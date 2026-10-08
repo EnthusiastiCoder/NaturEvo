@@ -457,3 +457,13 @@ impl Match {
             }
         }
     }
+
+    fn bleed(&mut self) {
+        if self.tick < BLEED_START {
+            return;
+        }
+        for r in self.robots.iter_mut() {
+            let hp = r.hp(Part::Torso);
+            r.set_hp(Part::Torso, hp - BLEED_PER_SEC * PHYS_DT);
+        }
+    }
