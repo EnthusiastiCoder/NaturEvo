@@ -366,3 +366,14 @@ impl Match {
         self.threats.push(t);
         self.threats.len() - 1
     }
+
+    fn resolve_threat(&mut self, att: usize, res: Resolution) {
+        let k = match self.threats.iter().position(|t| t.attacker == att && t.resolution.is_none()) {
+            Some(k) => k,
+            None => {
+                let k = self.create_threat(att, 0.0);
+                k
+            }
+        };
+        self.threats[k].resolution = Some(res);
+    }
