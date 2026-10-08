@@ -15,3 +15,4 @@ pub struct HallOfFame {
 }
 
 impl HallOfFame {
+    pub fn new(cap: usize) -> HallOfFame {
