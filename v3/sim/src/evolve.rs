@@ -5,3 +5,4 @@ use crate::fitness::score_match;
 use crate::genome::Genome;
 use crate::metrics::csv_header;
 use crate::rng::Rng;
+use crate::robot::Role;
