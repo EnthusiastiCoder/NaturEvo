@@ -45,3 +45,19 @@ pub enum Resolution {
     Dodged,
     Miss,
 }
+
+#[derive(Clone, Debug)]
+pub struct Threat {
+    pub id: u32,
+    pub attacker: usize,
+    pub defender: usize,
+    pub start_tick: u32,
+    pub resolution: Option<Resolution>,
+    /// Impact the swing could have delivered (from its peak tip speed).
+    pub potential: f32,
+    start_x: f32,
+    start_angles: [f32; 12],
+    moved: f32,
+    flexed: f32,
+    quiet: u32,
+}
