@@ -59,3 +59,4 @@ pub struct TrainConfig {
 
 impl TrainConfig {
     pub fn new(seed: u64, pop: usize, gens: u32, out: PathBuf) -> TrainConfig {
+        let name = out.file_name().map(|s| s.to_string_lossy().to_string()).unwrap_or_else(|| "run".into());
