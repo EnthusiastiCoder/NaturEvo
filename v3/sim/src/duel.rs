@@ -80,3 +80,14 @@ pub struct MatchResult {
     /// Raw sum of per-threat credits (each at most 1.0, at most 6 threats) earned by each defender.
     pub defence_credit: [f32; 2],
 }
+
+const THREAT_SPEED: f32 = 2.5;
+const THREAT_RANGE: f32 = 0.25;
+const THREAT_HORIZON: f32 = 0.4;
+const SWING_COOLDOWN: u32 = 12;
+const IDLE_GUARD_WINDOW: u32 = 36;
+const TURN_TICKS: u32 = 15;
+const BLEED_START: u32 = 450;
+const BLEED_PER_SEC: f32 = 0.5;
+const SPAWN_A: f32 = 4.5;
+const SPAWN_B: f32 = 9.5;
