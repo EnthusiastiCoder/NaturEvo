@@ -449,3 +449,11 @@ impl Match {
             self.emit(format!("{{\"t\":{},\"kind\":\"dodge\",\"who\":{}}}", tick, who));
         }
     }
+
+    fn finish_threats(&mut self) {
+        for k in 0..self.threats.len() {
+            if self.threats[k].resolution.is_none() {
+                self.expire(k);
+            }
+        }
+    }
