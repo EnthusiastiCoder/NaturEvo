@@ -70,3 +70,13 @@ pub struct DefenceTally {
     pub hit: u32,
     pub miss: u32,
 }
+
+#[derive(Clone, Debug)]
+pub struct MatchResult {
+    pub outcome: Outcome,
+    pub ticks: u32,
+    pub defence: [DefenceTally; 2],
+    pub idle_guard_share: [f32; 2],
+    /// Raw sum of per-threat credits (each at most 1.0, at most 6 threats) earned by each defender.
+    pub defence_credit: [f32; 2],
+}
