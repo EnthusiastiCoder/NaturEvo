@@ -61,3 +61,12 @@ pub struct Threat {
     flexed: f32,
     quiet: u32,
 }
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct DefenceTally {
+    pub parry: u32,
+    pub block: u32,
+    pub dodge: u32,
+    pub hit: u32,
+    pub miss: u32,
+}
