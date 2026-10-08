@@ -63,3 +63,5 @@ impl TrainConfig {
         TrainConfig { seed, pop, gens, out, threads: 1, elites: (pop / 16).max(1), tournament: 3, mutation_rate: 0.08, sigma_start: 0.25, sigma_end: 0.05, name }
     }
 }
+
+struct Job {
