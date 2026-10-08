@@ -21,3 +21,4 @@ impl HallOfFame {
     pub fn should_save(&self, gen: u32) -> bool {
         gen > 0 && gen % 10 == 0
     }
+    pub fn push(&mut self, g: Genome) {
