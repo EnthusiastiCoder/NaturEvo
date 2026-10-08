@@ -51,3 +51,4 @@ pub struct TrainConfig {
     pub threads: usize,
     pub elites: usize,
     pub tournament: usize,
+    pub mutation_rate: f32,
