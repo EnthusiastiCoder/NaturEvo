@@ -52,3 +52,23 @@ impl Scripted {
         let wait = rng.range(0.4, 1.2);
         Scripted { rng, swing: None, wait, last_x: f32::NAN, still: 0.0 }
     }
+
+    /// Joint targets for one swing at time `t` since it began: (shoulder, elbow, waist, hip) of the sword arm.
+    fn pose(kind: Swing, t: f32) -> (f32, f32, f32, f32) {
+        let (w, s) = match kind {
+            Swing::SlashHigh => ((0.85, 0.2, -0.5, -0.1), (0.05, -0.5, 0.5, 0.0)),
+            Swing::SlashLow => ((0.5, 0.1, -0.5, -0.1), (-0.5, -0.6, 0.6, 0.0)),
+            Swing::Thrust => ((0.0, 0.8, -0.3, -0.1), (0.2, -0.9, 0.4, 0.0)),
+        };
+        let rest = (-0.4, 0.0, 0.0, -0.2);
+        let lerp4 = |a: (f32, f32, f32, f32), b: (f32, f32, f32, f32), k: f32| {
+            (lerp(a.0, b.0, k), lerp(a.1, b.1, k), lerp(a.2, b.2, k), lerp(a.3, b.3, k))
+        };
+        if t < WINDUP {
+            lerp4(rest, w, t / WINDUP)
+        } else if t < WINDUP + STRIKE {
+            lerp4(w, s, (t - WINDUP) / STRIKE)
+        } else {
+            lerp4(s, rest, (t - WINDUP - STRIKE) / RECOVER)
+        }
+    }
