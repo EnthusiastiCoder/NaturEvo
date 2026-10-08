@@ -28,3 +28,4 @@ impl HallOfFame {
         }
     }
     pub fn len(&self) -> usize {
+        self.members.len()
