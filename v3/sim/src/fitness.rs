@@ -77,3 +77,18 @@ pub fn score_stats(s: &MatchStats) -> f32 {
     }
     v
 }
+
+pub fn stats_for(r: &MatchResult, who: usize) -> MatchStats {
+    let mine = if who == 0 { Outcome::WinA } else { Outcome::WinB };
+    MatchStats {
+        win: r.outcome == mine,
+        draw: r.outcome == Outcome::Draw,
+        ko: r.outcome == mine && r.ko[1 - who],
+        dmg_dealt_norm: r.dmg_dealt_norm[who],
+        dmg_taken_norm: r.dmg_dealt_norm[1 - who].min(1.0),
+        defence_credit: r.defence_credit[who],
+        idle_guard: r.idle_guard_share[who],
+        passivity: r.passivity,
+        chain_quality: r.chain_quality[who],
+    }
+}
