@@ -46,3 +46,4 @@ impl HallOfFame {
 pub struct TrainConfig {
     pub seed: u64,
     pub pop: usize,
+    pub gens: u32,
