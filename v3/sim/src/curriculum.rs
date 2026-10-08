@@ -18,3 +18,7 @@ pub fn stage_for_gen(gen: u32) -> Stage {
         Stage::C
     }
 }
+
+pub fn hof_enabled(s: Stage) -> bool {
+    s == Stage::C
+}
