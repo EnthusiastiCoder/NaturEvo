@@ -32,3 +32,4 @@ impl HallOfFame {
     }
     pub fn is_empty(&self) -> bool {
         self.members.is_empty()
+    }
