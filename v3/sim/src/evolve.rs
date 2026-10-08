@@ -19,3 +19,4 @@ impl HallOfFame {
         HallOfFame { cap, members: Vec::new() }
     }
     pub fn should_save(&self, gen: u32) -> bool {
+        gen > 0 && gen % 10 == 0
