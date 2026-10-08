@@ -99,3 +99,14 @@ fn seg_point_dist(a: [f32; 2], b: [f32; 2], p: [f32; 2]) -> f32 {
     let c = [a[0] + d[0] * t, a[1] + d[1] * t];
     ((c[0] - p[0]).powi(2) + (c[1] - p[1]).powi(2)).sqrt()
 }
+
+/// Minimum distance between two segments (sampled on the first, which is short).
+fn seg_seg_dist(a: [f32; 2], b: [f32; 2], c: &Capsule) -> f32 {
+    let mut best = f32::MAX;
+    for i in 0..=8 {
+        let t = i as f32 / 8.0;
+        let p = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+        best = best.min(seg_point_dist(c.a, c.b, p) - c.r);
+    }
+    best
+}
