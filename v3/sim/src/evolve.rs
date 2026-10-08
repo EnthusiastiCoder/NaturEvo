@@ -56,3 +56,5 @@ pub struct TrainConfig {
     pub sigma_end: f32,
     pub name: String,
 }
+
+impl TrainConfig {
