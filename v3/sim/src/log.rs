@@ -18,3 +18,7 @@ fn cm(v: f32) -> i32 {
         0
     }
 }
+
+fn cap_json(out: &mut String, c: &Capsule) {
+    let _ = write!(out, "[{},{},{},{}]", cm(c.a[0]), cm(c.a[1]), cm(c.b[0]), cm(c.b[1]));
+}
