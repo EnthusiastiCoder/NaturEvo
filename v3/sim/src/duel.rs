@@ -155,3 +155,37 @@ fn make_ctl(b: Brain, seed: u64, salt: u64) -> Ctl {
         Brain::Fixed(t) => Ctl::Fixed(Action { targets: t, drive: 0.0 }),
     }
 }
+
+impl Match {
+    pub fn new(seed: u64, a: Brain, b: Brain) -> Match {
+        let arena = Arena::generate(seed);
+        let mut ra = Robot::new(Role::Hero);
+        ra.x = SPAWN_A;
+        ra.facing = 1.0;
+        let mut rb = Robot::new(Role::Monster);
+        rb.x = SPAWN_B;
+        rb.facing = -1.0;
+        ra.fk();
+        rb.fk();
+        ra.set_sword(ra.sword_capsule(), ra.sword_capsule());
+        rb.set_sword(rb.sword_capsule(), rb.sword_capsule());
+        let robots = [ra, rb];
+        let prev_state = [robots[0].state(), robots[1].state()];
+        Match {
+            robots,
+            arena,
+            tick: 0,
+            threats: Vec::new(),
+            idle_guard_ticks: [0; 2],
+            log: None,
+            ctl: [make_ctl(a, seed, 1), make_ctl(b, seed, 2)],
+            hitstop: 0,
+            cooldown: [0; 2],
+            turn: [0; 2],
+            last_live: [None; 2],
+            prev_state,
+            prev_destroyed: [[false; 13]; 2],
+            next_threat: 0,
+            ended: false,
+        }
+    }
