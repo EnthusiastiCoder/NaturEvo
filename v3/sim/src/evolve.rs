@@ -47,3 +47,4 @@ pub struct TrainConfig {
     pub seed: u64,
     pub pop: usize,
     pub gens: u32,
+    pub out: PathBuf,
