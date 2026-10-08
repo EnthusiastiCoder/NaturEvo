@@ -78,3 +78,4 @@ fn run_jobs(jobs: &[Job], threads: usize) -> Vec<MatchResult> {
     let t = threads.max(1).min(n.max(1));
     let chunk = ((n + t - 1) / t).max(1);
     std::thread::scope(|s| {
+        for (js, os) in jobs.chunks(chunk).zip(out.chunks_mut(chunk)) {
