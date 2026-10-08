@@ -205,3 +205,22 @@ impl Match {
             l.events.push(e);
         }
     }
+
+    fn decide(&mut self, i: usize) -> Action {
+        let (me, opp) = (&self.robots[i], &self.robots[1 - i]);
+        match &mut self.ctl[i] {
+            Ctl::Dummy => scripted::dummy(),
+            Ctl::Fixed(a) => *a,
+            Ctl::Scripted(s) => s.act(me, opp, PHYS_DT),
+            Ctl::Net(net, held) => {
+                if self.tick % DECISION_TICKS == 0 {
+                    let x = observe(me, opp, &self.arena);
+                    let o = net.forward(&x);
+                    let mut t = [0.0f32; 12];
+                    t.copy_from_slice(&o[..12]);
+                    *held = Action { targets: t, drive: o[12] };
+                }
+                *held
+            }
+        }
+    }
