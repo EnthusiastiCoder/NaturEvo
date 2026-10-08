@@ -62,3 +62,9 @@ fn wall_distances(me: &Robot, arena: &Arena) -> (f32, f32) {
         (left, right)
     }
 }
+
+/// True when an obstacle stands between the two torso centres.
+fn line_of_sight_blocked(a: f32, b: f32, arena: &Arena) -> bool {
+    let (lo, hi) = (a.min(b), a.max(b));
+    arena.obstacles.iter().any(|o| o.x > lo && o.x < hi)
+}
