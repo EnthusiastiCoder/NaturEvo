@@ -76,3 +76,4 @@ fn run_jobs(jobs: &[Job], threads: usize) -> Vec<MatchResult> {
     let n = jobs.len();
     let mut out: Vec<Option<MatchResult>> = (0..n).map(|_| None).collect();
     let t = threads.max(1).min(n.max(1));
+    let chunk = ((n + t - 1) / t).max(1);
