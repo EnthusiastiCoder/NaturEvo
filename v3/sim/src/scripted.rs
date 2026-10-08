@@ -9,3 +9,7 @@ pub struct Action {
     pub targets: [f32; 12],
     pub drive: f32,
 }
+
+pub fn dummy() -> Action {
+    Action { targets: STAND_TARGETS, drive: 0.0 }
+}
