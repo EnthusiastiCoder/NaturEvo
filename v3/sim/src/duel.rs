@@ -377,3 +377,53 @@ impl Match {
         };
         self.threats[k].resolution = Some(res);
     }
+
+    fn run_combat(&mut self) {
+        for att in 0..2 {
+            if self.cooldown[att] > 0 {
+                self.cooldown[att] -= 1;
+                continue;
+            }
+            let def = 1 - att;
+            let evs = {
+                let (l, r) = self.robots.split_at_mut(1);
+                let (a, b) = if att == 0 { (&mut l[0], &mut r[0]) } else { (&mut r[0], &mut l[0]) };
+                resolve_tick(a, b, &self.arena)
+            };
+            if evs.is_empty() {
+                continue;
+            }
+            self.cooldown[att] = SWING_COOLDOWN;
+            for ev in evs {
+                let t = self.tick;
+                match ev {
+                    CombatEvent::Hit(h) => {
+                        self.hitstop = self.hitstop.max(h.hitstop_ticks);
+                        self.resolve_threat(att, Resolution::Hit);
+                        self.emit(format!(
+                            "{{\"t\":{},\"kind\":\"hit\",\"victim\":{},\"part\":\"{}\",\"x\":{},\"y\":{},\"dx\":{},\"dy\":{},\"impact\":{},\"zone\":{},\"dmg\":{}}}",
+                            t, def, h.part.name(), f2(h.point[0]), f2(h.point[1]), f2(h.normal[0]), f2(h.normal[1]),
+                            f2(h.impact), f2(h.zone), f2(h.damage)
+                        ));
+                        self.emit(format!("{{\"t\":{},\"kind\":\"hitstop\",\"ticks\":{}}}", t, h.hitstop_ticks));
+                    }
+                    CombatEvent::Clash { kind, point, normal } => {
+                        if kind != ClashKind::Clash {
+                            self.resolve_threat(att, Resolution::Parried);
+                        }
+                        self.emit(format!(
+                            "{{\"t\":{},\"kind\":\"clash\",\"x\":{},\"y\":{},\"dx\":{},\"dy\":{},\"type\":\"{}\"}}",
+                            t, f2(point[0]), f2(point[1]), f2(normal[0]), f2(normal[1]), kind.log_name()
+                        ));
+                    }
+                    CombatEvent::Block { raw, point, .. } => {
+                        self.resolve_threat(att, Resolution::Blocked);
+                        self.emit(format!(
+                            "{{\"t\":{},\"kind\":\"block\",\"x\":{},\"y\":{},\"impact\":{}}}",
+                            t, f2(point[0]), f2(point[1]), f2(raw)
+                        ));
+                    }
+                }
+            }
+        }
+    }
