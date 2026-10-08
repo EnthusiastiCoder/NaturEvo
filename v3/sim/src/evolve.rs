@@ -13,3 +13,5 @@ pub struct HallOfFame {
     cap: usize,
     members: Vec<Genome>,
 }
+
+impl HallOfFame {
