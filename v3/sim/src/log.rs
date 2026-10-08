@@ -10,3 +10,11 @@ pub struct FightLog {
     pub frames: Vec<String>,
     pub events: Vec<String>,
 }
+
+fn cm(v: f32) -> i32 {
+    if v.is_finite() {
+        (v * 100.0).round() as i32
+    } else {
+        0
+    }
+}
