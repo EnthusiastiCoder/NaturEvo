@@ -515,3 +515,63 @@ impl Match {
         }
         s / m
     }
+
+    pub fn result(&self) -> MatchResult {
+        let ko = [self.robots[0].is_ko(), self.robots[1].is_ko()];
+        let outcome = match ko {
+            [true, false] => Outcome::WinB,
+            [false, true] => Outcome::WinA,
+            [true, true] => Outcome::Draw,
+            _ => {
+                let (a, b) = (self.hp_fraction(0), self.hp_fraction(1));
+                if a - b >= 0.05 {
+                    Outcome::WinA
+                } else if b - a >= 0.05 {
+                    Outcome::WinB
+                } else {
+                    Outcome::Draw
+                }
+            }
+        };
+        let mut defence = [DefenceTally::default(); 2];
+        let mut credit = [0.0f32; 2];
+        let mut counted = [0u32; 2];
+        for t in &self.threats {
+            let d = &mut defence[t.defender];
+            let frac = (t.potential / IMPACT_REF).min(1.0);
+            let c = match t.resolution {
+                Some(Resolution::Hit) => {
+                    d.hit += 1;
+                    0.0
+                }
+                Some(Resolution::Parried) => {
+                    d.parry += 1;
+                    frac
+                }
+                Some(Resolution::Blocked) => {
+                    d.block += 1;
+                    0.7
+                }
+                Some(Resolution::Dodged) => {
+                    d.dodge += 1;
+                    0.7
+                }
+                Some(Resolution::Miss) | None => {
+                    d.miss += 1;
+                    0.0
+                }
+            };
+            if c > 0.0 && counted[t.defender] < 6 {
+                counted[t.defender] += 1;
+                credit[t.defender] += c;
+            }
+        }
+        let n = self.tick.max(1) as f32;
+        MatchResult {
+            outcome,
+            ticks: self.tick,
+            defence,
+            idle_guard_share: [self.idle_guard_ticks[0] as f32 / n, self.idle_guard_ticks[1] as f32 / n],
+            defence_credit: credit,
+        }
+    }
