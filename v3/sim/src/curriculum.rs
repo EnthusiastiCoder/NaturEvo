@@ -22,3 +22,11 @@ pub fn stage_for_gen(gen: u32) -> Stage {
 pub fn hof_enabled(s: Stage) -> bool {
     s == Stage::C
 }
+
+pub fn opponents_per_individual(s: Stage) -> usize {
+    if s == Stage::A {
+        2
+    } else {
+        3
+    }
+}
