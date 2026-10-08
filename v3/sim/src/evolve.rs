@@ -34,3 +34,4 @@ impl HallOfFame {
         self.members.is_empty()
     }
     pub fn generations(&self) -> Vec<u32> {
+        self.members.iter().map(|g| g.generation).collect()
