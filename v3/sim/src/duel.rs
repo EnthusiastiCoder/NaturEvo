@@ -228,3 +228,35 @@ impl Match {
     fn blocked_by_obstacle(&self, x: f32) -> bool {
         self.arena.obstacles.iter().any(|o| (x - o.x).abs() < o.w * 0.5 + 0.35)
     }
+
+    /// Advance one physics tick.
+    pub fn step(&mut self) {
+        if self.is_over() {
+            self.ended = true;
+            return;
+        }
+        if self.hitstop > 0 {
+            self.hitstop -= 1;
+        } else {
+            self.advance_fighters();
+            self.update_threats_pre();
+            self.run_combat();
+        }
+        self.update_threats_post();
+        self.bleed();
+        self.track_idle_guard();
+        self.track_states();
+        if self.tick % 2 == 0 {
+            if self.log.is_some() {
+                let f = log::frame_json(self);
+                if let Some(l) = self.log.as_mut() {
+                    l.frames.push(f);
+                }
+            }
+        }
+        self.tick += 1;
+        if self.tick >= MAX_TICKS || self.robots.iter().any(|r| r.is_ko()) {
+            self.ended = true;
+            self.finish_threats();
+        }
+    }
