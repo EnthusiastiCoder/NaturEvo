@@ -67,3 +67,4 @@ impl TrainConfig {
 struct Job {
     hero: Option<usize>,
     mon: Option<usize>,
+    a: Brain,
