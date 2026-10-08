@@ -55,3 +55,4 @@ pub struct TrainConfig {
     pub sigma_start: f32,
     pub sigma_end: f32,
     pub name: String,
+}
