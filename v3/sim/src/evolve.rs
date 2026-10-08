@@ -49,3 +49,4 @@ pub struct TrainConfig {
     pub gens: u32,
     pub out: PathBuf,
     pub threads: usize,
+    pub elites: usize,
