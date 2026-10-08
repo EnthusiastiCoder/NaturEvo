@@ -25,3 +25,10 @@ pub struct MatchStats {
     pub passivity: f32,
     pub chain_quality: f32,
 }
+
+#[derive(Clone, Copy, Debug)]
+pub struct ThreatOutcome {
+    pub resolution: Resolution,
+    pub i_potential: f32,
+    pub followup_hit: bool,
+}
