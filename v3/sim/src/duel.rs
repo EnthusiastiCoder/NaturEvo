@@ -195,3 +195,7 @@ impl Match {
             self.log = Some(FightLog::default());
         }
     }
+
+    pub fn is_over(&self) -> bool {
+        self.ended || self.tick >= MAX_TICKS || self.robots.iter().any(|r| r.is_ko())
+    }
