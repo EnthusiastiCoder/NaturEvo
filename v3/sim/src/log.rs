@@ -3,3 +3,10 @@
 use crate::duel::{Match, Outcome};
 use crate::robot::{Capsule, Part, Robot, State};
 use std::fmt::Write;
+
+/// Recorded frames and events (pre-rendered JSON fragments).
+#[derive(Clone, Debug, Default)]
+pub struct FightLog {
+    pub frames: Vec<String>,
+    pub events: Vec<String>,
+}
