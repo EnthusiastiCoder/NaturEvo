@@ -29,3 +29,11 @@ pub struct Scripted {
     last_x: f32,
     still: f32,
 }
+
+const WINDUP: f32 = 0.3;
+const STRIKE: f32 = 0.2;
+const RECOVER: f32 = 0.35;
+/// Preferred torso distance for swinging, metres.
+const REACH: f32 = 2.4;
+/// Ticks without progress after which the attacker swings from where it is (an obstacle is in the way).
+const STUCK_S: f32 = 0.5;
