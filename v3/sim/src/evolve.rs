@@ -120,3 +120,4 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
                 let opp = if rng.f32() < 0.7 { Brain::Dummy } else { Brain::Scripted };
                 jobs.push(Job { hero: None, mon: Some(i), a: opp, b: brain_m(i), seed: next_seed() });
             }
+        }
