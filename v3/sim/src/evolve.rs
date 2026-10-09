@@ -161,3 +161,4 @@ fn breed(pop: &mut Vec<Genome>, fit: &[f32], cfg: &TrainConfig, gen: u32, rng: &
     idx.sort_by(|&a, &b| fit[b].partial_cmp(&fit[a]).unwrap_or(std::cmp::Ordering::Equal).then(a.cmp(&b)));
     let frac = if cfg.gens > 1 { gen as f32 / (cfg.gens - 1) as f32 } else { 1.0 };
     let sigma = cfg.sigma_start + (cfg.sigma_end - cfg.sigma_start) * frac;
+    let mut next: Vec<Genome> = Vec::with_capacity(n);
