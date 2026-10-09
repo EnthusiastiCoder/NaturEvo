@@ -183,3 +183,4 @@ fn breed(pop: &mut Vec<Genome>, fit: &[f32], cfg: &TrainConfig, gen: u32, rng: &
             let b = pick(rng);
             Genome::crossover(&pop[a], &pop[b], rng)
         } else {
+            pop[a].clone()
