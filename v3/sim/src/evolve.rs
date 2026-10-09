@@ -85,3 +85,4 @@ fn run_jobs(jobs: &[Job], threads: usize) -> Vec<MatchResult> {
                 }
             });
         }
+    });
