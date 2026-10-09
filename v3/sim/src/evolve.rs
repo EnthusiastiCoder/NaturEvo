@@ -94,3 +94,4 @@ fn permutation(n: usize, rng: &mut Rng) -> Vec<usize> {
     for i in (1..n).rev() {
         let j = (rng.next_u64() % (i as u64 + 1)) as usize;
         p.swap(i, j);
+    }
