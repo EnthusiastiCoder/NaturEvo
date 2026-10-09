@@ -132,3 +132,4 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
     } else {
         (2, 1, 0)
     };
+    for _ in 0..pairs {
