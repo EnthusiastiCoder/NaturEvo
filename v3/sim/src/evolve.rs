@@ -92,3 +92,4 @@ fn run_jobs(jobs: &[Job], threads: usize) -> Vec<MatchResult> {
 fn permutation(n: usize, rng: &mut Rng) -> Vec<usize> {
     let mut p: Vec<usize> = (0..n).collect();
     for i in (1..n).rev() {
+        let j = (rng.next_u64() % (i as u64 + 1)) as usize;
