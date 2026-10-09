@@ -153,3 +153,4 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
         }
     }
     jobs
+}
