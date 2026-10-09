@@ -181,3 +181,4 @@ fn breed(pop: &mut Vec<Genome>, fit: &[f32], cfg: &TrainConfig, gen: u32, rng: &
         let a = pick(rng);
         let mut child = if rng.f32() < 0.5 {
             let b = pick(rng);
+            Genome::crossover(&pop[a], &pop[b], rng)
