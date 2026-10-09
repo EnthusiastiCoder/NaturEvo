@@ -87,3 +87,4 @@ fn run_jobs(jobs: &[Job], threads: usize) -> Vec<MatchResult> {
         }
     });
     out.into_iter().map(|o| o.expect("job result")).collect()
+}
