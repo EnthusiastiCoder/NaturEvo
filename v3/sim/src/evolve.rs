@@ -82,3 +82,4 @@ fn run_jobs(jobs: &[Job], threads: usize) -> Vec<MatchResult> {
             s.spawn(move || {
                 for (j, o) in js.iter().zip(os.iter_mut()) {
                     *o = Some(Match::new(j.seed, j.a.clone(), j.b.clone()).run_to_end());
+                }
