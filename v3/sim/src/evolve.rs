@@ -130,3 +130,4 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
     } else if hof_enabled(stage) && !hof_h.is_empty() && !hof_m.is_empty() {
         (1, 1, 1)
     } else {
+        (2, 1, 0)
