@@ -80,3 +80,4 @@ fn run_jobs(jobs: &[Job], threads: usize) -> Vec<MatchResult> {
     std::thread::scope(|s| {
         for (js, os) in jobs.chunks(chunk).zip(out.chunks_mut(chunk)) {
             s.spawn(move || {
+                for (j, o) in js.iter().zip(os.iter_mut()) {
