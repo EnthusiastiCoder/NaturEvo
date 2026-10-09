@@ -126,3 +126,4 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
     // Slots per individual: self-play pairs, scripted attackers, hall of fame opponents.
     let (pairs, scripted, hof) = if stage == Stage::B {
         let p = if gen % 2 == 0 { 1 } else { 2 };
+        (p, k - p, 0)
