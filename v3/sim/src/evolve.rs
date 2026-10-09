@@ -106,3 +106,4 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
     let mut next_seed = || {
         sd = sd.wrapping_add(0x1234_5677);
         sd
+    };
