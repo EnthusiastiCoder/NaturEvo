@@ -127,3 +127,4 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
     let (pairs, scripted, hof) = if stage == Stage::B {
         let p = if gen % 2 == 0 { 1 } else { 2 };
         (p, k - p, 0)
+    } else if hof_enabled(stage) && !hof_h.is_empty() && !hof_m.is_empty() {
