@@ -139,3 +139,4 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
         }
     }
     for _ in 0..scripted {
+        for i in 0..n {
