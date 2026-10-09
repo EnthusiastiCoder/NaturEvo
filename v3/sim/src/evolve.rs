@@ -96,3 +96,4 @@ fn permutation(n: usize, rng: &mut Rng) -> Vec<usize> {
         p.swap(i, j);
     }
     p
+}
