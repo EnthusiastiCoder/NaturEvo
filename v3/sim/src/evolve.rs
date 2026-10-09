@@ -142,3 +142,4 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
         for i in 0..n {
             jobs.push(Job { hero: Some(i), mon: None, a: brain_h(i), b: Brain::Scripted, seed: next_seed() });
             jobs.push(Job { hero: None, mon: Some(i), a: Brain::Scripted, b: brain_m(i), seed: next_seed() });
+        }
