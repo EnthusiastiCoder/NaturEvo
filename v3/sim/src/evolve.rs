@@ -102,3 +102,4 @@ fn permutation(n: usize, rng: &mut Rng) -> Vec<usize> {
 fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: &HallOfFame, hof_m: &HallOfFame, seed: u64, rng: &mut Rng) -> Vec<Job> {
     let n = heroes.len();
     let mut jobs = Vec::new();
+    let mut sd = seed ^ ((gen as u64 + 1).wrapping_mul(0x9E37_79B9_7F4A_7C15));
