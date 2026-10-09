@@ -111,3 +111,4 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
     let brain_m = |i: usize| Brain::Net(mons[i].clone());
     let k = opponents_per_individual(stage);
     if stage == Stage::A {
+        for i in 0..n {
