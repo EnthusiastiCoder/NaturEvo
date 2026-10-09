@@ -189,3 +189,4 @@ fn breed(pop: &mut Vec<Genome>, fit: &[f32], cfg: &TrainConfig, gen: u32, rng: &
         child.generation = gen + 1;
         child.fitness = 0.0;
         next.push(child);
+    }
