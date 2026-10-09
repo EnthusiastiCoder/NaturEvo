@@ -168,3 +168,4 @@ fn breed(pop: &mut Vec<Genome>, fit: &[f32], cfg: &TrainConfig, gen: u32, rng: &
         next.push(g);
     }
     let pick = |rng: &mut Rng| -> usize {
+        let mut best = (rng.next_u64() % n as u64) as usize;
