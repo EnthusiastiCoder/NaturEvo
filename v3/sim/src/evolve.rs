@@ -154,3 +154,5 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
     }
     jobs
 }
+
+fn breed(pop: &mut Vec<Genome>, fit: &[f32], cfg: &TrainConfig, gen: u32, rng: &mut Rng) {
