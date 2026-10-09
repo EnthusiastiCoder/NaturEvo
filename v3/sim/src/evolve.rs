@@ -113,3 +113,4 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
     if stage == Stage::A {
         for i in 0..n {
             for _ in 0..k {
+                let opp = if rng.f32() < 0.7 { Brain::Dummy } else { Brain::Scripted };
