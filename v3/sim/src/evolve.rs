@@ -88,3 +88,5 @@ fn run_jobs(jobs: &[Job], threads: usize) -> Vec<MatchResult> {
     });
     out.into_iter().map(|o| o.expect("job result")).collect()
 }
+
+fn permutation(n: usize, rng: &mut Rng) -> Vec<usize> {
