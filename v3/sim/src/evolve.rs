@@ -179,3 +179,4 @@ fn breed(pop: &mut Vec<Genome>, fit: &[f32], cfg: &TrainConfig, gen: u32, rng: &
     };
     while next.len() < n {
         let a = pick(rng);
+        let mut child = if rng.f32() < 0.5 {
