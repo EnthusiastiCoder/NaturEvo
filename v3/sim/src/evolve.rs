@@ -84,3 +84,4 @@ fn run_jobs(jobs: &[Job], threads: usize) -> Vec<MatchResult> {
                     *o = Some(Match::new(j.seed, j.a.clone(), j.b.clone()).run_to_end());
                 }
             });
+        }
