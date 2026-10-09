@@ -112,3 +112,4 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
     let k = opponents_per_individual(stage);
     if stage == Stage::A {
         for i in 0..n {
+            for _ in 0..k {
