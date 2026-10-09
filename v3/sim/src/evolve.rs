@@ -185,3 +185,4 @@ fn breed(pop: &mut Vec<Genome>, fit: &[f32], cfg: &TrainConfig, gen: u32, rng: &
         } else {
             pop[a].clone()
         };
+        child.mutate(rng, cfg.mutation_rate, sigma);
