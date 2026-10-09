@@ -97,3 +97,5 @@ fn permutation(n: usize, rng: &mut Rng) -> Vec<usize> {
     }
     p
 }
+
+#[allow(clippy::too_many_arguments)]
