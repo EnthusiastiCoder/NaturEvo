@@ -164,3 +164,4 @@ fn breed(pop: &mut Vec<Genome>, fit: &[f32], cfg: &TrainConfig, gen: u32, rng: &
     let mut next: Vec<Genome> = Vec::with_capacity(n);
     for &i in idx.iter().take(cfg.elites) {
         let mut g = pop[i].clone();
+        g.fitness = fit[i];
