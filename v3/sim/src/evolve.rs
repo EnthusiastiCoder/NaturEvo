@@ -191,3 +191,4 @@ fn breed(pop: &mut Vec<Genome>, fit: &[f32], cfg: &TrainConfig, gen: u32, rng: &
         next.push(child);
     }
     *pop = next;
+}
