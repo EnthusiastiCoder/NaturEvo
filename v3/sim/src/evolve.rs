@@ -101,3 +101,4 @@ fn permutation(n: usize, rng: &mut Rng) -> Vec<usize> {
 #[allow(clippy::too_many_arguments)]
 fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: &HallOfFame, hof_m: &HallOfFame, seed: u64, rng: &mut Rng) -> Vec<Job> {
     let n = heroes.len();
+    let mut jobs = Vec::new();
