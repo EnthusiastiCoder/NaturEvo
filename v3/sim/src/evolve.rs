@@ -173,3 +173,4 @@ fn breed(pop: &mut Vec<Genome>, fit: &[f32], cfg: &TrainConfig, gen: u32, rng: &
             let c = (rng.next_u64() % n as u64) as usize;
             if fit[c] > fit[best] {
                 best = c;
+            }
