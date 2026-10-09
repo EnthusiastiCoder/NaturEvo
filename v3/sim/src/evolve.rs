@@ -150,3 +150,4 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
             jobs.push(Job { hero: Some(i), mon: None, a: brain_h(i), b: Brain::Net(m), seed: next_seed() });
             let h = hof_h.pick(rng).clone();
             jobs.push(Job { hero: None, mon: Some(i), a: Brain::Net(h), b: brain_m(i), seed: next_seed() });
+        }
