@@ -264,3 +264,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         ));
         let champ = |pop: &Vec<Genome>, f: &Vec<f32>| -> Genome {
             let mut bi = 0;
+            for i in 1..pop.len() {
