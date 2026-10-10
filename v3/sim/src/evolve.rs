@@ -223,3 +223,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
     let mut fight_gens: Vec<u32> = Vec::new();
     let mut evals: Vec<String> = Vec::new();
     for gen in 0..cfg.gens {
+        let stage = stage_for_gen(gen);
