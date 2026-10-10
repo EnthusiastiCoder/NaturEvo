@@ -295,3 +295,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             "gen {} stage {} hero {:.2}/{:.2} mon {:.2}/{:.2} def {:.3} idle {:.3} draw {:.2}",
             gen, stage_name, best(&fit[0]), mean(&fit[0]), best(&fit[1]), mean(&fit[1]), drate, idle / nj, draws as f32 / nj
         );
+        let mut r1 = Rng::new(cfg.seed ^ 0xA5A5 ^ ((gen as u64) << 8));
