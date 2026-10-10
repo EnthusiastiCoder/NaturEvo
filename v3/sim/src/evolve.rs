@@ -249,3 +249,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             ticks += r.ticks as f32;
         }
         let nj = jobs.len().max(1) as f32;
+        let fit: Vec<Vec<f32>> = (0..2).map(|s| (0..cfg.pop).map(|i| sum[s][i] / cnt[s][i].max(1) as f32).collect()).collect();
