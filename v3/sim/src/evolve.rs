@@ -206,3 +206,5 @@ fn civil_date() -> String {
     let y = yoe + era * 400 + if m <= 2 { 1 } else { 0 };
     format!("{:04}-{:02}-{:02}", y, m, d)
 }
+
+fn io(e: std::io::Error) -> String {
