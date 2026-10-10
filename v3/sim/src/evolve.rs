@@ -246,3 +246,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             if r.outcome == Outcome::Draw {
                 draws += 1;
             }
+            ticks += r.ticks as f32;
