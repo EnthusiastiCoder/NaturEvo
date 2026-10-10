@@ -304,3 +304,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
     let run = format!(
         "{{\"name\":\"{}\",\"seed\":{},\"date\":\"{}\",\"population\":{},\"generations\":{},\"fight_gens\":[{}],\"config\":{{\"elites\":{},\"tournament\":{},\"mutation_rate\":{},\"sigma_start\":{},\"sigma_end\":{}}},\"evals\":[{}]}}",
         cfg.name, cfg.seed, civil_date(), cfg.pop, cfg.gens, fg.join(","), cfg.elites, cfg.tournament, cfg.mutation_rate, cfg.sigma_start, cfg.sigma_end, evals.join(",")
+    );
