@@ -192,3 +192,5 @@ fn breed(pop: &mut Vec<Genome>, fit: &[f32], cfg: &TrainConfig, gen: u32, rng: &
     }
     *pop = next;
 }
+
+fn civil_date() -> String {
