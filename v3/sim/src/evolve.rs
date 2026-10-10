@@ -220,3 +220,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
     let mut hof_h = HallOfFame::new(8);
     let mut hof_m = HallOfFame::new(8);
     let mut csv = csv_header(&["gen", "stage", "hero_best", "hero_mean", "monster_best", "monster_mean", "defence_rate", "idle_guard", "draw_share", "mean_ticks"]);
+    let mut fight_gens: Vec<u32> = Vec::new();
