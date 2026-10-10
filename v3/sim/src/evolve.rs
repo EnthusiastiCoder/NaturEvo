@@ -217,3 +217,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
     let mut rng = Rng::new(cfg.seed);
     let mut heroes: Vec<Genome> = (0..cfg.pop).map(|_| Genome::random(Role::Hero, &mut rng)).collect();
     let mut mons: Vec<Genome> = (0..cfg.pop).map(|_| Genome::random(Role::Monster, &mut rng)).collect();
+    let mut hof_h = HallOfFame::new(8);
