@@ -268,3 +268,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
                 if f[i] > f[bi] {
                     bi = i;
                 }
+            }
