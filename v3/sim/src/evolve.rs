@@ -269,3 +269,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
                     bi = i;
                 }
             }
+            let mut g = pop[bi].clone();
