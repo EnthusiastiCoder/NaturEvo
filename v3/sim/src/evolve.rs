@@ -243,3 +243,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
                 threats += d.parry + d.block + d.dodge + d.hit + d.miss;
             }
             idle += (r.idle_guard_share[0] + r.idle_guard_share[1]) * 0.5;
+            if r.outcome == Outcome::Draw {
