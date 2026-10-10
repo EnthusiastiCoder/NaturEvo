@@ -210,3 +210,5 @@ fn civil_date() -> String {
 fn io(e: std::io::Error) -> String {
     e.to_string()
 }
+
+/// Train both populations; writes training.csv, champions, fight logs and run.json into `cfg.out`.
