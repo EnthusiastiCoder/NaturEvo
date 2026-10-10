@@ -233,3 +233,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             if let Some(i) = j.hero {
                 sum[0][i] += score_match(r, 0);
                 cnt[0][i] += 1;
+            }
