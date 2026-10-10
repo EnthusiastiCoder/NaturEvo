@@ -256,3 +256,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         let stage_name = match stage {
             Stage::A => "A",
             Stage::B => "B",
+            Stage::C => "C",
