@@ -241,3 +241,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             for d in &r.defence {
                 def += d.parry + d.block + d.dodge;
                 threats += d.parry + d.block + d.dodge + d.hit + d.miss;
+            }
