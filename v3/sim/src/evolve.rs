@@ -231,3 +231,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         let (mut def, mut threats, mut idle, mut draws, mut ticks) = (0u32, 0u32, 0.0f32, 0u32, 0.0f32);
         for (j, r) in jobs.iter().zip(results.iter()) {
             if let Some(i) = j.hero {
+                sum[0][i] += score_match(r, 0);
