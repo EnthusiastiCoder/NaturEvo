@@ -272,3 +272,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             let mut g = pop[bi].clone();
             g.generation = gen;
             g.fitness = f[bi];
+            g
