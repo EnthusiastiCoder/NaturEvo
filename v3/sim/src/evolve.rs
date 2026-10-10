@@ -232,3 +232,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         for (j, r) in jobs.iter().zip(results.iter()) {
             if let Some(i) = j.hero {
                 sum[0][i] += score_match(r, 0);
+                cnt[0][i] += 1;
