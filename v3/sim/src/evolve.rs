@@ -297,3 +297,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         );
         let mut r1 = Rng::new(cfg.seed ^ 0xA5A5 ^ ((gen as u64) << 8));
         breed(&mut heroes, &fit[0], cfg, gen, &mut r1);
+        breed(&mut mons, &fit[1], cfg, gen, &mut r1);
