@@ -261,3 +261,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         csv.push_str(&format!(
             "{},{},{},{},{},{},{},{},{},{}\n",
             gen, stage_name, best(&fit[0]), mean(&fit[0]), best(&fit[1]), mean(&fit[1]), drate, idle / nj, draws as f32 / nj, ticks / nj
+        ));
