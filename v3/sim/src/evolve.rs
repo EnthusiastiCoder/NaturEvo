@@ -229,3 +229,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         let mut sum = [vec![0.0f32; cfg.pop], vec![0.0f32; cfg.pop]];
         let mut cnt = [vec![0u32; cfg.pop], vec![0u32; cfg.pop]];
         let (mut def, mut threats, mut idle, mut draws, mut ticks) = (0u32, 0u32, 0.0f32, 0u32, 0.0f32);
+        for (j, r) in jobs.iter().zip(results.iter()) {
