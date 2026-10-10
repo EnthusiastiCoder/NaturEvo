@@ -302,3 +302,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
     std::fs::write(cfg.out.join("training.csv"), csv).map_err(io)?;
     let fg: Vec<String> = fight_gens.iter().map(|g| g.to_string()).collect();
     let run = format!(
+        "{{\"name\":\"{}\",\"seed\":{},\"date\":\"{}\",\"population\":{},\"generations\":{},\"fight_gens\":[{}],\"config\":{{\"elites\":{},\"tournament\":{},\"mutation_rate\":{},\"sigma_start\":{},\"sigma_end\":{}}},\"evals\":[{}]}}",
