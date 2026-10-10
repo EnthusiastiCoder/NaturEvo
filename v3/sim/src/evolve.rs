@@ -280,3 +280,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             if hof_h.should_save(gen) {
                 hof_h.push(ch.clone());
                 hof_m.push(cm.clone());
+            }
