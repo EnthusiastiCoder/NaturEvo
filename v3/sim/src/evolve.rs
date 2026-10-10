@@ -275,3 +275,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             g
         };
         let last = gen + 1 == cfg.gens;
+        if hof_h.should_save(gen) || last || gen == 0 {
