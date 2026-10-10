@@ -273,3 +273,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             g.generation = gen;
             g.fitness = f[bi];
             g
+        };
