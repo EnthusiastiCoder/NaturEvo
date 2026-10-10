@@ -258,3 +258,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             Stage::B => "B",
             Stage::C => "C",
         };
+        csv.push_str(&format!(
