@@ -291,3 +291,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             fight_gens.push(gen);
             evals.push(format!("{{\"gen\":{},\"defence_rate\":{},\"idle_guard\":{},\"draw_share\":{}}}", gen, drate, idle / nj, draws as f32 / nj));
         }
+        eprintln!(
