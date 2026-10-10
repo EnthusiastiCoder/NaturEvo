@@ -234,3 +234,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
                 sum[0][i] += score_match(r, 0);
                 cnt[0][i] += 1;
             }
+            if let Some(i) = j.mon {
