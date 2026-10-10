@@ -276,3 +276,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         };
         let last = gen + 1 == cfg.gens;
         if hof_h.should_save(gen) || last || gen == 0 {
+            let (ch, cm) = (champ(&heroes, &fit[0]), champ(&mons, &fit[1]));
