@@ -245,3 +245,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             idle += (r.idle_guard_share[0] + r.idle_guard_share[1]) * 0.5;
             if r.outcome == Outcome::Draw {
                 draws += 1;
+            }
