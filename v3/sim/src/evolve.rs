@@ -290,3 +290,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             w(format!("fight_gen_{}.json", gen), crate::log::fight_json(&m))?;
             fight_gens.push(gen);
             evals.push(format!("{{\"gen\":{},\"defence_rate\":{},\"idle_guard\":{},\"draw_share\":{}}}", gen, drate, idle / nj, draws as f32 / nj));
+        }
