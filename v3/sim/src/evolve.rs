@@ -281,3 +281,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
                 hof_h.push(ch.clone());
                 hof_m.push(cm.clone());
             }
+            let w = |name: String, body: String| std::fs::write(cfg.out.join(name), body).map_err(io);
