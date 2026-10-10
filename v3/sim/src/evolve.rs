@@ -299,3 +299,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         breed(&mut heroes, &fit[0], cfg, gen, &mut r1);
         breed(&mut mons, &fit[1], cfg, gen, &mut r1);
     }
+    std::fs::write(cfg.out.join("training.csv"), csv).map_err(io)?;
