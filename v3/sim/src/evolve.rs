@@ -307,3 +307,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
     );
     std::fs::write(cfg.out.join("run.json"), run).map_err(io)?;
     Ok(())
+}
