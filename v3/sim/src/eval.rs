@@ -34,3 +34,17 @@ fn champions(dir: &Path, role: &str) -> Result<Vec<Genome>, String> {
     found.sort_by_key(|f| f.0);
     Ok(found.into_iter().map(|f| f.1).collect())
 }
+
+#[derive(Default)]
+struct Acc {
+    n: u32,
+    wins: u32,
+    draws: u32,
+    ticks: f32,
+    idle: f32,
+    parry: u32,
+    block: u32,
+    dodge: u32,
+    hit: u32,
+    miss: u32,
+}
