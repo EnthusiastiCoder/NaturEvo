@@ -266,3 +266,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             let mut bi = 0;
             for i in 1..pop.len() {
                 if f[i] > f[bi] {
+                    bi = i;
