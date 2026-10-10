@@ -255,3 +255,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         let drate = if threats > 0 { def as f32 / threats as f32 } else { 0.0 };
         let stage_name = match stage {
             Stage::A => "A",
+            Stage::B => "B",
