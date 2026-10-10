@@ -253,3 +253,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         let best = |v: &Vec<f32>| v.iter().cloned().fold(f32::MIN, f32::max);
         let mean = |v: &Vec<f32>| v.iter().sum::<f32>() / v.len() as f32;
         let drate = if threats > 0 { def as f32 / threats as f32 } else { 0.0 };
+        let stage_name = match stage {
