@@ -242,3 +242,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
                 def += d.parry + d.block + d.dodge;
                 threats += d.parry + d.block + d.dodge + d.hit + d.miss;
             }
+            idle += (r.idle_guard_share[0] + r.idle_guard_share[1]) * 0.5;
