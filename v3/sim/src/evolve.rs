@@ -254,3 +254,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         let mean = |v: &Vec<f32>| v.iter().sum::<f32>() / v.len() as f32;
         let drate = if threats > 0 { def as f32 / threats as f32 } else { 0.0 };
         let stage_name = match stage {
+            Stage::A => "A",
