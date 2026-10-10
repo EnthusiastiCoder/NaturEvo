@@ -279,3 +279,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             let (ch, cm) = (champ(&heroes, &fit[0]), champ(&mons, &fit[1]));
             if hof_h.should_save(gen) {
                 hof_h.push(ch.clone());
+                hof_m.push(cm.clone());
