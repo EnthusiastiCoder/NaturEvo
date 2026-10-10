@@ -239,3 +239,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
                 cnt[1][i] += 1;
             }
             for d in &r.defence {
+                def += d.parry + d.block + d.dodge;
