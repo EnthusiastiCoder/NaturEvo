@@ -205,3 +205,4 @@ fn civil_date() -> String {
     let m = if mp < 10 { mp + 3 } else { mp - 9 };
     let y = yoe + era * 400 + if m <= 2 { 1 } else { 0 };
     format!("{:04}-{:02}-{:02}", y, m, d)
+}
