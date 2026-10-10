@@ -225,3 +225,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
     for gen in 0..cfg.gens {
         let stage = stage_for_gen(gen);
         let jobs = make_jobs(gen, stage, &heroes, &mons, &hof_h, &hof_m, cfg.seed, &mut rng);
+        let results = run_jobs(&jobs, cfg.threads);
