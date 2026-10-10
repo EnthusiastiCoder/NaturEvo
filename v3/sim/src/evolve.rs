@@ -198,3 +198,4 @@ fn civil_date() -> String {
     let z = secs / 86400 + 719468;
     let era = z.div_euclid(146097);
     let doe = z.rem_euclid(146097);
+    let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
