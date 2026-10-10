@@ -248,3 +248,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             }
             ticks += r.ticks as f32;
         }
+        let nj = jobs.len().max(1) as f32;
