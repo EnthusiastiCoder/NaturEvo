@@ -212,3 +212,4 @@ fn io(e: std::io::Error) -> String {
 }
 
 /// Train both populations; writes training.csv, champions, fight logs and run.json into `cfg.out`.
+pub fn train(cfg: &TrainConfig) -> Result<(), String> {
