@@ -267,3 +267,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             for i in 1..pop.len() {
                 if f[i] > f[bi] {
                     bi = i;
+                }
