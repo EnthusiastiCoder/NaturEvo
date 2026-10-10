@@ -286,3 +286,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             w(format!("champion_monster_gen_{}.json", gen), cm.to_json())?;
             let mut m = Match::new(cfg.seed.wrapping_add(gen as u64), Brain::Net(ch), Brain::Net(cm));
             m.enable_log();
+            m.run_to_end();
