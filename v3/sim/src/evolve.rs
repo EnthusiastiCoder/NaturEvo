@@ -306,3 +306,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         cfg.name, cfg.seed, civil_date(), cfg.pop, cfg.gens, fg.join(","), cfg.elites, cfg.tournament, cfg.mutation_rate, cfg.sigma_start, cfg.sigma_end, evals.join(",")
     );
     std::fs::write(cfg.out.join("run.json"), run).map_err(io)?;
+    Ok(())
