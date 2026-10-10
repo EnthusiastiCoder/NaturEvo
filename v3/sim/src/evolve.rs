@@ -288,3 +288,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             m.enable_log();
             m.run_to_end();
             w(format!("fight_gen_{}.json", gen), crate::log::fight_json(&m))?;
+            fight_gens.push(gen);
