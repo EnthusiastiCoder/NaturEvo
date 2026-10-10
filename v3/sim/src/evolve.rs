@@ -287,3 +287,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             let mut m = Match::new(cfg.seed.wrapping_add(gen as u64), Brain::Net(ch), Brain::Net(cm));
             m.enable_log();
             m.run_to_end();
+            w(format!("fight_gen_{}.json", gen), crate::log::fight_json(&m))?;
