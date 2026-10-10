@@ -247,3 +247,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
                 draws += 1;
             }
             ticks += r.ticks as f32;
+        }
