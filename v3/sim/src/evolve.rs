@@ -274,3 +274,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             g.fitness = f[bi];
             g
         };
+        let last = gen + 1 == cfg.gens;
