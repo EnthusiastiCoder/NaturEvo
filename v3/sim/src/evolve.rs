@@ -292,3 +292,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             evals.push(format!("{{\"gen\":{},\"defence_rate\":{},\"idle_guard\":{},\"draw_share\":{}}}", gen, drate, idle / nj, draws as f32 / nj));
         }
         eprintln!(
+            "gen {} stage {} hero {:.2}/{:.2} mon {:.2}/{:.2} def {:.3} idle {:.3} draw {:.2}",
