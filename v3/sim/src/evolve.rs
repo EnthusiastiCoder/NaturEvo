@@ -300,3 +300,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         breed(&mut mons, &fit[1], cfg, gen, &mut r1);
     }
     std::fs::write(cfg.out.join("training.csv"), csv).map_err(io)?;
+    let fg: Vec<String> = fight_gens.iter().map(|g| g.to_string()).collect();
