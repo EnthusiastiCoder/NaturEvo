@@ -257,3 +257,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             Stage::A => "A",
             Stage::B => "B",
             Stage::C => "C",
+        };
