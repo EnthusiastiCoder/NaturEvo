@@ -226,3 +226,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         let stage = stage_for_gen(gen);
         let jobs = make_jobs(gen, stage, &heroes, &mons, &hof_h, &hof_m, cfg.seed, &mut rng);
         let results = run_jobs(&jobs, cfg.threads);
+        let mut sum = [vec![0.0f32; cfg.pop], vec![0.0f32; cfg.pop]];
