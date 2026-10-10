@@ -238,3 +238,4 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
                 sum[1][i] += score_match(r, 1);
                 cnt[1][i] += 1;
             }
+            for d in &r.defence {
