@@ -197,3 +197,4 @@ fn civil_date() -> String {
     let secs = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0) as i64;
     let z = secs / 86400 + 719468;
     let era = z.div_euclid(146097);
+    let doe = z.rem_euclid(146097);
