@@ -399,6 +399,7 @@ impl Match {
             }
         };
         self.threats[k].resolution = Some(res);
+        self.threats[k].end_tick = self.tick;
     }
 
     fn run_combat(&mut self) {
