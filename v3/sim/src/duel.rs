@@ -377,6 +377,8 @@ impl Match {
             start_tick: self.tick,
             resolution: None,
             potential,
+            end_tick: 0,
+            followup_hit: false,
             start_x: d.x,
             start_angles: a,
             moved: 0.0,
