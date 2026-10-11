@@ -590,6 +590,10 @@ impl Match {
             }
             outs[t.defender].push(ThreatOutcome { resolution: res, i_potential: t.potential, followup_hit: t.followup_hit });
         }
+        let credit = [fitness::defence_credit(&outs[0]), fitness::defence_credit(&outs[1])];
+        let total = |i: usize| -> f32 { Part::ALL.iter().map(|p| self.robots[i].max_hp(*p)).sum() };
+        let dealt = [(self.dealt_w[0] / total(1)).min(1.0), (self.dealt_w[1] / total(0)).min(1.0)];
+        let q = |i: usize| if self.hits[i] > 0 { self.quality_sum[i] / self.hits[i] as f32 } else { 0.0 };
         let n = self.tick.max(1) as f32;
         MatchResult {
             outcome,
