@@ -122,3 +122,5 @@ pub fn evaluate_run(dir: &Path, arena_seeds: u64) -> Result<EvalMetrics, String>
         dodge_share: hof.dodge as f32 / def,
     })
 }
+
+const KEYS: [&str; 10] = ["win_rate_hof", "defence_rate", "defence_rate_scripted", "hit_rate", "idle_guard", "draw_share", "mean_ticks", "parry_share", "block_share", "dodge_share"];
