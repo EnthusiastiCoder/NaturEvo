@@ -588,6 +588,7 @@ impl Match {
                 Resolution::Dodged => d.dodge += 1,
                 Resolution::Miss => d.miss += 1,
             }
+            outs[t.defender].push(ThreatOutcome { resolution: res, i_potential: t.potential, followup_hit: t.followup_hit });
         }
         let n = self.tick.max(1) as f32;
         MatchResult {
