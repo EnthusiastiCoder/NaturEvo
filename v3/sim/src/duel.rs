@@ -56,6 +56,8 @@ pub struct Threat {
     pub resolution: Option<Resolution>,
     /// Impact the swing could have delivered (from its peak tip speed).
     pub potential: f32,
+    pub end_tick: u32,
+    pub followup_hit: bool,
     start_x: f32,
     start_angles: [f32; 12],
     moved: f32,
