@@ -139,3 +139,17 @@ pub fn aggregate(ms: &[EvalMetrics]) -> Vec<(f32, f32, f32)> {
         })
         .collect()
 }
+
+pub fn aggregate_json(names: &[String], ms: &[EvalMetrics]) -> String {
+    let agg = aggregate(ms);
+    let per: Vec<String> = names
+        .iter()
+        .zip(ms)
+        .map(|(n, m)| {
+            let f: Vec<String> = KEYS.iter().zip(values(m)).map(|(k, v)| format!("\"{}\":{}", k, v)).collect();
+            format!("{{\"run\":\"{}\",\"matches\":{},{}}}", n, m.matches, f.join(","))
+        })
+        .collect();
+    let a: Vec<String> = KEYS.iter().zip(&agg).map(|(k, (m, lo, hi))| format!("\"{}\":{{\"mean\":{},\"min\":{},\"max\":{}}}", k, m, lo, hi)).collect();
+    format!("{{\"version\":3,\"runs\":[{}],\"aggregate\":{{{}}}}}", per.join(","), a.join(","))
+}
