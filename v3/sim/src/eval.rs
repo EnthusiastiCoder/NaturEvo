@@ -48,3 +48,34 @@ struct Acc {
     hit: u32,
     miss: u32,
 }
+
+impl Acc {
+    fn add(&mut self, r: &crate::duel::MatchResult, who: usize) {
+        self.n += 1;
+        let mine = if who == 0 { Outcome::WinA } else { Outcome::WinB };
+        if r.outcome == mine {
+            self.wins += 1;
+        }
+        if r.outcome == Outcome::Draw {
+            self.draws += 1;
+        }
+        self.ticks += r.ticks as f32;
+        self.idle += r.idle_guard_share[who];
+        let d = &r.defence[who];
+        self.parry += d.parry;
+        self.block += d.block;
+        self.dodge += d.dodge;
+        self.hit += d.hit;
+        self.miss += d.miss;
+    }
+    fn threats(&self) -> f32 {
+        (self.parry + self.block + self.dodge + self.hit + self.miss) as f32
+    }
+    fn defence_rate(&self) -> f32 {
+        if self.threats() > 0.0 {
+            (self.parry + self.block + self.dodge) as f32 / self.threats()
+        } else {
+            0.0
+        }
+    }
+}
