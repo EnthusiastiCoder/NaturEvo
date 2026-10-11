@@ -424,6 +424,16 @@ impl Match {
                     CombatEvent::Hit(h) => {
                         self.hitstop = self.hitstop.max(h.hitstop_ticks);
                         self.resolve_threat(att, Resolution::Hit);
+                        self.dealt_w[att] += h.damage.max(0.0) * zone_weight(h.part);
+                        self.quality_sum[att] += self.robots[att].strike_quality;
+                        self.hits[att] += 1;
+                        self.last_hit = Some(t);
+                        for th in self.threats.iter_mut().rev() {
+                            if th.attacker == att && matches!(th.resolution, Some(Resolution::Parried | Resolution::Blocked | Resolution::Dodged)) && t.saturating_sub(th.end_tick) <= 30 {
+                                th.followup_hit = true;
+                                break;
+                            }
+                        }
                         self.emit(format!(
                             "{{\"t\":{},\"kind\":\"hit\",\"victim\":{},\"part\":\"{}\",\"x\":{},\"y\":{},\"dx\":{},\"dy\":{},\"impact\":{},\"zone\":{},\"dmg\":{}}}",
                             t, def, h.part.name(), f2(h.point[0]), f2(h.point[1]), f2(h.normal[0]), f2(h.normal[1]),
