@@ -82,6 +82,13 @@ pub struct MatchResult {
     pub idle_guard_share: [f32; 2],
     /// Raw sum of per-threat credits (each at most 1.0, at most 6 threats) earned by each defender.
     pub defence_credit: [f32; 2],
+    pub ko: [bool; 2],
+    /// Zone-weighted damage dealt by each fighter, over the opponent's total hp (0..1).
+    pub dmg_dealt_norm: [f32; 2],
+    /// Share of the match spent far apart with no hit exchanged recently.
+    pub passivity: f32,
+    /// Mean strike quality of each fighter's landed hits.
+    pub chain_quality: [f32; 2],
 }
 
 const THREAT_SPEED: f32 = 2.5;
