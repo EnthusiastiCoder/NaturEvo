@@ -128,3 +128,14 @@ const KEYS: [&str; 10] = ["win_rate_hof", "defence_rate", "defence_rate_scripted
 fn values(m: &EvalMetrics) -> [f32; 10] {
     [m.win_rate_hof, m.defence_rate, m.defence_rate_scripted, m.hit_rate, m.idle_guard, m.draw_share, m.mean_ticks, m.parry_share, m.block_share, m.dodge_share]
 }
+
+/// (mean, min, max) per metric across runs, in KEYS order.
+pub fn aggregate(ms: &[EvalMetrics]) -> Vec<(f32, f32, f32)> {
+    (0..KEYS.len())
+        .map(|k| {
+            let v: Vec<f32> = ms.iter().map(|m| values(m)[k]).collect();
+            let mean = v.iter().sum::<f32>() / v.len().max(1) as f32;
+            (mean, v.iter().cloned().fold(f32::MAX, f32::min), v.iter().cloned().fold(f32::MIN, f32::max))
+        })
+        .collect()
+}
