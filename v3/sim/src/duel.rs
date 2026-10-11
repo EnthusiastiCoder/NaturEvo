@@ -580,32 +580,13 @@ impl Match {
         let mut outs: [Vec<ThreatOutcome>; 2] = [Vec::new(), Vec::new()];
         for t in &self.threats {
             let d = &mut defence[t.defender];
-            let frac = (t.potential / IMPACT_REF).min(1.0);
-            let c = match t.resolution {
-                Some(Resolution::Hit) => {
-                    d.hit += 1;
-                    0.0
-                }
-                Some(Resolution::Parried) => {
-                    d.parry += 1;
-                    frac
-                }
-                Some(Resolution::Blocked) => {
-                    d.block += 1;
-                    0.7
-                }
-                Some(Resolution::Dodged) => {
-                    d.dodge += 1;
-                    0.7
-                }
-                Some(Resolution::Miss) | None => {
-                    d.miss += 1;
-                    0.0
-                }
-            };
-            if c > 0.0 && counted[t.defender] < 6 {
-                counted[t.defender] += 1;
-                credit[t.defender] += c;
+            let res = t.resolution.unwrap_or(Resolution::Miss);
+            match res {
+                Resolution::Hit => d.hit += 1,
+                Resolution::Parried => d.parry += 1,
+                Resolution::Blocked => d.block += 1,
+                Resolution::Dodged => d.dodge += 1,
+                Resolution::Miss => d.miss += 1,
             }
         }
         let n = self.tick.max(1) as f32;
