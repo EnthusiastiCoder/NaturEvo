@@ -577,8 +577,7 @@ impl Match {
             }
         };
         let mut defence = [DefenceTally::default(); 2];
-        let mut credit = [0.0f32; 2];
-        let mut counted = [0u32; 2];
+        let mut outs: [Vec<ThreatOutcome>; 2] = [Vec::new(), Vec::new()];
         for t in &self.threats {
             let d = &mut defence[t.defender];
             let frac = (t.potential / IMPACT_REF).min(1.0);
