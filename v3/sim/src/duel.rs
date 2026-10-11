@@ -479,6 +479,7 @@ impl Match {
         let dodged = t.moved >= 0.3 || t.flexed >= 20f32.to_radians();
         let (who, tick) = (t.defender, self.tick);
         self.threats[k].resolution = Some(if dodged { Resolution::Dodged } else { Resolution::Miss });
+        self.threats[k].end_tick = tick;
         if dodged {
             self.emit(format!("{{\"t\":{},\"kind\":\"dodge\",\"who\":{}}}", tick, who));
         }
