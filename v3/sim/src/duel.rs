@@ -601,6 +601,10 @@ impl Match {
             defence,
             idle_guard_share: [self.idle_guard_ticks[0] as f32 / n, self.idle_guard_ticks[1] as f32 / n],
             defence_credit: credit,
+            ko,
+            dmg_dealt_norm: dealt,
+            passivity: self.passive_ticks as f32 / MAX_TICKS as f32,
+            chain_quality: [q(0), q(1)],
         }
     }
 
