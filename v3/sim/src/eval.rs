@@ -153,3 +153,24 @@ pub fn aggregate_json(names: &[String], ms: &[EvalMetrics]) -> String {
     let a: Vec<String> = KEYS.iter().zip(&agg).map(|(k, (m, lo, hi))| format!("\"{}\":{{\"mean\":{},\"min\":{},\"max\":{}}}", k, m, lo, hi)).collect();
     format!("{{\"version\":3,\"runs\":[{}],\"aggregate\":{{{}}}}}", per.join(","), a.join(","))
 }
+
+pub fn aggregate_markdown(names: &[String], ms: &[EvalMetrics]) -> String {
+    let agg = aggregate(ms);
+    let mut s = String::from("| metric |");
+    for n in names {
+        s.push_str(&format!(" {} |", n));
+    }
+    s.push_str(" mean | min | max |\n|---|");
+    for _ in names {
+        s.push_str("---|");
+    }
+    s.push_str("---|---|---|\n");
+    for (k, key) in KEYS.iter().enumerate() {
+        s.push_str(&format!("| {} |", key));
+        for m in ms {
+            s.push_str(&format!(" {:.3} |", values(m)[k]));
+        }
+        s.push_str(&format!(" {:.3} | {:.3} | {:.3} |\n", agg[k].0, agg[k].1, agg[k].2));
+    }
+    s
+}
