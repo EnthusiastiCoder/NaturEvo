@@ -513,6 +513,14 @@ impl Match {
         }
     }
 
+    fn track_passivity(&mut self) {
+        let far = (self.robots[0].x - self.robots[1].x).abs() > 3.5;
+        let quiet = self.last_hit.map_or(true, |t| self.tick.saturating_sub(t) > 240);
+        if far && quiet {
+            self.passive_ticks += 1;
+        }
+    }
+
     fn track_states(&mut self) {
         for i in 0..2 {
             let st = self.robots[i].state();
