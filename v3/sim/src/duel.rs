@@ -265,6 +265,7 @@ impl Match {
         self.update_threats_post();
         self.bleed();
         self.track_idle_guard();
+        self.track_passivity();
         self.track_states();
         if self.tick % 2 == 0 {
             if self.log.is_some() {
