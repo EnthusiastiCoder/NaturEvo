@@ -79,3 +79,46 @@ impl Acc {
         }
     }
 }
+
+/// Evaluate the latest hero and monster champions in `dir`.
+pub fn evaluate_run(dir: &Path, arena_seeds: u64) -> Result<EvalMetrics, String> {
+    let heroes = champions(dir, "hero")?;
+    let mons = champions(dir, "monster")?;
+    if heroes.is_empty() || mons.is_empty() {
+        return Err(format!("{}: no champions", dir.display()));
+    }
+    let (fh, fm) = (heroes.last().unwrap().clone(), mons.last().unwrap().clone());
+    let mut hof = Acc::default();
+    let mut scripted = Acc::default();
+    for s in 0..arena_seeds {
+        let seed = 1000 + s;
+        // Earlier champions (all but the final one); fall back to the final one for a single-champion run.
+        let eh: Vec<&Genome> = if heroes.len() > 1 { heroes[..heroes.len() - 1].iter().collect() } else { vec![&heroes[0]] };
+        let em: Vec<&Genome> = if mons.len() > 1 { mons[..mons.len() - 1].iter().collect() } else { vec![&mons[0]] };
+        for m in &em {
+            let r = Match::new(seed, Brain::Net(fh.clone()), Brain::Net((*m).clone())).run_to_end();
+            hof.add(&r, 0);
+        }
+        for h in &eh {
+            let r = Match::new(seed, Brain::Net((*h).clone()), Brain::Net(fm.clone())).run_to_end();
+            hof.add(&r, 1);
+        }
+        scripted.add(&Match::new(seed, Brain::Net(fh.clone()), Brain::Scripted).run_to_end(), 0);
+        scripted.add(&Match::new(seed, Brain::Scripted, Brain::Net(fm.clone())).run_to_end(), 1);
+    }
+    let n = hof.n.max(1) as f32;
+    let def = (hof.parry + hof.block + hof.dodge).max(1) as f32;
+    Ok(EvalMetrics {
+        matches: hof.n,
+        win_rate_hof: hof.wins as f32 / n,
+        defence_rate: hof.defence_rate(),
+        defence_rate_scripted: scripted.defence_rate(),
+        hit_rate: if hof.threats() > 0.0 { hof.hit as f32 / hof.threats() } else { 0.0 },
+        idle_guard: hof.idle / n,
+        draw_share: hof.draws as f32 / n,
+        mean_ticks: hof.ticks / n,
+        parry_share: hof.parry as f32 / def,
+        block_share: hof.block as f32 / def,
+        dodge_share: hof.dodge as f32 / def,
+    })
+}
