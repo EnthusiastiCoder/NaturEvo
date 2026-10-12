@@ -37,3 +37,22 @@ fn torso_destroyed_is_death() {
     r.set_hp(Part::Torso, -0.5 * r.max_hp(Part::Torso));
     assert!(r.is_ko());
 }
+
+#[test]
+fn pool_below_fraction_is_death_and_above_is_not() {
+    let total: f32 = Part::ALL.iter().map(|p| standing(Role::Hero, 3.0, 1.0).max_hp(*p)).sum();
+    let mut r = standing(Role::Hero, 3.0, 1.0);
+    // Strip every non-torso part to zero hp, then leave the torso at a given pool fraction.
+    for p in Part::ALL {
+        if p != Part::Torso {
+            r.set_hp(p, 0.0);
+        }
+    }
+    let torso = r.max_hp(Part::Torso);
+    r.set_hp(Part::Torso, (KO_POOL_FRAC * total + 3.0).min(torso));
+    if KO_POOL_FRAC * total + 3.0 < torso {
+        assert!(!r.is_ko(), "just above the pool fraction must live");
+    }
+    r.set_hp(Part::Torso, KO_POOL_FRAC * total - 3.0);
+    assert!(r.is_ko(), "just below the pool fraction must die");
+}
