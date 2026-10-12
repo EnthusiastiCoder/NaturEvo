@@ -62,3 +62,39 @@ fn no_threats_and_no_credit_when_nobody_swings() {
     assert!(m.threats.is_empty());
     assert_eq!(r.defence_credit, [0.0, 0.0]);
 }
+
+// Dodge credit needs an actual evasion: the swing would have connected with the defender where it
+// stood when the threat began, and it did not because the defender moved.
+use common::seg;
+use mech_sim::duel::{is_evasion, would_connect};
+
+#[test]
+fn wiggle_without_a_path_through_the_body_is_not_an_evasion() {
+    let body = [seg(5.0, 0.5, 5.0, 1.5, 0.2)];
+    let prev = seg(3.0, 3.0, 3.5, 3.0, 0.05);
+    let cur = seg(3.5, 3.0, 4.0, 3.0, 0.05);
+    assert!(!would_connect(prev, cur, &body), "attacker would have missed anyway");
+    assert!(!is_evasion(false, 0.5, 1.0), "wiggling earns nothing");
+}
+
+#[test]
+fn real_sidestep_of_a_swing_that_would_connect_is_an_evasion() {
+    let body = [seg(5.0, 0.5, 5.0, 1.5, 0.2)];
+    let prev = seg(4.0, 1.0, 4.6, 1.0, 0.05);
+    let cur = seg(4.6, 1.0, 5.2, 1.0, 0.05);
+    assert!(would_connect(prev, cur, &body));
+    assert!(is_evasion(true, 0.4, 0.0));
+    assert!(is_evasion(true, 0.0, 0.5));
+    assert!(!is_evasion(true, 0.05, 0.05), "standing still while the swing misses is not a dodge");
+}
+
+#[test]
+fn every_dodge_in_a_match_would_have_connected() {
+    for seed in 1..6 {
+        let mut m = Match::new(seed, Brain::Scripted, Brain::Fixed(GUARD_TARGETS));
+        m.run_to_end();
+        for t in m.threats.iter().filter(|t| t.resolution == Some(Resolution::Dodged)) {
+            assert!(t.would_hit, "dodge without a counterfactual hit, threat {}", t.id);
+        }
+    }
+}
