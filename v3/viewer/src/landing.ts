@@ -6,9 +6,9 @@ import { formatDate, humanName } from './run-labels';
 import { DEFAULT_ACCENT, applyTheme, nextTheme, setAccent, themeIconPath, type Theme } from './theme';
 
 export const EMPTY_COMMANDS: string[] = [
-  'cargo run --release -- train --out ../runs/main --gens 200 --seed 1',
-  'cargo run --release -- campaign --champions ../runs/main --out ../runs/main/campaign_on.json --fights-dir ../runs/main/fights_on --seed 1',
-  'cargo run --release -- campaign --champions ../runs/main --out ../runs/main/campaign_off.json --fights-dir ../runs/main/fights_off --permadeath off --seed 1',
+  'cargo run --release -- train --out ../runs/slice_s1 --gens 200 --seed 1',
+  'cargo run --release -- train --out ../runs/slice_s2 --gens 200 --seed 2',
+  'cargo run --release -- train --out ../runs/slice_s3 --gens 200 --seed 3',
 ];
 
 export type LandingRow = {
