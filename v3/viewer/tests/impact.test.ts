@@ -78,3 +78,26 @@ describe('blockPoint snaps the spark onto the nearest shield plate', () => {
     expect(blockPoint(5, 5, [])).toEqual([5, 5]);
   });
 });
+
+describe('damage overlay thresholds', () => {
+  it('clean above 75', () => {
+    const s = partDamageStyle(90);
+    expect(s.dents).toBe(false); expect(s.darken).toBe(0); expect(s.smoke).toBe(0); expect(s.sparking).toBe(false);
+  });
+  it('dents below 75, darkening and cracks below 50', () => {
+    expect(partDamageStyle(70).dents).toBe(true);
+    expect(partDamageStyle(70).darken).toBe(0);
+    expect(partDamageStyle(49).darken).toBeGreaterThan(0);
+    expect(partDamageStyle(10).darken).toBeGreaterThan(partDamageStyle(49).darken);
+  });
+  it('smoke and sparking only when below 50% and not yet destroyed', () => {
+    expect(partDamageStyle(60).smoke).toBe(0);
+    expect(partDamageStyle(40).smoke).toBeGreaterThan(0);
+    expect(partDamageStyle(40).sparking).toBe(true);
+    expect(partDamageStyle(5).smoke).toBeGreaterThan(partDamageStyle(40).smoke);
+  });
+  it('destroyed is detached with no smoke on the (absent) part', () => {
+    const s = partDamageStyle(0, true);
+    expect(s.detached).toBe(true); expect(s.smoke).toBe(0);
+  });
+});
