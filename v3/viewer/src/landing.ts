@@ -69,7 +69,6 @@ const card = (title: string, info: string, body: string, legend = '') =>
   `<article class="card"><header><h3>${esc(title)}</h3>${infoButton(info)}${legend}</header><p class="info-text" hidden>${esc(info)}</p><div class="body">${body}</div></article>`;
 const tile = (label: string, info: string, big: string, sub: string) =>
   `<div class="tile" title="${esc(info)}"><span class="tl">${esc(label)}</span><span class="big">${big}</span><span class="sub">${esc(sub)}</span></div>`;
-const duo = (a: string, b: string) => `<span class="hero">${esc(a)}</span><span class="sep">/</span><span class="monster">${esc(b)}</span>`;
 
 export function renderResultsHtml(data: RunData[], all: boolean, opts: { total?: number; size?: Size } = {}): string {
   const size = opts.size ?? DEFAULT_SIZE;
