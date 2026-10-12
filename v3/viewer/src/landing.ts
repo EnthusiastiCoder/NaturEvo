@@ -14,16 +14,10 @@ export const EMPTY_COMMANDS: string[] = [
 export type LandingRow = { name: string; label: string; seed: string; dateLabel: string; generations: number; openHref: string; canOpen: boolean };
 export type LandingVM = { empty: boolean; rows: LandingRow[] };
 
-const fightGens = (r: RunInfo) => r.files.map((f) => /^fight_gen_(\d+)\.json$/.exec(f)).filter((m): m is RegExpExecArray => !!m).map((m) => Number(m[1])).sort((a, b) => a - b);
-const fightUrl = (r: RunInfo, g: number) => `/runs/${r.name}/fight_gen_${g}.json`;
-
-/** Campaign runs open the jungle replay; training-only runs open the early-vs-late duel. */
-function openFor(r: RunInfo): { href: string; ok: boolean } {
-  if (hasCampaign(r)) return { href: `?run=${encodeURIComponent(r.name)}`, ok: true };
-  const g = fightGens(r);
-  if (g.length === 0) return { href: '', ok: false };
-  const urls = g.length > 1 ? [g[0], g[g.length - 1]] : [g[0]];
-  return { href: '?' + urls.map((x) => `fight=${encodeURIComponent(fightUrl(r, x))}`).join('&'), ok: true };
+/** Opens the latest fight generation of a run in the fight view. */
+export function openHrefOf(r: Pick<RunInfo, 'name' | 'fightGens'>): string {
+  const g = r.fightGens ?? [];
+  return g.length ? `#/fight/${encodeURIComponent(r.name)}/${Math.max(...g)}` : '';
 }
 
 const rate = (s?: { wins: number; losses: number }) => (s ? pct(rateOf(s.wins, s.wins + s.losses).rate) : 'n/a');
