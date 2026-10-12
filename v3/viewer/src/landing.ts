@@ -167,7 +167,7 @@ export async function mountLanding(el: HTMLElement, index: RunIndex): Promise<vo
     const row = (e.target as HTMLElement).closest<HTMLElement>('.run-row');
     if (row) { select(row.dataset.run!); row.focus(); }
   });
-  rowList?.addEventListener('keydown', (e) => {
+  list?.addEventListener('keydown', (e) => {
     const row = (e.target as HTMLElement).closest<HTMLElement>('.run-row');
     if (!row) return;
     const rs = rowsEls(), i = rs.indexOf(row);
