@@ -19,3 +19,14 @@ fn no_single_hit_from_full_health_is_ko() {
         }
     }
 }
+
+#[test]
+fn a_destroyed_head_is_not_death() {
+    let mut r = standing(Role::Hero, 3.0, 1.0);
+    r.set_hp(Part::Head, -0.5 * r.max_hp(Part::Head));
+    assert!(r.is_destroyed(Part::Head) && r.is_disabled(Part::Head));
+    assert!(!r.is_ko());
+    r.apply_targets(&mech_sim::robot::STAND_TARGETS, mech_sim::robot::DT);
+    assert_ne!(r.state(), State::Ko);
+    assert!(r.can_act() || r.state() != State::Ko);
+}
