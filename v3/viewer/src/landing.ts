@@ -45,7 +45,7 @@ function rowHtml(r: LandingRow, selected: boolean): string {
 <b class="nm">${esc(r.label)}</b><span class="meta">${esc(meta)}</span></div></li>`;
 }
 
-export function renderLandingHtml(vm: LandingVM, selectedName?: string): string {
+export function renderLandingHtml(vm: LandingVM, selected: string = ALL): string {
   if (vm.empty) {
     return `<section class="landing-empty"><h2>No runs yet</h2>
 <p>Train a population, then walk the jungle with its champions. Run these from the <code>v2/sim</code> folder; they write into <code>v2/runs/</code>, which is where this viewer looks.</p>
