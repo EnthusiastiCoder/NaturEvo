@@ -173,8 +173,7 @@ export async function mountLanding(el: HTMLElement, index: RunIndex): Promise<vo
     const rs = Array.from(list.querySelectorAll<HTMLElement>('.run-row')), i = rs.indexOf(row);
     const to = e.key === 'ArrowDown' ? i + 1 : e.key === 'ArrowUp' ? i - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? rs.length - 1 : -1;
     if (to >= 0) { e.preventDefault(); const t = rs[Math.max(0, Math.min(rs.length - 1, to))]; select(t.dataset.run!); t.focus(); }
-    else if (e.key === 'Enter' && row.dataset.open) { e.preventDefault(); location.href = row.dataset.open; }
-    else if (e.key === ' ') { e.preventDefault(); select(row.dataset.run!); }
+    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(row.dataset.run!); }
   });
   el.querySelector('[data-action="all-runs"]')?.addEventListener('click', (e) => {
     all = !all; (e.currentTarget as HTMLElement).setAttribute('aria-pressed', String(all)); void paint();
