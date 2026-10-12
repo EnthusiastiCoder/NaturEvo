@@ -22,3 +22,18 @@ describe('hitFx scales with impact', () => {
     expect(shakeFor({ t: 1, kind: 'hit', impact: 200 } as any)).toBeGreaterThanOrEqual(6);
   });
 });
+
+describe('hitstopPlan', () => {
+  it('maps event ticks to a freeze, plus slow-mo for heavy stops', () => {
+    expect(hitstopPlan(0, false)).toEqual({ freeze: 0, slow: 0, slowFactor: 1 });
+    const p = hitstopPlan(6, false);
+    expect(p.freeze).toBeGreaterThanOrEqual(5);
+    expect(p.slow).toBeGreaterThan(0);
+    expect(p.slowFactor).toBeLessThan(1);
+    expect(hitstopPlan(2, false).slow).toBe(0);
+  });
+  it('is capped and disabled under reduced motion', () => {
+    expect(hitstopPlan(100, false).freeze).toBeLessThanOrEqual(10);
+    expect(hitstopPlan(6, true)).toEqual({ freeze: 0, slow: 0, slowFactor: 1 });
+  });
+});
