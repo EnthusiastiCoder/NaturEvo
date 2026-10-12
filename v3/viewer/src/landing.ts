@@ -75,35 +75,29 @@ export function renderResultsHtml(data: RunData[], evals: (EvalRow & { run: stri
   const hero = aggregateSeries(col('hero_best')), mon = aggregateSeries(col('monster_best'));
   const yMax = Math.max(1, ...hero.max, ...mon.max);
   const cards: string[] = [];
-  const zones = new Map<string, { k: number; n: number }>();
-  for (const d of data) for (const side of ['on', 'off'] as const) for (const [z, v] of Object.entries(d.run.permadeath[side]?.perZone ?? {})) {
-    const a = zones.get(z) ?? { k: 0, n: 0 }; a.k += v.wins; a.n += v.wins + v.losses; zones.set(z, a);
-  }
-  if (zones.size) cards.push(card('Win rate by zone', 'Hero win share per jungle zone, pooled over the campaign files. Later zones are tougher.',
-    barChart([...zones].sort((a, b) => Number(a[0]) - Number(b[0])).map(([z, a]) => ({ label: `Z${z}`, ...rateOf(a.k, a.n) })), size)));
-  const rows = all ? [] : sel.rows;
-  if (rows.length) {
-    const c = learningCurves(rows);
-    const has = (col: string) => rows.some((r) => r[col] !== undefined);
-    const col = (k: string) => rows.map((r) => r[k] ?? 0);
-    const hm = (a: string, b: string) => legendHtml([{ key: 'hero', label: a }, { key: 'monster', label: b }]);
-    cards.push(card('Best fitness', 'Best fitness per generation for each side. Rising lines mean both sides keep learning. Faint line is raw, bold is smoothed.',
-      lineChart([{ key: 'hero', label: 'hero', ys: c.heroFitness }, { key: 'monster', label: 'monster', ys: c.monsterFitness }], c.gens, Math.max(1, ...c.heroFitness, ...c.monsterFitness), size), hm('hero', 'monster')));
-    cards.push(card('Win vs earlier champions', 'Win share against earlier hall-of-fame champions; draw is what is left. Faint line is raw, bold is smoothed.',
-      lineChart([{ key: 'hero', label: 'hero win', ys: c.heroWinVsEarlier }, { key: 'monster', label: 'monster win', ys: c.monsterWinVsEarlier }, ...(c.drawRate ? [{ key: 'draw' as const, label: 'draw', ys: c.drawRate }] : [])], c.gens, 1, size, { pct: true }),
-      legendHtml([{ key: 'hero', label: 'hero' }, { key: 'monster', label: 'monster' }, { key: 'draw', label: 'draw' }])));
-    if (has('seen_share_hero')) cards.push(card('Sees the opponent', 'Share of ticks where each side had the opponent in its vision cone, per generation.',
-      lineChart([{ key: 'hero', label: 'hero sees foe', ys: col('seen_share_hero') }, { key: 'monster', label: 'monster sees foe', ys: col('seen_share_monster') }], c.gens, 1, size, { pct: true }), hm('hero', 'monster')));
-    if (has('statuses_per_fight_hero')) cards.push(card('Statuses per fight', 'Average status effects (stun, bleed and so on) landed per fight, per generation. "on hero" means suffered by the hero.',
-      lineChart([{ key: 'hero', label: 'on hero', ys: col('statuses_per_fight_hero') }, { key: 'monster', label: 'on monster', ys: col('statuses_per_fight_monster') }], c.gens, Math.max(1, ...col('statuses_per_fight_hero'), ...col('statuses_per_fight_monster')), size), hm('on hero', 'on monster')));
-  }
-  const gens = fightGens(sel.run);
-  const link = (g: number, label: string) => `<a href="?fight=${encodeURIComponent(fightUrl(sel.run, g))}" title="Replay the ${label} fight (generation ${g})">${label} (gen ${g})</a>`;
-  const duel = !all && gens.length > 1 ? `<span class="duels">Replay: ${link(gens[0], 'early')} ${link(gens[gens.length - 1], 'late')}</span>` : '';
-  const title = all ? 'All runs' : humanName(sel.run.name);
-  const sub = all ? `${data.length} of ${opts.total ?? data.length} runs have campaign data; only those are pooled` : [formatDate(sel.run.date), sel.run.generations ? `${sel.run.generations} generations` : ''].filter(Boolean).join(' · ');
-  const body = cards.length ? `<div class="grid">${cards.join('')}</div>` : na('Nothing to chart for this selection yet');
-  return `<div class="results-head"><h2>${esc(title)}</h2><span class="sub">${esc(sub)}</span>${duel}</div>${tiles.length ? `<div class="stats">${tiles.join('')}</div>` : ''}${body}`;
+  const multi = data.length > 1;
+  cards.push(card('Learning curves', multi ? 'Best fitness per generation: line is the mean over seeds, shaded area the min to max.' : 'Best fitness per generation for each side. Rising lines mean both sides keep learning.',
+    lineChart([{ key: 'hero', label: 'hero', ys: hero.mean, lo: hero.min, hi: hero.max }, { key: 'monster', label: 'monster', ys: mon.mean, lo: mon.min, hi: mon.max }], hero.gens, yMax, size),
+    legendHtml([{ key: 'hero', label: 'hero' }, { key: 'monster', label: 'monster' }])));
+  const n = data.length ? Math.min(...data.map((d) => d.shares.parry.length)) : 0;
+  const sh = (k: 'parry' | 'block' | 'dodge') => aggregateSeries(data.map((d) => d.shares[k]));
+  const xs = data[0]?.run.fightGens.slice(0, n) ?? [];
+  const p = sh('parry'), b = sh('block'), dg = sh('dodge');
+  cards.push(card('Defence mix', 'Share of successful defences that were parries, shield blocks or dodges, in the sampled fight of each generation (mean over seeds).',
+    lineChart([{ key: 'hero', label: 'parry', ys: p.mean }, { key: 'accent', label: 'block', ys: b.mean }, { key: 'monster', label: 'dodge', ys: dg.mean }], xs, 1, size, { pct: true }),
+    legendHtml([{ key: 'hero', label: 'parry' }, { key: 'accent', label: 'block' }, { key: 'monster', label: 'dodge' }])));
+  const bars = evals.map((e) => ({ label: e.run.replace(/^slice_/, ''), value: e.win_rate_hof, tip: `${e.run}\nwin rate vs earlier champions ${pct(e.win_rate_hof)}` }));
+  cards.push(card('Win rate', 'Final champions against earlier hall-of-fame champions. Above the dashed line means the late champion wins more often.',
+    bars.length ? barChart(bars, size) : '<div class="na">no eval yet</div>'));
+  const a = aggregateEval(evals);
+  const rng = (r: { mean: number; min: number; max: number }) => (evals.length > 1 ? `range ${pct(r.min)} to ${pct(r.max)}` : 'single run');
+  const tiles = evals.length ? [
+    tile('Win rate', 'Final champions vs earlier champions', pct(a.win_rate_hof.mean), rng(a.win_rate_hof)),
+    tile('Defence rate', 'Share of incoming attacks that were parried, blocked or dodged', pct(a.defence_rate.mean), rng(a.defence_rate)),
+    tile('Draws', 'Share of duels with no winner', pct(a.draw_share.mean), rng(a.draw_share)),
+    tile('Idle guard', 'Share of time spent guarding with no threat. Low is good.', pct(a.idle_guard.mean), rng(a.idle_guard)),
+  ].join('') : '';
+  return `<div class="results-head"><h2>${esc(title)}</h2><span class="sub">${multi ? `mean of ${data.length} seeds, band is min to max` : ''}</span></div>${tiles ? `<div class="stats">${tiles}</div>` : ''}<div class="grid">${cards.join('')}</div>`;
 }
 
 // ---- DOM controller ----
