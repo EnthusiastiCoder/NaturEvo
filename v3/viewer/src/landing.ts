@@ -51,12 +51,8 @@ export function renderLandingHtml(vm: LandingVM, selected: string = ALL): string
 <p>Train a population from the <code>v3/sim</code> folder; it writes into <code>v3/runs/</code>, which is where this viewer looks.</p>
 <ol class="cmds">${EMPTY_COMMANDS.map((c) => `<li><code>${esc(c)}</code></li>`).join('')}</ol></section>`;
   }
-  const groups = groupRunsFromVm(vm);
-  const sel = selectedName ?? groups.campaign[0]?.name ?? groups.training[0]?.name ?? groups.scratch[0]?.name;
-  const list = (rs: LandingRow[]) => `<ul>${rs.map((r) => rowHtml(r, r.name === sel)).join('')}</ul>`;
-  const section = (title: string, rs: LandingRow[], hint = '') => (rs.length ? `<h3 class="grp">${esc(title)}${hint ? `<small>${esc(hint)}</small>` : ''}</h3>${list(rs)}` : '');
-  const scratchOpen = groups.scratch.some((r) => r.name === sel) ? ' open' : '';
-  const scratch = groups.scratch.length ? `<details class="scratch"${scratchOpen}><summary>Scratch runs (${groups.scratch.length})</summary>${list(groups.scratch)}</details>` : '';
+  const sel = selected === ALL || !vm.rows.some((r) => r.name === selected) ? ALL : selected;
+  const watch = (vm.rows.find((r) => r.name === sel) ?? vm.rows.find((r) => r.canOpen))?.openHref ?? '';
   return `<section class="picker"><div class="head"><h2>Runs</h2>
 <button type="button" data-action="all-runs" aria-pressed="false" title="Pool the campaign results of every run that has them">${icon(ICON.layers)}All runs</button>${demoButton}</div>
 <div class="runs" role="listbox" aria-label="Runs">${section('With campaign results', groups.campaign, 'win rate: permadeath on / off')}${section('Training only', groups.training)}${scratch}</div></section>
