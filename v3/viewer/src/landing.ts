@@ -20,8 +20,6 @@ export function openHrefOf(r: Pick<RunInfo, 'name' | 'fightGens'>): string {
   return g.length ? `#/fight/${encodeURIComponent(r.name)}/${Math.max(...g)}` : '';
 }
 
-const rate = (s?: { wins: number; losses: number }) => (s ? pct(rateOf(s.wins, s.wins + s.losses).rate) : 'n/a');
-
 export const landingViewModel = (index: RunIndex): LandingVM => ({
   empty: index.runs.length === 0,
   rows: index.runs.map((r) => {
