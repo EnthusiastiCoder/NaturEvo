@@ -58,6 +58,9 @@ pub struct Threat {
     pub potential: f32,
     pub end_tick: u32,
     pub followup_hit: bool,
+    /// The swing's path met the defender's parts as they stood when the threat began.
+    pub would_hit: bool,
+    snapshot: Vec<Capsule>,
     start_x: f32,
     start_angles: [f32; 12],
     moved: f32,
@@ -325,6 +328,8 @@ impl Match {
                 continue;
             }
             let (tip, vel) = self.tip_state(att);
+            let sp = self.robots[att].sword_prev_capsule();
+            let sc = self.robots[att].sword_capsule();
             let live = is_live_threat(tip, vel, &self.robots[def]);
             if live {
                 self.last_live[def] = Some(self.tick);
@@ -349,6 +354,9 @@ impl Match {
                     };
                     let t = &mut self.threats[k];
                     t.potential = t.potential.max(pot);
+                    if !t.would_hit && would_connect(sp, sc, &t.snapshot) {
+                        t.would_hit = true;
+                    }
                     t.moved = t.moved.max((dx - t.start_x).abs());
                     for j in 0..12 {
                         t.flexed = t.flexed.max((angles[j] - t.start_angles[j]).abs());
@@ -379,6 +387,8 @@ impl Match {
             potential,
             end_tick: 0,
             followup_hit: false,
+            would_hit: false,
+            snapshot: Part::ALL.iter().filter(|p| !d.is_detached(**p)).map(|p| d.capsule(*p)).collect(),
             start_x: d.x,
             start_angles: a,
             moved: 0.0,
@@ -476,7 +486,7 @@ impl Match {
 
     fn expire(&mut self, k: usize) {
         let t = &self.threats[k];
-        let dodged = t.moved >= 0.3 || t.flexed >= 20f32.to_radians();
+        let dodged = is_evasion(t.would_hit, t.moved, t.flexed);
         let (who, tick) = (t.defender, self.tick);
         self.threats[k].resolution = Some(if dodged { Resolution::Dodged } else { Resolution::Miss });
         self.threats[k].end_tick = tick;
@@ -616,4 +626,14 @@ impl Match {
         self.finish_threats();
         self.result()
     }
+}
+
+/// Whether a swing moving from `prev` to `cur` meets any of the frozen defender capsules.
+pub fn would_connect(prev: Capsule, cur: Capsule, snapshot: &[Capsule]) -> bool {
+    snapshot.iter().any(|c| crate::combat::swept_hit(prev, cur, *c).is_some())
+}
+
+/// A dodge is an evasion only if the swing would have connected and the defender really moved or flexed.
+pub fn is_evasion(would_hit: bool, moved: f32, flexed: f32) -> bool {
+    would_hit && (moved >= 0.3 || flexed >= 20f32.to_radians())
 }
