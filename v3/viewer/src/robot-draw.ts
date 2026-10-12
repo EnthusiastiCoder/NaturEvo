@@ -4,7 +4,8 @@ import type { FighterFrame, Seg } from './data';
 import { partDamageStyle } from './damage-style';
 
 // order: Head Torso Pelvis UArmL UArmR FArmL FArmR ThighL ThighR ShinL ShinR FootL FootR
-const RADIUS_CM = [14, 30, 26, 11, 11, 10, 10, 15, 15, 12, 12, 9, 9];
+export const HEAD_R_CM = 23, TORSO_R_CM = 30, NECK_R_CM = 9;
+const RADIUS_CM = [HEAD_R_CM, TORSO_R_CM, 26, 11, 11, 10, 10, 15, 15, 12, 12, 9, 9];
 const BACK = new Set([3, 5, 7, 9, 11]); // left limbs drawn darker (far side)
 export const PART_Z = [8, 5, 4, 2, 6, 3, 7, 1, 2, 1, 2, 0, 1];
 
@@ -30,6 +31,18 @@ function capsule(g: Graphics, s: Seg, r: number, sc: number, fill: number, line:
     .closePath().fill(fill).stroke({ width: lw, color: line, alignment: 0.5 });
 }
 
+/** Shield plate drawn across the forearm axis (perpendicular), centred near the hand. */
+export function shieldPlate(fa: Seg, along = 0.62, len = 70): Seg {
+  const dx = fa[2] - fa[0], dy = fa[3] - fa[1], l = Math.hypot(dx, dy) || 1;
+  const cx = fa[0] + dx * along, cy = fa[1] + dy * along, nx = -dy / l * len / 2, ny = dx / l * len / 2;
+  return [cx - nx, cy - ny, cx + nx, cy + ny];
+}
+/** Visual neck: from the torso's upper end to the head centre. */
+export function neckSeg(torso: Seg, head: Seg): Seg {
+  const top = torso[1] >= torso[3] ? [torso[0], torso[1]] : [torso[2], torso[3]];
+  return [top[0], top[1], (head[0] + head[2]) / 2, (head[1] + head[3]) / 2];
+}
+
 /** Clip a segment (cm, y up) so no part of it is below minY: the end that dips is pulled back along the line. */
 export function clampSegAboveGround(s: Seg, minY: number): Seg {
   const [x1, y1, x2, y2] = s;
@@ -50,9 +63,9 @@ export function drawRobot(g: Graphics, f: FighterFrame, o: DrawOpts): void {
   g.clear();
   const sc = o.scale, lw = Math.max(1.5, Math.min(2, 1.5 * sc * 2));
   const order = PART_Z.map((z, i) => [z, i]).sort((a, b) => a[0] - b[0]).map((p) => p[1]);
-  const swordBack = f.facing; void swordBack;
   for (const i of order) {
     if (o.detached[i]) continue;
+    if (i === 0 && !o.detached[1]) capsule(g, neckSeg(f.parts[1], f.parts[0]), NECK_R_CM, sc, shade(o.color, 0.55), shade(o.color, 0.3), lw);
     const hp = f.hp[i];
     const st = partDamageStyle(hp, false);
     if (st.limp && Math.floor(o.time * 14) % 3 === 0) continue; // flicker
@@ -62,8 +75,8 @@ export function drawRobot(g: Graphics, f: FighterFrame, o: DrawOpts): void {
     capsule(g, f.parts[i], RADIUS_CM[i], sc, fill, shade(o.color, 0.35), lw);
     drawDamage(g, f.parts[i], RADIUS_CM[i], sc, st, i, o.time);
     if (i === 0) { // visor
-      const p = f.parts[0], vx = (p[0] + p[2]) / 2 + f.facing * 6, vy = (p[1] + p[3]) / 2 + 2;
-      g.roundRect(vx * sc - 5 * sc, -vy * sc - 2 * sc, 10 * sc, 4 * sc, 2).fill({ color: o.accent, alpha: 0.95 });
+      const p = f.parts[0], vx = (p[0] + p[2]) / 2 + f.facing * 10, vy = (p[1] + p[3]) / 2 + 3;
+      g.roundRect(vx * sc - 7 * sc, -vy * sc - 3 * sc, 14 * sc, 6 * sc, 2).fill({ color: o.accent, alpha: 0.95 });
     }
     if (i === 1) { // core glow
       const p = f.parts[1], cx = (p[0] + p[2]) / 2, cy = (p[1] + p[3]) / 2 + 8;
@@ -73,7 +86,7 @@ export function drawRobot(g: Graphics, f: FighterFrame, o: DrawOpts): void {
   }
   // shield plate then sword
   if (f.hp[5] > 0 && !o.detached[5]) {
-    capsule(g, f.shield, 5, sc, shade(o.color, 0.8), o.accent, lw);
+    capsule(g, shieldPlate(f.parts[5]), 5, sc, shade(o.color, 0.8), o.accent, lw);
   }
   if (f.hp[6] > 0 && !o.detached[6]) {
     const s = clampSegAboveGround(f.sword, 2.5); // half blade width: tip never pokes below the ground line
