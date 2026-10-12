@@ -23,13 +23,8 @@ export function openHrefOf(r: Pick<RunInfo, 'name' | 'fightGens'>): string {
 export const landingViewModel = (index: RunIndex): LandingVM => ({
   empty: index.runs.length === 0,
   rows: index.runs.map((r) => {
-    const o = openFor(r);
-    return {
-      name: r.name, label: humanName(r.name), seed: r.seed, date: r.date, dateLabel: formatDate(r.date), generations: r.generations,
-      permadeathOn: r.permadeath.on?.outcome ?? 'n/a', permadeathOff: r.permadeath.off?.outcome ?? 'n/a',
-      onRate: rate(r.permadeath.on), offRate: rate(r.permadeath.off),
-      keyResult: r.keyResult, openHref: o.href, canOpen: o.ok, hasCampaign: hasCampaign(r),
-    };
+    const href = openHrefOf(r);
+    return { name: r.name, label: humanName(r.name), seed: r.seed, dateLabel: formatDate(r.date), generations: r.generations, openHref: href, canOpen: href !== '' };
   }),
 });
 
