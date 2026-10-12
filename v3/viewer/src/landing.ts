@@ -149,11 +149,9 @@ export async function mountLanding(el: HTMLElement, index: RunIndex): Promise<vo
       const p = b.closest('.card')!.querySelector<HTMLElement>('.info-text')!;
       p.hidden = !p.hidden; b.setAttribute('aria-expanded', String(!p.hidden));
     }));
-    el.querySelectorAll<HTMLElement>('.run-row').forEach((a) => {
-      const on = !all && a.dataset.run === selected.name;
-      a.setAttribute('aria-selected', String(on)); a.tabIndex = on ? 0 : -1;
-      a.parentElement!.classList.toggle('sel', on);
-      if (on) a.scrollIntoView({ block: 'nearest' });
+    body.querySelectorAll<HTMLElement>('li').forEach((li) => {
+      const row = li.querySelector<HTMLElement>('.run-row')!, on = row.dataset.run === sel;
+      li.classList.toggle('sel', on); row.setAttribute('aria-selected', String(on)); row.tabIndex = on ? 0 : -1;
     });
     const body = results.querySelector<HTMLElement>('.card .body');
     if (body && body.clientWidth > 40 && (Math.abs(body.clientWidth - size.w) > 6 || Math.abs(body.clientHeight - size.h) > 6)) {
