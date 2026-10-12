@@ -37,3 +37,33 @@ describe('hitstopPlan', () => {
     expect(hitstopPlan(6, true)).toEqual({ freeze: 0, slow: 0, slowFactor: 1 });
   });
 });
+
+describe('shake / recoil / floating number are deterministic and decay', () => {
+  it('shakeOffset is pure, decays to zero, and is zero when reduced', () => {
+    expect(shakeOffset(2, 10, 17)).toEqual(shakeOffset(2, 10, 17));
+    const [x0, y0] = shakeOffset(1, 10, 17);
+    expect(Math.hypot(x0, y0)).toBeGreaterThan(0);
+    expect(shakeOffset(40, 10, 17)).toEqual([0, 0]);
+    expect(shakeOffset(1, 0, 17)).toEqual([0, 0]);
+  });
+  it('recoil peaks early, returns to zero, scales with impact', () => {
+    expect(recoilCm(0, 200)).toBe(0);
+    expect(recoilCm(3, 200)).toBeGreaterThan(recoilCm(3, 40));
+    expect(recoilCm(3, 200)).toBeGreaterThan(recoilCm(14, 200));
+    expect(recoilCm(30, 200)).toBe(0);
+    expect(recoilCm(-1, 200)).toBe(0);
+  });
+  it('floating number rises and fades, absent before and after its life', () => {
+    expect(floatNumber(-1)).toBeNull();
+    const a = floatNumber(5)!, b = floatNumber(30)!;
+    expect(b.rise).toBeGreaterThan(a.rise);
+    expect(b.alpha).toBeLessThan(a.alpha);
+    expect(floatNumber(200)).toBeNull();
+  });
+  it('part flash is white at impact then fades within ~8 ticks', () => {
+    expect(partFlashAt(0)).toBe(1);
+    expect(partFlashAt(4)).toBeCloseTo(0.5, 5);
+    expect(partFlashAt(9)).toBe(0);
+    expect(partFlashAt(-1)).toBe(0);
+  });
+});
