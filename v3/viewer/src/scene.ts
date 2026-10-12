@@ -3,7 +3,7 @@ import type { Fight, FighterFrame, Frame, Seg } from './data';
 import { cameraFor, lerpCamera, type Camera } from './camera';
 import { debrisPose, drawRobot, PART_Z } from './robot-draw';
 import { drawGround } from './ground';
-import { hitstopTicks, shakeFor, sparkSpec, spawnParticles, type Particle } from './fx';
+import { ageParticles, hitstopTicks, recentEvents, shakeFor, sparkSpec, spawnParticles, type Particle } from './fx';
 import { rendererOptions } from './renderer';
 
 const hexNum = (css: string, fb: number) => { const m = /^#?([0-9a-f]{6})$/i.exec(css.trim()); return m ? parseInt(m[1], 16) : fb; };
@@ -60,6 +60,15 @@ export class FightScene {
     this.tick = Math.max(0, tick); this.fired = Math.ceil(this.tick) - 1; this.particles = []; this.rings = [];
     this.detachedAt = [new Array(13).fill(null), new Array(13).fill(null)];
     for (const e of this.fight.events) if (e.kind === 'destroyed' && e.t <= this.tick) this.detachedAt[e.who][this.fight.parts.indexOf(e.part)] = e.t;
+    // scrubbing onto a hit/clash must still show its sparks: replay recent events, pre-aged
+    for (const { e, age } of recentEvents(this.fight.events, this.tick)) {
+      const spec = sparkSpec(e);
+      if (spec) this.particles.push(...ageParticles(spawnParticles(spec, e.x, e.y, e.t * 31 + 7), age));
+      if (e.kind === 'hit') {
+        this.flash[e.victim] = Math.max(this.flash[e.victim], Math.max(0, 1 - age * 5));
+        if (age * 3 < 1) this.rings.push({ x: e.x, y: e.y, age: age * 3, color: spec?.color ?? 0xffa83a, r: 28 });
+      }
+    }
   }
   get lastTick(): number { return this.fight.frames[this.fight.frames.length - 1].t; }
   destroy(): void { this.app.destroy(true, { children: true }); }
@@ -92,7 +101,7 @@ export class FightScene {
       if (e.kind === 'clash' && e.type !== 'clash') this.rings.push({ x: e.x, y: e.y, age: 0, color: 0xfff2b0, r: 60 });
     }
     this.shake = Math.max(this.shake, shakeFor(e));
-    if (e.kind === 'hit') this.flash[e.victim] = 1;
+    if (e.kind === 'hit') { this.flash[e.victim] = 1; this.rings.push({ x: e.x, y: e.y, age: 0, color: 0xffa83a, r: 28 }); }
     if (e.kind === 'stagger') this.rings.push({ ...this.torso(this.sampleNow(), e.who), age: 0, color: 0xffe14a, r: 70 });
     if (e.kind === 'destroyed') this.detachedAt[e.who][this.fight.parts.indexOf(e.part)] = e.t;
     const hs = hitstopTicks(this.fight.events, e.t);
@@ -131,10 +140,10 @@ export class FightScene {
         this.debris.moveTo(d[0] * sc, -d[1] * sc).lineTo(d[2] * sc, -d[3] * sc).stroke({ width: 14 * sc, color: col[i], cap: 'round', alpha: 0.9 });
       });
       this.robots[i].scale.set(1);
-      if (fr.f[i].state === 'staggered') this.rings.push({ ...this.torso(fr, i), age: 0.85, color: 0xffe14a, r: 70 });
+      if (fr.f[i].state === 'staggered' && (this.playing || this.rings.length < 2)) this.rings.push({ ...this.torso(fr, i), age: 0.85, color: 0xffe14a, r: 70 });
     }
     void PART_Z;
-    this.drawFx(dt);
+    this.drawFx(this.playing && this.freeze <= 0 ? dt : 0); // paused: sparks hold still so a scrubbed hit frame stays visible
     this.onFrame(fr, this.tick);
   }
 
