@@ -34,6 +34,7 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
     <div class="fv-bar bar">
       <a href="#/" class="btn" title="Back to the run list" aria-label="Back">${svg(ICON.home)}</a>
       <h1>${esc(title)}</h1><span class="spacer"></span>
+      <input id="fv-scrub" type="range" min="0" max="1000" value="0" title="Scrub through the fight" aria-label="Scrub">
       <button id="fv-play" title="Play or pause (Space)" aria-label="Play or pause">${svg(ICON.pause)}</button>
       <button id="fv-restart" title="Restart the fight (R)" aria-label="Restart">${svg(ICON.rotate)}</button>
       <select id="fv-speed" title="Playback speed" aria-label="Speed">${SPEEDS.map((s) => `<option value="${s}"${s === 1 ? ' selected' : ''}>${s}x</option>`).join('')}</select>
@@ -62,7 +63,10 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
   const sides = [0, 1].map((i) => hud.querySelector<HTMLElement>(`#fv-side${i}`)!);
   const setBar = (el: HTMLElement, cls: string, v: number) => { el.querySelector<HTMLElement>('.' + cls)!.style.width = `${Math.max(0, Math.min(100, v))}%`; };
   let lastKey = '';
+  const scrub = $<HTMLInputElement>('fv-scrub');
+  let scrubbing = false;
   scene.onFrame = (fr, tick) => {
+    if (!scrubbing) scrub.value = String(Math.round((tick / (scene.lastTick || 1)) * 1000));
     const key = `${fr.t}|${Math.round(tick)}`;
     if (key === lastKey) return;
     lastKey = key;
@@ -88,6 +92,9 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
   const restart = () => { scene.seek(0); res.hidden = true; scene.playing = true; syncPlay(); };
   play.onclick = toggle;
   $('fv-restart').onclick = restart;
+  scrub.onpointerdown = () => { scrubbing = true; };
+  scrub.onpointerup = () => { scrubbing = false; };
+  scrub.oninput = () => { scene.seek((Number(scrub.value) / 1000) * scene.lastTick); res.hidden = true; };
   $<HTMLSelectElement>('fv-speed').onchange = (e) => { scene.speed = Number((e.target as HTMLSelectElement).value); };
   $<HTMLInputElement>('fv-accent').oninput = (e) => setAccent(root, (e.target as HTMLInputElement).value);
   $('fv-theme').onclick = () => { theme = nextTheme(theme); syncTheme(); };
