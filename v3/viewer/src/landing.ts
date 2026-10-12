@@ -139,8 +139,11 @@ export async function mountLanding(el: HTMLElement, index: RunIndex): Promise<vo
   let size = DEFAULT_SIZE;
   let tip: HTMLElement | null = null;
   const paint = async () => {
-    const data = all ? await Promise.all(withCampaign.map(async (run) => ({ run, rows: await rowsOf(run) }))) : [{ run: selected, rows: await rowsOf(selected) }];
-    results.innerHTML = renderResultsHtml(data, all, { total: index.runs.length, size });
+    const runs = sel === ALL ? index.runs : index.runs.filter((r) => r.name === sel);
+    const data = await Promise.all(runs.map(dataOf));
+    const names = new Set(runs.map((r) => r.name));
+    const evals = (evalAll.runs ?? []).filter((e) => names.has(e.run));
+    results.innerHTML = renderResultsHtml(data, evals, sel === ALL ? 'All seeds' : humanName(sel), size);
     tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; results.appendChild(tip);
     results.querySelectorAll<HTMLButtonElement>('.info-btn').forEach((b) => b.addEventListener('click', () => {
       const p = b.closest('.card')!.querySelector<HTMLElement>('.info-text')!;
