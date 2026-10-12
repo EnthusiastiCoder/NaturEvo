@@ -184,10 +184,10 @@ export async function mountLanding(el: HTMLElement, index: RunIndex): Promise<vo
     let msg = '';
     if (g) msg = g.dataset.tip ?? '';
     else if (svg) {
-      const data = JSON.parse(svg.dataset.tip!) as Tip, rect = svg.getBoundingClientRect();
-      const i = nearestIndex(e.clientX - rect.left, data.xs.length, Number(svg.dataset.l), Number(svg.dataset.r));
-      msg = tipText(data, i);
-      const x = Number(svg.dataset.l) + (data.xs.length > 1 ? (i / (data.xs.length - 1)) * (Number(svg.dataset.r) - Number(svg.dataset.l)) : 0);
+      const d = JSON.parse(svg.dataset.tip!) as Tip, rect = svg.getBoundingClientRect();
+      const i = nearestIndex(e.clientX - rect.left, d.xs.length, Number(svg.dataset.l), Number(svg.dataset.r));
+      msg = tipText(d, i);
+      const x = Number(svg.dataset.l) + (d.xs.length > 1 ? (i / (d.xs.length - 1)) * (Number(svg.dataset.r) - Number(svg.dataset.l)) : 0);
       cursor?.setAttribute('x1', String(x)); cursor?.setAttribute('x2', String(x)); cursor?.removeAttribute('hidden');
     }
     results.querySelectorAll('.cursor').forEach((c) => { if (c !== cursor) c.setAttribute('hidden', ''); });
