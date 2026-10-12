@@ -70,19 +70,10 @@ const card = (title: string, info: string, body: string, legend = '') =>
 const tile = (label: string, info: string, big: string, sub: string) =>
   `<div class="tile" title="${esc(info)}"><span class="tl">${esc(label)}</span><span class="big">${big}</span><span class="sub">${esc(sub)}</span></div>`;
 
-export function renderResultsHtml(data: RunData[], all: boolean, opts: { total?: number; size?: Size } = {}): string {
-  const size = opts.size ?? DEFAULT_SIZE;
-  const sel = data[0];
-  const hl = headline(data);
-  const tiles: string[] = [];
-  if (hl.campaign) {
-    const f = (r: { k: number; n: number; rate: number | null }) => `${pct(r.rate)} <small>${r.k}/${r.n}</small>`;
-    tiles.push(`<div class="tile wide" title="Share of jungle encounters the hero won"><span class="tl">Campaign win rate</span><span class="big">${hl.campaign.on.n ? `<span class="k">perma on</span> ${f(hl.campaign.on)}` : ''}${hl.campaign.off.n ? ` <span class="k">off</span> ${f(hl.campaign.off)}` : ''}</span><span class="sub">permadeath on / off, wins of encounters</span></div>`);
-  } else if (!all) tiles.push(tile('Campaign win rate', 'No campaign files for this run', 'none yet', 'run the campaign command to fill this'));
-  if (hl.lateVsEarly) tiles.push(tile('Late vs early champions', 'Win share of current champions against earlier hall-of-fame champions (mean of the last 10 generations)', duo(pct(hl.lateVsEarly.hero), pct(hl.lateVsEarly.monster)), 'hero / monster win share'));
-  if (hl.draw !== null) tiles.push(tile('Draw rate', 'Share of duels that end without a winner (last 10 generations)', pct(hl.draw), 'duels with no winner'));
-  if (hl.unseenBlock) tiles.push(tile('Blocks at an unseen foe', 'Share of blocks started while the opponent was outside the vision cone (last 10 generations). Low is good.', duo(pct(hl.unseenBlock.hero), pct(hl.unseenBlock.monster)), 'hero / monster, lower is smarter'));
-
+export function renderResultsHtml(data: RunData[], evals: (EvalRow & { run: string })[], title: string, size: Size = DEFAULT_SIZE): string {
+  const col = (c: string) => data.map((d) => d.rows.map((r) => r[c] ?? 0));
+  const hero = aggregateSeries(col('hero_best')), mon = aggregateSeries(col('monster_best'));
+  const yMax = Math.max(1, ...hero.max, ...mon.max);
   const cards: string[] = [];
   const zones = new Map<string, { k: number; n: number }>();
   for (const d of data) for (const side of ['on', 'off'] as const) for (const [z, v] of Object.entries(d.run.permadeath[side]?.perZone ?? {})) {
