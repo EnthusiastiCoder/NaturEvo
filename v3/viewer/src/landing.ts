@@ -48,10 +48,8 @@ function rowHtml(r: LandingRow, selected: boolean): string {
 export function renderLandingHtml(vm: LandingVM, selected: string = ALL): string {
   if (vm.empty) {
     return `<section class="landing-empty"><h2>No runs yet</h2>
-<p>Train a population, then walk the jungle with its champions. Run these from the <code>v2/sim</code> folder; they write into <code>v2/runs/</code>, which is where this viewer looks.</p>
-<ol class="cmds">${EMPTY_COMMANDS.map((c) => `<li><code>${esc(c)}</code></li>`).join('')}</ol>
-<p class="muted">Results appear here when the files exist. Meanwhile you can look at the built-in demo.</p>
-<div class="actions">${demoButton}</div></section>`;
+<p>Train a population from the <code>v3/sim</code> folder; it writes into <code>v3/runs/</code>, which is where this viewer looks.</p>
+<ol class="cmds">${EMPTY_COMMANDS.map((c) => `<li><code>${esc(c)}</code></li>`).join('')}</ol></section>`;
   }
   const groups = groupRunsFromVm(vm);
   const sel = selectedName ?? groups.campaign[0]?.name ?? groups.training[0]?.name ?? groups.scratch[0]?.name;
