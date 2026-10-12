@@ -67,3 +67,14 @@ describe('shake / recoil / floating number are deterministic and decay', () => {
     expect(partFlashAt(-1)).toBe(0);
   });
 });
+
+describe('blockPoint snaps the spark onto the nearest shield plate', () => {
+  it('returns the closest point on a plate segment', () => {
+    const p = blockPoint(5, 10, [[0, 0, 0, 20]]);
+    expect(p[0]).toBeCloseTo(0, 6); expect(p[1]).toBeCloseTo(10, 6);
+  });
+  it('clamps to the endpoint and passes through with no plates', () => {
+    expect(blockPoint(5, 30, [[0, 0, 0, 20]])).toEqual([0, 20]);
+    expect(blockPoint(5, 5, [])).toEqual([5, 5]);
+  });
+});
