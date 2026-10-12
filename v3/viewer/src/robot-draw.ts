@@ -30,6 +30,16 @@ function capsule(g: Graphics, s: Seg, r: number, sc: number, fill: number, line:
     .closePath().fill(fill).stroke({ width: lw, color: line, alignment: 0.5 });
 }
 
+/** Clip a segment (cm, y up) so no part of it is below minY: the end that dips is pulled back along the line. */
+export function clampSegAboveGround(s: Seg, minY: number): Seg {
+  const [x1, y1, x2, y2] = s;
+  if (y1 >= minY && y2 >= minY) return s;
+  if (y1 < minY && y2 < minY) return [x1, Math.max(y1, minY), x2, Math.max(y2, minY)];
+  const k = (minY - y1) / (y2 - y1);
+  const cx = x1 + (x2 - x1) * k;
+  return y1 < minY ? [cx, minY, x2, y2] : [x1, y1, cx, minY];
+}
+
 export interface DrawOpts {
   color: number; accent: number; scale: number; time: number; // scale = px per cm; time in s for flicker
   detached: boolean[]; flash: number; // flash 0..1 white overlay on struck robot
@@ -66,7 +76,7 @@ export function drawRobot(g: Graphics, f: FighterFrame, o: DrawOpts): void {
     capsule(g, f.shield, 5, sc, shade(o.color, 0.8), o.accent, lw);
   }
   if (f.hp[6] > 0 && !o.detached[6]) {
-    const s = f.sword;
+    const s = clampSegAboveGround(f.sword, 2.5); // half blade width: tip never pokes below the ground line
     g.moveTo(s[0] * sc, -s[1] * sc).lineTo(s[2] * sc, -s[3] * sc).stroke({ width: 5 * sc, color: 0x9aa7b3, cap: 'round' });
     g.moveTo(s[0] * sc, -s[1] * sc).lineTo(s[2] * sc, -s[3] * sc).stroke({ width: Math.max(1.5, 1.5 * sc), color: 0xffffff, cap: 'round' });
   }
