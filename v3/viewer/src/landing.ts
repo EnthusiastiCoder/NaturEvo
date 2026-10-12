@@ -135,9 +135,9 @@ export async function mountLanding(el: HTMLElement, index: RunIndex): Promise<vo
     }
     return cache.get(run.name)!;
   };
-  let selected = start, all = false, size = DEFAULT_SIZE;
-  const withCampaign = index.runs.filter(hasCampaign);
-  let tip = results.querySelector<HTMLElement>('.tip');
+  const evalAll: { runs?: (EvalRow & { run: string })[] } = (await json('/runs/eval_seeds.json')) ?? {};
+  let size = DEFAULT_SIZE;
+  let tip: HTMLElement | null = null;
   const paint = async () => {
     const data = all ? await Promise.all(withCampaign.map(async (run) => ({ run, rows: await rowsOf(run) }))) : [{ run: selected, rows: await rowsOf(selected) }];
     results.innerHTML = renderResultsHtml(data, all, { total: index.runs.length, size });
