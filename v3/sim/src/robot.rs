@@ -214,6 +214,11 @@ pub enum State {
     Ko,
 }
 
+/// One hit removes at most this fraction of the struck part's max hp (no single hit one-shots a part).
+pub const HIT_DAMAGE_CAP_FRAC: f32 = 0.5;
+/// A robot dies when its summed part health falls below this fraction of the summed maximum.
+pub const KO_POOL_FRAC: f32 = 0.55;
+
 // Per-part table: (mass kg, max hp, armour, zone multiplier).
 const TABLE: [(f32, f32, f32, f32); 13] = [
     (40.0, 60.0, 0.30, 1.6),   // Head
@@ -431,7 +436,7 @@ impl Robot {
         }
         let impact = raw_impact.min(IMPACT_CAP).max(0.0);
         let exposed = if matches!(self.state(), State::Staggered | State::Fallen) { EXPOSED_MULT } else { 1.0 };
-        let dmg = impact * self.zone_mult(p) * (1.0 - self.armour_eff(p)) * exposed;
+        let dmg = (impact * self.zone_mult(p) * (1.0 - self.armour_eff(p)) * exposed).min(HIT_DAMAGE_CAP_FRAC * self.max_hp(p));
         let before = self.hp[p as usize];
         self.set_hp(p, before - dmg);
         before - self.hp[p as usize]
@@ -484,8 +489,20 @@ impl Robot {
         }
     }
 
+    /// Total remaining part health over total maximum (0..1; destroyed parts count as 0).
+    pub fn pool_frac(&self) -> f32 {
+        let (mut s, mut m) = (0.0, 0.0);
+        for p in Part::ALL {
+            s += self.hp[p as usize].max(0.0);
+            m += self.max_hp(p);
+        }
+        s / m
+    }
+
+    /// Dead: torso destroyed, or the whole part-health pool below `KO_POOL_FRAC`.
+    /// A destroyed head only blinds (see sense) and disables the neck joint.
     pub fn is_ko(&self) -> bool {
-        self.is_destroyed(Part::Head) || self.is_destroyed(Part::Torso)
+        self.is_destroyed(Part::Torso) || self.pool_frac() < KO_POOL_FRAC
     }
 
     pub fn state(&self) -> State {
