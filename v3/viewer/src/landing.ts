@@ -2,8 +2,8 @@
 import { type RunIndex, type RunInfo, type Row, parseTrainingCsv } from './runs-index';
 import { type EvalRow, aggregateEval, aggregateSeries, defenceShares } from './aggregate';
 import { type Size, barChart, legendHtml, lineChart, nearestIndex, pct, tipText, type Tip } from './charts';
-import { headline } from './headline';
-import { defaultRun, formatDate, groupRuns, hasCampaign, humanName } from './run-labels';
+import { formatDate, humanName } from './run-labels';
+import { DEFAULT_ACCENT, applyTheme, nextTheme, setAccent, themeIconPath, type Theme } from './theme';
 
 // The viewer reads v2/runs; the sim runs from v2/sim, so the commands write one level up.
 export const EMPTY_COMMANDS: string[] = [
