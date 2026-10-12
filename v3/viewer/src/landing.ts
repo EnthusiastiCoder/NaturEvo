@@ -175,8 +175,8 @@ export async function mountLanding(el: HTMLElement, index: RunIndex): Promise<vo
     if (to >= 0) { e.preventDefault(); const t = rs[Math.max(0, Math.min(rs.length - 1, to))]; select(t.dataset.run!); t.focus(); }
     else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(row.dataset.run!); }
   });
-  el.querySelector('[data-action="all-runs"]')?.addEventListener('click', (e) => {
-    all = !all; (e.currentTarget as HTMLElement).setAttribute('aria-pressed', String(all)); void paint();
+  body.querySelector<HTMLElement>('[data-action="watch"]')?.addEventListener('click', (e) => {
+    const h = (e.currentTarget as HTMLElement).dataset.open; if (h) location.hash = h;
   });
   // hover tooltip: nearest generation on line charts, text on bars
   results.addEventListener('mousemove', (e) => {
