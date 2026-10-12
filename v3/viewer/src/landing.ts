@@ -11,11 +11,7 @@ export const EMPTY_COMMANDS: string[] = [
   'cargo run --release -- train --out ../runs/slice_s3 --gens 200 --seed 3',
 ];
 
-export type LandingRow = {
-  name: string; label: string; seed: string; date: string; dateLabel: string; generations: number;
-  permadeathOn: string; permadeathOff: string; onRate: string; offRate: string; keyResult: string;
-  openHref: string; canOpen: boolean; hasCampaign: boolean;
-};
+export type LandingRow = { name: string; label: string; seed: string; dateLabel: string; generations: number; openHref: string; canOpen: boolean };
 export type LandingVM = { empty: boolean; rows: LandingRow[] };
 
 const fightGens = (r: RunInfo) => r.files.map((f) => /^fight_gen_(\d+)\.json$/.exec(f)).filter((m): m is RegExpExecArray => !!m).map((m) => Number(m[1])).sort((a, b) => a - b);
