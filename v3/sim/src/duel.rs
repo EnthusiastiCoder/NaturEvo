@@ -92,6 +92,8 @@ pub struct MatchResult {
     pub passivity: f32,
     /// Mean strike quality of each fighter's landed hits.
     pub chain_quality: [f32; 2],
+    /// Body hits landed by each fighter.
+    pub hits: [u32; 2],
 }
 
 const THREAT_SPEED: f32 = 2.5;
@@ -615,6 +617,7 @@ impl Match {
             dmg_dealt_norm: dealt,
             passivity: self.passive_ticks as f32 / MAX_TICKS as f32,
             chain_quality: [q(0), q(1)],
+            hits: self.hits,
         }
     }
 
