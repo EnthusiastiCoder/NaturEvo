@@ -59,4 +59,16 @@ describe('parseFight', () => {
     j.version = 2;
     expect(() => parseFight(j)).toThrow(/version/i);
   });
+  it('normalises the real sim log (arena and events in metres) to centimetres', () => {
+    const j = raw();
+    j.arena = { width: 14, height: 6, obstacles: [{ x: 2.8, w: 0.99, h: 1.16 }], biome: 'jungle' };
+    j.events = [{ t: 0, kind: 'clash', x: 6.93, y: 4.26, dx: 0.5, dy: 0.8, type: 'parry' }];
+    const f = parseFight(j);
+    expect(f.arena.width).toBe(1400);
+    expect(f.arena.height).toBe(600);
+    expect(f.arena.obstacles[0]).toEqual({ x: 280, w: 99, h: 116 });
+    expect(f.events[0].x).toBeCloseTo(693);
+    expect(f.events[0].y).toBeCloseTo(426);
+    expect(f.events[0].dx).toBe(0.5);
+  });
 });
