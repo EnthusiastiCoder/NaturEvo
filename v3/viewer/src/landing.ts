@@ -123,10 +123,17 @@ export async function mountLanding(el: HTMLElement, index: RunIndex): Promise<vo
   if (!results) return;
 
   const text = async (u: string) => { try { const r = await fetch(u); return r.ok ? await r.text() : ''; } catch { return ''; } };
-  const cache = new Map<string, Row[]>();
-  const rowsOf = async (r: RunInfo) => {
-    if (!cache.has(r.name)) cache.set(r.name, parseTrainingCsv(await text(`/runs/${r.name}/training.csv`)));
-    return cache.get(r.name)!;
+  const json = async (u: string) => { try { return JSON.parse(await text(u)); } catch { return null; } };
+  const cache = new Map<string, RunData>();
+  const dataOf = async (run: RunInfo): Promise<RunData> => {
+    if (!cache.has(run.name)) {
+      const rows = parseTrainingCsv(await text(`/runs/${encodeURIComponent(run.name)}/training.csv`));
+      const fights = await Promise.all(run.fightGens.map((g) => json(`/runs/${encodeURIComponent(run.name)}/fight_gen_${g}.json`)));
+      const shares = { parry: [] as number[], block: [] as number[], dodge: [] as number[] };
+      for (const f of fights) { const s = defenceShares(f?.result?.defence ?? []); shares.parry.push(s.parry); shares.block.push(s.block); shares.dodge.push(s.dodge); }
+      cache.set(run.name, { run, rows, shares });
+    }
+    return cache.get(run.name)!;
   };
   let selected = start, all = false, size = DEFAULT_SIZE;
   const withCampaign = index.runs.filter(hasCampaign);
