@@ -153,9 +153,12 @@ export async function mountLanding(el: HTMLElement, index: RunIndex): Promise<vo
       const row = li.querySelector<HTMLElement>('.run-row')!, on = row.dataset.run === sel;
       li.classList.toggle('sel', on); row.setAttribute('aria-selected', String(on)); row.tabIndex = on ? 0 : -1;
     });
-    const body = results.querySelector<HTMLElement>('.card .body');
-    if (body && body.clientWidth > 40 && (Math.abs(body.clientWidth - size.w) > 6 || Math.abs(body.clientHeight - size.h) > 6)) {
-      size = { w: Math.floor(body.clientWidth), h: Math.floor(body.clientHeight) }; void paint();
+    const w = body.querySelector<HTMLButtonElement>('[data-action="watch"]')!;
+    const open = (runs.find((r) => openHrefOf(r)) && openHrefOf(runs.find((r) => openHrefOf(r))!)) || '';
+    w.dataset.open = open; w.disabled = !open;
+    const c = results.querySelector<HTMLElement>('.card .body');
+    if (c && c.clientWidth > 40 && (Math.abs(c.clientWidth - size.w) > 6 || Math.abs(c.clientHeight - size.h) > 6)) {
+      size = { w: Math.floor(c.clientWidth), h: Math.floor(c.clientHeight) }; void paint();
     }
   };
   const select = (name: string) => {
