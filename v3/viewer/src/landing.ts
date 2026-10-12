@@ -161,13 +161,9 @@ export async function mountLanding(el: HTMLElement, index: RunIndex): Promise<vo
       size = { w: Math.floor(c.clientWidth), h: Math.floor(c.clientHeight) }; void paint();
     }
   };
-  const select = (name: string) => {
-    selected = index.runs.find((r) => r.name === name)!; all = false;
-    el.querySelector('[data-action="all-runs"]')?.setAttribute('aria-pressed', 'false'); void paint();
-  };
-  const rowsEls = () => Array.from(el.querySelectorAll<HTMLElement>('.run-row')).filter((r) => r.offsetParent !== null);
-  const rowList = el.querySelector<HTMLElement>('.runs');
-  rowList?.addEventListener('click', (e) => {
+  const select = (name: string) => { sel = name; void paint(); };
+  const list = body.querySelector<HTMLElement>('.runs');
+  list?.addEventListener('click', (e) => {
     const row = (e.target as HTMLElement).closest<HTMLElement>('.run-row');
     if (row && !(e.target as HTMLElement).closest('a.open')) { select(row.dataset.run!); row.focus(); }
   });
