@@ -101,12 +101,27 @@ export function renderResultsHtml(data: RunData[], evals: (EvalRow & { run: stri
 }
 
 // ---- DOM controller ----
-export async function mountLanding(el: HTMLElement, index: RunIndex, onDemo: () => void): Promise<void> {
-  const start = defaultRun(index.runs);
-  el.innerHTML = renderLandingHtml(landingViewModel(index), start?.name);
-  el.querySelector('[data-action="demo"]')?.addEventListener('click', onDemo);
-  const results = el.querySelector<HTMLElement>('#landing-results');
-  if (!results || !start) return;
+export async function mountLanding(el: HTMLElement, index: RunIndex): Promise<void> {
+  const vm = landingViewModel(index);
+  let sel = ALL;
+  const root = document.documentElement;
+  let theme: Theme = (root.dataset.theme as Theme) || 'dark';
+  const bar = document.createElement('header');
+  bar.className = 'bar';
+  bar.innerHTML = `<h1>NaturEvo v3</h1><span class="spacer"></span>
+<input id="ld-accent" type="color" value="${DEFAULT_ACCENT}" title="Accent colour" aria-label="Accent colour">
+<button id="ld-theme" type="button" title="Toggle light or dark theme" aria-label="Toggle theme"></button>`;
+  const body = document.createElement('div');
+  body.className = 'ld-body';
+  el.replaceChildren(bar, body);
+  const syncTheme = () => { applyTheme(root, theme); bar.querySelector('#ld-theme')!.innerHTML = icon(themeIconPath(theme)); };
+  syncTheme();
+  bar.querySelector<HTMLInputElement>('#ld-accent')!.oninput = (e) => setAccent(root, (e.target as HTMLInputElement).value);
+  bar.querySelector<HTMLElement>('#ld-theme')!.onclick = () => { theme = nextTheme(theme); syncTheme(); };
+  body.innerHTML = renderLandingHtml(vm, sel);
+  const results = body.querySelector<HTMLElement>('#landing-results');
+  if (!results) return;
+
   const text = async (u: string) => { try { const r = await fetch(u); return r.ok ? await r.text() : ''; } catch { return ''; } };
   const cache = new Map<string, Row[]>();
   const rowsOf = async (r: RunInfo) => {
