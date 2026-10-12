@@ -37,7 +37,7 @@ const ICON = {
 };
 const infoButton = (text: string) => `<button type="button" class="info-btn" aria-label="About this chart" aria-expanded="false" title="${esc(text)}">${icon(ICON.info)}</button>`;
 
-const demoButton = `<button type="button" data-action="demo" title="Open the built-in demo fight (not a real run)">Demo${icon(ICON.play)}</button>`;
+export const ALL = 'all';
 
 function rowHtml(r: LandingRow, selected: boolean): string {
   const chips = r.hasCampaign
