@@ -13,7 +13,7 @@ const ICON = {
 };
 const svg = (p: string) => `<svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
 // silhouette part centre and half-size (13 parts) in a 40x72 box
-const SIL: [number, number, number, number][] = [[20, 6, 5, 5], [20, 22, 9, 12], [20, 36, 8, 6], [10, 20, 3, 8], [30, 20, 3, 8], [8, 33, 3, 8], [32, 33, 3, 8], [15, 48, 4, 10], [25, 48, 4, 10], [15, 60, 3, 9], [25, 60, 3, 9], [13, 68, 4, 2], [27, 68, 4, 2]];
+const SIL: [number, number, number, number][] = [[20, 8, 7, 12], [20, 25, 9, 14], [20, 36, 8, 6], [10, 20, 3, 8], [30, 20, 3, 8], [8, 33, 3, 8], [32, 33, 3, 8], [15, 48, 4, 10], [25, 48, 4, 10], [15, 60, 3, 9], [25, 60, 3, 9], [13, 68, 4, 2], [27, 68, 4, 2]];
 const PART_NAMES = ['Head', 'Torso', 'Pelvis', 'Upper arm L', 'Upper arm R', 'Forearm L (shield)', 'Forearm R (sword)', 'Thigh L', 'Thigh R', 'Shin L', 'Shin R', 'Foot L', 'Foot R'];
 const SPEEDS = [0.25, 0.5, 1, 2];
 
@@ -57,7 +57,7 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
     <div class="fv-bar-row" title="Core (torso) health"><i class="b hp"></i></div>
     <div class="fv-bar-row" title="Energy: spent by movement and guarding"><i class="b en"></i></div>
     <div class="fv-bar-row" title="Posture: full means staggered"><i class="b po"></i></div>
-    <svg class="fv-sil" viewBox="0 0 40 72">${SIL.map(([x, y, w, h], k) => `<rect x="${x - w}" y="${y - h / 2}" width="${w * 2}" height="${h}" rx="2"><title>${PART_NAMES[k]}</title></rect>`).join('')}</svg>
+    <svg class="fv-sil" viewBox="0 0 40 72"><path class="fv-neck" d="M20 12V20" stroke="#888" stroke-width="5" opacity=".7"/>${SIL.map(([x, y, w, h], k) => `<rect x="${x - w}" y="${y - h / 2}" width="${w * 2}" height="${h}" rx="2"><title>${PART_NAMES[k]}</title></rect>`).join('')}</svg>
     <div class="fv-tally"></div></div>`;
   hud.innerHTML = sideHtml(0) + sideHtml(1);
   const sides = [0, 1].map((i) => hud.querySelector<HTMLElement>(`#fv-side${i}`)!);
