@@ -143,12 +143,13 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .fv-stage { position: relative; min-height: 0; overflow: hidden; border-radius: var(--radius); }
 #fv-canvas { position: absolute; inset: 0; }
 .fv-hud { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; justify-content: space-between; pointer-events: none; gap: 8px; }
-.fv-side { background: color-mix(in srgb, var(--panel) 85%, transparent); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 8px; width: 190px; pointer-events: auto; }
+.fv-side { background: color-mix(in srgb, var(--panel) 85%, transparent); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 8px; width: 230px; min-height: 108px; box-sizing: border-box; pointer-events: auto; }
 .fv-name { font-weight: 600; } .fv-state { color: var(--accent); font-weight: 400; }
-.fv-bar-row { height: 6px; background: var(--line); border-radius: 3px; margin: 4px 44px 4px 0; overflow: hidden; }
+.fv-bar-row { height: 6px; background: var(--line); border-radius: 3px; margin: 5px 70px 5px 0; overflow: hidden; }
 .fv-bar-row .b { display: block; height: 100%; }
 .b.hp { background: #3fb950; } .b.en { background: #4aa3ff; } .b.po { background: #e6c229; }
-.fv-sil { position: absolute; right: 8px; top: 8px; width: 34px; height: 61px; } .fv-sil rect { stroke: var(--bg); stroke-width: 0.6; }
+.fv-sil { position: absolute; right: 8px; top: 8px; width: 56px; height: 101px; } .fv-sil rect { stroke: var(--bg); stroke-width: 0.8; }
+#fv-scrub { flex: 1 1 160px; min-width: 80px; max-width: 420px; accent-color: var(--accent); }
 .fv-side { position: relative; }
 .fv-tally { display: flex; gap: 8px; color: var(--muted); font-size: 12px; }
 .fv-help, .fv-result { position: absolute; left: 50%; transform: translateX(-50%); background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 12px; max-width: 70%; }
