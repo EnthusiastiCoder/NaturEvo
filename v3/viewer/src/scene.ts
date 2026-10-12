@@ -93,10 +93,15 @@ export class FightScene {
     }
     this.shake = Math.max(this.shake, shakeFor(e));
     if (e.kind === 'hit') this.flash[e.victim] = 1;
-    if (e.kind === 'stagger') this.rings.push({ x: this.sampleNow().f[e.who].fx, y: 330, age: 0, color: 0xffe14a, r: 70 });
+    if (e.kind === 'stagger') this.rings.push({ ...this.torso(this.sampleNow(), e.who), age: 0, color: 0xffe14a, r: 70 });
     if (e.kind === 'destroyed') this.detachedAt[e.who][this.fight.parts.indexOf(e.part)] = e.t;
     const hs = hitstopTicks(this.fight.events, e.t);
     if (e.kind === 'hit' && hs > 0) this.freeze = Math.max(this.freeze, hs);
+  }
+
+  private torso(fr: Frame, who: number): { x: number; y: number } {
+    const p = fr.f[who].parts[1];
+    return { x: (p[0] + p[2]) / 2, y: (p[1] + p[3]) / 2 };
   }
 
   private sampleNow(): Frame { return sampleFrame(this.fight, this.tick); }
@@ -126,7 +131,7 @@ export class FightScene {
         this.debris.moveTo(d[0] * sc, -d[1] * sc).lineTo(d[2] * sc, -d[3] * sc).stroke({ width: 14 * sc, color: col[i], cap: 'round', alpha: 0.9 });
       });
       this.robots[i].scale.set(1);
-      if (fr.f[i].state === 'staggered') this.rings.push({ x: fr.f[i].fx, y: 330, age: 0.85, color: 0xffe14a, r: 70 });
+      if (fr.f[i].state === 'staggered') this.rings.push({ ...this.torso(fr, i), age: 0.85, color: 0xffe14a, r: 70 });
     }
     void PART_Z;
     this.drawFx(dt);
