@@ -40,3 +40,22 @@ export function spawnParticles(spec: SparkSpec, x: number, y: number, seed: numb
   }
   return out;
 }
+
+/** Events fired within `windowTicks` before `tick` (inclusive), with age in seconds. Used so scrubbing to a hit shows its sparks. */
+export function recentEvents(events: FightEvent[], tick: number, windowTicks = 18): { e: FightEvent; age: number }[] {
+  return events.filter((e) => e.t <= tick && e.t >= tick - windowTicks).map((e) => ({ e, age: (tick - e.t) / 60 }));
+}
+
+/** Advance particles by `age` seconds (same integrator as the live renderer) and drop expired ones. */
+export function ageParticles(ps: Particle[], age: number): Particle[] {
+  const out: Particle[] = [];
+  for (const p of ps) {
+    const q = { ...p };
+    for (let t = 0; t < age; t += 1 / 60) {
+      const dt = Math.min(1 / 60, age - t);
+      q.x += q.vx * dt; q.y += q.vy * dt; q.vy -= 600 * dt; q.life += dt;
+    }
+    if (q.life < q.max) out.push(q);
+  }
+  return out;
+}
