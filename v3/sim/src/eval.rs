@@ -17,6 +17,11 @@ pub struct EvalMetrics {
     pub parry_share: f32,
     pub block_share: f32,
     pub dodge_share: f32,
+    pub median_ticks: f32,
+    /// Body hits landed by both fighters, per fight.
+    pub hits_per_fight: f32,
+    /// Share of fights that ended in a death (not time-out).
+    pub death_share: f32,
 }
 
 fn champions(dir: &Path, role: &str) -> Result<Vec<Genome>, String> {
@@ -41,6 +46,9 @@ struct Acc {
     wins: u32,
     draws: u32,
     ticks: f32,
+    tick_list: Vec<u32>,
+    hit_total: u32,
+    deaths: u32,
     idle: f32,
     parry: u32,
     block: u32,
@@ -60,6 +68,11 @@ impl Acc {
             self.draws += 1;
         }
         self.ticks += r.ticks as f32;
+        self.tick_list.push(r.ticks);
+        self.hit_total += r.hits[0] + r.hits[1];
+        if r.ko[0] || r.ko[1] {
+            self.deaths += 1;
+        }
         self.idle += r.idle_guard_share[who];
         let d = &r.defence[who];
         self.parry += d.parry;
@@ -120,13 +133,20 @@ pub fn evaluate_run(dir: &Path, arena_seeds: u64) -> Result<EvalMetrics, String>
         parry_share: hof.parry as f32 / def,
         block_share: hof.block as f32 / def,
         dodge_share: hof.dodge as f32 / def,
+        median_ticks: {
+            let mut t = hof.tick_list.clone();
+            t.sort();
+            t.get(t.len() / 2).copied().unwrap_or(0) as f32
+        },
+        hits_per_fight: hof.hit_total as f32 / n,
+        death_share: hof.deaths as f32 / n,
     })
 }
 
-const KEYS: [&str; 10] = ["win_rate_hof", "defence_rate", "defence_rate_scripted", "hit_rate", "idle_guard", "draw_share", "mean_ticks", "parry_share", "block_share", "dodge_share"];
+const KEYS: [&str; 13] = ["win_rate_hof", "defence_rate", "defence_rate_scripted", "hit_rate", "idle_guard", "draw_share", "mean_ticks", "parry_share", "block_share", "dodge_share", "median_ticks", "hits_per_fight", "death_share"];
 
-fn values(m: &EvalMetrics) -> [f32; 10] {
-    [m.win_rate_hof, m.defence_rate, m.defence_rate_scripted, m.hit_rate, m.idle_guard, m.draw_share, m.mean_ticks, m.parry_share, m.block_share, m.dodge_share]
+fn values(m: &EvalMetrics) -> [f32; 13] {
+    [m.win_rate_hof, m.defence_rate, m.defence_rate_scripted, m.hit_rate, m.idle_guard, m.draw_share, m.mean_ticks, m.parry_share, m.block_share, m.dodge_share, m.median_ticks, m.hits_per_fight, m.death_share]
 }
 
 /// (mean, min, max) per metric across runs, in KEYS order.
