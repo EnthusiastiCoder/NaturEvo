@@ -1,11 +1,6 @@
-// Run discovery: pure parsing of what the sim writes into v2/runs, plus the client-side index loader.
+// Run discovery: pure parsing of what the v3 sim writes into v3/runs, plus the client-side index loader.
 export type Row = Record<string, number>;
-export type CampaignSummary = { outcome: string; wins: number; losses: number; encounters: number; perZone: Record<string, { wins: number; losses: number }> };
-export type RunInfo = {
-  name: string; seed: string; date: string; generations: number;
-  permadeath: { on?: CampaignSummary; off?: CampaignSummary };
-  keyResult: string; files: string[];
-};
+export type RunInfo = { name: string; seed: string; date: string; generations: number; fightGens: number[] };
 export type RunIndex = { runs: RunInfo[]; error?: string };
 export type FileSource = { list(): string[]; read(path: string): Promise<string> };
 
@@ -21,50 +16,27 @@ export function parseTrainingCsv(text: string): Row[] {
   });
 }
 
-export function summarizeCampaign(jsonText: string): CampaignSummary | null {
-  try {
-    const j = JSON.parse(jsonText);
-    if (!j || typeof j !== 'object') return null;
-    const encs: { zone?: number; result?: string }[] = Array.isArray(j.encounters) ? j.encounters : [];
-    const perZone: CampaignSummary['perZone'] = {};
-    let wins = 0, losses = 0;
-    for (const e of encs) {
-      const win = e.result === 'HeroWin';
-      if (win) wins++; else losses++;
-      const z = (perZone[String(e.zone ?? 'n/a')] ??= { wins: 0, losses: 0 });
-      if (win) z.wins++; else z.losses++;
-    }
-    return { outcome: typeof j.outcome === 'string' ? j.outcome : 'n/a', wins, losses, encounters: encs.length, perZone };
-  } catch { return null; }
-}
-
-export function seedOf(name: string): string {
-  const m = /(?:^|\/)s(\d+)$/.exec(name);
-  return m ? m[1] : 'n/a';
-}
-
+/** One run = one folder holding run.json; fight generations come from run.json, else from fight_gen_N.json names. */
 export async function buildIndex(src: FileSource, opts: { mtime(path: string): string | undefined }): Promise<RunIndex> {
-  const byDir = new Map<string, string[]>();
+  const dirs = new Map<string, string[]>();
   for (const p of src.list()) {
     const i = p.lastIndexOf('/');
     if (i < 0) continue;
-    const dir = p.slice(0, i);
-    (byDir.get(dir) ?? byDir.set(dir, []).get(dir)!).push(p.slice(i + 1));
+    const d = p.slice(0, i);
+    if (!dirs.has(d)) dirs.set(d, []);
+    dirs.get(d)!.push(p.slice(i + 1));
   }
   const runs: RunInfo[] = [];
-  for (const [dir, names] of byDir) {
-    const hasCsv = names.includes('training.csv');
-    const camps = names.filter((n) => /^campaign_(on|off)\.json$/.test(n));
-    if (!hasCsv && !camps.length) continue;
+  for (const [dir, names] of dirs) {
+    if (!names.includes('run.json')) continue;
     try {
-      const read = async (n: string) => { try { return await src.read(`${dir}/${n}`); } catch { return ''; } };
-      const generations = hasCsv ? parseTrainingCsv(await read('training.csv')).length : 0;
-      const permadeath: RunInfo['permadeath'] = {};
-      if (camps.includes('campaign_on.json')) permadeath.on = summarizeCampaign(await read('campaign_on.json')) ?? undefined;
-      if (camps.includes('campaign_off.json')) permadeath.off = summarizeCampaign(await read('campaign_off.json')) ?? undefined;
+      const j = JSON.parse(await src.read(`${dir}/run.json`));
+      const fromFiles = names.map((n) => /^fight_gen_(\d+)\.json$/.exec(n)).filter((m): m is RegExpExecArray => !!m).map((m) => Number(m[1]));
+      const fg: number[] = (Array.isArray(j.fight_gens) ? j.fight_gens : fromFiles).filter((x: unknown) => Number.isFinite(x)).sort((a: number, b: number) => a - b);
       runs.push({
-        name: dir, seed: seedOf(dir), date: opts.mtime(`${dir}/${hasCsv ? 'training.csv' : camps[0]}`) ?? 'n/a',
-        generations, permadeath, keyResult: permadeath.on?.outcome ?? permadeath.off?.outcome ?? 'n/a', files: names.slice().sort(),
+        name: String(j.name ?? dir), seed: j.seed === undefined ? 'n/a' : String(j.seed),
+        date: typeof j.date === 'string' ? j.date : opts.mtime(`${dir}/run.json`) ?? 'n/a',
+        generations: Number(j.generations) || 0, fightGens: fg,
       });
     } catch { /* odd folder: skip */ }
   }
