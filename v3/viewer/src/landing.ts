@@ -54,8 +54,10 @@ export function renderLandingHtml(vm: LandingVM, selected: string = ALL): string
   const sel = selected === ALL || !vm.rows.some((r) => r.name === selected) ? ALL : selected;
   const watch = (vm.rows.find((r) => r.name === sel) ?? vm.rows.find((r) => r.canOpen))?.openHref ?? '';
   return `<section class="picker"><div class="head"><h2>Runs</h2>
-<button type="button" data-action="all-runs" aria-pressed="false" title="Pool the campaign results of every run that has them">${icon(ICON.layers)}All runs</button>${demoButton}</div>
-<div class="runs" role="listbox" aria-label="Runs">${section('With campaign results', groups.campaign, 'win rate: permadeath on / off')}${section('Training only', groups.training)}${scratch}</div></section>
+<button type="button" class="primary" data-action="watch" data-open="${esc(watch)}"${watch ? '' : ' disabled'} title="Watch the latest fight of the selected run">${icon(ICON.play)}Watch fight</button></div>
+<div class="runs" role="listbox" aria-label="Runs"><ul>
+<li class="${sel === ALL ? 'sel' : ''}"><div class="run-row" role="option" tabindex="${sel === ALL ? 0 : -1}" aria-selected="${sel === ALL}" data-run="${ALL}" title="Average and range over every seed">${icon(ICON.layers)}<b class="nm">All seeds</b><span class="meta">${vm.rows.length} runs</span></div></li>
+${vm.rows.map((r) => rowHtml(r, r.name === sel)).join('')}</ul></div></section>
 <section class="results" id="landing-results" aria-live="polite"></section>`;
 }
 
