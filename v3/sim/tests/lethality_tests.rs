@@ -56,3 +56,17 @@ fn pool_below_fraction_is_death_and_above_is_not() {
     r.set_hp(Part::Torso, KO_POOL_FRAC * total - 3.0);
     assert!(r.is_ko(), "just below the pool fraction must die");
 }
+
+#[test]
+fn many_scripted_duels_are_long_and_decisive() {
+    let mut ticks = Vec::new();
+    for seed in 1..=8u64 {
+        let r = Match::new(seed, Brain::Scripted, Brain::Scripted).run_to_end();
+        assert!(r.ticks >= 150, "seed {} ended after {} ticks", seed, r.ticks);
+        assert!(r.ko[0] || r.ko[1] || r.outcome != Outcome::Draw, "seed {} undecided", seed);
+        assert!(r.hits[0] + r.hits[1] >= 3, "seed {} only {} hits", seed, r.hits[0] + r.hits[1]);
+        ticks.push(r.ticks);
+    }
+    ticks.sort();
+    assert!(ticks[ticks.len() / 2] >= 300, "median {:?}", ticks);
+}
