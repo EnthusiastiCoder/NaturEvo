@@ -62,8 +62,7 @@ ${vm.rows.map((r) => rowHtml(r, r.name === sel)).join('')}</ul></div></section>
 }
 
 // ---- results ----
-const na = (why: string) => `<div class="na">${esc(why)}</div>`;
-export type RunData = { run: RunInfo; rows: Row[] };
+export type RunData = { run: RunInfo; rows: Row[]; shares: { parry: number[]; block: number[]; dodge: number[] } };
 const DEFAULT_SIZE: Size = { w: 240, h: 130 };
 
 const card = (title: string, info: string, body: string, legend = '') =>
