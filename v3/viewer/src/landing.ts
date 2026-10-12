@@ -61,13 +61,6 @@ ${vm.rows.map((r) => rowHtml(r, r.name === sel)).join('')}</ul></div></section>
 <section class="results" id="landing-results" aria-live="polite"></section>`;
 }
 
-function groupRunsFromVm(vm: LandingVM): { campaign: LandingRow[]; training: LandingRow[]; scratch: LandingRow[] } {
-  const stub = vm.rows.map((r) => ({ name: r.name, seed: r.seed, date: r.date, generations: r.generations, permadeath: r.hasCampaign ? { on: { outcome: '', wins: 0, losses: 0, encounters: 0, perZone: {} } } : {}, keyResult: r.keyResult, files: [] }) as RunInfo);
-  const g = groupRuns(stub), by = new Map(vm.rows.map((r) => [r.name, r]));
-  const m = (rs: RunInfo[]) => rs.map((r) => by.get(r.name)!);
-  return { campaign: m(g.campaign), training: m(g.training), scratch: m(g.scratch) };
-}
-
 // ---- results ----
 const na = (why: string) => `<div class="na">${esc(why)}</div>`;
 export type RunData = { run: RunInfo; rows: Row[] };
