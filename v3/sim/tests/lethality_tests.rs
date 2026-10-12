@@ -30,3 +30,10 @@ fn a_destroyed_head_is_not_death() {
     assert_ne!(r.state(), State::Ko);
     assert!(r.can_act() || r.state() != State::Ko);
 }
+
+#[test]
+fn torso_destroyed_is_death() {
+    let mut r = standing(Role::Hero, 3.0, 1.0);
+    r.set_hp(Part::Torso, -0.5 * r.max_hp(Part::Torso));
+    assert!(r.is_ko());
+}
