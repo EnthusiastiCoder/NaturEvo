@@ -72,3 +72,29 @@ fn many_scripted_duels_are_long_and_decisive() {
     ticks.sort();
     assert!(ticks[ticks.len() / 2] >= 300, "median {:?}", ticks);
 }
+
+#[test]
+fn trained_champions_average_at_least_five_hits_per_fight() {
+    let runs = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../runs");
+    let mut tot = 0u32;
+    let mut n = 0u32;
+    for s in 1..=3 {
+        let dir = runs.join(format!("slice_s{}", s));
+        let Ok(rd) = std::fs::read_dir(&dir) else { continue };
+        let last = |role: &str| {
+            rd_last(&dir, role)
+        };
+        let _ = rd;
+        let (Some(h), Some(m)) = (last("hero"), last("monster")) else { continue };
+        for seed in 0..4u64 {
+            let r = Match::new(1000 + seed, Brain::Net(h.clone()), Brain::Net(m.clone())).run_to_end();
+            tot += r.hits[0] + r.hits[1];
+            n += 1;
+        }
+    }
+    if n == 0 {
+        eprintln!("no trained runs present; skipped");
+        return;
+    }
+    assert!(tot as f32 / n as f32 >= 5.0, "{} hits over {} fights", tot, n);
+}
