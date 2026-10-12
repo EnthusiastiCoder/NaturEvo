@@ -5,7 +5,6 @@ import { type Size, barChart, legendHtml, lineChart, nearestIndex, pct, tipText,
 import { formatDate, humanName } from './run-labels';
 import { DEFAULT_ACCENT, applyTheme, nextTheme, setAccent, themeIconPath, type Theme } from './theme';
 
-// The viewer reads v2/runs; the sim runs from v2/sim, so the commands write one level up.
 export const EMPTY_COMMANDS: string[] = [
   'cargo run --release -- train --out ../runs/main --gens 200 --seed 1',
   'cargo run --release -- campaign --champions ../runs/main --out ../runs/main/campaign_on.json --fights-dir ../runs/main/fights_on --seed 1',
