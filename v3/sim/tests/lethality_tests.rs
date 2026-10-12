@@ -98,3 +98,17 @@ fn trained_champions_average_at_least_five_hits_per_fight() {
     }
     assert!(tot as f32 / n as f32 >= 5.0, "{} hits over {} fights", tot, n);
 }
+
+fn rd_last(dir: &std::path::Path, role: &str) -> Option<mech_sim::genome::Genome> {
+    let prefix = format!("champion_{}_gen_", role);
+    let mut best: Option<(u32, std::path::PathBuf)> = None;
+    for e in std::fs::read_dir(dir).ok()? {
+        let name = e.ok()?.file_name().to_string_lossy().to_string();
+        if let Some(g) = name.strip_prefix(&prefix).and_then(|r| r.strip_suffix(".json")).and_then(|r| r.parse::<u32>().ok()) {
+            if best.as_ref().map_or(true, |b| g > b.0) {
+                best = Some((g, dir.join(&name)));
+            }
+        }
+    }
+    mech_sim::genome::Genome::from_json(&std::fs::read_to_string(best?.1).ok()?).ok()
+}
