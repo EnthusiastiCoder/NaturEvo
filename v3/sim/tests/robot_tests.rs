@@ -225,8 +225,9 @@ fn weapon_and_shield_are_dropped_with_the_forearm() {
 }
 
 #[test]
-fn destroyed_head_or_torso_is_ko() {
-    for p in [Part::Head, Part::Torso] {
+// Updated for the lethality model: a destroyed head blinds instead of killing (see lethality_tests.rs).
+fn destroyed_torso_is_ko() {
+    for p in [Part::Torso] {
         let mut r = standing(Role::Hero, 3.0, 1.0);
         assert_ne!(r.state(), State::Ko);
         r.set_hp(p, -0.5 * r.max_hp(p));
