@@ -97,6 +97,9 @@ fn compare_cmd(args: &[String]) -> Result<(), String> {
 pub fn run(args: &[String]) -> Result<(), String> {
     match args.first().map(|s| s.as_str()) {
         Some("fight") => fight(&args[1..]),
+        Some("train") => train_cmd(&args[1..]),
+        Some("eval") => eval_cmd(&args[1..]),
+        Some("compare") => compare_cmd(&args[1..]),
         Some(other) => Err(format!("unknown command: {}", other)),
         None => Err("usage: mech-sim <fight|train|eval|compare> [options]".to_string()),
     }
