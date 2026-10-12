@@ -178,7 +178,6 @@ export async function mountLanding(el: HTMLElement, index: RunIndex): Promise<vo
   body.querySelector<HTMLElement>('[data-action="watch"]')?.addEventListener('click', (e) => {
     const h = (e.currentTarget as HTMLElement).dataset.open; if (h) location.hash = h;
   });
-  // hover tooltip: nearest generation on line charts, text on bars
   results.addEventListener('mousemove', (e) => {
     const t = e.target as Element, g = t.closest<SVGGElement>('.barg'), svg = t.closest<SVGSVGElement>('svg.chart[data-tip]');
     const cursor = svg?.querySelector<SVGLineElement>('.cursor');
