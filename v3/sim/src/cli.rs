@@ -1,4 +1,4 @@
-//! CLI skeleton. `fight`, `train`, `eval` and `compare` land in later workstreams.
+//! CLI: fight, train, eval, compare.
 use crate::duel::{Brain, Match};
 use crate::genome::Genome;
 use crate::log;
