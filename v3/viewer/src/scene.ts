@@ -177,7 +177,6 @@ export class FightScene {
     const accent = hexNum(this.css('--accent'), 0x2f9e44);
     this.debris.clear();
     for (let i = 0; i < 2; i++) {
-      this.flash[i] = Math.max(0, this.flash[i] - dt * 5);
       const det = this.detachedAt[i].map((t) => t !== null && this.tick >= t);
       drawRobot(this.robots[i], fr.f[i], { color: col[i], accent, scale: c.scale, time: this.time, detached: det, flash: this.flash[i] });
       this.detachedAt[i].forEach((t, p) => {
