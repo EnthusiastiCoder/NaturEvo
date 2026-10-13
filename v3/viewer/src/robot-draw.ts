@@ -13,6 +13,10 @@ export function shade(hex: number, f: number): number {
   const r = Math.round(((hex >> 16) & 255) * f), g = Math.round(((hex >> 8) & 255) * f), b = Math.round((hex & 255) * f);
   return (Math.min(255, r) << 16) | (Math.min(255, g) << 8) | Math.min(255, b);
 }
+export function mixWhite(hex: number, k: number): number {
+  const m = (c: number) => Math.round(c + (255 - c) * k);
+  return (m((hex >> 16) & 255) << 16) | (m((hex >> 8) & 255) << 8) | m(hex & 255);
+}
 export function desat(hex: number, k: number): number {
   const r = (hex >> 16) & 255, g = (hex >> 8) & 255, b = hex & 255;
   const y = 0.3 * r + 0.59 * g + 0.11 * b;
@@ -56,6 +60,7 @@ export function clampSegAboveGround(s: Seg, minY: number): Seg {
 export interface DrawOpts {
   color: number; accent: number; scale: number; time: number; // scale = px per cm; time in s for flicker
   detached: boolean[]; flash: number; // flash 0..1 white overlay on struck robot
+  partFlash?: number[]; // per-part 0..1 white flash of the struck part
 }
 
 /** Draw one fighter into g (world px = cm * scale, y flipped; caller positions the container). */
@@ -71,7 +76,10 @@ export function drawRobot(g: Graphics, f: FighterFrame, o: DrawOpts): void {
     if (st.limp && Math.floor(o.time * 14) % 3 === 0) continue; // flicker
     let fill = BACK.has(i) ? shade(o.color, 0.62) : o.color;
     fill = desat(fill, st.desaturate);
-    if (o.flash > 0) fill = shade(fill, 1 + o.flash * 1.2);
+    fill = shade(fill, 1 - st.darken);
+    if (o.flash > 0) fill = shade(fill, 1 + o.flash * 0.5);
+    const pf = o.partFlash?.[i] ?? 0;
+    if (pf > 0) fill = mixWhite(fill, pf);
     capsule(g, f.parts[i], RADIUS_CM[i], sc, fill, shade(o.color, 0.35), lw);
     drawDamage(g, f.parts[i], RADIUS_CM[i], sc, st, i, o.time);
     if (i === 0) { // visor
@@ -99,14 +107,24 @@ function drawDamage(g: Graphics, s: Seg, r: number, sc: number, st: ReturnType<t
   if (!st.scratches) return;
   const mx = (s[0] + s[2]) / 2, my = (s[1] + s[3]) / 2;
   const w = Math.max(1, sc);
-  g.moveTo((mx - r * 0.5) * sc, -(my + r * 0.3) * sc).lineTo((mx + r * 0.2) * sc, -(my - r * 0.1) * sc).stroke({ width: w, color: 0x000000, alpha: 0.4 });
-  if (st.cracks) {
-    g.moveTo(mx * sc, -(my + r * 0.6) * sc).lineTo((mx + r * 0.3) * sc, -my * sc).lineTo((mx - r * 0.2) * sc, -(my - r * 0.5) * sc)
-      .stroke({ width: w * 1.3, color: 0x111111, alpha: 0.85 });
-    if (Math.floor(time * 12 + i * 3) % 4 === 0) { // spark leak
-      g.circle((mx + r * 0.3) * sc, -my * sc, 2 * sc).fill({ color: 0xffd36a, alpha: 0.9 });
+  // dent: a dark notch with a light rim
+  g.moveTo((mx - r * 0.5) * sc, -(my + r * 0.3) * sc).lineTo((mx + r * 0.2) * sc, -(my - r * 0.1) * sc).stroke({ width: w * 1.6, color: 0x000000, alpha: 0.5 });
+  g.moveTo((mx - r * 0.5) * sc, -(my + r * 0.3 + 3) * sc).lineTo((mx + r * 0.2) * sc, -(my - r * 0.1 + 3) * sc).stroke({ width: w, color: 0xffffff, alpha: 0.25 });
+  if (!st.cracks) return;
+  g.moveTo(mx * sc, -(my + r * 0.7) * sc).lineTo((mx + r * 0.3) * sc, -my * sc).lineTo((mx - r * 0.2) * sc, -(my - r * 0.6) * sc)
+    .stroke({ width: w * 1.8, color: 0x0a0a0a, alpha: 0.9 });
+  g.moveTo((mx + r * 0.3) * sc, -my * sc).lineTo((mx + r * 0.7) * sc, -(my + r * 0.2) * sc).stroke({ width: w * 1.2, color: 0x0a0a0a, alpha: 0.8 });
+  const f = Math.floor(time * 12 + i * 3);
+  if (st.sparking && f % 3 === 0) { // spark leak, flickering
+    const a = (f * 2.4) % 6.28, sx = mx + r * 0.3, sy = my;
+    g.moveTo(sx * sc, -sy * sc).lineTo((sx + Math.cos(a) * 10) * sc, -(sy + Math.sin(a) * 10) * sc).stroke({ width: Math.max(1.5, 1.5 * sc), color: 0xffe9a0, alpha: 0.95 });
+    g.circle(sx * sc, -sy * sc, 3 * sc).fill({ color: 0xffd36a, alpha: 0.95 });
+  }
+  if (st.smoke > 0) { // three rising puffs, phase-offset
+    for (let k = 0; k < 3; k++) {
+      const ph = (time * 0.9 + k / 3 + i * 0.13) % 1;
+      g.circle((mx + (k - 1) * r * 0.3 + Math.sin(ph * 6 + k) * 5) * sc, -(my + r + ph * 45) * sc, (4 + ph * 8) * sc * (0.6 + st.smoke * 0.6)).fill({ color: 0x3a3a3a, alpha: 0.5 * st.smoke * (1 - ph) });
     }
-    if (st.desaturate > 0.6) g.circle(mx * sc, -(my + r + 6) * sc - (time * 30 % 12) * sc, 3 * sc).fill({ color: 0x555555, alpha: 0.35 });
   }
 }
 
