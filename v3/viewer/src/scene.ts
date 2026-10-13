@@ -40,6 +40,10 @@ export class FightScene {
   private robots = [new Graphics(), new Graphics()];
   private debris = new Graphics();
   private fxg = new Graphics();
+  private screenFx = new Graphics();
+  private labels: Text[] = [];
+  private banner!: Text;
+  private bannerSub!: Text;
   private particles: Particle[] = [];
   private rings: { x: number; y: number; age: number; color: number; r: number }[] = [];
   private flash = [0, 0];
