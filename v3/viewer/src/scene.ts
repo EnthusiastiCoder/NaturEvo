@@ -104,12 +104,12 @@ export class FightScene {
     this.render(dt);
   }
 
-  private fire(e: Fight['events'][number]): void {
-    const spec = sparkSpec(e);
-    if (spec) {
-      this.particles.push(...spawnParticles(spec, e.x, e.y, e.t * 31 + 7));
-      if (spec.kind === 'ring') this.rings.push({ x: e.x, y: e.y, age: 0, color: spec.color, r: 30 });
-      if (e.kind === 'clash' && e.type !== 'clash') this.rings.push({ x: e.x, y: e.y, age: 0, color: 0xfff2b0, r: 60 });
+  /** World point (cm) where an event's effect appears. Block sparks snap onto the nearest drawn shield plate; ko/destroyed use the part. */
+  private evPoint(e: Ev): { x: number; y: number } {
+    if (e.kind === 'block') {
+      const fr = sampleFrame(this.fight, e.t);
+      const [x, y] = blockPoint(e.x, e.y, fr.f.filter((g) => g.hp[5] > 0).map((g) => shieldPlate(g.parts[5])));
+      return { x, y };
     }
     this.shake = Math.max(this.shake, shakeFor(e));
     if (e.kind === 'hit') { this.flash[e.victim] = 1; this.rings.push({ x: e.x, y: e.y, age: 0, color: 0xffa83a, r: 28 }); }
