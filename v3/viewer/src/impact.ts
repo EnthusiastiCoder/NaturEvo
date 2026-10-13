@@ -34,3 +34,11 @@ export function recoilCm(age: number, impact: number): number {
   const k = age < 3 ? age / 3 : 1 - (age - 3) / (RECOIL_TICKS - 3);
   return peak * k * k;
 }
+
+export const NUMBER_TICKS = 60;
+/** Floating damage number: rise in cm and alpha at `age` ticks, null outside its life. */
+export function floatNumber(age: number): { rise: number; alpha: number } | null {
+  if (age < 0 || age >= NUMBER_TICKS) return null;
+  const k = age / NUMBER_TICKS;
+  return { rise: 70 * (1 - (1 - k) ** 2), alpha: k < 0.3 ? 1 : 1 - (k - 0.3) / 0.7 };
+}
