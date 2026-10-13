@@ -72,6 +72,7 @@ export class FightScene {
 
   seek(tick: number): void {
     this.tick = Math.max(0, tick); this.fired = Math.ceil(this.tick) - 1; this.particles = []; this.rings = [];
+    this.freeze = 0; this.slowLeft = 0;
     this.detachedAt = [new Array(13).fill(null), new Array(13).fill(null)];
     for (const e of this.fight.events) if (e.kind === 'destroyed' && e.t <= this.tick) this.detachedAt[e.who][this.fight.parts.indexOf(e.part)] = e.t;
     // scrubbing onto a hit/clash must still show its sparks: replay recent events, pre-aged
