@@ -9,6 +9,8 @@ const ICON = {
   pause: '<rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/>',
   rotate: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
   info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
+  vibrate: '<path d="m2 8 2 2-2 2 2 2-2 2"/><path d="m22 8-2 2 2 2-2 2 2 2"/><rect width="8" height="14" x="8" y="5" rx="1"/>',
+  vibrateOff: '<path d="m2 8 2 2-2 2 2 2-2 2"/><path d="m22 8-2 2 2 2-2 2 2 2"/><path d="M8 8v10a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2"/><path d="M16 10V6a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v2"/><path d="m2 2 20 20"/>',
   home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
 };
 const svg = (p: string) => `<svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
@@ -40,6 +42,7 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
       <select id="fv-speed" title="Playback speed" aria-label="Speed">${SPEEDS.map((s) => `<option value="${s}"${s === 1 ? ' selected' : ''}>${s}x</option>`).join('')}</select>
       <input id="fv-accent" type="color" value="${DEFAULT_ACCENT}" title="Accent colour" aria-label="Accent colour">
       <button id="fv-theme" title="Toggle light or dark theme (T)" aria-label="Toggle theme"></button>
+      <button id="fv-motion" title="Impact shake and hit-stop: on (click for reduced motion)" aria-label="Toggle shake and hit-stop" aria-pressed="false"></button>
       <button id="fv-info" title="What the HUD shows" aria-label="Info">${svg(ICON.info)}</button>
     </div>
     <div class="fv-stage"><div id="fv-canvas"></div>
@@ -98,6 +101,15 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
   $<HTMLSelectElement>('fv-speed').onchange = (e) => { scene.speed = Number((e.target as HTMLSelectElement).value); };
   $<HTMLInputElement>('fv-accent').oninput = (e) => setAccent(root, (e.target as HTMLInputElement).value);
   $('fv-theme').onclick = () => { theme = nextTheme(theme); syncTheme(); };
+  const motion = $('fv-motion');
+  const syncMotion = () => {
+    const r = scene.reduceMotion;
+    motion.innerHTML = svg(r ? ICON.vibrateOff : ICON.vibrate);
+    motion.setAttribute('aria-pressed', String(r));
+    motion.title = r ? 'Reduced motion: shake, hit-stop and recoil off (click to enable)' : 'Impact shake and hit-stop on (click for reduced motion)';
+  };
+  syncMotion();
+  motion.onclick = () => { scene.reduceMotion = !scene.reduceMotion; syncMotion(); };
   $('fv-info').onclick = () => { const h = $('fv-help'); h.hidden = !h.hidden; };
   window.addEventListener('keydown', (e) => {
     if ((e.target as HTMLElement).matches?.('input,select')) return;
