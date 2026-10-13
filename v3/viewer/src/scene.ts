@@ -90,7 +90,10 @@ export class FightScene {
       if (this.freeze > 0) this.freeze = Math.max(0, this.freeze - dt * ticksPerSec);
       else {
         const prev = this.tick;
-        this.tick = Math.min(this.lastTick, this.tick + dt * ticksPerSec * this.speed);
+        const k = this.slowLeft > 0 ? this.slowFactor : 1;
+        const adv = dt * ticksPerSec * this.speed * k;
+        if (this.slowLeft > 0) this.slowLeft = Math.max(0, this.slowLeft - adv / k);
+        this.tick = Math.min(this.lastTick, this.tick + adv);
         for (const e of this.fight.events) {
           if (e.t > this.fired && e.t <= this.tick) this.fire(e);
         }
