@@ -131,8 +131,11 @@ export class FightScene {
     this.burst(e, 0);
     if (e.kind === 'stagger') this.rings.push({ ...this.torso(this.sampleNow(), e.who), age: 0, color: 0xffe14a, r: 70 });
     if (e.kind === 'destroyed') this.detachedAt[e.who][this.fight.parts.indexOf(e.part)] = e.t;
-    const hs = hitstopTicks(this.fight.events, e.t);
-    if (e.kind === 'hit' && hs > 0) this.freeze = Math.max(this.freeze, hs);
+    if (e.kind === 'hit') {
+      const p = hitstopPlan(hitstopTicks(this.fight.events, e.t), this.reduceMotion);
+      this.freeze = Math.max(this.freeze, p.freeze);
+      if (p.slow > 0) { this.slowLeft = p.slow; this.slowFactor = p.slowFactor; }
+    }
   }
 
   private torso(fr: Frame, who: number): { x: number; y: number } {
