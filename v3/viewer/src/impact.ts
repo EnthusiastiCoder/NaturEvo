@@ -47,3 +47,15 @@ export function floatNumber(age: number): { rise: number; alpha: number } | null
 export function partFlashAt(age: number): number {
   return age < 0 || age >= 8 ? 0 : 1 - age / 8;
 }
+
+/** Closest point on any plate (cm segments) to (x,y): block sparks land on the drawn shield. No plates leaves the point alone. */
+export function blockPoint(x: number, y: number, plates: Seg[]): [number, number] {
+  let best: [number, number] = [x, y], bd = Infinity;
+  for (const [x1, y1, x2, y2] of plates) {
+    const dx = x2 - x1, dy = y2 - y1, l2 = dx * dx + dy * dy;
+    const t = l2 > 0 ? clamp(((x - x1) * dx + (y - y1) * dy) / l2, 0, 1) : 0;
+    const px = x1 + dx * t, py = y1 + dy * t, d = (px - x) ** 2 + (py - y) ** 2;
+    if (d < bd) { bd = d; best = [px, py]; }
+  }
+  return best;
+}
