@@ -178,7 +178,7 @@ export class FightScene {
     this.debris.clear();
     for (let i = 0; i < 2; i++) {
       const det = this.detachedAt[i].map((t) => t !== null && this.tick >= t);
-      drawRobot(this.robots[i], fr.f[i], { color: col[i], accent, scale: c.scale, time: this.time, detached: det, flash: this.flash[i] });
+      drawRobot(this.robots[i], fr.f[i], { color: col[i], accent, scale: c.scale, time: this.tick / 60, detached: det, flash: body[i], partFlash: pf[i] });
       this.detachedAt[i].forEach((t, p) => {
         if (t === null || this.tick < t) return;
         const last = sampleFrame(this.fight, Math.max(0, t - 2)).f[i].parts[p];
