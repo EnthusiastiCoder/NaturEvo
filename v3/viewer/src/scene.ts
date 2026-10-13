@@ -47,7 +47,8 @@ export class FightScene {
   private particles: Particle[] = [];
   private rings: { x: number; y: number; age: number; color: number; r: number }[] = [];
   private freeze = 0;
-  private shake = 0;
+  private slowLeft = 0;
+  private slowFactor = 1;
   private fired = -1;
   private cam!: Camera;
   private detachedAt: (number | null)[][] = [new Array(13).fill(null), new Array(13).fill(null)];
