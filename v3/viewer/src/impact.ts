@@ -25,3 +25,12 @@ export function shakeOffset(age: number, amp: number, seed: number): [number, nu
   const d = (1 - age / SHAKE_TICKS) ** 2 * amp, ph = seed * 1.7 + age * 2.3;
   return [Math.sin(ph * 3.1) * d, Math.cos(ph * 2.7) * d * 0.7];
 }
+
+const RECOIL_TICKS = 18;
+/** Recoil distance (cm) of the struck body along the hit direction: quick rise, eased return. */
+export function recoilCm(age: number, impact: number): number {
+  if (age <= 0 || age >= RECOIL_TICKS) return 0;
+  const peak = 6 + 16 * clamp(impact / 200, 0.2, 1.6);
+  const k = age < 3 ? age / 3 : 1 - (age - 3) / (RECOIL_TICKS - 3);
+  return peak * k * k;
+}
