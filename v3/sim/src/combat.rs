@@ -216,7 +216,16 @@ pub fn resolve_tick(att: &mut Robot, def: &mut Robot, arena: &Arena) -> Vec<Comb
         if def.is_detached(p) {
             continue;
         }
-        if let Some(c) = swept_hit(sp, sc, def.capsule(p)) {
+        let mut hit = swept_hit(sp, sc, def.capsule(p));
+        if p == Part::Head && !def.is_detached(Part::Torso) {
+            // The neck is part of the head hit zone.
+            if let Some(n) = swept_hit(sp, sc, def.neck_capsule()) {
+                if hit.as_ref().map_or(true, |h| n.t < h.t) {
+                    hit = Some(n);
+                }
+            }
+        }
+        if let Some(c) = hit {
             if len(c.velocity) / PHYS_DT >= MIN_SPEED {
                 if matches!(p, Part::Head | Part::Torso | Part::Pelvis) {
                     consider(c.t, if p == Part::Torso { 2 } else { 3 }, Target::Body(p, c));
