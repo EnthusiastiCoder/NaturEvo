@@ -42,3 +42,8 @@ export function floatNumber(age: number): { rise: number; alpha: number } | null
   const k = age / NUMBER_TICKS;
   return { rise: 70 * (1 - (1 - k) ** 2), alpha: k < 0.3 ? 1 : 1 - (k - 0.3) / 0.7 };
 }
+
+/** White flash of a struck part: 1 at the hit, linear to 0 over 8 ticks. */
+export function partFlashAt(age: number): number {
+  return age < 0 || age >= 8 ? 0 : 1 - age / 8;
+}
