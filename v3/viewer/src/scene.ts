@@ -186,7 +186,7 @@ export class FightScene {
         const sc = c.scale;
         this.debris.moveTo(d[0] * sc, -d[1] * sc).lineTo(d[2] * sc, -d[3] * sc).stroke({ width: 14 * sc, color: col[i], cap: 'round', alpha: 0.9 });
       });
-      this.robots[i].scale.set(1);
+      this.robots[i].position.set(rc[i][0] * c.scale, -rc[i][1] * c.scale);
       if (fr.f[i].state === 'staggered' && (this.playing || this.rings.length < 2)) this.rings.push({ ...this.torso(fr, i), age: 0.85, color: 0xffe14a, r: 70 });
     }
     void PART_Z;
