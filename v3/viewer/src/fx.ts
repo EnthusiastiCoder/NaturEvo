@@ -12,11 +12,15 @@ export function sparkSpec(e: FightEvent): SparkSpec | null {
     case 'hit':
       return { kind: 'cone', count: hitFx(e.impact).sparks, color: 0xffa83a, spread: Math.PI / 3, dirAngle: Math.atan2(e.dy, e.dx) };
     case 'clash': {
-      const perfect = e.type === 'perfect_parry';
-      return { kind: 'radial', count: perfect ? 40 : 28, color: perfect ? 0xfff2b0 : 0xffe9a8, spread: 2 * Math.PI, dirAngle: Math.atan2(e.dy, e.dx) };
+      const perfect = e.type === 'perfect_parry', deflect = e.type === 'parry';
+      return { kind: 'radial', count: perfect ? 56 : deflect ? 36 : 30, color: perfect ? 0xfff2b0 : deflect ? 0xbfeaff : 0xffe9a8, spread: 2 * Math.PI, dirAngle: Math.atan2(e.dy, e.dx) };
     }
     case 'block':
-      return { kind: 'ring', count: 10, color: 0x7fd4ff, spread: 2 * Math.PI, dirAngle: 0 };
+      return { kind: 'ring', count: 18, color: 0x7fd4ff, spread: 2 * Math.PI, dirAngle: 0 };
+    case 'destroyed':
+      return { kind: 'radial', count: 40, color: 0xffb347, spread: 2 * Math.PI, dirAngle: 0 };
+    case 'ko':
+      return { kind: 'radial', count: 120, color: 0xffd36a, spread: 2 * Math.PI, dirAngle: 0 };
     default:
       return null;
   }
@@ -25,6 +29,18 @@ export function sparkSpec(e: FightEvent): SparkSpec | null {
 /** Screen shake amplitude in px for an event (0 if none). */
 export function shakeFor(e: FightEvent): number {
   return e.kind === 'hit' ? hitFx(e.impact).shake : e.kind === 'clash' ? (e.type === 'clash' ? 2 : 3) : e.kind === 'block' ? 2 : e.kind === 'ko' ? 14 : 0;
+}
+
+/** All spark layers for an event: a coloured body plus a fast white core on heavy events. */
+export function sparkLayers(e: FightEvent): SparkSpec[] {
+  const base = sparkSpec(e);
+  if (!base) return [];
+  const white = (count: number, kind: SparkSpec['kind'] = base.kind) => ({ ...base, kind, count, color: 0xffffff });
+  if (e.kind === 'hit') return [base, white(Math.round(base.count / 3))];
+  if (e.kind === 'block') return [base, { ...white(16), kind: 'radial' as const }];
+  if (e.kind === 'ko') return [base, white(60)];
+  if (e.kind === 'destroyed') return [base, white(16)];
+  return [base];
 }
 
 export interface Particle { x: number; y: number; vx: number; vy: number; life: number; max: number; color: number; size: number }
