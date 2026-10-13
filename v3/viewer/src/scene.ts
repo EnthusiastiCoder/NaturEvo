@@ -190,7 +190,8 @@ export class FightScene {
       if (fr.f[i].state === 'staggered' && (this.playing || this.rings.length < 2)) this.rings.push({ ...this.torso(fr, i), age: 0.85, color: 0xffe14a, r: 70 });
     }
     void PART_Z;
-    this.drawFx(this.playing && this.freeze <= 0 ? dt : 0); // paused: sparks hold still so a scrubbed hit frame stays visible
+    const slow = this.slowLeft > 0 ? this.slowFactor : 1;
+    this.drawFx(this.playing && this.freeze <= 0 ? dt * slow : 0, rec, w, h); // paused: sparks hold still so a scrubbed frame stays visible
     this.onFrame(fr, this.tick);
   }
 
