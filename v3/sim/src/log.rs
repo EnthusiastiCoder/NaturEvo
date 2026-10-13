@@ -87,6 +87,24 @@ pub fn outcome_name(o: Outcome) -> &'static str {
     }
 }
 
+/// The "geometry" block: the single source of truth for what the viewer draws (integer cm).
+pub fn geometry_json(s: &mut String) {
+    use crate::config::*;
+    let r = Robot::new(crate::robot::Role::Hero);
+    let _ = write!(
+        s,
+        "\"geometry\":{{\"head_r\":{},\"neck_r\":{},\"neck\":\"torso_top_to_head_centre,part_of_head_zone\",\"shield_len\":{},\"shield_along\":{},\"shield_r\":{},\"shield_orient\":\"perpendicular\",\"sword_len\":{},\"sword_r\":{},\"radii\":[",
+        cm(HEAD_R), cm(NECK_R), cm(SHIELD_LEN), cm(SHIELD_ALONG), cm(SHIELD_R), cm(SWORD_LEN), cm(SWORD_R)
+    );
+    for (i, p) in Part::ALL.iter().enumerate() {
+        if i > 0 {
+            s.push(',');
+        }
+        let _ = write!(s, "{}", cm(r.capsule(*p).r));
+    }
+    s.push_str("]}");
+}
+
 /// Full fight JSON for a match run with `enable_log()`.
 pub fn fight_json(m: &Match) -> String {
     let empty = FightLog::default();
@@ -106,7 +124,9 @@ pub fn fight_json(m: &Match) -> String {
         }
         let _ = write!(s, "\"{}\"", p.name());
     }
-    s.push_str("],\"dt\":0.0333,\"frames\":[");
+    s.push_str("],");
+    geometry_json(&mut s);
+    s.push_str(",\"dt\":0.0333,\"frames\":[");
     s.push_str(&log.frames.join(","));
     s.push_str("],\"events\":[");
     s.push_str(&log.events.join(","));
