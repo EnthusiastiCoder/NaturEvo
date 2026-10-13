@@ -46,7 +46,6 @@ export class FightScene {
   private bannerSub!: Text;
   private particles: Particle[] = [];
   private rings: { x: number; y: number; age: number; color: number; r: number }[] = [];
-  private flash = [0, 0];
   private freeze = 0;
   private shake = 0;
   private fired = -1;
