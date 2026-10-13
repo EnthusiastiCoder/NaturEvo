@@ -41,3 +41,33 @@ fn poke(a: &mut mech_sim::robot::Robot, q: [f32; 2], w: [f32; 2]) {
     a.set_sword(s(0.0), s(0.4));
 }
 fn blocks(ev: &[CombatEvent]) -> usize { ev.iter().filter(|e| matches!(e, CombatEvent::Block { .. })).count() }
+
+#[test]
+fn sword_on_plate_face_blocks_but_edge_and_arm_behind_do_not() {
+    let (mut a, _) = duel_pair();
+    let mut d = guarded();
+    d.set_sword(seg(9.0, 0.3, 11.0, 0.3, 0.05), seg(9.0, 0.3, 11.0, 0.3, 0.05));
+    let f = d.capsule(Part::FArmL);
+    let p = d.shield_capsule();
+    let fa = sub(f.b, f.a);
+    let fl = (fa[0] * fa[0] + fa[1] * fa[1]).sqrt();
+    let axis = [fa[0] / fl, fa[1] / fl];
+    let pc = [(p.a[0] + p.b[0]) / 2.0, (p.a[1] + p.b[1]) / 2.0];
+    let pdir = sub(p.b, p.a);
+    let pl = (pdir[0] * pdir[0] + pdir[1] * pdir[1]).sqrt();
+    let pu = [pdir[0] / pl, pdir[1] / pl];
+    // face: blade crosses the plate centre moving along the forearm axis (plate normal)
+    poke(&mut a, [pc[0] - axis[0] * 0.2, pc[1] - axis[1] * 0.2], axis);
+    let ev = resolve_tick(&mut a, &mut d.clone(), &arena());
+    assert_eq!(blocks(&ev), 1, "face hit must block: {:?}", ev);
+    // edge: well beyond the plate end, same direction
+    let q = [pc[0] + pu[0] * (SHIELD_LEN / 2.0 + 0.3) - axis[0] * 0.2, pc[1] + pu[1] * (SHIELD_LEN / 2.0 + 0.3) - axis[1] * 0.2];
+    poke(&mut a, q, axis);
+    let ev = resolve_tick(&mut a, &mut d.clone(), &arena());
+    assert_eq!(blocks(&ev), 0, "edge hit must not block: {:?}", ev);
+    // arm behind: on the forearm near the elbow (old parallel capsule would have blocked), sideways swing
+    let q = [f.a[0] + axis[0] * 0.1 + pu[0] * 0.5, f.a[1] + axis[1] * 0.1 + pu[1] * 0.5];
+    poke(&mut a, q, [-pu[0], -pu[1]]);
+    let ev = resolve_tick(&mut a, &mut d, &arena());
+    assert_eq!(blocks(&ev), 0, "arm hit near the elbow must not block: {:?}", ev);
+}
