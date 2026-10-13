@@ -17,3 +17,11 @@ export function hitstopPlan(ticks: number, reduced: boolean): HitstopPlan {
   const freeze = Math.min(10, ticks);
   return ticks >= 5 ? { freeze, slow: 8, slowFactor: 0.35 } : { freeze, slow: 0, slowFactor: 1 };
 }
+
+const SHAKE_TICKS = 16;
+/** Camera shake offset in px at `age` ticks after the event; deterministic, decays to zero. */
+export function shakeOffset(age: number, amp: number, seed: number): [number, number] {
+  if (amp <= 0 || age < 0 || age >= SHAKE_TICKS) return [0, 0];
+  const d = (1 - age / SHAKE_TICKS) ** 2 * amp, ph = seed * 1.7 + age * 2.3;
+  return [Math.sin(ph * 3.1) * d, Math.cos(ph * 2.7) * d * 0.7];
+}
