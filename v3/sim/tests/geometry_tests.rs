@@ -34,3 +34,10 @@ fn shield_plate_is_perpendicular_to_forearm_and_sized_from_config() {
         assert!((c[0] - want[0]).abs() < 1e-3 && (c[1] - want[1]).abs() < 1e-3);
     }
 }
+
+fn poke(a: &mut mech_sim::robot::Robot, q: [f32; 2], w: [f32; 2]) {
+    // short blade at q moving by 0.4 m along unit w in one tick
+    let s = |o: f32| seg(q[0] + o * w[0] - 0.05, q[1] + o * w[1], q[0] + o * w[0] + 0.05, q[1] + o * w[1], 0.05);
+    a.set_sword(s(0.0), s(0.4));
+}
+fn blocks(ev: &[CombatEvent]) -> usize { ev.iter().filter(|e| matches!(e, CombatEvent::Block { .. })).count() }
