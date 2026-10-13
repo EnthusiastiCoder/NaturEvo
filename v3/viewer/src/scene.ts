@@ -61,7 +61,10 @@ export class FightScene {
     this.host = host; this.fight = fight;
     await this.app.init({ ...rendererOptions(window.devicePixelRatio || 1), resizeTo: host, background: 0x000000 });
     host.appendChild(this.app.canvas);
-    this.app.stage.addChild(this.ground, this.world);
+    const mk = (size: number) => new Text({ text: '', style: { fontFamily: 'system-ui, Segoe UI, sans-serif', fontWeight: '900', fontSize: size, fill: 0xffffff, stroke: { color: 0x000000, width: Math.max(3, size / 7), join: 'round' } } });
+    this.banner = mk(120); this.bannerSub = mk(30);
+    for (const t of [this.banner, this.bannerSub]) { t.anchor.set(0.5); t.visible = false; }
+    this.app.stage.addChild(this.ground, this.world, this.screenFx, this.banner, this.bannerSub);
     this.world.addChild(this.debris, this.robots[0], this.robots[1], this.fxg);
     this.cam = cameraFor(fight.frames[0], this.app.screen.width, this.app.screen.height);
     this.app.ticker.add((tk) => this.update(tk.deltaMS / 1000));
