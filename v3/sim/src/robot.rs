@@ -244,7 +244,6 @@ const TORSO_R: f32 = 0.3;
 const SHOULDER_UP: f32 = 0.8; // along torso from its base
 const HEAD_NEAR: f32 = 0.25;
 const HEAD_FAR: f32 = 0.4;
-const HEAD_R: f32 = 0.25;
 const UARM_LEN: f32 = 0.8;
 const UARM_R: f32 = 0.14;
 const FARM_LEN: f32 = 0.8;
@@ -256,10 +255,6 @@ const SHIN_R: f32 = 0.12;
 const FOOT_BACK: f32 = 0.15;
 const FOOT_FRONT: f32 = 0.35;
 const FOOT_R: f32 = 0.1;
-const SWORD_LEN: f32 = 2.2;
-const SWORD_R: f32 = 0.05;
-const SHIELD_LEN: f32 = 1.2;
-const SHIELD_R: f32 = 0.05;
 
 const GUARD_SHOULDER: f32 = 60.0 * std::f32::consts::PI / 180.0;
 const GUARD_ELBOW: f32 = 50.0 * std::f32::consts::PI / 180.0;
@@ -297,6 +292,7 @@ pub struct Robot {
     sword: Capsule,
     sword_prev: Capsule,
     shield: Capsule,
+    neck: Capsule,
     debris: Vec<Option<Debris>>,
     com_off: f32,
     com_vel: f32,
@@ -351,6 +347,7 @@ impl Robot {
             sword: ZERO_CAP,
             sword_prev: ZERO_CAP,
             shield: ZERO_CAP,
+            neck: ZERO_CAP,
             debris: vec![None; 13],
             com_off: 0.0,
             com_vel: 0.0,
@@ -465,6 +462,10 @@ impl Robot {
     pub fn sword_prev_capsule(&self) -> Capsule {
         self.sword_prev
     }
+    /// Neck hit zone (torso top to head centre); a hit here damages the Head part.
+    pub fn neck_capsule(&self) -> Capsule {
+        self.neck
+    }
     pub fn shield_capsule(&self) -> Capsule {
         self.shield
     }
@@ -566,6 +567,8 @@ impl Robot {
         caps[Part::Head as usize] =
             Capsule { a: add(neck, hdir, HEAD_NEAR), b: add(neck, hdir, HEAD_FAR), r: HEAD_R };
 
+        let hc = add(neck, hdir, (HEAD_NEAR + HEAD_FAR) * 0.5);
+        let mut neck_cap = Capsule { a: neck, b: hc, r: NECK_R };
         let shoulder = add(base, tdir, SHOULDER_UP);
         let mut hand = [[0.0; 2]; 2];
         let mut fore_ang = [0.0f32; 2];
@@ -587,12 +590,12 @@ impl Robot {
             fore_ang[i] = tf;
             fore_start[i] = elbow;
         }
-        // Left forearm carries the shield plate: along the forearm, offset forward of it.
+        // Left forearm carries the shield plate: perpendicular to the forearm axis, centred SHIELD_ALONG
+        // of the way from the elbow to the hand.
         {
             let tf = fore_ang[0];
-            let n = dir(f, tf - std::f32::consts::FRAC_PI_2);
-            let c = add(add(fore_start[0], dir(f, tf), 0.5), n, 0.3);
-            let d = dir(f, tf);
+            let d = dir(f, tf + std::f32::consts::FRAC_PI_2);
+            let c = add(fore_start[0], dir(f, tf), FARM_LEN * SHIELD_ALONG);
             self.shield = Capsule { a: add(c, d, -SHIELD_LEN * 0.5), b: add(c, d, SHIELD_LEN * 0.5), r: SHIELD_R };
         }
         // Right forearm carries the sword, pointing forward-up of the forearm.
@@ -633,6 +636,8 @@ impl Robot {
             self.sword.b = rot(self.sword.b);
             self.shield.a = rot(self.shield.a);
             self.shield.b = rot(self.shield.b);
+            neck_cap.a = rot(neck_cap.a);
+            neck_cap.b = rot(neck_cap.b);
         }
 
         // Ground solve: lowest attached part touches y = 0.
@@ -649,6 +654,9 @@ impl Robot {
             cp.a[1] -= low;
             cp.b[1] -= low;
         }
+        neck_cap.a[1] -= low;
+        neck_cap.b[1] -= low;
+        self.neck = neck_cap;
         for cp in [&mut self.sword, &mut self.shield] {
             cp.a[1] -= low;
             cp.b[1] -= low;
