@@ -38,3 +38,18 @@ pub const FALL_MARGIN_TIME: f32 = 0.4;
 pub const EXPOSED_MULT: f32 = 1.5;
 /// Maximum walking speed, m/s.
 pub const DRIVE_SPEED: f32 = 2.0;
+
+// ---- Body geometry: single source of truth, written into the fight log "geometry" block ----
+/// Head hit radius, metres (viewer draws exactly this).
+pub const HEAD_R: f32 = 0.23;
+/// Neck hit radius, metres. The neck is NOT a separate zone: a hit on it damages the Head part
+/// (same zone multiplier), so a blade cannot slip between head and torso.
+pub const NECK_R: f32 = 0.09;
+/// Shield plate length (metres), perpendicular to the forearm axis.
+pub const SHIELD_LEN: f32 = 0.7;
+/// Shield plate centre as a fraction of the forearm from the elbow.
+pub const SHIELD_ALONG: f32 = 0.62;
+/// Shield plate half-thickness (hit radius).
+pub const SHIELD_R: f32 = 0.05;
+pub const SWORD_LEN: f32 = 2.2;
+pub const SWORD_R: f32 = 0.05;
