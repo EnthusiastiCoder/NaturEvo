@@ -213,5 +213,79 @@ export class FightScene {
     }
     this.rings = this.rings.filter((r) => (r.age += dt * 3) < 1);
     for (const r of this.rings) g.circle(r.x * sc, -r.y * sc, r.r * sc * (0.4 + r.age)).stroke({ width: 2, color: r.color, alpha: 1 - r.age });
+    // stateless flashes, shockwaves and flares
+    let n = 0;
+    const seen = new Set<string>();
+    for (const { e, a } of rec) {
+      if (!['hit', 'clash', 'block', 'destroyed', 'ko'].includes(e.kind)) continue;
+      const pt = this.evPoint(e), X = pt.x * sc, Y = -pt.y * sc;
+      if (e.kind === 'hit') {
+        const fx = hitFx(e.impact), k = a / 14;
+        if (a < 5) g.circle(X, Y, fx.flashR * sc * (1 + a * 0.15)).fill({ color: 0xffffff, alpha: 0.95 * (1 - a / 5) });
+        if (a < 9) g.circle(X, Y, fx.flashR * 1.8 * sc).fill({ color: 0xffa83a, alpha: 0.45 * (1 - a / 9) });
+        if (k < 1) {
+          g.circle(X, Y, fx.ringR * sc * (0.25 + 0.9 * Math.sqrt(k))).stroke({ width: Math.max(2, 5 * (1 - k)), color: 0xffffff, alpha: 0.9 * (1 - k) });
+          g.circle(X, Y, fx.ringR * 0.7 * sc * (0.25 + 0.9 * Math.sqrt(k))).stroke({ width: 3, color: 0xffa83a, alpha: 0.8 * (1 - k) });
+        }
+        const f = floatNumber(a);
+        if (f) {
+          const dmg = Math.round(e.dmg ?? 0), nm = PART_SHORT[e.part] ?? e.part;
+          this.label(n++, `${nm} -${dmg}`, X, Y - (30 + f.rise) * sc, dmg >= 40 ? 0xff5a36 : 0xffd166, 0.7 + 0.35 * fx.scale, f.alpha);
+        }
+      } else if (e.kind === 'clash') {
+        const key = `${e.t}|${e.type}`, k = a / 16;
+        const perfect = e.type === 'perfect_parry', deflect = e.type === 'parry';
+        if (k < 1) {
+          const R = (perfect ? 90 : deflect ? 70 : 50) * sc, col = perfect ? 0xfff2b0 : deflect ? 0xbfeaff : 0xffe9a8;
+          const spokes = perfect ? 8 : 6;
+          for (let s = 0; s < spokes; s++) { // star flare: crossed streaks
+            const ang = (s / spokes) * Math.PI + (e.t % 7) * 0.2, L = R * (1 - k) * (s % 2 ? 0.7 : 1);
+            g.moveTo(X - Math.cos(ang) * L, Y - Math.sin(ang) * L).lineTo(X + Math.cos(ang) * L, Y + Math.sin(ang) * L).stroke({ width: 3, color: col, alpha: 1 - k, cap: 'round' });
+          }
+          if (a < 4) g.circle(X, Y, 22 * sc).fill({ color: 0xffffff, alpha: 0.9 * (1 - a / 4) });
+          if (deflect || perfect) g.circle(X, Y, R * (0.3 + k)).stroke({ width: 4, color: col, alpha: 0.9 * (1 - k) });
+        }
+        if ((deflect || perfect) && !seen.has(key)) {
+          seen.add(key);
+          const f = floatNumber(a);
+          if (f) this.label(n++, perfect ? 'PERFECT PARRY' : 'PARRY', X, Y - (40 + f.rise * 0.6) * sc, perfect ? 0xffe14a : 0x9fe1ff, perfect ? 0.95 : 0.8, f.alpha);
+        }
+      } else if (e.kind === 'block') {
+        const k = a / 16;
+        if (k < 1) {
+          if (a < 6) g.circle(X, Y, 26 * sc).fill({ color: 0xbfeaff, alpha: 0.85 * (1 - a / 6) });
+          g.circle(X, Y, 55 * sc * (0.3 + k)).stroke({ width: 4, color: 0x7fd4ff, alpha: 1 - k });
+          g.circle(X, Y, 35 * sc * (0.3 + k)).stroke({ width: 2, color: 0xffffff, alpha: 1 - k });
+        }
+        const f = floatNumber(a);
+        if (f) this.label(n++, 'BLOCK', X, Y - (40 + f.rise * 0.6) * sc, 0x7fd4ff, 0.8, f.alpha);
+      } else if (e.kind === 'destroyed') {
+        const k = a / 20;
+        if (k < 1) g.circle(X, Y, 70 * sc * (0.3 + k)).stroke({ width: 5, color: 0xff7a2a, alpha: 1 - k });
+        const f = floatNumber(a);
+        if (f) this.label(n++, 'PART OFF!', X, Y - (40 + f.rise) * sc, KO_TINT, 0.9, f.alpha);
+      } else if (e.kind === 'ko') {
+        const k = a / 30;
+        if (k < 1) for (const [rr, wd] of [[160, 7], [100, 4]]) g.circle(X, Y, rr * sc * (0.2 + k)).stroke({ width: wd, color: 0xffffff, alpha: 1 - k });
+      }
+    }
+    for (let i = n; i < this.labels.length; i++) this.labels[i].visible = false;
+    this.drawBanner(w, h);
+  }
+
+  /** Big K.O. banner from the first ko event onwards (pops in, then holds); a white screen flash on the blow. */
+  private drawBanner(w: number, h: number): void {
+    const sf = this.screenFx; sf.clear();
+    const ko = this.fight.events.find((e) => e.kind === 'ko');
+    const a = ko ? this.tick - ko.t : -1;
+    const on = !!ko && a >= 0;
+    this.banner.visible = this.bannerSub.visible = on;
+    if (!on || !ko) return;
+    if (!this.reduceMotion && a < 8) sf.rect(0, 0, w, h).fill({ color: 0xffffff, alpha: 0.5 * (1 - a / 8) });
+    const pop = a < 10 ? 1.6 - 0.6 * (a / 10) + Math.sin(a / 10 * Math.PI) * 0.2 : 1, fit = Math.min(1, w / 760) * (h < 700 ? 0.75 : 1);
+    this.banner.text = 'K.O.'; this.banner.tint = KO_TINT; this.banner.alpha = Math.min(1, a / 3 + 0.2);
+    this.banner.scale.set(pop * fit); this.banner.position.set(w / 2, h * 0.3);
+    this.bannerSub.text = `${ko.who === 0 ? 'HERO' : 'MONSTER'} DOWN`; this.bannerSub.tint = 0xffffff; this.bannerSub.alpha = this.banner.alpha;
+    this.bannerSub.scale.set(fit); this.bannerSub.position.set(w / 2, h * 0.3 + 78 * fit);
   }
 }
