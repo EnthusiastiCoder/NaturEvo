@@ -111,8 +111,24 @@ export class FightScene {
       const [x, y] = blockPoint(e.x, e.y, fr.f.filter((g) => g.hp[5] > 0).map((g) => shieldPlate(g.parts[5])));
       return { x, y };
     }
-    this.shake = Math.max(this.shake, shakeFor(e));
-    if (e.kind === 'hit') { this.flash[e.victim] = 1; this.rings.push({ x: e.x, y: e.y, age: 0, color: 0xffa83a, r: 28 }); }
+    if (e.kind === 'destroyed') {
+      const p = sampleFrame(this.fight, e.t).f[e.who].parts[Math.max(0, this.fight.parts.indexOf(e.part))];
+      return { x: (p[0] + p[2]) / 2, y: (p[1] + p[3]) / 2 };
+    }
+    if (e.kind === 'ko') return this.torso(sampleFrame(this.fight, e.t), e.who);
+    return { x: e.x, y: e.y };
+  }
+
+  /** Spawn the stateful sparks for an event, pre-aged by `age` seconds. */
+  private burst(e: Ev, age: number): void {
+    const layers = sparkLayers(e);
+    if (!layers.length) return;
+    const pt = this.evPoint(e);
+    layers.forEach((spec, k) => this.particles.push(...ageParticles(spawnParticles(spec, pt.x, pt.y, e.t * 31 + 7 + k * 101), age)));
+  }
+
+  private fire(e: Ev): void {
+    this.burst(e, 0);
     if (e.kind === 'stagger') this.rings.push({ ...this.torso(this.sampleNow(), e.who), age: 0, color: 0xffe14a, r: 70 });
     if (e.kind === 'destroyed') this.detachedAt[e.who][this.fight.parts.indexOf(e.part)] = e.t;
     const hs = hitstopTicks(this.fight.events, e.t);
