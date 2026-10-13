@@ -71,3 +71,20 @@ fn sword_on_plate_face_blocks_but_edge_and_arm_behind_do_not() {
     let ev = resolve_tick(&mut a, &mut d, &arena());
     assert_eq!(blocks(&ev), 0, "arm hit near the elbow must not block: {:?}", ev);
 }
+
+#[test]
+fn head_matches_config_and_neck_hit_damages_head() {
+    let d = standing(Role::Monster, 6.0, -1.0);
+    assert!((d.capsule(Part::Head).r - HEAD_R).abs() < 1e-6);
+    let n = d.neck_capsule();
+    assert!((n.r - NECK_R).abs() < 1e-6);
+    let mut a = standing(Role::Hero, 0.0, 1.0);
+    let mut d = d;
+    d.set_sword(seg(9.0, 0.3, 11.0, 0.3, 0.05), seg(9.0, 0.3, 11.0, 0.3, 0.05));
+    d.set_shield(seg(9.0, 1.0, 9.0, 2.2, 0.05));
+    let mid = [n.a[0] + (n.b[0] - n.a[0]) * 0.9, n.a[1] + (n.b[1] - n.a[1]) * 0.9]; // upper neck, outside the torso cap
+    // vertical blade passing through the neck from the attacker side
+    a.set_sword(seg(mid[0] - 0.8, mid[1] - 0.03, mid[0] - 0.8, mid[1] + 0.03, 0.02), seg(mid[0] + 0.0, mid[1] - 0.03, mid[0], mid[1] + 0.03, 0.02));
+    let ev = resolve_tick(&mut a, &mut d, &arena());
+    assert!(hits(&ev).iter().any(|h| h.part == Part::Head), "{:?}", ev);
+}
