@@ -209,7 +209,7 @@ export class FightScene {
     for (const p of this.particles) {
       p.x += p.vx * dt; p.y += p.vy * dt; p.vy -= 600 * dt;
       const a = 1 - p.life / p.max;
-      g.moveTo(p.x * sc, -p.y * sc).lineTo((p.x - p.vx * 0.03) * sc, -(p.y - p.vy * 0.03) * sc).stroke({ width: p.size, color: p.color, alpha: a, cap: 'round' });
+      g.moveTo(p.x * sc, -p.y * sc).lineTo((p.x - p.vx * 0.035) * sc, -(p.y - p.vy * 0.035) * sc).stroke({ width: p.size * 1.6, color: p.color, alpha: a, cap: 'round' });
     }
     this.rings = this.rings.filter((r) => (r.age += dt * 3) < 1);
     for (const r of this.rings) g.circle(r.x * sc, -r.y * sc, r.r * sc * (0.4 + r.age)).stroke({ width: 2, color: r.color, alpha: 1 - r.age });
