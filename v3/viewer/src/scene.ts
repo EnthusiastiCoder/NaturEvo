@@ -32,6 +32,8 @@ type Ev = Fight['events'][number];
 export class FightScene {
   app = new Application();
   tick = 0; playing = true; speed = 1; showNumbers = false;
+  /** Reduced motion: no camera shake, hit-stop, recoil or screen flash (sparks and numbers stay). */
+  reduceMotion = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
   private fight!: Fight;
   private world = new Container();
   private ground = new Graphics();
