@@ -151,8 +151,26 @@ export class FightScene {
     const target = cameraFor(fr, w, h);
     this.cam = lerpCamera(this.cam, target, Math.min(1, dt * 6));
     const c = this.cam;
-    const sx = this.shake > 0.1 ? (Math.sin(this.time * 90) * this.shake) : 0, sy = this.shake > 0.1 ? (Math.cos(this.time * 77) * this.shake) : 0;
-    this.shake *= Math.pow(0.001, dt);
+    // every effect below is a pure function of (tick - event.t): scrub and pause stay deterministic
+    const rec = recentEvents(this.fight.events, this.tick, 60).map(({ e, age }) => ({ e, a: age * 60 }));
+    let sx = 0, sy = 0, best = -1;
+    const pf = [new Array(13).fill(0), new Array(13).fill(0)], body = [0, 0], rc = [[0, 0], [0, 0]];
+    for (const { e, a } of rec) {
+      if (!this.reduceMotion) {
+        const [ox, oy] = shakeOffset(a, shakeFor(e), e.t);
+        if (Math.hypot(ox, oy) > best) { best = Math.hypot(ox, oy); sx = ox; sy = oy; }
+      }
+      if (e.kind === 'hit') {
+        const v = e.victim as number, pi = this.fight.parts.indexOf(e.part);
+        if (pi >= 0) pf[v][pi] = Math.max(pf[v][pi], partFlashAt(a));
+        body[v] = Math.max(body[v], partFlashAt(a) * 0.35);
+        if (!this.reduceMotion) {
+          const away = Math.sign(this.torso(fr, v).x - this.torso(fr, 1 - v).x) || 1, r = recoilCm(a, e.impact);
+          rc[v][0] += away * r; rc[v][1] += e.dy * r * 0.3;
+        }
+      }
+    }
+    if (this.freeze > 0 && !this.reduceMotion) { sx += Math.sin(this.time * 120) * 2.5; sy += Math.cos(this.time * 97) * 2.5; }
     drawGround(this.ground, this.fight.arena, c.scale, w, h, c.tx, c.ty);
     this.world.position.set(Math.round(c.tx + sx), Math.round(c.ty + sy));
     const col = [hexNum(this.css('--hero'), 0x56b4e9), hexNum(this.css('--monster'), 0xe69f00)];
