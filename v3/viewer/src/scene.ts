@@ -75,15 +75,8 @@ export class FightScene {
     this.freeze = 0; this.slowLeft = 0;
     this.detachedAt = [new Array(13).fill(null), new Array(13).fill(null)];
     for (const e of this.fight.events) if (e.kind === 'destroyed' && e.t <= this.tick) this.detachedAt[e.who][this.fight.parts.indexOf(e.part)] = e.t;
-    // scrubbing onto a hit/clash must still show its sparks: replay recent events, pre-aged
-    for (const { e, age } of recentEvents(this.fight.events, this.tick)) {
-      const spec = sparkSpec(e);
-      if (spec) this.particles.push(...ageParticles(spawnParticles(spec, e.x, e.y, e.t * 31 + 7), age));
-      if (e.kind === 'hit') {
-        this.flash[e.victim] = Math.max(this.flash[e.victim], Math.max(0, 1 - age * 5));
-        if (age * 3 < 1) this.rings.push({ x: e.x, y: e.y, age: age * 3, color: spec?.color ?? 0xffa83a, r: 28 });
-      }
-    }
+    // scrubbing onto an impact must still show its sparks: replay recent events, pre-aged
+    for (const { e, age } of recentEvents(this.fight.events, this.tick)) this.burst(e, age);
   }
   get lastTick(): number { return this.fight.frames[this.fight.frames.length - 1].t; }
   destroy(): void { this.app.destroy(true, { children: true }); }
