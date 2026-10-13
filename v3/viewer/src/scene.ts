@@ -3,7 +3,8 @@ import type { Fight, FighterFrame, Frame, Seg } from './data';
 import { cameraFor, lerpCamera, type Camera } from './camera';
 import { debrisPose, drawRobot, PART_Z, shieldPlate } from './robot-draw';
 import { drawGround } from './ground';
-import { ageParticles, hitstopTicks, recentEvents, shakeFor, sparkSpec, spawnParticles, type Particle } from './fx';
+import { ageParticles, hitstopTicks, recentEvents, shakeFor, sparkLayers, sparkSpec, spawnParticles, type Particle } from './fx';
+import { blockPoint, floatNumber, hitFx, hitstopPlan, partFlashAt, recoilCm, shakeOffset } from './impact';
 import { rendererOptions } from './renderer';
 
 const hexNum = (css: string, fb: number) => { const m = /^#?([0-9a-f]{6})$/i.exec(css.trim()); return m ? parseInt(m[1], 16) : fb; };
