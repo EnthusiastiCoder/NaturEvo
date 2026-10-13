@@ -1,4 +1,5 @@
 import type { FightEvent } from './data';
+import { hitFx } from './impact';
 export interface SparkSpec { kind: 'cone' | 'radial' | 'ring'; count: number; color: number; spread: number; dirAngle: number }
 
 export function hitstopTicks(events: FightEvent[], t: number): number {
@@ -9,7 +10,7 @@ export function hitstopTicks(events: FightEvent[], t: number): number {
 export function sparkSpec(e: FightEvent): SparkSpec | null {
   switch (e.kind) {
     case 'hit':
-      return { kind: 'cone', count: Math.round(Math.min(60, 6 + e.impact * 0.2)), color: 0xffa83a, spread: Math.PI / 3, dirAngle: Math.atan2(e.dy, e.dx) };
+      return { kind: 'cone', count: hitFx(e.impact).sparks, color: 0xffa83a, spread: Math.PI / 3, dirAngle: Math.atan2(e.dy, e.dx) };
     case 'clash': {
       const perfect = e.type === 'perfect_parry';
       return { kind: 'radial', count: perfect ? 40 : 28, color: perfect ? 0xfff2b0 : 0xffe9a8, spread: 2 * Math.PI, dirAngle: Math.atan2(e.dy, e.dx) };
@@ -23,7 +24,7 @@ export function sparkSpec(e: FightEvent): SparkSpec | null {
 
 /** Screen shake amplitude in px for an event (0 if none). */
 export function shakeFor(e: FightEvent): number {
-  return e.kind === 'hit' ? Math.min(10, 1 + e.impact * 0.05) : e.kind === 'clash' ? 2 : 0;
+  return e.kind === 'hit' ? hitFx(e.impact).shake : e.kind === 'clash' ? (e.type === 'clash' ? 2 : 3) : e.kind === 'block' ? 2 : e.kind === 'ko' ? 14 : 0;
 }
 
 export interface Particle { x: number; y: number; vx: number; vy: number; life: number; max: number; color: number; size: number }
