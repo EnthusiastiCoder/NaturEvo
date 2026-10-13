@@ -25,6 +25,10 @@ export function sampleFrame(fight: Fight, tick: number): Frame {
   return { t: tick, f: [mix(a.f[0], b.f[0]), mix(a.f[1], b.f[1])] };
 }
 
+const PART_SHORT: Record<string, string> = { UpperArmL: 'U.arm', UpperArmR: 'U.arm', ForearmL: 'Shield arm', ForearmR: 'Sword arm' };
+const KO_TINT = 0xff3b30;
+type Ev = Fight['events'][number];
+
 export class FightScene {
   app = new Application();
   tick = 0; playing = true; speed = 1; showNumbers = false;
