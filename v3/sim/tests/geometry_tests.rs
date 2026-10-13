@@ -88,3 +88,22 @@ fn head_matches_config_and_neck_hit_damages_head() {
     let ev = resolve_tick(&mut a, &mut d, &arena());
     assert!(hits(&ev).iter().any(|h| h.part == Part::Head), "{:?}", ev);
 }
+
+#[test]
+fn log_has_geometry_block_matching_config() {
+    let mut m = Match::new(1, Brain::Dummy, Brain::Dummy);
+    m.enable_log();
+    m.run_to_end();
+    let j = fight_json(&m);
+    let at = j.find("\"geometry\":{").expect("geometry block");
+    let g = &j[at..];
+    let g = &g[..g.find("},\"dt\"").expect("geometry before dt")];
+    for (k, v) in [
+        ("head_r", HEAD_R), ("neck_r", NECK_R), ("shield_len", SHIELD_LEN), ("shield_along", SHIELD_ALONG),
+        ("shield_r", SHIELD_R), ("sword_len", SWORD_LEN), ("sword_r", SWORD_R),
+    ] {
+        assert!(g.contains(&format!("\"{}\":{}", k, (v * 100.0).round() as i32)), "{} in {}", k, g);
+    }
+    assert!(g.contains("\"shield_orient\":\"perpendicular\""));
+    assert!(g.contains("\"radii\":["));
+}
