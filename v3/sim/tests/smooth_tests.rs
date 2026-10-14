@@ -51,3 +51,30 @@ fn smooth_toward_is_a_first_order_low_pass() {
     assert!((x[3] - 1.0).abs() < 0.01);
     assert!(ACTION_SMOOTH > 0.0 && ACTION_SMOOTH < 1.0);
 }
+
+#[test]
+fn smoothness_metric_separates_still_from_bang_bang() {
+    let mut still = SmoothAcc::new();
+    let mut r = standing(Role::Hero, 4.0, 1.0);
+    for k in 0..300 {
+        r.apply_targets(&STAND_TARGETS, DT);
+        still.tick(&r);
+        if k % 3 == 0 {
+            still.decision(&STAND_TARGETS);
+        }
+    }
+    let s = still.finish();
+    assert!(s.jerk < 1e-3 && s.sat_frac == 0.0 && s.tgt_delta == 0.0, "{:?}", s);
+    let mut bb = SmoothAcc::new();
+    for k in 0..300 {
+        let v = if (k / 3) % 2 == 0 { 1.0 } else { -1.0 };
+        let t = [v; 12];
+        r.apply_targets(&t, DT);
+        bb.tick(&r);
+        if k % 3 == 0 {
+            bb.decision(&t);
+        }
+    }
+    let b = bb.finish();
+    assert!(b.jerk > 10.0 * s.jerk.max(1e-3) && b.vel_frac > 0.1 && b.flip_rate > 0.9 && b.tgt_delta > 1.5, "{:?}", b);
+}
