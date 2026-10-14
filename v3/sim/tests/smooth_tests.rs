@@ -36,3 +36,18 @@ fn motors_limit_acceleration_and_do_not_overshoot() {
         prev = r.joint_vel;
     }
 }
+
+#[test]
+fn smooth_toward_is_a_first_order_low_pass() {
+    let a = [0.0f32; 12];
+    let mut b = [0.0f32; 12];
+    b[3] = 1.0;
+    let c = smooth_toward(&a, &b, 0.25);
+    assert!((c[3] - 0.25).abs() < 1e-6 && c[0] == 0.0);
+    let mut x = a;
+    for _ in 0..60 {
+        x = smooth_toward(&x, &b, ACTION_SMOOTH);
+    }
+    assert!((x[3] - 1.0).abs() < 0.01);
+    assert!(ACTION_SMOOTH > 0.0 && ACTION_SMOOTH < 1.0);
+}
