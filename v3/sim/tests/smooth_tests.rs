@@ -87,3 +87,10 @@ fn fitness_has_a_small_jerk_cost() {
     assert!(W_JERK * 0.15 < 1.5, "jerk cost must stay small next to the win bonus");
     assert!(W_JERK > 0.0);
 }
+
+#[test]
+fn match_result_reports_jerk_per_fighter() {
+    let r = Match::new(1, Brain::Scripted, Brain::Dummy).run_to_end();
+    assert!(r.jerk[0] > 0.0 && r.jerk[0].is_finite());
+    assert!(r.jerk[1] < r.jerk[0], "a standing dummy is smoother than a swinging attacker");
+}
