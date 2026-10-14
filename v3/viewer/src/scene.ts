@@ -199,7 +199,7 @@ export class FightScene {
     let t = this.labels[i];
     if (!t) { t = this.labels[i] = new Text({ text: '', style: { fontFamily: 'system-ui, Segoe UI, sans-serif', fontWeight: '900', fontSize: 34, fill: 0xffffff, stroke: { color: 0x000000, width: 5, join: 'round' } } }); t.anchor.set(0.5); this.world.addChild(t); }
     if (t.text !== text) t.text = text;
-    t.tint = tint; t.alpha = alpha; t.scale.set(size); t.position.set(x, y); t.visible = true;
+    t.tint = tint; t.alpha = alpha; t.scale.set(size); t.position.set(x, Math.max(y, 28 - this.world.y)); t.visible = true;
   }
 
   private drawFx(dt: number, rec: { e: Ev; a: number }[], w: number, h: number): void {
@@ -263,7 +263,7 @@ export class FightScene {
         const k = a / 20;
         if (k < 1) g.circle(X, Y, 70 * sc * (0.3 + k)).stroke({ width: 5, color: 0xff7a2a, alpha: 1 - k });
         const f = floatNumber(a);
-        if (f) this.label(n++, 'PART OFF!', X, Y - (40 + f.rise) * sc, KO_TINT, 0.9, f.alpha);
+        if (f) this.label(n++, 'PART OFF!', X, Y - (85 + f.rise) * sc, KO_TINT, 0.9, f.alpha);
       } else if (e.kind === 'ko') {
         const k = a / 30;
         if (k < 1) for (const [rr, wd] of [[160, 7], [100, 4]]) g.circle(X, Y, rr * sc * (0.2 + k)).stroke({ width: wd, color: 0xffffff, alpha: 1 - k });
