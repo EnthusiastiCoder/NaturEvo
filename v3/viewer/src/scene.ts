@@ -277,7 +277,7 @@ export class FightScene {
   private drawBanner(w: number, h: number): void {
     const sf = this.screenFx; sf.clear();
     const ko = this.fight.events.find((e) => e.kind === 'ko');
-    const a = ko ? this.tick - ko.t : -1;
+    const a = ko ? this.tick - Math.min(ko.t, this.lastTick) + (ko.t > this.lastTick ? 10 : 0) : -1;
     const on = !!ko && a >= 0;
     this.banner.visible = this.bannerSub.visible = on;
     if (!on || !ko) return;
