@@ -78,3 +78,12 @@ fn smoothness_metric_separates_still_from_bang_bang() {
     let b = bb.finish();
     assert!(b.jerk > 10.0 * s.jerk.max(1e-3) && b.vel_frac > 0.1 && b.flip_rate > 0.9 && b.tgt_delta > 1.5, "{:?}", b);
 }
+
+#[test]
+fn fitness_has_a_small_jerk_cost() {
+    let calm = MatchStats { win: true, ko: true, jerk: 0.01, ..Default::default() };
+    let jerky = MatchStats { win: true, ko: true, jerk: 0.15, ..Default::default() };
+    assert!(score_stats(&calm) > score_stats(&jerky));
+    assert!(W_JERK * 0.15 < 1.5, "jerk cost must stay small next to the win bonus");
+    assert!(W_JERK > 0.0);
+}
