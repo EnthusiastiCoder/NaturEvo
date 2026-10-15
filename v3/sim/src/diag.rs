@@ -31,3 +31,8 @@ pub struct Smooth {
     /// Share of decisions on which a target moved in the opposite direction to its previous move.
     pub flip_rate: f32,
 }
+
+impl SmoothAcc {
+    pub fn new() -> SmoothAcc {
+        SmoothAcc::default()
+    }
