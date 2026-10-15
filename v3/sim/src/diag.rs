@@ -55,3 +55,24 @@ impl SmoothAcc {
         self.prev_vel = Some(v);
         self.ticks += 1;
     }
+
+    /// Call whenever the policy emits a new raw target vector.
+    pub fn decision(&mut self, t: &[f32; 12]) {
+        if let Some(p) = &self.prev_tgt {
+            for i in 0..12 {
+                let d = t[i] - p[i];
+                self.tgt_delta += d.abs() as f64;
+                if d.abs() > 0.02 {
+                    if self.prev_dt[i].abs() > 0.02 {
+                        self.flip_den += 1;
+                        if d * self.prev_dt[i] < 0.0 {
+                            self.flips += 1;
+                        }
+                    }
+                    self.prev_dt[i] = d;
+                }
+            }
+            self.decisions += 1;
+        }
+        self.prev_tgt = Some(*t);
+    }
