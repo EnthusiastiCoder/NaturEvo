@@ -106,3 +106,16 @@ fn a_death_win_beats_every_non_death_result() {
     let loss = MatchStats { dmg_taken_norm: 1.0, ..Default::default() };
     assert!(score_stats(&loss) > score_stats(&draw), "a loss still beats a draw");
 }
+
+#[test]
+fn log_contains_the_whole_fight_to_the_death() {
+    let mut m = Match::new(1, Brain::Dummy, Brain::Dummy);
+    m.enable_log();
+    let r = m.run_to_end();
+    let j = fight_json(&m);
+    assert_eq!(j.matches("\"f\":[").count() as u32, r.ticks / 2 + 1, "one frame per 2 ticks plus the final state");
+    assert!(j.contains("\"kind\":\"ko\""), "the killing blow is logged");
+    assert!(j.contains("\"kind\":\"sudden_death\""));
+    assert!(j.contains("\"sudden_death\":{\"start_tick\":"));
+    assert!(j.contains("\"state\":\"ko\""), "the last frame shows the dead fighter");
+}
