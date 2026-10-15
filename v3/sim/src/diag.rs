@@ -112,3 +112,7 @@ pub fn mean_smooth(v: &[Smooth]) -> Smooth {
     let f = |g: fn(&Smooth) -> f32| v.iter().map(g).sum::<f32>() / n;
     Smooth { vel_frac: f(|s| s.vel_frac), sat_frac: f(|s| s.sat_frac), jerk: f(|s| s.jerk), tgt_delta: f(|s| s.tgt_delta), flip_rate: f(|s| s.flip_rate) }
 }
+
+pub fn row(label: &str, s: &Smooth) -> String {
+    format!("| {} | {:.3} | {:.3} | {:.4} | {:.3} | {:.3} |\n", label, s.vel_frac, s.sat_frac, s.jerk, s.tgt_delta, s.flip_rate)
+}
