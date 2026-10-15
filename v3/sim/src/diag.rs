@@ -76,3 +76,15 @@ impl SmoothAcc {
         }
         self.prev_tgt = Some(*t);
     }
+
+    pub fn finish(&self) -> Smooth {
+        let jt = (self.ticks.max(1) * 12) as f64;
+        Smooth {
+            vel_frac: (self.vel_frac / jt) as f32,
+            sat_frac: (self.sat / jt) as f32,
+            jerk: (self.jerk / jt) as f32,
+            tgt_delta: (self.tgt_delta / (self.decisions.max(1) * 12) as f64) as f32,
+            flip_rate: self.flips as f32 / self.flip_den.max(1) as f32,
+        }
+    }
+}
