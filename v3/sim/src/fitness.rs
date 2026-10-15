@@ -10,6 +10,8 @@ pub const W_DEFENCE: f32 = 2.0;
 pub const W_IDLE_GUARD: f32 = 1.0;
 pub const W_PASSIVITY: f32 = 1.0;
 pub const W_CHAIN: f32 = 0.5;
+/// Small cost on jerky joint motion (mean |dv|/vmax per tick); typical net values 0.1, calm 0.01.
+pub const W_JERK: f32 = 8.0;
 pub const KO_BONUS: f32 = 1.0;
 pub const MAX_CREDITED_THREATS: usize = 6;
 
@@ -24,6 +26,7 @@ pub struct MatchStats {
     pub idle_guard: f32,
     pub passivity: f32,
     pub chain_quality: f32,
+    pub jerk: f32,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -68,6 +71,7 @@ pub fn score_stats(s: &MatchStats) -> f32 {
     let mut v = W_DEALT * s.dmg_dealt_norm - W_TAKEN * s.dmg_taken_norm + W_DEFENCE * s.defence_credit
         - W_IDLE_GUARD * s.idle_guard
         - W_PASSIVITY * s.passivity
+        - W_JERK * s.jerk
         + W_CHAIN * s.chain_quality;
     if s.win {
         v += W_WIN;
@@ -90,6 +94,7 @@ pub fn stats_for(r: &MatchResult, who: usize) -> MatchStats {
         idle_guard: r.idle_guard_share[who],
         passivity: r.passivity,
         chain_quality: r.chain_quality[who],
+        jerk: r.jerk[who],
     }
 }
 
