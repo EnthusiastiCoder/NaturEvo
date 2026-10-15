@@ -106,3 +106,9 @@ pub fn measure(a: Brain, b: Brain, seed: u64) -> ([Smooth; 2], u32) {
     }
     ([acc[0].finish(), acc[1].finish()], m.tick)
 }
+
+pub fn mean_smooth(v: &[Smooth]) -> Smooth {
+    let n = v.len().max(1) as f32;
+    let f = |g: fn(&Smooth) -> f32| v.iter().map(g).sum::<f32>() / n;
+    Smooth { vel_frac: f(|s| s.vel_frac), sat_frac: f(|s| s.sat_frac), jerk: f(|s| s.jerk), tgt_delta: f(|s| s.tgt_delta), flip_rate: f(|s| s.flip_rate) }
+}
