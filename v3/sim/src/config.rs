@@ -4,8 +4,25 @@
 pub const PHYS_DT: f32 = 1.0 / 60.0;
 /// The net decides every this many physics ticks (20 Hz).
 pub const DECISION_TICKS: u32 = 3;
-/// Maximum match length in physics ticks (15 s).
-pub const MAX_TICKS: u32 = 900;
+/// Emergency safety net only: fights are death battles and should never reach this many ticks.
+/// A capped fight is a Draw (never an hp-lead win) and is reported.
+pub const HARD_CAP_TICKS: u32 = 6000;
+/// Grace period before sudden death (ticks, 7.5 s). After it the walls close in and the torso bleeds
+/// at an escalating rate, which forces engagement so a fight always ends in a death.
+pub const SUDDEN_DEATH_START: u32 = 450;
+/// Each wall closes in at this speed (m/s) after onset.
+pub const WALL_SPEED: f32 = 0.6;
+/// The walls stop closing at this arena width (m).
+pub const WALL_MIN_WIDTH: f32 = 1.6;
+/// Sudden-death torso bleed, hp/s, at onset; grows by `SD_BLEED_GROWTH` (fraction of base) per second.
+pub const SD_BLEED_BASE: f32 = 4.0;
+pub const SD_BLEED_GROWTH: f32 = 0.25;
+/// Motor velocity gain (1/s): desired joint speed = MOTOR_KP * angle error, capped at the joint max speed.
+pub const MOTOR_KP: f32 = 14.0;
+/// Motor angular acceleration limit, rad/s^2 (joint speed ramps, never steps).
+pub const MOTOR_ACCEL: f32 = 100.0;
+/// Per-tick low-pass factor on the net's held target (first order, 0..1).
+pub const ACTION_SMOOTH: f32 = 0.25;
 /// Arena width in metres.
 pub const ARENA_WIDTH: f32 = 14.0;
 
