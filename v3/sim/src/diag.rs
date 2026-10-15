@@ -88,3 +88,5 @@ impl SmoothAcc {
         }
     }
 }
+
+use crate::duel::{Brain, Match};
