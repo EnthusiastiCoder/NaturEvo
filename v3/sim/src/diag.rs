@@ -90,3 +90,19 @@ impl SmoothAcc {
 }
 
 use crate::duel::{Brain, Match};
+
+/// Run one match and measure both fighters, sampling the applied targets at the 20 Hz decision rate.
+pub fn measure(a: Brain, b: Brain, seed: u64) -> ([Smooth; 2], u32) {
+    let mut m = Match::new(seed, a, b);
+    let mut acc = [SmoothAcc::new(), SmoothAcc::new()];
+    while !m.is_over() {
+        m.step();
+        for i in 0..2 {
+            acc[i].tick(&m.robots[i]);
+            if m.tick % crate::config::DECISION_TICKS == 0 {
+                acc[i].decision(&m.applied_action[i]);
+            }
+        }
+    }
+    ([acc[0].finish(), acc[1].finish()], m.tick)
+}
