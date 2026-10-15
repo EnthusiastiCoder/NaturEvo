@@ -97,3 +97,12 @@ fn sudden_death_bleed_escalates_and_starts_only_after_the_grace_period() {
     let c = torso(&m);
     assert!(a - b > 0.0 && (b - c) > (a - b), "bleed must grow: {} {} {}", a, b, c);
 }
+
+#[test]
+fn a_death_win_beats_every_non_death_result() {
+    let win = MatchStats { win: true, ko: true, ..Default::default() };
+    let draw = MatchStats { draw: true, ..Default::default() };
+    assert!(score_stats(&win) > score_stats(&draw));
+    let loss = MatchStats { dmg_taken_norm: 1.0, ..Default::default() };
+    assert!(score_stats(&loss) > score_stats(&draw), "a loss still beats a draw");
+}
