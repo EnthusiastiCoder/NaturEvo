@@ -789,10 +789,23 @@ impl Robot {
             } else {
                 (j.to_angle(eff[i]), j.max_speed() * self.torque_scale(j))
             };
-            let step = (target - self.angles[i]).clamp(-speed * dt, speed * dt);
-            self.angles[i] = (self.angles[i] + step).clamp(lo, hi);
-            self.joint_vel[i] = step / dt;
-            let omega = step.abs() / dt;
+            let err = target - self.angles[i];
+            let desired = (MOTOR_KP * err).clamp(-speed, speed);
+            let dv = MOTOR_ACCEL * dt;
+            let mut v = self.joint_vel[i] + (desired - self.joint_vel[i]).clamp(-dv, dv);
+            let mut step = v * dt;
+            // Never step past the target.
+            if (err >= 0.0 && step > err) || (err <= 0.0 && step < err) {
+                step = err;
+                v = step / dt;
+            }
+            let before = self.angles[i];
+            self.angles[i] = (before + step).clamp(lo, hi);
+            if self.angles[i] != before + step {
+                v = (self.angles[i] - before) / dt;
+            }
+            self.joint_vel[i] = v;
+            let omega = v.abs();
             cost += omega * MOTOR_COST * dt;
             if omega > 0.5 * j.max_speed() {
                 fast = true;
