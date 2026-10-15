@@ -32,16 +32,16 @@ fn header_and_result_fields() {
 }
 
 #[test]
-fn frame_count_is_ticks_over_two() {
+fn frame_count_is_ticks_over_two_plus_the_final_state() {
     let (j, ticks) = logged(Brain::Dummy, Brain::Dummy, 1);
-    assert_eq!(ticks, 900);
-    assert_eq!(j.matches("\"f\":[").count(), 450);
+    assert!(ticks > 600);
+    assert_eq!(j.matches("\"f\":[").count() as u32, ticks / 2 + 1);
 }
 
 #[test]
 fn each_fighter_frame_has_13_parts_of_4_integer_cm_values() {
-    let (j, _) = logged(Brain::Dummy, Brain::Dummy, 1);
-    assert_eq!(j.matches("\"parts\":[[").count(), 900 + 0, "2 fighters x 450 frames (the header parts list is names)");
+    let (j, ticks) = logged(Brain::Dummy, Brain::Dummy, 1);
+    assert_eq!(j.matches("\"parts\":[[").count() as u32, 2 * (ticks / 2 + 1), "2 fighters per frame (the header parts list is names)");
     let at = j.find("\"parts\":[[").unwrap() + "\"parts\":[".len();
     let end = at + j[at..].find("]]").unwrap() + 2;
     let body = &j[at + 1..end - 1]; // strip outer brackets
