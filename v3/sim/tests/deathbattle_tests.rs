@@ -21,3 +21,21 @@ fn dummies_never_time_out_they_die_in_sudden_death() {
     assert!(!r.capped);
     assert!(r.sudden_death);
 }
+
+#[test]
+fn no_fight_ends_without_a_death_across_many_matchups() {
+    for seed in 0..60u64 {
+        let mut rng = Rng::new(seed * 11 + 3);
+        let a = Genome::random(Role::Hero, &mut rng);
+        let b = Genome::random(Role::Monster, &mut rng);
+        let (ba, bb) = match seed % 4 {
+            0 => (Brain::Net(a), Brain::Net(b)),
+            1 => (Brain::Net(a), Brain::Dummy),
+            2 => (Brain::Scripted, Brain::Net(b)),
+            _ => (Brain::Scripted, Brain::Scripted),
+        };
+        let mut m = Match::new(seed, ba, bb);
+        let r = m.run_to_end();
+        assert!(dead(&m) && !r.capped, "seed {} ended at {} without a death", seed, r.ticks);
+    }
+}
