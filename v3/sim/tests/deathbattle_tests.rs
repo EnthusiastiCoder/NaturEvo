@@ -39,3 +39,12 @@ fn no_fight_ends_without_a_death_across_many_matchups() {
         assert!(dead(&m) && !r.capped, "seed {} ended at {} without a death", seed, r.ticks);
     }
 }
+
+#[test]
+fn a_timeout_is_never_a_win() {
+    // The emergency cap yields a draw, never a win by hp lead.
+    let mut m = Match::new(2, Brain::Dummy, Brain::Dummy);
+    m.robots[0].set_hp(Part::Head, 1.0);
+    let r = m.force_cap_for_test();
+    assert!(r.capped && r.outcome == Outcome::Draw);
+}
