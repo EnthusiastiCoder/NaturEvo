@@ -1,4 +1,4 @@
-// W3 fuzz: 200 random-genome 900-tick matches stay finite, in range and never panic.
+// W3 fuzz: 200 random-genome death-battle matches stay finite, in range and never panic.
 use mech_sim::duel::{Brain, Match};
 use mech_sim::genome::Genome;
 use mech_sim::robot::{Part, Role};
@@ -12,7 +12,7 @@ fn two_hundred_random_matches_stay_sane() {
         let b = Genome::random(Role::Monster, &mut rng);
         let mut m = Match::new(seed, Brain::Net(a), Brain::Net(b));
         let r = m.run_to_end();
-        assert!(r.ticks <= 900, "seed {}", seed);
+        assert!(!r.capped && r.ticks < mech_sim::config::HARD_CAP_TICKS, "seed {}", seed);
         for who in 0..2 {
             let rb = &m.robots[who];
             assert!(rb.x.is_finite() && rb.com()[0].is_finite() && rb.com()[1].is_finite(), "seed {} pos", seed);
