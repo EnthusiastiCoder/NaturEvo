@@ -36,3 +36,22 @@ impl SmoothAcc {
     pub fn new() -> SmoothAcc {
         SmoothAcc::default()
     }
+
+    /// Call once per physics tick after the robot has stepped.
+    pub fn tick(&mut self, r: &Robot) {
+        let mut v = [0.0f32; 12];
+        for j in Joint::ALL {
+            let i = j as usize;
+            v[i] = r.joint_vel[i];
+            let m = j.max_speed();
+            self.vel_frac += (v[i].abs() / m) as f64;
+            if v[i].abs() > 0.9 * m {
+                self.sat += 1.0;
+            }
+            if let Some(p) = &self.prev_vel {
+                self.jerk += ((v[i] - p[i]).abs() / m) as f64;
+            }
+        }
+        self.prev_vel = Some(v);
+        self.ticks += 1;
+    }
