@@ -73,3 +73,27 @@ fn walls_close_in_after_the_grace_period_to_a_minimum_width() {
     let (lo3, hi3) = m.bounds();
     assert!(hi3 - lo3 >= WALL_MIN_WIDTH - 1e-3, "walls stop at the minimum width");
 }
+
+#[test]
+fn sudden_death_bleed_escalates_and_starts_only_after_the_grace_period() {
+    let mut early = Match::new(1, Brain::Dummy, Brain::Dummy);
+    for _ in 0..SUDDEN_DEATH_START - 5 {
+        early.step();
+    }
+    assert_eq!(early.robots[0].hp(Part::Torso), early.robots[0].max_hp(Part::Torso), "no bleed before sudden death");
+    let mut m = Match::new(1, Brain::Dummy, Brain::Dummy);
+    while m.tick < SUDDEN_DEATH_START + 60 {
+        m.step();
+    }
+    let torso = |m: &Match| m.robots[0].hp(Part::Torso);
+    let a = torso(&m);
+    for _ in 0..120 {
+        m.step();
+    }
+    let b = torso(&m);
+    for _ in 0..120 {
+        m.step();
+    }
+    let c = torso(&m);
+    assert!(a - b > 0.0 && (b - c) > (a - b), "bleed must grow: {} {} {}", a, b, c);
+}
