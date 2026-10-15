@@ -116,3 +116,5 @@ pub fn mean_smooth(v: &[Smooth]) -> Smooth {
 pub fn row(label: &str, s: &Smooth) -> String {
     format!("| {} | {:.3} | {:.3} | {:.4} | {:.3} | {:.3} |\n", label, s.vel_frac, s.sat_frac, s.jerk, s.tgt_delta, s.flip_rate)
 }
+
+pub const TABLE_HEAD: &str = "| who | vel_frac | sat_frac | jerk | tgt_delta | flip_rate |\n|---|---|---|---|---|---|\n";
