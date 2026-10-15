@@ -48,3 +48,28 @@ fn a_timeout_is_never_a_win() {
     let r = m.force_cap_for_test();
     assert!(r.capped && r.outcome == Outcome::Draw);
 }
+
+#[test]
+fn walls_close_in_after_the_grace_period_to_a_minimum_width() {
+    let mut m = Match::new(1, Brain::Dummy, Brain::Dummy);
+    let (lo0, hi0) = m.bounds();
+    assert!((hi0 - lo0 - (ARENA_WIDTH - 1.0)).abs() < 1e-3);
+    while m.tick < SUDDEN_DEATH_START {
+        m.step();
+    }
+    let (lo, hi) = m.bounds();
+    assert!((hi - lo - (hi0 - lo0)).abs() < 1e-3, "no closing during the grace period");
+    for _ in 0..120 {
+        m.step();
+    }
+    let (lo2, hi2) = m.bounds();
+    assert!(hi2 - lo2 < hi - lo - 0.5 && lo2 > lo && hi2 < hi);
+    for i in 0..2 {
+        assert!(m.robots[i].x >= lo2 - 1e-3 && m.robots[i].x <= hi2 + 1e-3, "fighter {} outside the walls", i);
+    }
+    while !m.is_over() && m.tick < SUDDEN_DEATH_START + 1500 {
+        m.step();
+    }
+    let (lo3, hi3) = m.bounds();
+    assert!(hi3 - lo3 >= WALL_MIN_WIDTH - 1e-3, "walls stop at the minimum width");
+}
