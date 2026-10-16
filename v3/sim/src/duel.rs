@@ -367,6 +367,7 @@ impl Match {
             self.applied_action[i] = act.targets;
             let old_x = self.robots[i].x;
             let r = &mut self.robots[i];
+            let before = r.joint_vel;
             r.apply_targets(&act.targets, PHYS_DT);
             r.apply_drive(act.drive, PHYS_DT, self.arena.width);
             let nx = self.robots[i].x;
