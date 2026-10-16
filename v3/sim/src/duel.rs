@@ -640,16 +640,6 @@ impl Match {
         }
     }
 
-    fn hp_fraction(&self, i: usize) -> f32 {
-        let r = &self.robots[i];
-        let (mut s, mut m) = (0.0, 0.0);
-        for p in Part::ALL {
-            s += r.hp(p).max(0.0);
-            m += r.max_hp(p);
-        }
-        s / m
-    }
-
     pub fn result(&self) -> MatchResult {
         let ko = [self.robots[0].is_ko(), self.robots[1].is_ko()];
         let outcome = match ko {
