@@ -132,3 +132,16 @@ fn min_jerk_endpoints_exact_and_zero_velocity() {
     let t: f32 = 0.3;
     assert!((min_jerk(t) - (10.0 * t.powi(3) - 15.0 * t.powi(4) + 6.0 * t.powi(5))).abs() < 1e-6);
 }
+
+#[test]
+fn windup_starts_and_recovery_ends_with_near_zero_velocity() {
+    for m in attacks() {
+        let p = mid();
+        let a = pose_at(m, &p, Phase::Windup, 0.0);
+        let b = pose_at(m, &p, Phase::Windup, 0.01);
+        assert!(jump(&a, &b) < 0.01, "{:?} windup start speed", m);
+        let c = pose_at(m, &p, Phase::Recovery, 0.99);
+        let d = pose_at(m, &p, Phase::Recovery, 1.0);
+        assert!(jump(&c, &d) < 0.01, "{:?} recovery end speed", m);
+    }
+}
