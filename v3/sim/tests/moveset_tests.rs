@@ -105,3 +105,12 @@ fn pose_is_continuous_across_phase_boundaries_at_60hz() {
         }
     }
 }
+
+#[test]
+fn keyframes_are_shared_between_adjacent_phases() {
+    for m in attacks() {
+        let p = mid();
+        assert!(jump(&pose_at(m, &p, Phase::Windup, 1.0), &pose_at(m, &p, Phase::Active, 0.0)) < 1e-4, "{:?} windup->active", m);
+        assert!(jump(&pose_at(m, &p, Phase::Active, 1.0), &pose_at(m, &p, Phase::Recovery, 0.0)) < 1e-4, "{:?} active->recovery", m);
+    }
+}
