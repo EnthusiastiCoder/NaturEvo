@@ -73,3 +73,18 @@ fn required_joints_follow_the_plan() {
     assert!(!spec(MoveId::Guard).required.contains(&Joint::ShoulderR));
     assert!(!spec(MoveId::Overhead).required.contains(&Joint::ShoulderL));
 }
+
+#[test]
+fn pose_is_finite_and_within_unit_range_everywhere() {
+    for m in MoveId::ALL {
+        for &(r, s, a, d) in &[(0.0, 0.0, 0.0, 0.0), (0.5, 0.5, 0.5, 0.0), (1.0, 1.0, 1.0, 1.0), (0.0, 1.0, 0.0, 1.0), (1.0, 0.0, 1.0, 0.5)] {
+            let p = MoveParams { reach: r, speed: s, arc: a, delay: d };
+            for ph in [Phase::Idle, Phase::Windup, Phase::Active, Phase::Recovery] {
+                for k in 0..=20 {
+                    let pose = pose_at(m, &p, ph, k as f32 / 20.0);
+                    for v in pose { assert!(v.is_finite() && (-1.0..=1.0).contains(&v), "{:?} {:?} {} -> {}", m, ph, k, v); }
+                }
+            }
+        }
+    }
+}
