@@ -163,3 +163,15 @@ fn speed_up_shortens_total_duration() {
         assert!((0.4..=0.7).contains(&ratio), "{:?} ratio {}", m, ratio);
     }
 }
+
+#[test]
+fn delay_adds_up_to_0_2_s_of_windup_only() {
+    for m in [MoveId::Overhead, MoveId::Thrust, MoveId::Sweep] {
+        let d0 = phase_durations(m, &mid());
+        let d5 = phase_durations(m, &MoveParams { delay: 0.5, ..mid() });
+        let d1 = phase_durations(m, &MoveParams { delay: 1.0, ..mid() });
+        assert!((d5[0] - d0[0] - 0.1).abs() < 1e-3, "{:?}", m);
+        assert!((d1[0] - d0[0] - 0.2).abs() < 1e-3, "{:?}", m);
+        assert!((d1[1] - d0[1]).abs() < 1e-6 && (d1[2] - d0[2]).abs() < 1e-6, "{:?}", m);
+    }
+}
