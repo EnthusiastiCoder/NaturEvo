@@ -364,6 +364,7 @@ impl Match {
         let (lo, hi) = self.bounds();
         for i in 0..2 {
             let act = self.decide(i);
+            self.applied_action[i] = act.targets;
             let old_x = self.robots[i].x;
             let r = &mut self.robots[i];
             r.apply_targets(&act.targets, PHYS_DT);
