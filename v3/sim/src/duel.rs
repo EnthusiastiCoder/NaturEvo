@@ -642,6 +642,7 @@ impl Match {
 
     pub fn result(&self) -> MatchResult {
         let ko = [self.robots[0].is_ko(), self.robots[1].is_ko()];
+        // A death decides the fight; a mutual death or the emergency cap is a draw. Never a timeout win.
         let outcome = match ko {
             [true, false] => Outcome::WinB,
             [false, true] => Outcome::WinA,
