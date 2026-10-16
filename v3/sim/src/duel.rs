@@ -329,7 +329,17 @@ impl Match {
             }
         }
         self.tick += 1;
-        if self.tick >= MAX_TICKS || self.robots.iter().any(|r| r.is_ko()) {
+        if self.tick >= HARD_CAP_TICKS && !self.robots.iter().any(|r| r.is_ko()) {
+            self.capped = true;
+        }
+        if self.tick >= HARD_CAP_TICKS || self.robots.iter().any(|r| r.is_ko()) {
+            // The log always ends on the final state.
+            if self.tick % 2 == 0 && self.log.is_some() {
+                let f = log::frame_json(self);
+                if let Some(l) = self.log.as_mut() {
+                    l.frames.push(f);
+                }
+            }
             self.ended = true;
             self.finish_threats();
         }
