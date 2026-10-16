@@ -376,6 +376,11 @@ impl Match {
             }
             self.jerk_sum[i] += jerk / 12.0;
             r.apply_drive(act.drive, PHYS_DT, self.arena.width);
+            let r = &mut self.robots[i];
+            if r.x < lo || r.x > hi {
+                r.x = r.x.clamp(lo, hi);
+                r.fk();
+            }
             let nx = self.robots[i].x;
             if nx != old_x && self.blocked_by_obstacle(nx) && !self.blocked_by_obstacle(old_x) {
                 self.robots[i].x = old_x;
