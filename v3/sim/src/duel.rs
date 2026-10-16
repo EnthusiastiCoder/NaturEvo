@@ -675,7 +675,7 @@ impl Match {
             defence_credit: credit,
             ko,
             dmg_dealt_norm: dealt,
-            passivity: self.passive_ticks as f32 / MAX_TICKS as f32,
+            passivity: self.passive_ticks as f32 / n,
             chain_quality: [q(0), q(1)],
             hits: self.hits,
         }
