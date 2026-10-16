@@ -88,3 +88,20 @@ fn pose_is_finite_and_within_unit_range_everywhere() {
         }
     }
 }
+
+#[test]
+fn pose_is_continuous_across_phase_boundaries_at_60hz() {
+    for m in attacks() {
+        let p = mid();
+        let d = phase_durations(m, &p);
+        let mut seq: Vec<[f32; 12]> = Vec::new();
+        for (ph, dur) in [(Phase::Windup, d[0]), (Phase::Active, d[1]), (Phase::Recovery, d[2])] {
+            let n = ((dur * 60.0).round() as usize).max(1);
+            for k in 0..=n { seq.push(pose_at(m, &p, ph, k as f32 / n as f32)); }
+        }
+        seq.push(pose_at(MoveId::Idle, &p, Phase::Idle, 0.0));
+        for w in seq.windows(2) {
+            assert!(jump(&w[0], &w[1]) < 0.35, "{:?} jump {}", m, jump(&w[0], &w[1]));
+        }
+    }
+}
