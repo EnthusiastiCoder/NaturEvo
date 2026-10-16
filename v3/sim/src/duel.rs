@@ -262,7 +262,7 @@ impl Match {
             Ctl::Dummy => scripted::dummy(),
             Ctl::Fixed(a) => *a,
             Ctl::Scripted(s) => s.act(me, opp, PHYS_DT),
-            Ctl::Net(net, held) => {
+            Ctl::Net(net, held, smooth) => {
                 if self.tick % DECISION_TICKS == 0 {
                     let x = observe(me, opp, &self.arena);
                     let o = net.forward(&x);
