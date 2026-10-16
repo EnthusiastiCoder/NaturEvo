@@ -310,6 +310,7 @@ impl Match {
         if self.hitstop > 0 {
             self.hitstop -= 1;
         } else {
+            self.adv_ticks += 1;
             self.advance_fighters();
             self.update_threats_pre();
             self.run_combat();
