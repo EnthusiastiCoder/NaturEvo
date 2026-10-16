@@ -78,6 +78,48 @@ fn eval_cmd(args: &[String]) -> Result<(), String> {
     Ok(())
 }
 
+/// Smoothness diagnosis of a run: hero/monster champions per saved generation vs the scripted attacker.
+fn diag_cmd(args: &[String]) -> Result<(), String> {
+    use crate::diag::*;
+    let dir = PathBuf::from(need(args, "--run")?);
+    let seeds: u64 = opt(args, "--seeds").unwrap_or("3").parse().map_err(|_| "bad --seeds".to_string())?;
+    let mut gens: Vec<u32> = Vec::new();
+    for e in std::fs::read_dir(&dir).map_err(|e| e.to_string())? {
+        let n = e.map_err(|e| e.to_string())?.file_name().to_string_lossy().to_string();
+        if let Some(g) = n.strip_prefix("champion_hero_gen_").and_then(|r| r.strip_suffix(".json")).and_then(|r| r.parse::<u32>().ok()) {
+            gens.push(g);
+        }
+    }
+    gens.sort();
+    let load = |role: &str, g: u32| -> Result<Genome, String> {
+        let p = dir.join(format!("champion_{}_gen_{}.json", role, g));
+        Genome::from_json(&std::fs::read_to_string(&p).map_err(|e| format!("{}: {}", p.display(), e))?)
+    };
+    let mut out = String::from(TABLE_HEAD);
+    let step = (gens.len() / 6).max(1);
+    for (k, g) in gens.iter().enumerate() {
+        if k % step != 0 && k + 1 != gens.len() {
+            continue;
+        }
+        let (h, m) = (Brain::Net(load("hero", *g)?), Brain::Net(load("monster", *g)?));
+        let mut v = Vec::new();
+        for s in 0..seeds {
+            let (sm, _) = measure(h.clone(), m.clone(), 1000 + s);
+            v.push(sm[0]);
+            v.push(sm[1]);
+        }
+        out.push_str(&row(&format!("net gen {} (hero+monster)", g), &mean_smooth(&v)));
+    }
+    let mut v = Vec::new();
+    for s in 0..seeds.max(6) {
+        let (sm, _) = measure(Brain::Scripted, Brain::Dummy, 1000 + s);
+        v.push(sm[0]);
+    }
+    out.push_str(&row("scripted attacker", &mean_smooth(&v)));
+    print!("{}", out);
+    Ok(())
+}
+
 fn compare_cmd(args: &[String]) -> Result<(), String> {
     let a = brain(need(args, "--a")?)?;
     let b = brain(need(args, "--b")?)?;
