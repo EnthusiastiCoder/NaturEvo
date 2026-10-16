@@ -145,3 +145,11 @@ fn windup_starts_and_recovery_ends_with_near_zero_velocity() {
         assert!(jump(&c, &d) < 0.01, "{:?} recovery end speed", m);
     }
 }
+
+#[test]
+fn nominal_duration_matches_spec_at_speed_half() {
+    for m in attacks() {
+        let s = spec(m);
+        assert!((total(m, &mid()) - (s.windup + s.active + s.recovery)).abs() < 1e-3, "{:?}", m);
+    }
+}
