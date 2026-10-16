@@ -277,6 +277,26 @@ impl Match {
         }
     }
 
+    /// Arena walls (lo, hi). They close in symmetrically after the sudden-death grace period.
+    pub fn bounds(&self) -> (f32, f32) {
+        let w = self.arena.width;
+        let max_shrink = ((w - 1.0 - WALL_MIN_WIDTH) * 0.5).max(0.0);
+        let shrink = if self.tick > SUDDEN_DEATH_START {
+            (WALL_SPEED * (self.tick - SUDDEN_DEATH_START) as f32 * PHYS_DT).min(max_shrink)
+        } else {
+            0.0
+        };
+        (0.5 + shrink, w - 0.5 - shrink)
+    }
+
+    /// End the match as if the emergency cap fired (tests).
+    pub fn force_cap_for_test(&mut self) -> MatchResult {
+        self.capped = true;
+        self.ended = true;
+        self.finish_threats();
+        self.result()
+    }
+
     fn blocked_by_obstacle(&self, x: f32) -> bool {
         self.arena.obstacles.iter().any(|o| (x - o.x).abs() < o.w * 0.5 + 0.35)
     }
