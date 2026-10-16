@@ -189,7 +189,7 @@ pub struct Match {
 
 fn make_ctl(b: Brain, seed: u64, salt: u64) -> Ctl {
     match b {
-        Brain::Net(g) => Ctl::Net(Box::new(Net::from_genome(&g)), Action { targets: STAND_TARGETS, drive: 0.0 }),
+        Brain::Net(g) => Ctl::Net(Box::new(Net::from_genome(&g)), Action { targets: STAND_TARGETS, drive: 0.0 }, STAND_TARGETS),
         Brain::Dummy => Ctl::Dummy,
         Brain::Scripted => Ctl::Scripted(Box::new(Scripted::new(seed.wrapping_add(salt)))),
         Brain::Fixed(t) => Ctl::Fixed(Action { targets: t, drive: 0.0 }),
