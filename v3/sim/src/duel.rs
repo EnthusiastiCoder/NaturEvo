@@ -163,6 +163,10 @@ pub struct Match {
     pub tick: u32,
     pub threats: Vec<Threat>,
     pub idle_guard_ticks: [u32; 2],
+    /// Last raw net output per fighter (targets, before smoothing); diagnostics only.
+    pub raw_action: [[f32; 12]; 2],
+    /// Targets actually applied to the motors on the last tick.
+    pub applied_action: [[f32; 12]; 2],
     dealt_w: [f32; 2],
     quality_sum: [f32; 2],
     hits: [u32; 2],
