@@ -590,7 +590,7 @@ impl Match {
         let rate = SD_BLEED_BASE * (1.0 + SD_BLEED_GROWTH * secs);
         for r in self.robots.iter_mut() {
             let hp = r.hp(Part::Torso);
-            r.set_hp(Part::Torso, hp - BLEED_PER_SEC * PHYS_DT);
+            r.set_hp(Part::Torso, hp - rate * PHYS_DT);
         }
     }
 
