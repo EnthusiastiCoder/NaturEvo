@@ -20,3 +20,16 @@ fn mid() -> MoveParams { MoveParams { reach: 0.5, speed: 0.5, arc: 0.5, delay: 0
 fn attacks() -> Vec<MoveId> { MoveId::ALL.iter().copied().filter(|m| *m != MoveId::Idle).collect() }
 fn jump(a: &[f32; 12], b: &[f32; 12]) -> f32 { (0..12).map(|i| (a[i] - b[i]).abs()).fold(0.0, f32::max) }
 fn total(id: MoveId, p: &MoveParams) -> f32 { phase_durations(id, p).iter().sum() }
+
+#[test]
+fn move_id_order_and_count_are_fixed() {
+    assert_eq!(N_MOVES, 14);
+    assert_eq!(MoveId::ALL.len(), 14);
+    let order = [MoveId::Idle, MoveId::Overhead, MoveId::DiagDown, MoveId::DiagUp, MoveId::Sweep, MoveId::Thrust, MoveId::LowCut,
+        MoveId::Feint, MoveId::Parry, MoveId::Guard, MoveId::Riposte, MoveId::ShieldBash, MoveId::Kick, MoveId::Backstep];
+    for (i, m) in order.iter().enumerate() {
+        assert_eq!(MoveId::ALL[i], *m);
+        assert_eq!(m.index(), i);
+    }
+    assert_eq!(MoveId::Backstep as usize, 13);
+}
