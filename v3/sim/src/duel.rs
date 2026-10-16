@@ -102,6 +102,15 @@ pub struct MatchResult {
     pub sudden_death: bool,
 }
 
+/// First-order low-pass of an action vector: `prev + alpha * (target - prev)`.
+pub fn smooth_toward(prev: &[f32; 12], target: &[f32; 12], alpha: f32) -> [f32; 12] {
+    let mut o = [0.0f32; 12];
+    for i in 0..12 {
+        o[i] = prev[i] + alpha * (target[i] - prev[i]);
+    }
+    o
+}
+
 const THREAT_SPEED: f32 = 2.5;
 const THREAT_RANGE: f32 = 0.25;
 const THREAT_HORIZON: f32 = 0.4;
