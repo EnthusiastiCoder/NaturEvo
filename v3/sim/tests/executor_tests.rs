@@ -27,3 +27,6 @@ use mech_sim::robot::{Joint, Part, Robot, Role, State, DT};
 
 mod common;
 use common::standing;
+
+fn mid() -> MoveParams { MoveParams { reach: 0.5, speed: 0.5, arc: 0.5, delay: 0.0 } }
+fn fresh() -> (Executor, Robot) { (Executor::new(), standing(Role::Hero, 3.0, 1.0)) }
