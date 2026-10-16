@@ -271,7 +271,8 @@ impl Match {
                     *held = Action { targets: t, drive: o[12] };
                     self.raw_action[i] = t;
                 }
-                *held
+                *smooth = smooth_toward(smooth, &held.targets, ACTION_SMOOTH);
+                Action { targets: *smooth, drive: held.drive }
             }
         }
     }
