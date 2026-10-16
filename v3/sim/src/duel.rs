@@ -646,17 +646,7 @@ impl Match {
         let outcome = match ko {
             [true, false] => Outcome::WinB,
             [false, true] => Outcome::WinA,
-            [true, true] => Outcome::Draw,
-            _ => {
-                let (a, b) = (self.hp_fraction(0), self.hp_fraction(1));
-                if a - b >= 0.05 {
-                    Outcome::WinA
-                } else if b - a >= 0.05 {
-                    Outcome::WinB
-                } else {
-                    Outcome::Draw
-                }
-            }
+            _ => Outcome::Draw,
         };
         let mut defence = [DefenceTally::default(); 2];
         let mut outs: [Vec<ThreatOutcome>; 2] = [Vec::new(), Vec::new()];
