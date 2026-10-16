@@ -153,3 +153,13 @@ fn nominal_duration_matches_spec_at_speed_half() {
         assert!((total(m, &mid()) - (s.windup + s.active + s.recovery)).abs() < 1e-3, "{:?}", m);
     }
 }
+
+#[test]
+fn speed_up_shortens_total_duration() {
+    for m in attacks() {
+        let at = |s: f32| total(m, &MoveParams { reach: 0.5, speed: s, arc: 0.5, delay: 0.0 });
+        assert!(at(1.0) < at(0.5) && at(0.5) < at(0.0), "{:?} {} {} {}", m, at(0.0), at(0.5), at(1.0));
+        let ratio = at(1.0) / at(0.0);
+        assert!((0.4..=0.7).contains(&ratio), "{:?} ratio {}", m, ratio);
+    }
+}
