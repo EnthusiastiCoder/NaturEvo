@@ -269,6 +269,7 @@ impl Match {
                     let mut t = [0.0f32; 12];
                     t.copy_from_slice(&o[..12]);
                     *held = Action { targets: t, drive: o[12] };
+                    self.raw_action[i] = t;
                 }
                 *held
             }
