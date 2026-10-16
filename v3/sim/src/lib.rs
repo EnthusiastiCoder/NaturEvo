@@ -4,6 +4,7 @@ pub mod cli;
 pub mod combat;
 pub mod config;
 pub mod curriculum;
+pub mod diag;
 pub mod duel;
 pub mod eval;
 pub mod evolve;
