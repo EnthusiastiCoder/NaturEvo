@@ -94,6 +94,12 @@ pub struct MatchResult {
     pub chain_quality: [f32; 2],
     /// Body hits landed by each fighter.
     pub hits: [u32; 2],
+    /// Mean per-tick |change of joint speed| / max speed, over joints and ticks, per fighter.
+    pub jerk: [f32; 2],
+    /// The emergency hard tick cap ended the fight (a Draw; should never happen).
+    pub capped: bool,
+    /// Sudden death (closing walls + escalating bleed) began.
+    pub sudden_death: bool,
 }
 
 const THREAT_SPEED: f32 = 2.5;
