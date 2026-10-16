@@ -30,3 +30,18 @@ use common::standing;
 
 fn mid() -> MoveParams { MoveParams { reach: 0.5, speed: 0.5, arc: 0.5, delay: 0.0 } }
 fn fresh() -> (Executor, Robot) { (Executor::new(), standing(Role::Hero, 3.0, 1.0)) }
+
+/// Step once, apply the action to the robot, return nothing.
+fn tick(ex: &mut Executor, r: &mut Robot, req: Option<(MoveId, MoveParams)>) {
+    let a = ex.step(r, req, DT);
+    r.apply_targets(&a.targets, DT);
+}
+fn ticks(ex: &mut Executor, r: &mut Robot, n: usize) { for _ in 0..n { tick(ex, r, None); } }
+fn run_until(ex: &mut Executor, r: &mut Robot, ph: Phase, max: usize) -> usize {
+    for i in 0..max {
+        if ex.phase() == ph { return i; }
+        tick(ex, r, None);
+    }
+    panic!("never reached {:?}, now {:?}", ph, ex.phase());
+}
+fn tip(r: &Robot) -> [f32; 2] { r.sword_capsule().b }
