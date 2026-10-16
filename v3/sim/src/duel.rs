@@ -247,7 +247,7 @@ impl Match {
     }
 
     pub fn is_over(&self) -> bool {
-        self.ended || self.tick >= MAX_TICKS || self.robots.iter().any(|r| r.is_ko())
+        self.ended || self.tick >= HARD_CAP_TICKS || self.robots.iter().any(|r| r.is_ko())
     }
 
     fn emit(&mut self, e: String) {
