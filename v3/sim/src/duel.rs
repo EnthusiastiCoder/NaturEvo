@@ -577,6 +577,7 @@ impl Match {
         }
     }
 
+    /// Sudden death: after the grace period the torso bleeds at a rate that grows every second.
     fn bleed(&mut self) {
         if self.tick < BLEED_START {
             return;
