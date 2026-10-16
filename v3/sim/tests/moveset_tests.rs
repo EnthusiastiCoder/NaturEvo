@@ -175,3 +175,15 @@ fn delay_adds_up_to_0_2_s_of_windup_only() {
         assert!((d1[1] - d0[1]).abs() < 1e-6 && (d1[2] - d0[2]).abs() < 1e-6, "{:?}", m);
     }
 }
+
+#[test]
+fn reach_changes_the_active_pose_and_arc_changes_the_cut() {
+    for m in [MoveId::Thrust, MoveId::Overhead] {
+        let lo = pose_at(m, &MoveParams { reach: 0.0, ..mid() }, Phase::Active, 0.5);
+        let hi = pose_at(m, &MoveParams { reach: 1.0, ..mid() }, Phase::Active, 0.5);
+        assert!(jump(&lo, &hi) > 0.05, "{:?} reach does nothing", m);
+    }
+    let a0 = pose_at(MoveId::DiagDown, &MoveParams { arc: 0.0, ..mid() }, Phase::Active, 0.5);
+    let a1 = pose_at(MoveId::DiagDown, &MoveParams { arc: 1.0, ..mid() }, Phase::Active, 0.5);
+    assert!(jump(&a0, &a1) > 0.05, "arc does nothing");
+}
