@@ -582,6 +582,12 @@ impl Match {
         if self.tick < SUDDEN_DEATH_START {
             return;
         }
+        if self.tick == SUDDEN_DEATH_START {
+            let t = self.tick;
+            self.emit(format!("{{\"t\":{},\"kind\":\"sudden_death\"}}", t));
+        }
+        let secs = (self.tick - SUDDEN_DEATH_START) as f32 * PHYS_DT;
+        let rate = SD_BLEED_BASE * (1.0 + SD_BLEED_GROWTH * secs);
         for r in self.robots.iter_mut() {
             let hp = r.hp(Part::Torso);
             r.set_hp(Part::Torso, hp - BLEED_PER_SEC * PHYS_DT);
