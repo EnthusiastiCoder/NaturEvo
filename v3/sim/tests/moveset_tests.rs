@@ -114,3 +114,21 @@ fn keyframes_are_shared_between_adjacent_phases() {
         assert!(jump(&pose_at(m, &p, Phase::Active, 1.0), &pose_at(m, &p, Phase::Recovery, 0.0)) < 1e-4, "{:?} active->recovery", m);
     }
 }
+
+#[test]
+fn min_jerk_endpoints_exact_and_zero_velocity() {
+    assert_eq!(min_jerk(0.0), 0.0);
+    assert!((min_jerk(1.0) - 1.0).abs() < 1e-6);
+    assert!((min_jerk(0.5) - 0.5).abs() < 1e-6);
+    let e = 1e-3;
+    assert!(min_jerk(e) / e < 1e-4, "start velocity");
+    assert!((1.0 - min_jerk(1.0 - e)) / e < 1e-4, "end velocity");
+    let mut prev = 0.0;
+    for k in 1..=100 {
+        let v = min_jerk(k as f32 / 100.0);
+        assert!(v >= prev);
+        prev = v;
+    }
+    let t: f32 = 0.3;
+    assert!((min_jerk(t) - (10.0 * t.powi(3) - 15.0 * t.powi(4) + 6.0 * t.powi(5))).abs() < 1e-6);
+}
