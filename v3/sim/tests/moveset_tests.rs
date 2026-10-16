@@ -33,3 +33,14 @@ fn move_id_order_and_count_are_fixed() {
     }
     assert_eq!(MoveId::Backstep as usize, 13);
 }
+
+#[test]
+fn every_non_idle_move_has_required_joints_and_positive_phases() {
+    for m in attacks() {
+        let s = spec(m);
+        assert!(!s.required.is_empty(), "{:?} required joints", m);
+        assert!(s.windup > 0.0 && s.active > 0.0 && s.recovery > 0.0, "{:?} W/A/R {} {} {}", m, s.windup, s.active, s.recovery);
+        assert!(s.energy > 0.0, "{:?} energy", m);
+        assert!(!m.name().is_empty());
+    }
+}
