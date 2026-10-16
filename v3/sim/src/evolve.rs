@@ -219,7 +219,7 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
     let mut mons: Vec<Genome> = (0..cfg.pop).map(|_| Genome::random(Role::Monster, &mut rng)).collect();
     let mut hof_h = HallOfFame::new(8);
     let mut hof_m = HallOfFame::new(8);
-    let mut csv = csv_header(&["gen", "stage", "hero_best", "hero_mean", "monster_best", "monster_mean", "defence_rate", "idle_guard", "draw_share", "mean_ticks"]);
+    let mut csv = csv_header(&["gen", "stage", "hero_best", "hero_mean", "monster_best", "monster_mean", "defence_rate", "idle_guard", "draw_share", "mean_ticks", "sudden_death_share", "jerk"]);
     let mut fight_gens: Vec<u32> = Vec::new();
     let mut evals: Vec<String> = Vec::new();
     for gen in 0..cfg.gens {
@@ -229,6 +229,7 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         let mut sum = [vec![0.0f32; cfg.pop], vec![0.0f32; cfg.pop]];
         let mut cnt = [vec![0u32; cfg.pop], vec![0u32; cfg.pop]];
         let (mut def, mut threats, mut idle, mut draws, mut ticks) = (0u32, 0u32, 0.0f32, 0u32, 0.0f32);
+        let (mut sd, mut jerk) = (0u32, 0.0f32);
         for (j, r) in jobs.iter().zip(results.iter()) {
             if let Some(i) = j.hero {
                 sum[0][i] += score_match(r, 0);
@@ -247,6 +248,8 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
                 draws += 1;
             }
             ticks += r.ticks as f32;
+            sd += r.sudden_death as u32;
+            jerk += (r.jerk[0] + r.jerk[1]) * 0.5;
         }
         let nj = jobs.len().max(1) as f32;
         let fit: Vec<Vec<f32>> = (0..2).map(|s| (0..cfg.pop).map(|i| sum[s][i] / cnt[s][i].max(1) as f32).collect()).collect();
@@ -259,8 +262,8 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
             Stage::C => "C",
         };
         csv.push_str(&format!(
-            "{},{},{},{},{},{},{},{},{},{}\n",
-            gen, stage_name, best(&fit[0]), mean(&fit[0]), best(&fit[1]), mean(&fit[1]), drate, idle / nj, draws as f32 / nj, ticks / nj
+            "{},{},{},{},{},{},{},{},{},{},{},{}\n",
+            gen, stage_name, best(&fit[0]), mean(&fit[0]), best(&fit[1]), mean(&fit[1]), drate, idle / nj, draws as f32 / nj, ticks / nj, sd as f32 / nj, jerk / nj
         ));
         let champ = |pop: &Vec<Genome>, f: &Vec<f32>| -> Genome {
             let mut bi = 0;
