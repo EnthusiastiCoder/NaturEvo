@@ -45,3 +45,21 @@ fn run_until(ex: &mut Executor, r: &mut Robot, ph: Phase, max: usize) -> usize {
     panic!("never reached {:?}, now {:?}", ph, ex.phase());
 }
 fn tip(r: &Robot) -> [f32; 2] { r.sword_capsule().b }
+
+struct Trace { max_reach: f32, max_speed: f32 }
+fn trace(r: &mut Robot, id: MoveId, p: MoveParams) -> Trace {
+    let mut ex = Executor::new();
+    tick(&mut ex, r, Some((id, p)));
+    let mut prev = tip(r);
+    let (mut max_reach, mut max_speed) = (0.0f32, 0.0f32);
+    for _ in 0..140 {
+        tick(&mut ex, r, None);
+        let t = tip(r);
+        let sh = r.capsule(Part::UArmR).a;
+        max_reach = max_reach.max(((t[0] - sh[0]).powi(2) + (t[1] - sh[1]).powi(2)).sqrt());
+        max_speed = max_speed.max(((t[0] - prev[0]).powi(2) + (t[1] - prev[1]).powi(2)).sqrt() / DT);
+        prev = t;
+        if ex.phase() == Phase::Idle && ex.move_id() == MoveId::Idle { break; }
+    }
+    Trace { max_reach, max_speed }
+}
