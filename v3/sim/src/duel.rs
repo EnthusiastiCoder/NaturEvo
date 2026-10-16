@@ -361,6 +361,7 @@ impl Match {
                 self.turn[i] = 0;
             }
         }
+        let (lo, hi) = self.bounds();
         for i in 0..2 {
             let act = self.decide(i);
             let old_x = self.robots[i].x;
