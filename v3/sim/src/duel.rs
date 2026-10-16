@@ -217,6 +217,8 @@ impl Match {
             tick: 0,
             threats: Vec::new(),
             idle_guard_ticks: [0; 2],
+            raw_action: [STAND_TARGETS; 2],
+            applied_action: [STAND_TARGETS; 2],
             dealt_w: [0.0; 2],
             quality_sum: [0.0; 2],
             hits: [0; 2],
