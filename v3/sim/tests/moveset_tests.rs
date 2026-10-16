@@ -187,3 +187,12 @@ fn reach_changes_the_active_pose_and_arc_changes_the_cut() {
     let a1 = pose_at(MoveId::DiagDown, &MoveParams { arc: 1.0, ..mid() }, Phase::Active, 0.5);
     assert!(jump(&a0, &a1) > 0.05, "arc does nothing");
 }
+
+#[test]
+fn pose_at_is_deterministic() {
+    for m in MoveId::ALL {
+        let a = pose_at(m, &mid(), Phase::Active, 0.37);
+        let b = pose_at(m, &mid(), Phase::Active, 0.37);
+        assert_eq!(a, b);
+    }
+}
