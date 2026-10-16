@@ -24,7 +24,7 @@ pub enum Brain {
 }
 
 enum Ctl {
-    Net(Box<Net>, Action),
+    Net(Box<Net>, Action, [f32; 12]),
     Dummy,
     Scripted(Box<Scripted>),
     Fixed(Action),
