@@ -56,3 +56,20 @@ fn spec_times_match_the_plan_table() {
         assert!((s.windup - w).abs() < 1e-4 && (s.active - a).abs() < 1e-4 && (s.recovery - r).abs() < 1e-4, "{:?}", m);
     }
 }
+
+#[test]
+fn required_joints_follow_the_plan() {
+    let has = |m: MoveId, js: &[Joint]| {
+        let s = spec(m);
+        for j in js { assert!(s.required.contains(j), "{:?} needs {:?}", m, j); }
+    };
+    has(MoveId::Overhead, &[Joint::HipR, Joint::Waist, Joint::ShoulderR, Joint::ElbowR]);
+    has(MoveId::Thrust, &[Joint::HipR, Joint::KneeR, Joint::Waist, Joint::ShoulderR, Joint::ElbowR]);
+    has(MoveId::Parry, &[Joint::ShoulderR, Joint::ElbowR, Joint::Waist]);
+    has(MoveId::Guard, &[Joint::ShoulderL, Joint::ElbowL]);
+    has(MoveId::ShieldBash, &[Joint::Waist, Joint::ShoulderL, Joint::ElbowL]);
+    has(MoveId::Kick, &[Joint::HipR, Joint::KneeR, Joint::AnkleR]);
+    has(MoveId::Backstep, &[Joint::HipL, Joint::HipR, Joint::KneeL, Joint::KneeR, Joint::AnkleL, Joint::AnkleR]);
+    assert!(!spec(MoveId::Guard).required.contains(&Joint::ShoulderR));
+    assert!(!spec(MoveId::Overhead).required.contains(&Joint::ShoulderL));
+}
