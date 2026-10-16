@@ -678,6 +678,12 @@ impl Match {
             passivity: self.passive_ticks as f32 / n,
             chain_quality: [q(0), q(1)],
             hits: self.hits,
+            jerk: {
+                let d = self.adv_ticks.max(1) as f32;
+                [self.jerk_sum[0] / d, self.jerk_sum[1] / d]
+            },
+            capped: self.capped,
+            sudden_death: self.tick > SUDDEN_DEATH_START,
         }
     }
 
