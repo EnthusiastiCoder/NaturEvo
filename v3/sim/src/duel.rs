@@ -579,7 +579,7 @@ impl Match {
 
     /// Sudden death: after the grace period the torso bleeds at a rate that grows every second.
     fn bleed(&mut self) {
-        if self.tick < BLEED_START {
+        if self.tick < SUDDEN_DEATH_START {
             return;
         }
         for r in self.robots.iter_mut() {
