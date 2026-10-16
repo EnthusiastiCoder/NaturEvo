@@ -2,7 +2,7 @@
 use crate::arena::Arena;
 use crate::combat::{resolve_tick, CombatEvent, ClashKind};
 use crate::fitness::{self, ThreatOutcome, zone_weight};
-use crate::config::{DECISION_TICKS, MAX_TICKS, PHYS_DT};
+use crate::config::*;
 use crate::genome::Genome;
 use crate::log::{self, f2, FightLog};
 use crate::moves::raw_impact;
