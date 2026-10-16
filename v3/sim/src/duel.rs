@@ -369,6 +369,12 @@ impl Match {
             let r = &mut self.robots[i];
             let before = r.joint_vel;
             r.apply_targets(&act.targets, PHYS_DT);
+            let mut jerk = 0.0;
+            for j in Joint::ALL {
+                let k = j as usize;
+                jerk += (r.joint_vel[k] - before[k]).abs() / j.max_speed();
+            }
+            self.jerk_sum[i] += jerk / 12.0;
             r.apply_drive(act.drive, PHYS_DT, self.arena.width);
             let nx = self.robots[i].x;
             if nx != old_x && self.blocked_by_obstacle(nx) && !self.blocked_by_obstacle(old_x) {
