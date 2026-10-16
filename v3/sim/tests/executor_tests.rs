@@ -24,3 +24,6 @@ use mech_sim::config::PHYS_DT;
 use mech_sim::executor::Executor;
 use mech_sim::moveset::*;
 use mech_sim::robot::{Joint, Part, Robot, Role, State, DT};
+
+mod common;
+use common::standing;
