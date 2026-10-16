@@ -1,0 +1,26 @@
+// WS-A executor tests (plan 2026-10-23_v3-sword-vocabulary.md, Test cases WS-A).
+//
+// INVENTED API (module `mech_sim::executor`, new file v3/sim/src/executor.rs; moveset API as in moveset_tests.rs):
+//   #[derive(Clone, Debug)] pub struct Executor;
+//   impl Executor {
+//     pub fn new() -> Executor;
+//     /// One fixed-dt tick. `req` is this tick's decision (None = no request). Requests are latched only when the
+//     /// executor may start/chain/feint; otherwise ignored silently. Returns the same Action type as scripted.rs.
+//     pub fn step(&mut self, me: &Robot, req: Option<(MoveId, MoveParams)>, dt: f32) -> scripted::Action;
+//     pub fn move_id(&self) -> MoveId;      // current move, Idle when none
+//     pub fn phase(&self) -> Phase;
+//     pub fn progress(&self) -> f32;        // 0..=1 inside the current phase
+//     pub fn committed(&self) -> bool;      // true from Active start until the move ends (Windup is still cancellable)
+//     pub fn whiffed(&self) -> bool;        // Active ended without notify_contact(); stays set through Recovery
+//     pub fn notify_contact(&mut self);     // caller reports the move touched the opponent during Active
+//     pub fn energy_spent(&self) -> f32;    // cumulative energy cost charged by the executor (move + feint 8 + drag 3 + chain 5 + jerk)
+//   }
+// Semantics under test: start only when Idle (or chain window), robot.state()==Idle, move parts not disabled
+// (moves::required joints via moveset::spec), robot.energy >= spec.energy. Feint request during Windup before 60% of
+// the windup cancels it (phase leaves Windup, costs 8 energy); after 60% it is ignored. Active is never cancelled.
+// Chain: a new attack request is accepted only in the last 25% of Recovery. Feint is a request-only move: it never
+// becomes the move_id of a fresh start from Idle with nothing to cancel (ignored).
+use mech_sim::config::PHYS_DT;
+use mech_sim::executor::Executor;
+use mech_sim::moveset::*;
+use mech_sim::robot::{Joint, Part, Robot, Role, State, DT};
