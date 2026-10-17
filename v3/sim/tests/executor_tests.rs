@@ -63,3 +63,13 @@ fn trace(r: &mut Robot, id: MoveId, p: MoveParams) -> Trace {
     }
     Trace { max_reach, max_speed }
 }
+
+#[test]
+fn starts_idle_and_a_request_starts_windup() {
+    let (mut ex, mut r) = fresh();
+    assert_eq!((ex.move_id(), ex.phase(), ex.committed()), (MoveId::Idle, Phase::Idle, false));
+    tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
+    assert_eq!(ex.move_id(), MoveId::Overhead);
+    assert_eq!(ex.phase(), Phase::Windup);
+    assert!(!ex.committed());
+}
