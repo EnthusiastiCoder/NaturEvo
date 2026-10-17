@@ -27,3 +27,10 @@ use mech_sim::sense::*;
 
 mod common;
 use common::standing;
+
+fn out_with(f: impl Fn(&mut [f32; N_OUT])) -> [f32; N_OUT] {
+    let mut o = [-1.0f32; N_OUT];
+    o[14..].iter_mut().for_each(|v| *v = 0.0);
+    f(&mut o);
+    o
+}
