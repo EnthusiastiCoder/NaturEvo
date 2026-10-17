@@ -207,3 +207,14 @@ fn chain_is_allowed_only_in_the_last_quarter_of_recovery() {
     assert_eq!(ex.move_id(), MoveId::DiagDown, "chain window must accept");
     assert_eq!(ex.phase(), Phase::Windup);
 }
+
+#[test]
+fn every_move_spends_positive_energy_over_its_duration() {
+    for id in MoveId::ALL.iter().copied().filter(|m| *m != MoveId::Idle && *m != MoveId::Feint) {
+        let (mut ex, mut r) = fresh();
+        tick(&mut ex, &mut r, Some((id, mid())));
+        ticks(&mut ex, &mut r, 90);
+        assert!(ex.energy_spent() > 0.0, "{:?}", id);
+        assert!(ex.energy_spent() < 60.0, "{:?} absurd cost {}", id, ex.energy_spent());
+    }
+}
