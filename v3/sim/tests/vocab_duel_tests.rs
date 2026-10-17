@@ -93,3 +93,15 @@ fn new_event_kinds_appear_with_required_fields() {
         for e in evs { for f in fields { assert!(e.contains(f), "{} event lacks {}: {}", kind, f, e); } }
     }
 }
+
+#[test]
+fn punish_mult_is_a_legal_multiplier() {
+    let all: String = (0..10u64).map(|s| logged(Brain::Skill(3), Brain::Spam(MoveId::Sweep), s)).collect();
+    let evs = events_of(&all, "punish");
+    assert!(!evs.is_empty());
+    for e in evs {
+        let i = e.find("\"mult\":").unwrap() + 7;
+        let v: f32 = e[i..].trim_end_matches('}').split(',').next().unwrap().parse().expect("mult number");
+        assert!((1.0..=1.75 + 1e-3).contains(&v), "mult {}", v);
+    }
+}
