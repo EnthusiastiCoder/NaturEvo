@@ -103,3 +103,14 @@ fn combine_takes_max_and_caps_at_1_75() {
     approx(combine(&[1.5, 2.2]), 1.75);
     approx(combine(&[3.0, 3.0, 3.0]), 1.75);
 }
+
+#[test]
+fn punish_mult_never_exceeds_the_cap() {
+    let mut st = RuleState::new();
+    st.begin_recovery(true, 0.4);
+    st.on_parry_success();
+    for a in [false, true] { for b in [false, true] { for c in [false, true] {
+        let m = punish_mult(&st, a, b, c);
+        assert!((1.0..=1.75 + 1e-5).contains(&m), "{}", m);
+    } } }
+}
