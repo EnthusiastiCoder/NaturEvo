@@ -42,3 +42,11 @@ fn different_seeds_give_different_sequences() {
     let a = starts(Brain::Skill(3), Brain::Scripted, 1).0;
     assert!((2..12u64).any(|s| starts(Brain::Skill(3), Brain::Scripted, s).0 != a));
 }
+
+#[test]
+fn tier_1_attacks_with_more_than_one_kind_of_move() {
+    let mut seen = std::collections::BTreeSet::new();
+    for s in 0..15u64 { for m in starts(Brain::Skill(1), Brain::Dummy, s).0 { seen.insert(m as usize); } }
+    assert!(seen.len() >= 4, "brawler used {:?}", seen);
+    assert!(!seen.contains(&(MoveId::Feint as usize)), "tier 1 does not feint");
+}
