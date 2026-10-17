@@ -183,3 +183,12 @@ fn spamming_one_move_loses_more_hp_to_tier_2_than_mixing_moves() {
     let mix = mean_pool(|| Brain::Cycle(vec![MoveId::Thrust, MoveId::Guard, MoveId::DiagDown, MoveId::Parry, MoveId::Overhead, MoveId::Backstep]));
     assert!(spam < mix - 0.02, "spam keeps {:.3} of its hp pool, mix keeps {:.3}", spam, mix);
 }
+
+#[test]
+fn spamming_overhead_mostly_whiffs_against_tier_2() {
+    let j: String = (0..8u64).map(|s| logged(Brain::Spam(MoveId::Overhead), Brain::Skill(2), s)).collect();
+    let whiffs = events_of(&j, "whiff").iter().filter(|e| e.contains("\"who\":0")).count();
+    let moves = events_of(&j, "move").iter().filter(|e| e.contains("\"who\":0")).count();
+    assert!(moves > 8);
+    assert!(whiffs as f32 >= 0.3 * moves as f32, "{} whiffs of {} swings", whiffs, moves);
+}
