@@ -155,3 +155,15 @@ fn fuzz_200_random_genome_matches_are_finite_in_range_and_never_panic() {
         }
     }
 }
+
+#[test]
+fn random_nets_actually_start_moves_through_the_executor() {
+    let mut any = false;
+    for seed in 0..20u64 {
+        let mut rng = Rng::new(seed + 1);
+        let mut m = Match::new(seed, Brain::Net(Genome::random(Role::Hero, &mut rng)), Brain::Dummy);
+        m.run_to_end();
+        any |= !m.move_starts(0).is_empty();
+    }
+    assert!(any, "no random net ever started a move: the Net brain does not drive the Executor");
+}
