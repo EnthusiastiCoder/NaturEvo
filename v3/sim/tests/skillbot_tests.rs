@@ -21,3 +21,8 @@ fn starts(a: Brain, b: Brain, seed: u64) -> (Vec<MoveId>, Vec<MoveId>) {
     m.run_to_end();
     (m.move_starts(0), m.move_starts(1))
 }
+
+#[test]
+fn skillbot_reports_its_tier() {
+    for t in 1..=3u8 { assert_eq!(SkillBot::new(5, t).tier(), t); }
+}
