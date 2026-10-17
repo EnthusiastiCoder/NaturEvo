@@ -88,3 +88,19 @@ fn phases_run_windup_active_recovery_idle_with_spec_durations() {
     assert_eq!(ex.move_id(), MoveId::Idle);
     assert!(!ex.committed());
 }
+
+#[test]
+fn disabled_shoulder_r_refuses_sword_moves_but_not_guard_or_kick() {
+    for id in [MoveId::Overhead, MoveId::Thrust, MoveId::Parry, MoveId::Riposte] {
+        let (mut ex, mut r) = fresh();
+        r.set_hp(Joint::ShoulderR.part(), 0.0);
+        tick(&mut ex, &mut r, Some((id, mid())));
+        assert_eq!((ex.move_id(), ex.phase()), (MoveId::Idle, Phase::Idle), "{:?} must be refused", id);
+    }
+    for id in [MoveId::Guard, MoveId::Kick] {
+        let (mut ex, mut r) = fresh();
+        r.set_hp(Joint::ShoulderR.part(), 0.0);
+        tick(&mut ex, &mut r, Some((id, mid())));
+        assert_eq!(ex.move_id(), id, "{:?} must still start", id);
+    }
+}
