@@ -209,3 +209,25 @@ fn timers_never_go_negative() {
     for _ in 0..100 { st.tick(0.05); }
     assert!(st.open_remaining() >= 0.0 && st.riposte_remaining() >= 0.0 && st.guard_broken_remaining() >= 0.0);
 }
+
+#[test]
+fn rules_are_pure_same_inputs_same_outputs() {
+    let build = || {
+        let mut st = RuleState::new();
+        st.begin_recovery(true, 0.4);
+        st.on_parry_success();
+        st.tick(0.1);
+        st
+    };
+    assert_eq!(build(), build());
+    let st = build();
+    for _ in 0..5 {
+        assert_eq!(punish_mult(&st, true, false, true), punish_mult(&st, true, false, true));
+    }
+    let (mut a, mut b) = (Robot::new(Role::Hero), Robot::new(Role::Hero));
+    let (mut sa, mut sb) = (RuleState::new(), RuleState::new());
+    backstep_counter(&mut a, &mut sa);
+    backstep_counter(&mut b, &mut sb);
+    assert_eq!(a.posture, b.posture);
+    assert_eq!(sa, sb);
+}
