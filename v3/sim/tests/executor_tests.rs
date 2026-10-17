@@ -112,3 +112,8 @@ fn refuses_when_staggered_fallen_or_out_of_energy() {
     assert_eq!(r.state(), State::Staggered);
     tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
     assert_eq!(ex.move_id(), MoveId::Idle);
+
+    let (mut ex, mut r) = fresh();
+    r.knock_down();
+    tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
+    assert_eq!(ex.move_id(), MoveId::Idle);
