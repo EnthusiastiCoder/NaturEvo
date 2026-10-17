@@ -71,3 +71,11 @@ fn tier_1_beats_dummy_in_20_of_20_seeds() {
         assert_eq!(r.outcome, Outcome::WinA, "seed {}", s);
     }
 }
+
+#[test]
+fn tier_2_and_3_also_beat_dummy_decisively() {
+    for t in [2u8, 3] {
+        let wins = (0..10u64).filter(|s| Match::new(*s, Brain::Skill(t), Brain::Dummy).run_to_end().outcome == Outcome::WinA).count();
+        assert!(wins >= 9, "tier {} won {}/10", t, wins);
+    }
+}
