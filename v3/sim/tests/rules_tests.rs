@@ -94,3 +94,12 @@ fn multipliers_combine_by_max_not_product() {
     approx(punish_mult(&st, true, true, false), 1.5);   // staggered exposed 1.5 wins
     approx(punish_mult(&st, false, true, false), 1.5);
 }
+
+#[test]
+fn combine_takes_max_and_caps_at_1_75() {
+    approx(combine(&[]), 1.0);
+    approx(combine(&[0.5]), 1.0);
+    approx(combine(&[1.3, 1.15, 1.5]), 1.5);
+    approx(combine(&[1.5, 2.2]), 1.75);
+    approx(combine(&[3.0, 3.0, 3.0]), 1.75);
+}
