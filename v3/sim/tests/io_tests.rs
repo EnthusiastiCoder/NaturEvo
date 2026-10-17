@@ -24,3 +24,6 @@ use mech_sim::net::{decode, MOVE_MARGIN, N_OUT, N_PARAMS};
 use mech_sim::rng::Rng;
 use mech_sim::robot::{Part, Robot, Role, STAND_TARGETS, DT};
 use mech_sim::sense::*;
+
+mod common;
+use common::standing;
