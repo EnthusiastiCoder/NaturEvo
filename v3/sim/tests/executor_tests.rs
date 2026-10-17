@@ -167,3 +167,15 @@ fn feint_cancels_windup_before_60_percent_and_costs_8_energy() {
         assert_ne!(ex.phase(), Phase::Active, "cancelled move went Active");
     }
 }
+
+#[test]
+fn feint_after_60_percent_of_windup_is_ignored() {
+    let (mut ex, mut r) = fresh();
+    tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
+    ticks(&mut ex, &mut r, 15); // about 16 of 21 ticks, 76%
+    assert_eq!(ex.phase(), Phase::Windup);
+    tick(&mut ex, &mut r, Some((MoveId::Feint, mid())));
+    assert_eq!(ex.move_id(), MoveId::Overhead);
+    run_until(&mut ex, &mut r, Phase::Active, 30);
+    assert_eq!(ex.move_id(), MoveId::Overhead);
+}
