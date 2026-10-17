@@ -248,3 +248,12 @@ fn whiffed_flag_clears_for_the_next_move() {
     assert_eq!(ex.move_id(), MoveId::Thrust);
     assert!(!ex.whiffed());
 }
+
+#[test]
+fn reach_up_extends_the_tip_for_thrust_and_overhead() {
+    for id in [MoveId::Thrust, MoveId::Overhead] {
+        let lo = trace(&mut standing(Role::Hero, 3.0, 1.0), id, MoveParams { reach: 0.0, ..mid() });
+        let hi = trace(&mut standing(Role::Hero, 3.0, 1.0), id, MoveParams { reach: 1.0, ..mid() });
+        assert!(hi.max_reach > lo.max_reach + 0.05, "{:?} reach {} vs {}", id, lo.max_reach, hi.max_reach);
+    }
+}
