@@ -266,3 +266,14 @@ fn speed_up_raises_peak_tip_speed() {
         assert!(fast.max_speed > slow.max_speed * 1.1, "{:?} {} vs {}", id, slow.max_speed, fast.max_speed);
     }
 }
+
+#[test]
+fn delay_param_extends_windup_in_the_executor() {
+    let windup_ticks = |delay: f32| {
+        let (mut ex, mut r) = fresh();
+        tick(&mut ex, &mut r, Some((MoveId::Overhead, MoveParams { delay, ..mid() })));
+        run_until(&mut ex, &mut r, Phase::Active, 90)
+    };
+    let (a, b) = (windup_ticks(0.0), windup_ticks(1.0));
+    assert!(b >= a + 10 && b <= a + 14, "0.2 s is 12 ticks: {} -> {}", a, b);
+}
