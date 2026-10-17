@@ -37,3 +37,23 @@ use mech_sim::robot::{Robot, Role};
 use mech_sim::rules::*;
 
 fn approx(a: f32, b: f32) { assert!((a - b).abs() < 1e-4, "{} vs {}", a, b); }
+
+#[test]
+fn constants_match_the_plan() {
+    approx(OPEN_MULT, 1.30);
+    approx(OPEN_POSTURE_MULT, 1.5);
+    approx(COUNTER_HIT_MULT, 1.15);
+    approx(MULT_CAP, 1.75);
+    approx(RIPOSTE_WINDOW, 0.6);
+    approx(RIPOSTE_MULT, 1.5);
+    approx(PARRY_MISS_RECOVERY, 0.30);
+    approx(PARRY_MISS_OPEN_MULT, 1.2);
+    approx(SHIELD_BASH_POSTURE, 35.0);
+    approx(GUARD_BREAK_TIME, 0.4);
+    approx(GUARD_BREAK_OPEN_MULT, 1.25);
+    approx(HEAVY_BLOCK_POSTURE_MULT, 1.4);
+    approx(BACKSTEP_COUNTER_POSTURE, 30.0);
+    approx(FEINT_COST, 8.0);
+    approx(DRAG_COST, 3.0);
+    approx(CHAIN_COST, 5.0);
+}
