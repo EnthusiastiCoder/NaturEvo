@@ -178,3 +178,12 @@ fn shield_bash_vs_guard_adds_35_posture_and_disables_guard_for_0_4_s() {
     approx(st.guard_broken_remaining(), 0.0);
     assert!(!st.is_open(), "free-light window ends with the guard break");
 }
+
+#[test]
+fn heavy_block_posture_x1_4_for_overhead_and_sweep_only() {
+    approx(heavy_block_posture(MoveId::Overhead, 20.0), 28.0);
+    approx(heavy_block_posture(MoveId::Sweep, 20.0), 28.0);
+    for m in [MoveId::DiagUp, MoveId::DiagDown, MoveId::Thrust, MoveId::LowCut, MoveId::Riposte, MoveId::Kick] {
+        approx(heavy_block_posture(m, 20.0), 20.0);
+    }
+}
