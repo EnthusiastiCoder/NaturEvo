@@ -37,3 +37,19 @@ fn events_of<'a>(j: &'a str, kind: &str) -> Vec<&'a str> {
     }
     out
 }
+
+#[test]
+fn every_frame_fighter_has_an_mv_object_with_id_phase_p_open() {
+    let j = logged(Brain::Skill(3), Brain::Skill(2), 3);
+    let a = j.find("\"frames\":[").expect("frames");
+    let b = j.find("\"events\":[").expect("events");
+    let frames = &j[a..b];
+    let n_frames = frames.matches("{\"t\":").count();
+    assert!(n_frames > 10);
+    assert_eq!(frames.matches("\"mv\":{").count(), 2 * n_frames, "one mv per fighter per frame");
+    for key in ["\"id\":\"", "\"phase\":", "\"p\":", "\"open\":", "\"gb\":", "\"rip\":"] {
+        assert!(frames.matches(key).count() >= 2 * n_frames, "mv key {} missing", key);
+    }
+    // At least one non-Idle id appears in a fight between two attackers.
+    assert!(["Overhead", "DiagDown", "DiagUp", "Sweep", "Thrust", "LowCut", "Parry", "Guard"].iter().any(|n| frames.contains(&format!("\"id\":\"{}\"", n))));
+}
