@@ -69,3 +69,27 @@ fn mv_ids_are_known_move_names_and_phase_in_0_to_3() {
         from = s;
     }
 }
+
+#[test]
+fn new_event_kinds_appear_with_required_fields() {
+    let mut all = String::new();
+    for s in 0..14u64 {
+        all.push_str(&logged(Brain::Skill(3), Brain::Skill(2), s));
+        all.push_str(&logged(Brain::Skill(3), Brain::Skill(3), s + 100));
+        all.push_str(&logged(Brain::Skill(2), Brain::Skill(3), s + 200));
+    }
+    let required: [(&str, &[&str]); 7] = [
+        ("move", &["\"t\":", "\"who\":", "\"name\":", "\"reach\":", "\"speed\":", "\"arc\":", "\"delay\":"]),
+        ("whiff", &["\"t\":", "\"who\":", "\"name\":"]),
+        ("punish", &["\"t\":", "\"who\":", "\"victim\":", "\"name\":", "\"mult\":"]),
+        ("guard_break", &["\"t\":", "\"who\":", "\"victim\":"]),
+        ("feint", &["\"t\":", "\"who\":"]),
+        ("counter", &["\"t\":", "\"who\":", "\"name\":"]),
+        ("riposte_open", &["\"t\":", "\"who\":"]),
+    ];
+    for (kind, fields) in required {
+        let evs = events_of(&all, kind);
+        assert!(!evs.is_empty(), "no {} event in 42 skillbot fights", kind);
+        for e in evs { for f in fields { assert!(e.contains(f), "{} event lacks {}: {}", kind, f, e); } }
+    }
+}
