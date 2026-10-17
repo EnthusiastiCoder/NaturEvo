@@ -53,3 +53,19 @@ fn every_frame_fighter_has_an_mv_object_with_id_phase_p_open() {
     // At least one non-Idle id appears in a fight between two attackers.
     assert!(["Overhead", "DiagDown", "DiagUp", "Sweep", "Thrust", "LowCut", "Parry", "Guard"].iter().any(|n| frames.contains(&format!("\"id\":\"{}\"", n))));
 }
+
+#[test]
+fn mv_ids_are_known_move_names_and_phase_in_0_to_3() {
+    let j = logged(Brain::Skill(3), Brain::Skill(2), 4);
+    let known = ["Idle", "Overhead", "DiagDown", "DiagUp", "Sweep", "Thrust", "LowCut", "Feint", "Parry", "Guard", "Riposte", "ShieldBash", "Kick", "Backstep"];
+    let mut from = 0;
+    while let Some(i) = j[from..].find("\"mv\":{\"id\":\"") {
+        let s = from + i + "\"mv\":{\"id\":\"".len();
+        let name = &j[s..s + j[s..].find('"').unwrap()];
+        assert!(known.contains(&name), "unknown id {}", name);
+        let rest = &j[s..s + 80];
+        let ph = rest.find("\"phase\":").map(|k| rest.as_bytes()[k + 8]).expect("phase after id");
+        assert!((b'0'..=b'3').contains(&ph), "phase digit {}", ph as char);
+        from = s;
+    }
+}
