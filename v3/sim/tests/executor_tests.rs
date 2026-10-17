@@ -257,3 +257,12 @@ fn reach_up_extends_the_tip_for_thrust_and_overhead() {
         assert!(hi.max_reach > lo.max_reach + 0.05, "{:?} reach {} vs {}", id, lo.max_reach, hi.max_reach);
     }
 }
+
+#[test]
+fn speed_up_raises_peak_tip_speed() {
+    for id in [MoveId::Thrust, MoveId::Overhead] {
+        let slow = trace(&mut standing(Role::Hero, 3.0, 1.0), id, MoveParams { speed: 0.2, ..mid() });
+        let fast = trace(&mut standing(Role::Hero, 3.0, 1.0), id, MoveParams { speed: 1.0, ..mid() });
+        assert!(fast.max_speed > slow.max_speed * 1.1, "{:?} {} vs {}", id, slow.max_speed, fast.max_speed);
+    }
+}
