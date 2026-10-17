@@ -314,3 +314,17 @@ fn two_runs_are_identical() {
     };
     assert_eq!(run(), run());
 }
+
+#[test]
+fn action_targets_are_normalised_and_finite() {
+    let (mut ex, mut r) = fresh();
+    for id in MoveId::ALL {
+        tick(&mut ex, &mut r, Some((id, mid())));
+        for _ in 0..30 {
+            let a = ex.step(&r, None, DT);
+            r.apply_targets(&a.targets, DT);
+            assert!(a.drive.is_finite() && a.drive.abs() <= 1.0 + 1e-4, "{:?} drive {}", id, a.drive);
+            for v in a.targets { assert!(v.is_finite() && v.abs() <= 1.0 + 1e-4, "{:?}", id); }
+        }
+    }
+}
