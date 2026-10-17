@@ -127,3 +127,31 @@ fn old_log_fields_are_still_present() {
         assert!(j.contains(k), "{}", k);
     }
 }
+
+#[test]
+fn fuzz_200_random_genome_matches_are_finite_in_range_and_never_panic() {
+    for seed in 0..200u64 {
+        let mut rng = Rng::new(seed * 13 + 5);
+        let a = Genome::random(Role::Hero, &mut rng);
+        let b = match seed % 4 {
+            0 => Brain::Net(Genome::random(Role::Monster, &mut rng)),
+            1 => Brain::Skill(1),
+            2 => Brain::Skill(2),
+            _ => Brain::Skill(3),
+        };
+        let mut m = Match::new(seed, Brain::Net(a), b);
+        let r = m.run_to_end();
+        assert!(r.ticks <= HARD_CAP_TICKS, "seed {}", seed);
+        for who in 0..2 {
+            let rb = &m.robots[who];
+            assert!(rb.x.is_finite() && rb.com()[0].is_finite() && rb.com()[1].is_finite(), "seed {} pos", seed);
+            assert!(rb.x >= 0.0 && rb.x <= m.arena.width, "seed {} left the arena: {}", seed, rb.x);
+            assert!((0.0..=100.0).contains(&rb.energy), "seed {} energy {}", seed, rb.energy);
+            assert!((0.0..=100.0).contains(&rb.posture), "seed {} posture {}", seed, rb.posture);
+            for p in Part::ALL {
+                let hp = rb.hp(p);
+                assert!(hp.is_finite() && hp <= rb.max_hp(p) + 1e-3 && hp >= -rb.max_hp(p), "seed {} {:?} hp {}", seed, p, hp);
+            }
+        }
+    }
+}
