@@ -47,3 +47,9 @@ fn decode_picks_the_max_logit() {
     let o = out_with(|o| { o[0] = 0.0; o[5] = 0.8; o[2] = 0.3; });
     assert_eq!(decode(&o).mv, MoveId::Thrust);
 }
+
+#[test]
+fn decode_ties_go_to_the_lowest_index() {
+    let o = out_with(|o| { o[0] = 0.0; o[3] = 0.7; o[7] = 0.7; o[11] = 0.7; });
+    assert_eq!(decode(&o).mv, MoveId::DiagUp);
+}
