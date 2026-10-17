@@ -179,3 +179,11 @@ fn feint_after_60_percent_of_windup_is_ignored() {
     run_until(&mut ex, &mut r, Phase::Active, 30);
     assert_eq!(ex.move_id(), MoveId::Overhead);
 }
+
+#[test]
+fn feint_from_idle_does_nothing() {
+    let (mut ex, mut r) = fresh();
+    tick(&mut ex, &mut r, Some((MoveId::Feint, mid())));
+    assert_eq!((ex.move_id(), ex.phase()), (MoveId::Idle, Phase::Idle));
+    assert!(ex.energy_spent() < 1.0);
+}
