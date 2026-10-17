@@ -114,3 +114,18 @@ fn punish_mult_never_exceeds_the_cap() {
         assert!((1.0..=1.75 + 1e-5).contains(&m), "{}", m);
     } } }
 }
+
+#[test]
+fn parry_success_opens_a_0_6_s_riposte_window_that_expires() {
+    let mut st = RuleState::new();
+    assert!(!st.riposte_open());
+    st.on_parry_success();
+    assert!(st.riposte_open());
+    approx(st.riposte_remaining(), 0.6);
+    st.tick(0.3);
+    assert!(st.riposte_open());
+    approx(st.riposte_remaining(), 0.3);
+    st.tick(0.31);
+    assert!(!st.riposte_open());
+    approx(st.riposte_remaining(), 0.0);
+}
