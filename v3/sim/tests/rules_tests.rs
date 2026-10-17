@@ -187,3 +187,16 @@ fn heavy_block_posture_x1_4_for_overhead_and_sweep_only() {
         approx(heavy_block_posture(m, 20.0), 20.0);
     }
 }
+
+#[test]
+fn backstep_counter_adds_30_posture_and_opens_the_attacker_for_0_3_s() {
+    let mut att = Robot::new(Role::Hero);
+    let mut st = RuleState::new();
+    let before = att.posture;
+    backstep_counter(&mut att, &mut st);
+    approx(att.posture - before, 30.0);
+    assert!(st.is_open());
+    approx(st.open_remaining(), 0.3);
+    st.tick(0.31);
+    assert!(!st.is_open());
+}
