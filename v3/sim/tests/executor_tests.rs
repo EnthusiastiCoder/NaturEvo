@@ -137,3 +137,13 @@ fn active_cannot_be_cancelled_or_replaced() {
         }
     }
 }
+
+#[test]
+fn requests_while_committed_are_ignored_through_recovery_start() {
+    let (mut ex, mut r) = fresh();
+    tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
+    run_until(&mut ex, &mut r, Phase::Recovery, 80);
+    tick(&mut ex, &mut r, Some((MoveId::Thrust, mid())));
+    assert_eq!(ex.move_id(), MoveId::Overhead);
+    assert_eq!(ex.phase(), Phase::Recovery);
+}
