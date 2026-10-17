@@ -106,3 +106,17 @@ fn tier_2_defends_better_than_a_dummy_and_better_than_tier_1() {
     };
     assert!(rate(Brain::Skill(2)) > rate(Brain::Skill(1)) + 0.1);
 }
+
+fn count_events(j: &str, kind: &str, who: usize) -> usize {
+    let key = format!("\"kind\":\"{}\"", kind);
+    let mut n = 0;
+    let mut from = 0;
+    while let Some(i) = j[from..].find(&key) {
+        let at = from + i;
+        let start = j[..at].rfind('{').unwrap();
+        let end = at + j[at..].find('}').unwrap();
+        if j[start..=end].contains(&format!("\"who\":{}", who)) { n += 1; }
+        from = at + key.len();
+    }
+    n
+}
