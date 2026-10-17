@@ -129,3 +129,13 @@ fn parry_success_opens_a_0_6_s_riposte_window_that_expires() {
     assert!(!st.riposte_open());
     approx(st.riposte_remaining(), 0.0);
 }
+
+#[test]
+fn riposte_windup_is_fast_inside_the_window_and_ordinary_outside() {
+    let mut st = RuleState::new();
+    approx(riposte_windup(&st), 0.30);
+    st.on_parry_success();
+    approx(riposte_windup(&st), 0.15);
+    st.tick(0.7);
+    approx(riposte_windup(&st), 0.30);
+}
