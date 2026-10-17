@@ -63,3 +63,11 @@ fn tier_3_uses_at_least_10_distinct_moves_over_30_seeds() {
         assert!(seen.contains(&(must as usize)), "{:?} never used", must);
     }
 }
+
+#[test]
+fn tier_1_beats_dummy_in_20_of_20_seeds() {
+    for s in 0..20u64 {
+        let r = Match::new(s, Brain::Skill(1), Brain::Dummy).run_to_end();
+        assert_eq!(r.outcome, Outcome::WinA, "seed {}", s);
+    }
+}
