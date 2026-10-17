@@ -277,3 +277,13 @@ fn delay_param_extends_windup_in_the_executor() {
     let (a, b) = (windup_ticks(0.0), windup_ticks(1.0));
     assert!(b >= a + 10 && b <= a + 14, "0.2 s is 12 ticks: {} -> {}", a, b);
 }
+
+#[test]
+fn damaged_elbow_lowers_tip_speed_for_the_same_move() {
+    let full = trace(&mut standing(Role::Hero, 3.0, 1.0), MoveId::Overhead, mid());
+    let mut hurt = standing(Role::Hero, 3.0, 1.0);
+    let p = Joint::ElbowR.part();
+    hurt.set_hp(p, hurt.max_hp(p) * 0.25);
+    let weak = trace(&mut hurt, MoveId::Overhead, mid());
+    assert!(weak.max_speed < full.max_speed * 0.95, "full {} weak {}", full.max_speed, weak.max_speed);
+}
