@@ -36,3 +36,9 @@ fn same_seed_same_tier_same_move_sequence() {
         assert!(!a.0.is_empty(), "tier {} never attacked", t);
     }
 }
+
+#[test]
+fn different_seeds_give_different_sequences() {
+    let a = starts(Brain::Skill(3), Brain::Scripted, 1).0;
+    assert!((2..12u64).any(|s| starts(Brain::Skill(3), Brain::Scripted, s).0 != a));
+}
