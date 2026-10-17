@@ -149,3 +149,15 @@ fn riposte_hit_deals_x1_5_on_staggered_or_open_targets_only() {
     approx(punish_mult(&open, false, false, true), 1.5);
     approx(punish_mult(&neutral, false, false, true), 1.0);
 }
+
+#[test]
+fn mistimed_parry_recovers_0_30_s_with_defender_open() {
+    let mut st = RuleState::new();
+    st.on_parry_miss();
+    assert!(st.is_open());
+    approx(st.open_remaining(), 0.30);
+    approx(st.open_mult(), 1.2);
+    approx(punish_mult(&st, false, false, false), 1.2);
+    st.tick(0.31);
+    assert!(!st.is_open());
+}
