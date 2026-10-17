@@ -200,3 +200,12 @@ fn backstep_counter_adds_30_posture_and_opens_the_attacker_for_0_3_s() {
     st.tick(0.31);
     assert!(!st.is_open());
 }
+
+#[test]
+fn timers_never_go_negative() {
+    let mut st = RuleState::new();
+    st.begin_recovery(true, 0.1);
+    st.on_parry_success();
+    for _ in 0..100 { st.tick(0.05); }
+    assert!(st.open_remaining() >= 0.0 && st.riposte_remaining() >= 0.0 && st.guard_broken_remaining() >= 0.0);
+}
