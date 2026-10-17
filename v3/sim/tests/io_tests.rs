@@ -41,3 +41,9 @@ fn n_out_is_19_and_sizes_are_sane() {
     assert!((90..=160).contains(&N_IN), "N_IN {}", N_IN);
     assert!((4000..=7000).contains(&N_PARAMS), "N_PARAMS {}", N_PARAMS);
 }
+
+#[test]
+fn decode_picks_the_max_logit() {
+    let o = out_with(|o| { o[0] = 0.0; o[5] = 0.8; o[2] = 0.3; });
+    assert_eq!(decode(&o).mv, MoveId::Thrust);
+}
