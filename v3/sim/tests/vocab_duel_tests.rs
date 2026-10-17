@@ -118,3 +118,12 @@ fn byte_identical_logs_for_the_same_seed() {
 fn different_seeds_give_different_logs() {
     assert_ne!(logged(Brain::Skill(3), Brain::Skill(2), 1), logged(Brain::Skill(3), Brain::Skill(2), 2));
 }
+
+#[test]
+fn old_log_fields_are_still_present() {
+    let j = logged(Brain::Skill(1), Brain::Dummy, 1);
+    assert!(j.contains("\"version\":3"));
+    for k in ["\"arena\":{", "\"frames\":[", "\"events\":[", "\"result\":{", "\"outcome\":", "\"defence\":", "\"sword\":", "\"shield\":"] {
+        assert!(j.contains(k), "{}", k);
+    }
+}
