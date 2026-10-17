@@ -73,3 +73,18 @@ fn starts_idle_and_a_request_starts_windup() {
     assert_eq!(ex.phase(), Phase::Windup);
     assert!(!ex.committed());
 }
+
+#[test]
+fn phases_run_windup_active_recovery_idle_with_spec_durations() {
+    let (mut ex, mut r) = fresh();
+    tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
+    let w = run_until(&mut ex, &mut r, Phase::Active, 60);
+    assert!((w as f32 * PHYS_DT - 0.35).abs() < 0.06, "windup ticks {}", w);
+    assert!(ex.committed());
+    let a = run_until(&mut ex, &mut r, Phase::Recovery, 60);
+    assert!((a as f32 * PHYS_DT - 0.10).abs() < 0.04, "active ticks {}", a);
+    let rec = run_until(&mut ex, &mut r, Phase::Idle, 80);
+    assert!((rec as f32 * PHYS_DT - 0.40).abs() < 0.06, "recovery ticks {}", rec);
+    assert_eq!(ex.move_id(), MoveId::Idle);
+    assert!(!ex.committed());
+}
