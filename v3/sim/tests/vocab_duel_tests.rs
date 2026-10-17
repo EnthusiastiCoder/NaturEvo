@@ -15,3 +15,10 @@ use mech_sim::log::fight_json;
 use mech_sim::moveset::MoveId;
 use mech_sim::rng::Rng;
 use mech_sim::robot::{Part, Role};
+
+fn logged(a: Brain, b: Brain, seed: u64) -> String {
+    let mut m = Match::new(seed, a, b);
+    m.enable_log();
+    m.run_to_end();
+    fight_json(&m)
+}
