@@ -113,3 +113,8 @@ fn byte_identical_logs_for_the_same_seed() {
     let g = Genome::random(Role::Hero, &mut rng);
     assert_eq!(logged(Brain::Net(g.clone()), Brain::Skill(2), 9), logged(Brain::Net(g), Brain::Skill(2), 9));
 }
+
+#[test]
+fn different_seeds_give_different_logs() {
+    assert_ne!(logged(Brain::Skill(3), Brain::Skill(2), 1), logged(Brain::Skill(3), Brain::Skill(2), 2));
+}
