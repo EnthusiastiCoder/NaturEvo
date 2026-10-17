@@ -50,3 +50,16 @@ fn tier_1_attacks_with_more_than_one_kind_of_move() {
     assert!(seen.len() >= 4, "brawler used {:?}", seen);
     assert!(!seen.contains(&(MoveId::Feint as usize)), "tier 1 does not feint");
 }
+
+#[test]
+fn tier_3_uses_at_least_10_distinct_moves_over_30_seeds() {
+    let mut seen = std::collections::BTreeSet::new();
+    for s in 0..30u64 {
+        let opp = if s % 2 == 0 { Brain::Skill(2) } else { Brain::Scripted };
+        for m in starts(Brain::Skill(3), opp, s).0 { seen.insert(m as usize); }
+    }
+    assert!(seen.len() >= 10, "duellist used only {} of {}: {:?}", seen.len(), N_MOVES, seen);
+    for must in [MoveId::Feint, MoveId::Parry, MoveId::Guard] {
+        assert!(seen.contains(&(must as usize)), "{:?} never used", must);
+    }
+}
