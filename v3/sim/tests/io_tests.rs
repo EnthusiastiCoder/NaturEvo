@@ -34,3 +34,10 @@ fn out_with(f: impl Fn(&mut [f32; N_OUT])) -> [f32; N_OUT] {
     f(&mut o);
     o
 }
+
+#[test]
+fn n_out_is_19_and_sizes_are_sane() {
+    assert_eq!(N_OUT, 19);
+    assert!((90..=160).contains(&N_IN), "N_IN {}", N_IN);
+    assert!((4000..=7000).contains(&N_PARAMS), "N_PARAMS {}", N_PARAMS);
+}
