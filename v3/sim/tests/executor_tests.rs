@@ -147,3 +147,23 @@ fn requests_while_committed_are_ignored_through_recovery_start() {
     assert_eq!(ex.move_id(), MoveId::Overhead);
     assert_eq!(ex.phase(), Phase::Recovery);
 }
+
+#[test]
+fn feint_cancels_windup_before_60_percent_and_costs_8_energy() {
+    let (mut ex, mut r) = fresh();
+    tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
+    ticks(&mut ex, &mut r, 4); // about 5 of 21 windup ticks, well before 60%
+    assert_eq!(ex.phase(), Phase::Windup);
+    let before = ex.energy_spent();
+    tick(&mut ex, &mut r, Some((MoveId::Feint, mid())));
+    assert_ne!(ex.phase(), Phase::Active);
+    assert_ne!(ex.phase(), Phase::Windup, "feint must leave the windup");
+    assert!(!ex.whiffed(), "a feint is not a whiff");
+    let cost = ex.energy_spent() - before;
+    assert!((cost - 8.0).abs() < 0.75, "feint cost {}", cost);
+    // And the cancelled swing never reaches Active.
+    for _ in 0..80 {
+        tick(&mut ex, &mut r, None);
+        assert_ne!(ex.phase(), Phase::Active, "cancelled move went Active");
+    }
+}
