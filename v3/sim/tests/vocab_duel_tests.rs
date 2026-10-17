@@ -22,3 +22,18 @@ fn logged(a: Brain, b: Brain, seed: u64) -> String {
     m.run_to_end();
     fight_json(&m)
 }
+
+/// Every `{...}` event object of the given kind (events are flat objects).
+fn events_of<'a>(j: &'a str, kind: &str) -> Vec<&'a str> {
+    let key = format!("\"kind\":\"{}\"", kind);
+    let mut out = Vec::new();
+    let mut from = 0;
+    while let Some(i) = j[from..].find(&key) {
+        let at = from + i;
+        let start = j[..at].rfind('{').unwrap();
+        let end = at + j[at..].find('}').unwrap();
+        out.push(&j[start..=end]);
+        from = end;
+    }
+    out
+}
