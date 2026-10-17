@@ -287,3 +287,14 @@ fn damaged_elbow_lowers_tip_speed_for_the_same_move() {
     let weak = trace(&mut hurt, MoveId::Overhead, mid());
     assert!(weak.max_speed < full.max_speed * 0.95, "full {} weak {}", full.max_speed, weak.max_speed);
 }
+
+#[test]
+fn smooth_moves_cost_less_jerk_energy_than_a_fast_one_of_the_same_move() {
+    let cost = |speed: f32| {
+        let (mut ex, mut r) = fresh();
+        tick(&mut ex, &mut r, Some((MoveId::Overhead, MoveParams { speed, ..mid() })));
+        ticks(&mut ex, &mut r, 100);
+        ex.energy_spent()
+    };
+    assert!(cost(1.0) > cost(0.0), "fast {} slow {}", cost(1.0), cost(0.0));
+}
