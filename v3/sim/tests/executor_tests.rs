@@ -238,3 +238,13 @@ fn whiffed_flag_not_set_after_contact() {
     run_until(&mut ex, &mut r, Phase::Recovery, 60);
     assert!(!ex.whiffed());
 }
+
+#[test]
+fn whiffed_flag_clears_for_the_next_move() {
+    let (mut ex, mut r) = fresh();
+    tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
+    run_until(&mut ex, &mut r, Phase::Idle, 150);
+    tick(&mut ex, &mut r, Some((MoveId::Thrust, mid())));
+    assert_eq!(ex.move_id(), MoveId::Thrust);
+    assert!(!ex.whiffed());
+}
