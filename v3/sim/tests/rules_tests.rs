@@ -69,3 +69,12 @@ fn whiff_recovery_is_open_with_x1_30_damage() {
     assert!(!st.is_open());
     approx(punish_mult(&st, false, false, false), 1.0);
 }
+
+#[test]
+fn a_landed_move_leaves_no_open_window() {
+    let mut st = RuleState::new();
+    st.begin_recovery(false, 0.40);
+    assert!(!st.is_open());
+    approx(st.open_mult(), 1.0);
+    approx(punish_mult(&st, false, false, false), 1.0);
+}
