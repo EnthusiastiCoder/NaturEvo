@@ -123,3 +123,17 @@ fn refuses_when_staggered_fallen_or_out_of_energy() {
     tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
     assert_eq!(ex.move_id(), MoveId::Idle, "energy below the move cost");
 }
+
+#[test]
+fn active_cannot_be_cancelled_or_replaced() {
+    let (mut ex, mut r) = fresh();
+    tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
+    run_until(&mut ex, &mut r, Phase::Active, 60);
+    for req in [MoveId::Feint, MoveId::Backstep, MoveId::Parry, MoveId::Thrust, MoveId::Idle] {
+        tick(&mut ex, &mut r, Some((req, mid())));
+        if ex.phase() == Phase::Active {
+            assert_eq!(ex.move_id(), MoveId::Overhead, "{:?} replaced an Active move", req);
+            assert!(ex.committed());
+        }
+    }
+}
