@@ -133,3 +133,9 @@ fn tier_2_punishes_an_open_spammer() {
     }
     assert!(punishes >= 3, "tier 2 punished only {} times", punishes);
 }
+
+#[test]
+fn tier_3_beats_tier_1_most_of_the_time() {
+    let wins = (0..10u64).filter(|s| Match::new(*s, Brain::Skill(3), Brain::Skill(1)).run_to_end().outcome == Outcome::WinA).count();
+    assert!(wins >= 6, "tier 3 won {}/10", wins);
+}
