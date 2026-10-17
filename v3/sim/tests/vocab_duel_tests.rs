@@ -167,3 +167,12 @@ fn random_nets_actually_start_moves_through_the_executor() {
     }
     assert!(any, "no random net ever started a move: the Net brain does not drive the Executor");
 }
+
+fn mean_pool(spammer: impl Fn() -> Brain) -> f32 {
+    let n = 10u64;
+    (0..n).map(|s| {
+        let mut m = Match::new(s, spammer(), Brain::Skill(2));
+        m.run_to_end();
+        m.robots[0].pool_frac()
+    }).sum::<f32>() / n as f32
+}
