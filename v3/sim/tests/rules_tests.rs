@@ -57,3 +57,15 @@ fn constants_match_the_plan() {
     approx(DRAG_COST, 3.0);
     approx(CHAIN_COST, 5.0);
 }
+
+#[test]
+fn whiff_recovery_is_open_with_x1_30_damage() {
+    let mut st = RuleState::new();
+    st.begin_recovery(true, 0.40);
+    assert!(st.is_open());
+    approx(st.open_mult(), 1.30);
+    approx(punish_mult(&st, false, false, false), 1.30);
+    st.tick(0.41);
+    assert!(!st.is_open());
+    approx(punish_mult(&st, false, false, false), 1.0);
+}
