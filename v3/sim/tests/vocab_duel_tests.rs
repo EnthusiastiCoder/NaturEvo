@@ -176,3 +176,10 @@ fn mean_pool(spammer: impl Fn() -> Brain) -> f32 {
         m.robots[0].pool_frac()
     }).sum::<f32>() / n as f32
 }
+
+#[test]
+fn spamming_one_move_loses_more_hp_to_tier_2_than_mixing_moves() {
+    let spam = mean_pool(|| Brain::Spam(MoveId::Overhead));
+    let mix = mean_pool(|| Brain::Cycle(vec![MoveId::Thrust, MoveId::Guard, MoveId::DiagDown, MoveId::Parry, MoveId::Overhead, MoveId::Backstep]));
+    assert!(spam < mix - 0.02, "spam keeps {:.3} of its hp pool, mix keeps {:.3}", spam, mix);
+}
