@@ -218,3 +218,13 @@ fn every_move_spends_positive_energy_over_its_duration() {
         assert!(ex.energy_spent() < 60.0, "{:?} absurd cost {}", id, ex.energy_spent());
     }
 }
+
+#[test]
+fn whiffed_flag_set_when_active_ends_without_contact() {
+    let (mut ex, mut r) = fresh();
+    tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
+    run_until(&mut ex, &mut r, Phase::Active, 60);
+    assert!(!ex.whiffed(), "not whiffed while still Active");
+    run_until(&mut ex, &mut r, Phase::Recovery, 60);
+    assert!(ex.whiffed());
+}
