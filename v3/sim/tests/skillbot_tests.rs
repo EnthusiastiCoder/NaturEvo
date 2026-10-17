@@ -120,3 +120,16 @@ fn count_events(j: &str, kind: &str, who: usize) -> usize {
     }
     n
 }
+
+#[test]
+fn tier_2_punishes_an_open_spammer() {
+    // A Sweep spammer whiffs often (longest recovery); a Reactive bot must hit it while Open.
+    let mut punishes = 0;
+    for s in 0..6u64 {
+        let mut m = Match::new(s, Brain::Spam(MoveId::Sweep), Brain::Skill(2));
+        m.enable_log();
+        m.run_to_end();
+        punishes += count_events(&fight_json(&m), "punish", 1);
+    }
+    assert!(punishes >= 3, "tier 2 punished only {} times", punishes);
+}
