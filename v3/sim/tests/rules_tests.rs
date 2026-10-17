@@ -78,3 +78,10 @@ fn a_landed_move_leaves_no_open_window() {
     approx(st.open_mult(), 1.0);
     approx(punish_mult(&st, false, false, false), 1.0);
 }
+
+#[test]
+fn counter_hit_x1_15_only_during_own_windup_or_active() {
+    let st = RuleState::new();
+    approx(punish_mult(&st, true, false, false), 1.15);
+    approx(punish_mult(&st, false, false, false), 1.0);
+}
