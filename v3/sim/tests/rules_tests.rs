@@ -85,3 +85,12 @@ fn counter_hit_x1_15_only_during_own_windup_or_active() {
     approx(punish_mult(&st, true, false, false), 1.15);
     approx(punish_mult(&st, false, false, false), 1.0);
 }
+
+#[test]
+fn multipliers_combine_by_max_not_product() {
+    let mut st = RuleState::new();
+    st.begin_recovery(true, 0.4);
+    approx(punish_mult(&st, true, false, false), 1.30); // open 1.30 vs counter 1.15
+    approx(punish_mult(&st, true, true, false), 1.5);   // staggered exposed 1.5 wins
+    approx(punish_mult(&st, false, true, false), 1.5);
+}
