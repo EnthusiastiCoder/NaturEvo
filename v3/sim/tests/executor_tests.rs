@@ -228,3 +228,13 @@ fn whiffed_flag_set_when_active_ends_without_contact() {
     run_until(&mut ex, &mut r, Phase::Recovery, 60);
     assert!(ex.whiffed());
 }
+
+#[test]
+fn whiffed_flag_not_set_after_contact() {
+    let (mut ex, mut r) = fresh();
+    tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
+    run_until(&mut ex, &mut r, Phase::Active, 60);
+    ex.notify_contact();
+    run_until(&mut ex, &mut r, Phase::Recovery, 60);
+    assert!(!ex.whiffed());
+}
