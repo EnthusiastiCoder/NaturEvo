@@ -104,3 +104,11 @@ fn disabled_shoulder_r_refuses_sword_moves_but_not_guard_or_kick() {
         assert_eq!(ex.move_id(), id, "{:?} must still start", id);
     }
 }
+
+#[test]
+fn refuses_when_staggered_fallen_or_out_of_energy() {
+    let (mut ex, mut r) = fresh();
+    r.add_posture(150.0);
+    assert_eq!(r.state(), State::Staggered);
+    tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
+    assert_eq!(ex.move_id(), MoveId::Idle);
