@@ -53,3 +53,14 @@ fn decode_ties_go_to_the_lowest_index() {
     let o = out_with(|o| { o[0] = 0.0; o[3] = 0.7; o[7] = 0.7; o[11] = 0.7; });
     assert_eq!(decode(&o).mv, MoveId::DiagUp);
 }
+
+#[test]
+fn decode_requires_the_margin_over_idle() {
+    let below = out_with(|o| { o[0] = 0.50; o[1] = 0.50 + MOVE_MARGIN * 0.5; });
+    assert_eq!(decode(&below).mv, MoveId::Idle);
+    let equal = out_with(|o| { o[0] = 0.5; o[4] = 0.5; });
+    assert_eq!(decode(&equal).mv, MoveId::Idle);
+    let above = out_with(|o| { o[0] = 0.50; o[1] = 0.50 + MOVE_MARGIN * 2.0; });
+    assert_eq!(decode(&above).mv, MoveId::Overhead);
+    approx(MOVE_MARGIN, 0.05);
+}
