@@ -192,3 +192,16 @@ fn spamming_overhead_mostly_whiffs_against_tier_2() {
     assert!(moves > 8);
     assert!(whiffs as f32 >= 0.3 * moves as f32, "{} whiffs of {} swings", whiffs, moves);
 }
+
+#[cfg(not(debug_assertions))]
+#[test]
+fn nine_hundred_ticks_of_skillbot_fight_run_under_25_ms_release() {
+    let mut best = f64::MAX;
+    for _ in 0..5 {
+        let mut m = Match::new(1, Brain::Skill(3), Brain::Skill(2));
+        let t = std::time::Instant::now();
+        for _ in 0..900 { if m.is_over() { break; } m.step(); }
+        best = best.min(t.elapsed().as_secs_f64() * 1000.0);
+    }
+    assert!(best < 25.0, "{:.1} ms", best);
+}
