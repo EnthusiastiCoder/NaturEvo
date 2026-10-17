@@ -79,3 +79,16 @@ fn tier_2_and_3_also_beat_dummy_decisively() {
         assert!(wins >= 9, "tier {} won {}/10", t, wins);
     }
 }
+
+#[test]
+fn tier_2_blocks_or_parries_at_least_40_percent_of_live_threats_from_tier_1() {
+    let (mut good, mut all) = (0u32, 0u32);
+    for s in 0..12u64 {
+        let r = Match::new(s, Brain::Skill(1), Brain::Skill(2)).run_to_end();
+        let d = &r.defence[1];
+        good += d.parry + d.block;
+        all += d.parry + d.block + d.dodge + d.hit;
+    }
+    assert!(all > 0, "tier 1 never threatened tier 2");
+    assert!(good as f32 >= 0.4 * all as f32, "tier 2 parried or blocked {}/{}", good, all);
+}
