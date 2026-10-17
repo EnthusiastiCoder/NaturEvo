@@ -117,3 +117,9 @@ fn refuses_when_staggered_fallen_or_out_of_energy() {
     r.knock_down();
     tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
     assert_eq!(ex.move_id(), MoveId::Idle);
+
+    let (mut ex, mut r) = fresh();
+    r.energy = 0.5;
+    tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
+    assert_eq!(ex.move_id(), MoveId::Idle, "energy below the move cost");
+}
