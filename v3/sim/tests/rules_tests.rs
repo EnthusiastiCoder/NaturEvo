@@ -161,3 +161,20 @@ fn mistimed_parry_recovers_0_30_s_with_defender_open() {
     st.tick(0.31);
     assert!(!st.is_open());
 }
+
+#[test]
+fn shield_bash_vs_guard_adds_35_posture_and_disables_guard_for_0_4_s() {
+    let mut def = Robot::new(Role::Monster);
+    let mut st = RuleState::new();
+    let before = def.posture;
+    guard_break(&mut def, &mut st);
+    approx(def.posture - before, 35.0);
+    approx(st.guard_broken_remaining(), 0.4);
+    assert!(st.is_open());
+    approx(st.open_mult(), 1.25);
+    st.tick(0.3);
+    assert!(st.guard_broken_remaining() > 0.05 && st.is_open());
+    st.tick(0.11);
+    approx(st.guard_broken_remaining(), 0.0);
+    assert!(!st.is_open(), "free-light window ends with the guard break");
+}
