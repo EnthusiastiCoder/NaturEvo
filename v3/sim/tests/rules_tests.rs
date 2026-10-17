@@ -139,3 +139,13 @@ fn riposte_windup_is_fast_inside_the_window_and_ordinary_outside() {
     st.tick(0.7);
     approx(riposte_windup(&st), 0.30);
 }
+
+#[test]
+fn riposte_hit_deals_x1_5_on_staggered_or_open_targets_only() {
+    let neutral = RuleState::new();
+    approx(punish_mult(&neutral, false, true, true), 1.5);
+    let mut open = RuleState::new();
+    open.begin_recovery(true, 0.4);
+    approx(punish_mult(&open, false, false, true), 1.5);
+    approx(punish_mult(&neutral, false, false, true), 1.0);
+}
