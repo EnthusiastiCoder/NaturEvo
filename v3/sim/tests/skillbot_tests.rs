@@ -26,3 +26,13 @@ fn starts(a: Brain, b: Brain, seed: u64) -> (Vec<MoveId>, Vec<MoveId>) {
 fn skillbot_reports_its_tier() {
     for t in 1..=3u8 { assert_eq!(SkillBot::new(5, t).tier(), t); }
 }
+
+#[test]
+fn same_seed_same_tier_same_move_sequence() {
+    for t in 1..=3u8 {
+        let a = starts(Brain::Skill(t), Brain::Scripted, 11);
+        let b = starts(Brain::Skill(t), Brain::Scripted, 11);
+        assert_eq!(a, b, "tier {}", t);
+        assert!(!a.0.is_empty(), "tier {} never attacked", t);
+    }
+}
