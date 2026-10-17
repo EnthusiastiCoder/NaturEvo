@@ -187,3 +187,23 @@ fn feint_from_idle_does_nothing() {
     assert_eq!((ex.move_id(), ex.phase()), (MoveId::Idle, Phase::Idle));
     assert!(ex.energy_spent() < 1.0);
 }
+
+#[test]
+fn chain_is_allowed_only_in_the_last_quarter_of_recovery() {
+    // Early in recovery: ignored.
+    let (mut ex, mut r) = fresh();
+    tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
+    run_until(&mut ex, &mut r, Phase::Recovery, 80);
+    ticks(&mut ex, &mut r, 4); // about 4 of 24 recovery ticks
+    tick(&mut ex, &mut r, Some((MoveId::DiagDown, mid())));
+    assert_eq!(ex.move_id(), MoveId::Overhead, "early chain must be ignored");
+    // Late in recovery: accepted.
+    let (mut ex, mut r) = fresh();
+    tick(&mut ex, &mut r, Some((MoveId::Overhead, mid())));
+    run_until(&mut ex, &mut r, Phase::Recovery, 80);
+    ticks(&mut ex, &mut r, 20); // about 20 of 24, inside the last 25%
+    assert_eq!(ex.phase(), Phase::Recovery);
+    tick(&mut ex, &mut r, Some((MoveId::DiagDown, mid())));
+    assert_eq!(ex.move_id(), MoveId::DiagDown, "chain window must accept");
+    assert_eq!(ex.phase(), Phase::Windup);
+}
