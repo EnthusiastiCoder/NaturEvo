@@ -15,3 +15,9 @@ use mech_sim::duel::{Brain, Match, Outcome};
 use mech_sim::log::fight_json;
 use mech_sim::moveset::{MoveId, N_MOVES};
 use mech_sim::skillbot::SkillBot;
+
+fn starts(a: Brain, b: Brain, seed: u64) -> (Vec<MoveId>, Vec<MoveId>) {
+    let mut m = Match::new(seed, a, b);
+    m.run_to_end();
+    (m.move_starts(0), m.move_starts(1))
+}
