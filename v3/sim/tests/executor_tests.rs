@@ -298,3 +298,19 @@ fn smooth_moves_cost_less_jerk_energy_than_a_fast_one_of_the_same_move() {
     };
     assert!(cost(1.0) > cost(0.0), "fast {} slow {}", cost(1.0), cost(0.0));
 }
+
+#[test]
+fn two_runs_are_identical() {
+    let run = || {
+        let (mut ex, mut r) = fresh();
+        let mut out = Vec::new();
+        for i in 0..200 {
+            let req = match i { 0 => Some((MoveId::Thrust, mid())), 40 => Some((MoveId::DiagUp, mid())), 90 => Some((MoveId::Guard, mid())), _ => None };
+            let a = ex.step(&r, req, DT);
+            r.apply_targets(&a.targets, DT);
+            out.push((a.targets, a.drive, ex.move_id(), ex.phase()));
+        }
+        (out, ex.energy_spent())
+    };
+    assert_eq!(run(), run());
+}
