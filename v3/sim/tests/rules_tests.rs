@@ -35,3 +35,5 @@
 use mech_sim::moveset::MoveId;
 use mech_sim::robot::{Robot, Role};
 use mech_sim::rules::*;
+
+fn approx(a: f32, b: f32) { assert!((a - b).abs() < 1e-4, "{} vs {}", a, b); }
