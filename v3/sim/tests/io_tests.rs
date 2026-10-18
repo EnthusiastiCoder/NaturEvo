@@ -97,3 +97,10 @@ fn decode_is_pure() {
 
 fn pair() -> (Robot, Robot, Arena) { (standing(Role::Hero, 4.0, 1.0), standing(Role::Monster, 7.0, -1.0), Arena::flat(14.0)) }
 fn info(id: MoveId, phase: Phase) -> MoveInfo { MoveInfo { id, phase, progress: 0.4, ..Default::default() } }
+
+#[test]
+fn old_observe_equals_observe_moves_with_idle_infos() {
+    let (a, b, ar) = pair();
+    let d = MoveInfo::default();
+    assert_eq!(observe(&a, &b, &ar)[..], observe_moves(&a, &b, &ar, &d, &d)[..]);
+}
