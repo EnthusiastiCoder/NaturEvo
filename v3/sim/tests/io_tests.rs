@@ -94,3 +94,6 @@ fn decode_is_pure() {
     assert_eq!((a.mv, a.drive), (b.mv, b.drive));
     assert_eq!(a.params, b.params);
 }
+
+fn pair() -> (Robot, Robot, Arena) { (standing(Role::Hero, 4.0, 1.0), standing(Role::Monster, 7.0, -1.0), Arena::flat(14.0)) }
+fn info(id: MoveId, phase: Phase) -> MoveInfo { MoveInfo { id, phase, progress: 0.4, ..Default::default() } }
