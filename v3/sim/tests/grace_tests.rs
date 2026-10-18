@@ -24,3 +24,6 @@ use mech_sim::grace::*;
 use mech_sim::moveset::{min_jerk, MoveId, MoveParams, Phase, N_MOVES};
 use mech_sim::robot::{Role, DT};
 use std::path::PathBuf;
+
+mod common;
+use common::standing;
