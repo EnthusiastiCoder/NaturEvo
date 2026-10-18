@@ -104,3 +104,12 @@ fn old_observe_equals_observe_moves_with_idle_infos() {
     let d = MoveInfo::default();
     assert_eq!(observe(&a, &b, &ar)[..], observe_moves(&a, &b, &ar, &d, &d)[..]);
 }
+
+#[test]
+fn input_ranges_for_move_and_phase_one_hots_exist_and_do_not_overlap() {
+    for (r1, r2) in [(&OWN_MOVE, &OWN_PHASE), (&OWN_MOVE, &OPP_MOVE), (&OWN_MOVE, &OPP_PHASE), (&OWN_PHASE, &OPP_MOVE), (&OWN_PHASE, &OPP_PHASE), (&OPP_MOVE, &OPP_PHASE)] {
+        assert!(r1.end <= r2.start || r2.end <= r1.start, "{:?} overlaps {:?}", r1, r2);
+    }
+    assert_eq!((OWN_MOVE.len(), OWN_PHASE.len(), OPP_MOVE.len(), OPP_PHASE.len()), (14, 4, 14, 4));
+    assert!(OWN_MOVE.end <= N_IN && OPP_MOVE.end <= N_IN && OWN_PHASE.end <= N_IN && OPP_PHASE.end <= N_IN);
+}
