@@ -54,3 +54,16 @@ fn punish_rate_counts_only_hits_on_open_or_staggered_windows() {
     approx(punish_rate(0, 0), 0.0);
     assert!(punish_rate(9, 3) <= 1.0, "clamped to 0..=1");
 }
+
+#[test]
+fn move_usage_entropy_bounds() {
+    let mut c = [0u32; N_MOVES];
+    approx(move_usage_entropy(&c), 0.0);
+    c[5] = 20;
+    approx(move_usage_entropy(&c), 0.0);
+    c = [3u32; N_MOVES];
+    approx(move_usage_entropy(&c), (N_MOVES as f32).ln());
+    c[0] = 30;
+    let e = move_usage_entropy(&c);
+    assert!(e > 0.0 && e < (N_MOVES as f32).ln());
+}
