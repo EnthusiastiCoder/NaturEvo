@@ -86,3 +86,11 @@ fn decode_maps_params_to_unit_range_and_clamps_drive() {
     assert_eq!((e.params.reach, e.params.speed), (0.0, 1.0));
     assert_eq!(e.drive, 1.0);
 }
+
+#[test]
+fn decode_is_pure() {
+    let o = out_with(|o| { o[9] = 0.9; o[14] = 0.3; });
+    let (a, b) = (decode(&o), decode(&o));
+    assert_eq!((a.mv, a.drive), (b.mv, b.drive));
+    assert_eq!(a.params, b.params);
+}
