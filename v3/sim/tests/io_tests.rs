@@ -64,3 +64,9 @@ fn decode_requires_the_margin_over_idle() {
     assert_eq!(decode(&above).mv, MoveId::Overhead);
     approx(MOVE_MARGIN, 0.05);
 }
+
+#[test]
+fn decode_idle_wins_when_it_is_the_max() {
+    let o = out_with(|o| { o[0] = 0.9; o[6] = 0.2; });
+    assert_eq!(decode(&o).mv, MoveId::Idle);
+}
