@@ -121,3 +121,18 @@ fn own_move_and_phase_are_one_hot() {
     for i in 0..14 { assert_eq!(x[OWN_MOVE.start + i], if i == MoveId::Overhead as usize { 1.0 } else { 0.0 }, "own move {}", i); }
     for i in 0..4 { assert_eq!(x[OWN_PHASE.start + i], if i == Phase::Active as usize { 1.0 } else { 0.0 }, "own phase {}", i); }
 }
+
+#[test]
+fn opponent_move_and_phase_mirror_correctly() {
+    let (a, b, ar) = pair();
+    let ia = info(MoveId::Overhead, Phase::Windup);
+    let ib = info(MoveId::Thrust, Phase::Recovery);
+    let xa = observe_moves(&a, &b, &ar, &ia, &ib);
+    let xb = observe_moves(&b, &a, &ar, &ib, &ia);
+    // What A sees as the opponent is what B sees as own, and vice versa.
+    assert_eq!(xa[OPP_MOVE.clone()], xb[OWN_MOVE.clone()]);
+    assert_eq!(xa[OPP_PHASE.clone()], xb[OWN_PHASE.clone()]);
+    assert_eq!(xb[OPP_MOVE.clone()], xa[OWN_MOVE.clone()]);
+    assert_eq!(xa[OPP_MOVE.start + MoveId::Thrust as usize], 1.0);
+    assert_eq!(xa[OPP_PHASE.start + Phase::Recovery as usize], 1.0);
+}
