@@ -67,3 +67,5 @@ fn move_usage_entropy_bounds() {
     let e = move_usage_entropy(&c);
     assert!(e > 0.0 && e < (N_MOVES as f32).ln());
 }
+
+fn curve(f: impl Fn(f32) -> f32) -> Vec<[f32; 2]> { (0..=40).map(|i| [f(i as f32 / 40.0), 0.0]).collect() }
