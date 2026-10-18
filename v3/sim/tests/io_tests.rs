@@ -113,3 +113,11 @@ fn input_ranges_for_move_and_phase_one_hots_exist_and_do_not_overlap() {
     assert_eq!((OWN_MOVE.len(), OWN_PHASE.len(), OPP_MOVE.len(), OPP_PHASE.len()), (14, 4, 14, 4));
     assert!(OWN_MOVE.end <= N_IN && OPP_MOVE.end <= N_IN && OWN_PHASE.end <= N_IN && OPP_PHASE.end <= N_IN);
 }
+
+#[test]
+fn own_move_and_phase_are_one_hot() {
+    let (a, b, ar) = pair();
+    let x = observe_moves(&a, &b, &ar, &info(MoveId::Overhead, Phase::Active), &MoveInfo::default());
+    for i in 0..14 { assert_eq!(x[OWN_MOVE.start + i], if i == MoveId::Overhead as usize { 1.0 } else { 0.0 }, "own move {}", i); }
+    for i in 0..4 { assert_eq!(x[OWN_PHASE.start + i], if i == Phase::Active as usize { 1.0 } else { 0.0 }, "own phase {}", i); }
+}
