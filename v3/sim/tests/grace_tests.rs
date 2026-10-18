@@ -40,3 +40,9 @@ fn whiff_rate_is_1_for_swings_at_nothing_and_0_when_all_land() {
     approx(whiff_rate(8, 2), 0.25);
     approx(whiff_rate(0, 0), 0.0);
 }
+
+#[test]
+fn hits_per_swing_counts_body_hits_over_attack_starts() {
+    approx(hits_per_swing(10, 4), 0.4);
+    approx(hits_per_swing(0, 0), 0.0);
+}
