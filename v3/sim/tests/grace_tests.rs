@@ -46,3 +46,11 @@ fn hits_per_swing_counts_body_hits_over_attack_starts() {
     approx(hits_per_swing(10, 4), 0.4);
     approx(hits_per_swing(0, 0), 0.0);
 }
+
+#[test]
+fn punish_rate_counts_only_hits_on_open_or_staggered_windows() {
+    approx(punish_rate(0, 5), 0.0);
+    approx(punish_rate(3, 6), 0.5);
+    approx(punish_rate(0, 0), 0.0);
+    assert!(punish_rate(9, 3) <= 1.0, "clamped to 0..=1");
+}
