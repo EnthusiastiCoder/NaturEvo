@@ -136,3 +136,14 @@ fn opponent_move_and_phase_mirror_correctly() {
     assert_eq!(xa[OPP_MOVE.start + MoveId::Thrust as usize], 1.0);
     assert_eq!(xa[OPP_PHASE.start + Phase::Recovery as usize], 1.0);
 }
+
+#[test]
+fn opponent_move_inputs_are_zero_when_own_head_is_disabled() {
+    let (mut a, b, ar) = pair();
+    a.set_hp(Part::Head, 0.0);
+    let x = observe_moves(&a, &b, &ar, &info(MoveId::Parry, Phase::Idle), &info(MoveId::Overhead, Phase::Active));
+    assert!(x[OPP_MOVE.clone()].iter().all(|v| *v == 0.0), "opp move not blanked");
+    assert!(x[OPP_PHASE.clone()].iter().all(|v| *v == 0.0), "opp phase not blanked");
+    // Own state is still known to a blinded fighter.
+    assert_eq!(x[OWN_MOVE.start + MoveId::Parry as usize], 1.0);
+}
