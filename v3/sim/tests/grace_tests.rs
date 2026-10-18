@@ -32,3 +32,11 @@ fn approx(a: f32, b: f32) { assert!((a - b).abs() < 1e-4, "{} vs {}", a, b); }
 fn weight(gen: u32, k: OppKind) -> f32 { opponent_mix(gen).iter().filter(|(o, _)| *o == k).map(|(_, w)| *w).sum() }
 
 // ---- pure metric helpers ----
+
+#[test]
+fn whiff_rate_is_1_for_swings_at_nothing_and_0_when_all_land() {
+    approx(whiff_rate(10, 10), 1.0);
+    approx(whiff_rate(10, 0), 0.0);
+    approx(whiff_rate(8, 2), 0.25);
+    approx(whiff_rate(0, 0), 0.0);
+}
