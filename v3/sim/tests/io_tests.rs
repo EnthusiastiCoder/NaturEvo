@@ -72,3 +72,17 @@ fn decode_idle_wins_when_it_is_the_max() {
 }
 
 fn approx(a: f32, b: f32) { assert!((a - b).abs() < 1e-5, "{} vs {}", a, b); }
+
+#[test]
+fn decode_maps_params_to_unit_range_and_clamps_drive() {
+    let d = decode(&out_with(|o| { o[14] = -1.0; o[15] = 0.0; o[16] = 1.0; o[17] = 0.5; o[18] = 0.25; }));
+    let p: MoveParams = d.params;
+    approx(p.reach, 0.0);
+    approx(p.speed, 0.5);
+    approx(p.arc, 1.0);
+    approx(p.delay, 0.75);
+    approx(d.drive, 0.25);
+    let e = decode(&out_with(|o| { o[14] = -3.0; o[15] = 3.0; o[18] = 2.0; }));
+    assert_eq!((e.params.reach, e.params.speed), (0.0, 1.0));
+    assert_eq!(e.drive, 1.0);
+}
