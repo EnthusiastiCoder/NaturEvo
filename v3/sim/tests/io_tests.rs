@@ -147,3 +147,35 @@ fn opponent_move_inputs_are_zero_when_own_head_is_disabled() {
     // Own state is still known to a blinded fighter.
     assert_eq!(x[OWN_MOVE.start + MoveId::Parry as usize], 1.0);
 }
+
+#[test]
+fn observations_are_finite_and_in_range_under_fuzz() {
+    let mut rng = Rng::new(99);
+    let ar = Arena::flat(14.0);
+    for _ in 0..200 {
+        let mut a = standing(Role::Hero, rng.range(1.0, 6.0), 1.0);
+        let mut b = standing(Role::Monster, rng.range(7.0, 13.0), -1.0);
+        for p in Part::ALL {
+            if rng.f32() < 0.2 { a.set_hp(p, a.max_hp(p) * rng.f32()); }
+            if rng.f32() < 0.2 { b.set_hp(p, b.max_hp(p) * rng.f32()); }
+        }
+        for _ in 0..5 {
+            let mut t = STAND_TARGETS;
+            for v in t.iter_mut() { *v = rng.range(-1.0, 1.0); }
+            a.apply_targets(&t, DT);
+            b.apply_targets(&t, DT);
+        }
+        let rnd = |rng: &mut Rng| MoveInfo {
+            id: MoveId::ALL[(rng.next_u64() % 14) as usize],
+            phase: [Phase::Idle, Phase::Windup, Phase::Active, Phase::Recovery][(rng.next_u64() % 4) as usize],
+            progress: rng.f32(), committed: rng.f32() < 0.5, open: rng.f32() < 0.5,
+            riposte_remaining: rng.range(0.0, 0.6), guard_broken_remaining: rng.range(0.0, 0.4),
+            last_cost: rng.range(0.0, 30.0), recovery_remaining: rng.range(0.0, 0.5),
+        };
+        let (ma, mb) = (rnd(&mut rng), rnd(&mut rng));
+        for x in [observe_moves(&a, &b, &ar, &ma, &mb), observe_moves(&b, &a, &ar, &mb, &ma)] {
+            assert_eq!(x.len(), N_IN);
+            assert!(x.iter().all(|v| v.is_finite() && (-3.0..=3.0).contains(v)));
+        }
+    }
+}
