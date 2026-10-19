@@ -229,3 +229,9 @@ fn stage_c_has_hall_of_fame_self_play_and_tier_3_and_no_dummy() {
         approx(weight(g, OppKind::Dummy), 0.0);
     }
 }
+
+#[test]
+fn hall_of_fame_only_in_stage_c() {
+    for g in [0, 29, 30, 79] { approx(weight(g, OppKind::Hof), 0.0); }
+    assert!(weight(80, OppKind::Hof) > 0.0);
+}
