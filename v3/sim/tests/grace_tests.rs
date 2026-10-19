@@ -112,3 +112,11 @@ fn executor_driven_swing_has_lower_tip_jerk_than_a_step_target_swing() {
 }
 
 // ---- match level metrics ----
+
+fn sample() -> (Match, GraceStats, GraceStats) {
+    let mut m = Match::new(4, Brain::Skill(3), Brain::Skill(2));
+    m.run_to_end();
+    let a = match_grace(&m, 0);
+    let b = match_grace(&m, 1);
+    (m, a, b)
+}
