@@ -107,3 +107,10 @@ pub fn guard_break(defender: &mut Robot, def_st: &mut RuleState) {
     def_st.guard_broken_t = GUARD_BREAK_TIME;
     def_st.open_for(GUARD_BREAK_TIME, GUARD_BREAK_OPEN_MULT);
 }
+
+pub fn heavy_block_posture(m: MoveId, base_posture: f32) -> f32 {
+    match m {
+        MoveId::Overhead | MoveId::Sweep => base_posture * HEAVY_BLOCK_POSTURE_MULT,
+        _ => base_posture,
+    }
+}
