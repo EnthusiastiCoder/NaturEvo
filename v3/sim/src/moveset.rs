@@ -12,3 +12,5 @@
 //! Poses are normalised 12-joint targets; phases interpolate between shared keyframes with a minimum-jerk quintic.
 use crate::config::DELAY_MAX;
 use crate::robot::{Joint, STAND_TARGETS};
+
+pub const N_MOVES: usize = 14;
