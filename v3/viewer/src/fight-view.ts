@@ -1,6 +1,5 @@
 import { parseFight, type Fight } from './data';
 import { FightScene } from './scene';
-import { bleedAt, suddenDeathActive } from './walls';
 import { defenceTallyModel, hudModel } from './hud';
 import { DEFAULT_ACCENT, applyTheme, nextTheme, setAccent, themeIconPath, type Theme } from './theme';
 
@@ -49,7 +48,6 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
     <div class="fv-stage"><div id="fv-canvas"></div>
       <div class="fv-hud" id="fv-hud"></div>
       <div id="fv-help" class="fv-help" hidden>Bars: core HP (green), energy (blue), posture (yellow; full means staggered). Silhouette: each of 13 parts coloured by health; dark red is disabled. Keys: Space pause, R restart, T theme, arrows step.</div>
-      <div id="fv-sd" class="fv-sd" hidden>SUDDEN DEATH</div>
       <div id="fv-result" class="fv-result" hidden></div></div>
   </div>`;
   const $ = <T extends HTMLElement>(id: string) => view.querySelector<T>('#' + id)!;
@@ -62,7 +60,6 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
     <div class="fv-bar-row" title="Core (torso) health"><i class="b hp"></i></div>
     <div class="fv-bar-row" title="Energy: spent by movement and guarding"><i class="b en"></i></div>
     <div class="fv-bar-row" title="Posture: full means staggered"><i class="b po"></i></div>
-    <div class="fv-bleed" hidden title="Sudden death: the torso loses health every second, faster the longer it lasts"><span class="fv-bleed-dot"></span><span class="fv-bleed-t"></span></div>
     <svg class="fv-sil" viewBox="0 0 40 72"><path class="fv-neck" d="M20 12V20" stroke="#888" stroke-width="5" opacity=".7"/>${SIL.map(([x, y, w, h], k) => `<rect x="${x - w}" y="${y - h / 2}" width="${w * 2}" height="${h}" rx="2"><title>${PART_NAMES[k]}</title></rect>`).join('')}</svg>
     <div class="fv-tally"></div></div>`;
   hud.innerHTML = sideHtml(0) + sideHtml(1);
@@ -76,22 +73,18 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
     const key = `${fr.t}|${Math.round(tick)}`;
     if (key === lastKey) return;
     lastKey = key;
-    const sdOn = suddenDeathActive(fight, tick), bleed = bleedAt(fight, tick);
-    $('fv-sd').hidden = !sdOn;
     const m = hudModel(fr);
     m.fighters.forEach((f, i) => {
       setBar(sides[i], 'hp', f.coreHp); setBar(sides[i], 'en', f.energy); setBar(sides[i], 'po', f.posture);
       sides[i].querySelectorAll<SVGRectElement>('rect').forEach((r, k) => { r.style.fill = f.parts[k].color; });
-      const bl = sides[i].querySelector<HTMLElement>('.fv-bleed')!;
-      bl.hidden = !sdOn || fr.f[i].hp[1] <= 0;
-      if (!bl.hidden) bl.querySelector('.fv-bleed-t')!.textContent = `BLEED -${bleed.toFixed(1)} hp/s`;
       sides[i].querySelector('.fv-state')!.textContent = fr.f[i].state === 'idle' ? '' : fr.f[i].state;
       const items = defenceTallyModel(tallyAt(fight, i, tick)).items;
       sides[i].querySelector('.fv-tally')!.innerHTML = items.map((x) => `<span title="${esc(x.tooltip)}">${x.key} ${x.count}</span>`).join('');
     });
   };
   const res = $('fv-result');
-  scene.onEnd = () => { res.hidden = false; res.textContent = `Result: ${fight.result.outcome.replace('_', ' ')} after ${(fight.result.ticks / 60).toFixed(1)} s`; };
+  scene.onEnd = () => { res.hidden = false; res.textContent = `Result: ${fight.result.outcome.replace('_', ' ')} after ${(fight.result.ticks / 60).toFixed(1)} s`;
+    if (fight.result.capped) { const b = document.createElement('div'); b.className = 'fv-stalemate'; b.textContent = 'stalemate'; res.append(' ', b); } };
 
   const root = document.documentElement;
   let theme: Theme = (root.dataset.theme as Theme) || 'dark';
