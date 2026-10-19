@@ -9,6 +9,18 @@ export interface FighterFrame {
 export interface Frame { t: number; f: [FighterFrame, FighterFrame] }
 export type FightEvent = { t: number; kind: string; [k: string]: any };
 export interface Tally { parry: number; block: number; dodge: number; hit: number }
+/** Collision geometry in cm, from the log's `geometry` block (shieldAlong is a 0..1 fraction of the forearm). */
+export interface Geometry {
+  headR: number; neckR: number; shieldLen: number; shieldAlong: number; shieldR: number;
+  swordLen: number; swordR: number; radii: number[]; // radii in part order Head Torso Pelvis UArmL UArmR FArmL FArmR ThighL ThighR ShinL ShinR FootL FootR
+}
+/** Used for logs written before the geometry block existed. */
+export const DEFAULT_GEOMETRY: Geometry = {
+  headR: 23, neckR: 9, shieldLen: 70, shieldAlong: 0.62, shieldR: 5, swordLen: 220, swordR: 5,
+  radii: [23, 30, 26, 11, 11, 10, 10, 15, 15, 12, 12, 9, 9],
+};
+/** Closing-walls mechanic (cm, ticks at 60/s). */
+export interface SuddenDeath { startTick: number; speedCm: number; minWidth: number; bleedBase: number; bleedGrowth: number }
 export interface Fight {
   version: 3; arena: Arena; parts: string[]; dt: number; frames: Frame[]; events: FightEvent[];
   result: { outcome: string; ticks: number; defence: [Tally, Tally] };
