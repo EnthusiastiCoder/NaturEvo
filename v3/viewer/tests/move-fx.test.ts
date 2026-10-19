@@ -55,3 +55,42 @@ describe('fixture and parseFight', () => {
     expect((f.frames[0].f[0] as any).mv).toBeUndefined();
   });
 });
+
+describe('moveCallout', () => {
+  const f = fight();
+  const at = (t: number) => moveCallout(f.events, frameAt(f, t - (t % 2)), t, f.dt);
+  it('is null before the event', () => { expect(at(2)).toBeNull(); });
+  it('names the move near the attacker head, fully opaque at the event tick', () => {
+    const c = at(4)!;
+    expect(c).not.toBeNull();
+    expect(c.text.toLowerCase()).toContain('overhead');
+    expect(c.alpha).toBeGreaterThan(0.95);
+    const head = frameAt(f, 4).f[0].parts[0];
+    expect(Math.abs(c.x - (head[0] + head[2]) / 2)).toBeLessThan(80);
+    expect(Math.abs(c.y - Math.max(head[1], head[3]))).toBeLessThan(200);
+  });
+  it('fades to nothing over 0.6 s', () => {
+    const ticks = 0.6 / f.dt; // 18
+    const mid = at(4 + Math.round(ticks / 2))!;
+    expect(mid.alpha).toBeGreaterThan(0.3);
+    expect(mid.alpha).toBeLessThan(0.7);
+    const end = at(4 + Math.ceil(ticks) + 1);
+    expect(end === null || end.alpha === 0).toBe(true);
+    const later = at(10);
+    expect(later === null || later.kind !== 'move' || later.alpha < 0.4).toBe(true);
+  });
+  it('PUNISH, COUNTER and GUARD BREAK variants are distinct', () => {
+    const p = at(14)!, c = at(30)!, g = at(20)!, m = at(4)!;
+    expect(p.text).toContain('PUNISH');
+    expect(c.text).toContain('COUNTER');
+    expect(g.text).toContain('GUARD BREAK');
+    expect(new Set([p.color, c.color, g.color, m.color]).size).toBe(4);
+    expect(new Set([p.kind, c.kind, g.kind, m.kind]).size).toBe(4);
+  });
+  it('punish anchors on the attacker (who) not the victim', () => {
+    const p = at(14)!;
+    const att = frameAt(f, 14).f[1].parts[0], vic = frameAt(f, 14).f[0].parts[0];
+    const hx = (h: number[]) => (h[0] + h[2]) / 2;
+    expect(Math.abs(p.x - hx(att))).toBeLessThan(Math.abs(p.x - hx(vic)));
+  });
+});
