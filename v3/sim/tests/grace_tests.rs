@@ -110,3 +110,5 @@ fn executor_driven_swing_has_lower_tip_jerk_than_a_step_target_swing() {
     assert!(smooth.is_finite() && raw.is_finite());
     assert!(smooth < raw, "executor {} vs step {}", smooth, raw);
 }
+
+// ---- match level metrics ----
