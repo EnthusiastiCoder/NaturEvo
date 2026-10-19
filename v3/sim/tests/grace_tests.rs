@@ -159,3 +159,17 @@ fn a_spammer_against_a_dummy_that_never_defends_lands_hits_a_spammer_in_the_void
 }
 
 // ---- fitness unchanged ----
+
+#[test]
+fn fitness_weights_are_unchanged() {
+    approx(W_WIN, 4.0);
+    approx(W_DEALT, 3.0);
+    approx(W_TAKEN, 2.5);
+    approx(W_DEFENCE, 2.0);
+    approx(W_IDLE_GUARD, 1.0);
+    approx(W_PASSIVITY, 1.0);
+    approx(W_CHAIN, 0.5);
+    approx(W_JERK, 8.0); // baseline from the motion fix, must not change
+    approx(KO_BONUS, 1.0);
+    assert_eq!(MAX_CREDITED_THREATS, 6);
+}
