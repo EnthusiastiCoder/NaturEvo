@@ -164,3 +164,26 @@ describe('hudMoveLine', () => {
     expect(hudMoveLine(load('fight_small.json').frames[0].f[0])).toBe('');
   });
 });
+
+describe('graceModel', () => {
+  const f = fight();
+  it('lists whiff, punish, hits per swing and jerk with formatted values and tooltips', () => {
+    const g = graceModel(f.result, 0)!;
+    expect(g.rows.map((r) => r.key)).toEqual(['whiff', 'punish', 'hits_per_swing', 'jerk']);
+    expect(g.rows.map((r) => r.value)).toEqual(['50%', '0%', '0.80', '0.12']);
+    for (const r of g.rows) { expect(r.label.length).toBeGreaterThan(0); expect(r.tooltip.length).toBeGreaterThan(5); }
+    expect(new Set(g.rows.map((r) => r.tooltip)).size).toBe(4);
+  });
+  it('is per fighter', () => {
+    const g = graceModel(f.result, 1)!;
+    expect(g.rows.map((r) => r.value)).toEqual(['25%', '40%', '0.60', '0.31']);
+  });
+  it('sorts move usage by count descending', () => {
+    const g = graceModel(f.result, 0)!;
+    expect(g.usage[0]).toEqual({ name: 'Overhead', count: 6 });
+    expect(g.usage.map((u) => u.name)).toEqual(['Overhead', 'Thrust', 'Parry', 'ShieldBash']);
+  });
+  it('is null when the log has no move summary', () => {
+    expect(graceModel(load('fight_small.json').result, 0)).toBeNull();
+  });
+});
