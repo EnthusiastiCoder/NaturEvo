@@ -114,3 +114,9 @@ pub fn heavy_block_posture(m: MoveId, base_posture: f32) -> f32 {
         _ => base_posture,
     }
 }
+
+/// Backstep evaded a Thrust that would have connected.
+pub fn backstep_counter(attacker: &mut Robot, att_st: &mut RuleState) {
+    attacker.add_posture(BACKSTEP_COUNTER_POSTURE);
+    att_st.open_for(BACKSTEP_COUNTER_OPEN, OPEN_MULT);
+}
