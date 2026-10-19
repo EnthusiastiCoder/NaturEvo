@@ -69,3 +69,13 @@ fn move_usage_entropy_bounds() {
 }
 
 fn curve(f: impl Fn(f32) -> f32) -> Vec<[f32; 2]> { (0..=40).map(|i| [f(i as f32 / 40.0), 0.0]).collect() }
+
+#[test]
+fn min_jerk_path_is_smoother_than_a_ramp_with_velocity_kinks() {
+    let smooth = tip_jerk(&curve(|t| 2.0 * min_jerk(t)), PHYS_DT);
+    let ramp = tip_jerk(&curve(|t| 2.0 * t), PHYS_DT);
+    assert!(smooth.is_finite() && ramp.is_finite());
+    // A ramp has zero jerk in its interior but the ramp-and-hold of a step-target move does not.
+    let step = tip_jerk(&curve(|t| if t < 0.5 { 4.0 * t } else { 2.0 }), PHYS_DT);
+    assert!(smooth < step, "min-jerk {} vs step {}", smooth, step);
+}
