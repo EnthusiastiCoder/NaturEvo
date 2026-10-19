@@ -102,3 +102,11 @@ fn tip_trace(drive_executor: bool) -> Vec<[f32; 2]> {
     }
     out
 }
+
+#[test]
+fn executor_driven_swing_has_lower_tip_jerk_than_a_step_target_swing() {
+    let smooth = tip_jerk(&tip_trace(true), DT);
+    let raw = tip_jerk(&tip_trace(false), DT);
+    assert!(smooth.is_finite() && raw.is_finite());
+    assert!(smooth < raw, "executor {} vs step {}", smooth, raw);
+}
