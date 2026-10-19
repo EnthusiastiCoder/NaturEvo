@@ -117,3 +117,18 @@ pub struct MoveSpec {
 }
 
 use Joint::*;
+
+static IDLE_SPEC: MoveSpec = MoveSpec { windup: 0.0, active: 0.0, recovery: 0.0, required: &[], energy: 0.0, can_whiff: false };
+static OVERHEAD: MoveSpec = MoveSpec { windup: 0.35, active: 0.10, recovery: 0.40, required: &[HipR, Waist, ShoulderR, ElbowR], energy: 7.0, can_whiff: true };
+static DIAG_DOWN: MoveSpec = MoveSpec { windup: 0.30, active: 0.10, recovery: 0.35, required: &[HipR, Waist, ShoulderR, ElbowR], energy: 6.0, can_whiff: true };
+static DIAG_UP: MoveSpec = MoveSpec { windup: 0.25, active: 0.10, recovery: 0.30, required: &[HipR, Waist, ShoulderR, ElbowR], energy: 5.0, can_whiff: true };
+static SWEEP: MoveSpec = MoveSpec { windup: 0.30, active: 0.15, recovery: 0.45, required: &[HipR, Waist, ShoulderR, ElbowR], energy: 8.0, can_whiff: true };
+static THRUST: MoveSpec = MoveSpec { windup: 0.20, active: 0.08, recovery: 0.35, required: &[HipR, KneeR, Waist, ShoulderR, ElbowR], energy: 6.0, can_whiff: true };
+static LOW_CUT: MoveSpec = MoveSpec { windup: 0.30, active: 0.12, recovery: 0.40, required: &[HipR, KneeR, Waist, ShoulderR, ElbowR], energy: 6.0, can_whiff: true };
+static FEINT: MoveSpec = MoveSpec { windup: 0.10, active: 0.05, recovery: 0.15, required: &[Waist, ShoulderR, ElbowR], energy: 8.0, can_whiff: false };
+static PARRY: MoveSpec = MoveSpec { windup: 0.05, active: 0.15, recovery: 0.30, required: &[ShoulderR, ElbowR, Waist], energy: 3.0, can_whiff: true };
+static GUARD: MoveSpec = MoveSpec { windup: 0.10, active: 0.40, recovery: 0.10, required: &[ShoulderL, ElbowL], energy: 2.0, can_whiff: false };
+static RIPOSTE: MoveSpec = MoveSpec { windup: 0.30, active: 0.10, recovery: 0.30, required: &[HipR, Waist, ShoulderR, ElbowR], energy: 6.0, can_whiff: true };
+static SHIELD_BASH: MoveSpec = MoveSpec { windup: 0.25, active: 0.10, recovery: 0.35, required: &[Waist, ShoulderL, ElbowL], energy: 6.0, can_whiff: true };
+static KICK: MoveSpec = MoveSpec { windup: 0.15, active: 0.08, recovery: 0.30, required: &[HipR, KneeR, AnkleR], energy: 5.0, can_whiff: true };
+static BACKSTEP: MoveSpec = MoveSpec { windup: 0.20, active: 0.10, recovery: 0.25, required: &[HipL, HipR, KneeL, KneeR, AnkleL, AnkleR], energy: 4.0, can_whiff: false };
