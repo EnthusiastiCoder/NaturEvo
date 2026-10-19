@@ -132,3 +132,11 @@ fn check(g: &GraceStats) {
     assert!(s == 0.0 || (s - 1.0).abs() < 1e-3, "usage sums to {}", s);
     assert!(g.usage.iter().all(|u| (0.0..=1.0 + 1e-5).contains(u)));
 }
+
+#[test]
+fn match_grace_is_finite_and_in_range_for_both_fighters() {
+    let (_, a, b) = sample();
+    check(&a);
+    check(&b);
+    assert!(a.usage.iter().sum::<f32>() > 0.5, "a skillbot fight must record move usage");
+}
