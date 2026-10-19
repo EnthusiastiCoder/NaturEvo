@@ -102,3 +102,16 @@ impl Phase {
         self as usize
     }
 }
+
+pub struct MoveSpec {
+    /// Seconds at speed 0.5, delay 0.
+    pub windup: f32,
+    pub active: f32,
+    pub recovery: f32,
+    /// Proximal to distal. A disabled/destroyed part of any of these makes the move impossible.
+    pub required: &'static [Joint],
+    /// Base energy at speed 0.5 (on top of the motor cost).
+    pub energy: f32,
+    /// Active ending with no contact counts as a whiff (Guard, Backstep and Feint cannot whiff).
+    pub can_whiff: bool,
+}
