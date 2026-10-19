@@ -7,7 +7,7 @@ const BIOMES: Record<string, { sky: [number, number]; ground: number; line: numb
 };
 
 /** Vector arena: sky gradient bands, ground slab, integer-aligned lines, obstacles, end walls. y world cm, scale px/cm. */
-export function drawGround(g: Graphics, arena: Arena, scale: number, viewW: number, viewH: number, tx: number, ty: number): void {
+export function drawGround(g: Graphics, arena: Arena, scale: number, viewW: number, viewH: number, tx: number, ty: number, walls?: { lo: number; hi: number }, tick = 0): void {
   const b = BIOMES[arena.biome] ?? BIOMES.scrapland;
   g.clear();
   const bands = 12;
@@ -25,6 +25,17 @@ export function drawGround(g: Graphics, arena: Arena, scale: number, viewW: numb
   const x0 = Math.round(tx), x1 = Math.round(arena.width * scale + tx);
   g.rect(x0 - wallW, 0, wallW, gy).fill({ color: b.wall, alpha: 0.9 });
   g.rect(x1, 0, wallW, gy).fill({ color: b.wall, alpha: 0.9 });
+  if (walls) { // sudden-death walls: solid slabs from each arena edge to the live wall position (what the sim collides with)
+    const lx = Math.round(walls.lo * scale + tx), hx = Math.round(walls.hi * scale + tx);
+    const closed = walls.lo > 50.5, pulse = closed ? 0.55 + 0.35 * Math.sin(tick / 6) : 0.35;
+    const slab = (xa: number, xb: number, edge: number) => {
+      g.rect(xa, 0, xb - xa, gy).fill({ color: 0x3a1a1a, alpha: closed ? 0.92 : 0.6 });
+      for (let y = 0; y < gy; y += 28) g.poly([xa, y + 28, xb, y, xb, y + 14, xa, y + 42]).fill({ color: 0xff3b30, alpha: closed ? 0.18 : 0.08 });
+      g.rect(edge - 2, 0, 4, gy).fill({ color: 0xff3b30, alpha: pulse });
+    };
+    slab(x0 - wallW, lx, lx);
+    slab(hx, x1 + wallW, hx);
+  }
   for (const o of arena.obstacles) {
     const ox = Math.round(o.x * scale + tx), ow = Math.round(o.w * scale), oh = Math.round(o.h * scale);
     g.rect(ox, gy - oh, ow, oh).fill(b.obst).stroke({ width: 1.5, color: 0x000000, alpha: 0.5 });
