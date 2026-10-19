@@ -115,3 +115,5 @@ pub struct MoveSpec {
     /// Active ending with no contact counts as a whiff (Guard, Backstep and Feint cannot whiff).
     pub can_whiff: bool,
 }
+
+use Joint::*;
