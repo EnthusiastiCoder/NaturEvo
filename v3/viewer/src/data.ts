@@ -27,6 +27,21 @@ export interface Fight {
   result: { outcome: string; ticks: number; defence: [Tally, Tally] };
 }
 
+const num = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+
+function parseGeometry(g: any): Geometry {
+  const ok = g && [g.head_r, g.neck_r, g.shield_len, g.shield_along, g.shield_r, g.sword_len, g.sword_r].every(num)
+    && Array.isArray(g.radii) && g.radii.length === 13 && g.radii.every(num);
+  if (!ok) return DEFAULT_GEOMETRY;
+  return { headR: g.head_r, neckR: g.neck_r, shieldLen: g.shield_len, shieldAlong: g.shield_along > 1 ? g.shield_along / 100 : g.shield_along,
+    shieldR: g.shield_r, swordLen: g.sword_len, swordR: g.sword_r, radii: [...g.radii] };
+}
+function parseSuddenDeath(s: any): SuddenDeath | null {
+  if (!s || !num(s.start_tick) || !num(s.speed) || !num(s.min_width)) return null;
+  return { startTick: s.start_tick, speedCm: s.speed * 100, minWidth: s.min_width * 100,
+    bleedBase: num(s.bleed_base) ? s.bleed_base : 4, bleedGrowth: num(s.bleed_growth) ? s.bleed_growth : 0.25 };
+}
+
 const fail = (m: string): never => { throw new Error(`bad fight log: ${m}`); };
 
 export function parseFight(json: unknown): Fight {
