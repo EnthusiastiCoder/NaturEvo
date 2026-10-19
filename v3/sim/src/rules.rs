@@ -100,3 +100,10 @@ pub fn punish_mult(st: &RuleState, victim_in_windup_or_active: bool, victim_stag
 pub fn riposte_windup(st: &RuleState) -> f32 {
     if st.riposte_open() { RIPOSTE_WINDUP_FAST } else { RIPOSTE_WINDUP_SLOW }
 }
+
+/// ShieldBash landed on a guarding or blocking defender.
+pub fn guard_break(defender: &mut Robot, def_st: &mut RuleState) {
+    defender.add_posture(SHIELD_BASH_POSTURE);
+    def_st.guard_broken_t = GUARD_BREAK_TIME;
+    def_st.open_for(GUARD_BREAK_TIME, GUARD_BREAK_OPEN_MULT);
+}
