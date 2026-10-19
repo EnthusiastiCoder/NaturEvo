@@ -196,3 +196,12 @@ fn mix_weights_sum_to_one_everywhere() {
         assert!(opponent_mix(g).iter().all(|(_, w)| *w > 0.0), "gen {}", g);
     }
 }
+
+#[test]
+fn stage_a_is_dummy_and_tier_1_only() {
+    for g in [0, 10, 29] {
+        approx(weight(g, OppKind::Dummy), 0.7);
+        approx(weight(g, OppKind::Skill(1)), 0.3);
+        approx(weight(g, OppKind::SelfPlay) + weight(g, OppKind::Hof) + weight(g, OppKind::Skill(2)) + weight(g, OppKind::Skill(3)), 0.0);
+    }
+}
