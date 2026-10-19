@@ -79,3 +79,12 @@ impl MoveId {
         }
     }
 }
+
+/// Continuous move parameters, each 0..=1.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct MoveParams {
+    pub reach: f32,
+    pub speed: f32,
+    pub arc: f32,
+    pub delay: f32,
+}
