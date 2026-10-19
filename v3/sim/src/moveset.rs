@@ -88,3 +88,11 @@ pub struct MoveParams {
     pub arc: f32,
     pub delay: f32,
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Phase {
+    Idle,
+    Windup,
+    Active,
+    Recovery,
+}
