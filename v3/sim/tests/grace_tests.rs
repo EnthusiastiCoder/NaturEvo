@@ -235,3 +235,5 @@ fn hall_of_fame_only_in_stage_c() {
     for g in [0, 29, 30, 79] { approx(weight(g, OppKind::Hof), 0.0); }
     assert!(weight(80, OppKind::Hof) > 0.0);
 }
+
+// ---- training (vocabulary genomes) ----
