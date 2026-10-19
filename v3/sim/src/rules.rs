@@ -24,3 +24,11 @@ pub const DRAG_COST: f32 = 3.0;
 pub const CHAIN_COST: f32 = 5.0;
 /// Multiplier on exposed (staggered) victims.
 const EXPOSED_MULT: f32 = 1.5;
+
+#[derive(Clone, Debug, PartialEq, Default)]
+pub struct RuleState {
+    open_t: f32,
+    open_m: f32,
+    riposte_t: f32,
+    guard_broken_t: f32,
+}
