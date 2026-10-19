@@ -70,3 +70,25 @@ pub const SHIELD_ALONG: f32 = 0.62;
 pub const SHIELD_R: f32 = 0.05;
 pub const SWORD_LEN: f32 = 2.2;
 pub const SWORD_R: f32 = 0.05;
+
+// ---- Sword vocabulary executor (WS-A). Design numbers, tunable, not sourced. ----
+/// Energy cost of a Feint (cancels a windup).
+pub const FEINT_COST: f32 = 8.0;
+/// Energy cost of the full Drag delay (scaled by the delay param 0..1).
+pub const DRAG_COST: f32 = 3.0;
+/// Energy cost of chaining a move out of the previous recovery.
+pub const CHAIN_COST: f32 = 5.0;
+/// Energy cost of cancelling a windup with a threatened Backstep.
+pub const BACKSTEP_CANCEL_COST: f32 = 5.0;
+/// Energy per unit of |second derivative of the joint targets| (smooth moves are cheaper: physics, not reward).
+pub const JERK_COST: f32 = 0.0004;
+/// A Feint cancels only before this fraction of the windup.
+pub const FEINT_CANCEL_FRAC: f32 = 0.6;
+/// Chain window: the last this-fraction of Recovery (progress >= 1 - CHAIN_FRAC).
+pub const CHAIN_FRAC: f32 = 0.25;
+/// Seconds to relax back to the ready pose after a cancelled windup.
+pub const CANCEL_RECOVER: f32 = 0.15;
+/// Riposte windup when its window is open (seconds at speed 0.5).
+pub const RIPOSTE_WINDUP_OPEN: f32 = 0.15;
+/// Extra windup hold at delay param 1.0 (Drag), seconds.
+pub const DELAY_MAX: f32 = 0.2;
