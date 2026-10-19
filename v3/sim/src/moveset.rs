@@ -55,3 +55,7 @@ impl MoveId {
     pub fn index(self) -> usize {
         self as usize
     }
+
+    pub fn from_index(i: usize) -> MoveId {
+        MoveId::ALL[i.min(N_MOVES - 1)]
+    }
