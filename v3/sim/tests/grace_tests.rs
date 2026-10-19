@@ -237,3 +237,9 @@ fn hall_of_fame_only_in_stage_c() {
 }
 
 // ---- training (vocabulary genomes) ----
+
+fn tmp(name: &str) -> PathBuf {
+    let p = std::env::temp_dir().join(format!("mech_sim_grace_{}_{}", name, std::process::id()));
+    let _ = std::fs::remove_dir_all(&p);
+    p
+}
