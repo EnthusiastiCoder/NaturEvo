@@ -25,3 +25,8 @@ Total: 129 test cases (107 Rust, 22 vitest).
 - Viewer: `npx vitest run tests/move-fx.test.ts` fails on the missing module `../src/move-fx`.
 - Guard tests in grace_tests.rs (`fitness_weights_are_unchanged`, `score_stats_has_no_new_term`) would pass on the current
   fitness.rs once the file compiles; they pin the baseline including the W_JERK = 8.0 term added by the motion fix.
+
+## Assumptions to confirm
+- Curriculum gens 30..54: only SelfPlay 0.3 and Skill(1) >= 0.4 are pinned (plan says "tier 2 (tier 1 until gen 55)").
+- Events on the log carry a flat shape (no nested objects); tests extract `{...}` objects textually.
+- Deathbattle: no draws; fuzz bound is `HARD_CAP_TICKS`.
