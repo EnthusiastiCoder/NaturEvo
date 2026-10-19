@@ -41,6 +41,10 @@ export function shieldPlate(fa: Seg, along = DEFAULT_GEOMETRY.shieldAlong, len =
   const cx = fa[0] + dx * along, cy = fa[1] + dy * along, nx = -dy / l * len / 2, ny = dx / l * len / 2;
   return [cx - nx, cy - ny, cx + nx, cy + ny];
 }
+/** Plates a block can have hit: present in the frame before the event (the block itself may destroy the arm). */
+export function blockPlates(now: FighterFrame[], before: FighterFrame[], along: number, len: number): Seg[] {
+  return now.filter((_, i) => (before[i] ?? now[i]).hp[5] > 0).map((g) => shieldPlate(g.parts[5], along, len));
+}
 /** Visual neck: from the torso's upper end to the head centre. */
 export function neckSeg(torso: Seg, head: Seg): Seg {
   const top = torso[1] >= torso[3] ? [torso[0], torso[1]] : [torso[2], torso[3]];
