@@ -151,3 +151,13 @@ pub fn spec(id: MoveId) -> &'static MoveSpec {
         MoveId::Backstep => &BACKSTEP,
     }
 }
+
+/// Phase duration multiplier from the speed param: 1.4 at 0, 1.0 at 0.5, 0.7 at 1.
+pub fn speed_mult(speed: f32) -> f32 {
+    let s = speed.clamp(0.0, 1.0);
+    if s <= 0.5 {
+        1.4 - 0.8 * s
+    } else {
+        1.0 - 0.6 * (s - 0.5)
+    }
+}
