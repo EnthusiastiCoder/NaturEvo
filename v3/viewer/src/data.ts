@@ -19,12 +19,10 @@ export const DEFAULT_GEOMETRY: Geometry = {
   headR: 23, neckR: 9, shieldLen: 70, shieldAlong: 0.62, shieldR: 5, swordLen: 220, swordR: 5,
   radii: [23, 30, 26, 11, 11, 10, 10, 15, 15, 12, 12, 9, 9],
 };
-/** Closing-walls mechanic (cm, ticks at 60/s). */
-export interface SuddenDeath { startTick: number; speedCm: number; minWidth: number; bleedBase: number; bleedGrowth: number }
 export interface Fight {
   version: 3; arena: Arena; parts: string[]; dt: number; frames: Frame[]; events: FightEvent[];
-  geometry: Geometry; suddenDeath: SuddenDeath | null;
-  result: { outcome: string; ticks: number; defence: [Tally, Tally] };
+  geometry: Geometry;
+  result: { outcome: string; ticks: number; defence: [Tally, Tally]; capped?: boolean };
 }
 
 const num = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
@@ -35,11 +33,6 @@ function parseGeometry(g: any): Geometry {
   if (!ok) return DEFAULT_GEOMETRY;
   return { headR: g.head_r, neckR: g.neck_r, shieldLen: g.shield_len, shieldAlong: g.shield_along > 1 ? g.shield_along / 100 : g.shield_along,
     shieldR: g.shield_r, swordLen: g.sword_len, swordR: g.sword_r, radii: [...g.radii] };
-}
-function parseSuddenDeath(s: any): SuddenDeath | null {
-  if (!s || !num(s.start_tick) || !num(s.speed) || !num(s.min_width)) return null;
-  return { startTick: s.start_tick, speedCm: s.speed * 100, minWidth: s.min_width * 100,
-    bleedBase: num(s.bleed_base) ? s.bleed_base : 4, bleedGrowth: num(s.bleed_growth) ? s.bleed_growth : 0.25 };
 }
 
 const fail = (m: string): never => { throw new Error(`bad fight log: ${m}`); };
@@ -62,7 +55,6 @@ export function parseFight(json: unknown): Fight {
     frames: j.frames,
     events,
     geometry: parseGeometry(j.geometry),
-    suddenDeath: parseSuddenDeath(j.sudden_death),
     result: j.result ?? { outcome: 'draw', ticks: 0, defence: [{ parry: 0, block: 0, dodge: 0, hit: 0 }, { parry: 0, block: 0, dodge: 0, hit: 0 }] },
   };
 }
