@@ -61,6 +61,8 @@ export function parseFight(json: unknown): Fight {
     dt: j.dt,
     frames: j.frames,
     events,
+    geometry: parseGeometry(j.geometry),
+    suddenDeath: parseSuddenDeath(j.sudden_death),
     result: j.result ?? { outcome: 'draw', ticks: 0, defence: [{ parry: 0, block: 0, dodge: 0, hit: 0 }, { parry: 0, block: 0, dodge: 0, hit: 0 }] },
   };
 }
