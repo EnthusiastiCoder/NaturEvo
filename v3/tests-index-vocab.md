@@ -16,3 +16,12 @@ or change the test header and the test together, reporting the change.
 | v3/viewer/tests/fixtures/fight_moves.json | fixture | WS-E | 20 frames with `mv`, all 7 new events, `result.moves` {usage, whiff, punish, hits_per_swing, jerk} (per-fighter arrays) |
 
 Total: 129 test cases (107 Rust, 22 vitest).
+
+## How they fail now
+- Rust: each file fails to compile with E0432 unresolved import (`mech_sim::moveset`, `executor`, `rules`, `skillbot`, `grace`,
+  `net::decode`, `curriculum::OppKind`) or E0599 (`Brain::Skill/Spam/Cycle`, `Match::move_starts`), E0425 (`observe_moves`, `OWN_MOVE`...).
+  This is the expected missing-behaviour failure; there are no syntax errors (only resolution errors are reported, further
+  type errors can only surface once the API exists).
+- Viewer: `npx vitest run tests/move-fx.test.ts` fails on the missing module `../src/move-fx`.
+- Guard tests in grace_tests.rs (`fitness_weights_are_unchanged`, `score_stats_has_no_new_term`) would pass on the current
+  fitness.rs once the file compiles; they pin the baseline including the W_JERK = 8.0 term added by the motion fix.
