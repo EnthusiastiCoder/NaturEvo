@@ -87,3 +87,18 @@ fn tip_jerk_is_zero_for_constant_velocity_and_scale_sensitive() {
     let big = tip_jerk(&curve(|t| 2.0 * min_jerk(t)), PHYS_DT);
     assert!(big > small * 3.5 && big < small * 4.5, "jerk scales with amplitude squared: {} {}", small, big);
 }
+
+fn tip_trace(drive_executor: bool) -> Vec<[f32; 2]> {
+    let mut r = standing(Role::Hero, 3.0, 1.0);
+    let mut ex = Executor::new();
+    let p = MoveParams { reach: 0.5, speed: 0.5, arc: 0.5, delay: 0.0 };
+    let mut out = Vec::new();
+    // Joint targets of the Active pose applied as one raw step (what the old raw-joint net did).
+    let step = mech_sim::moveset::pose_at(MoveId::Overhead, &p, Phase::Active, 0.5);
+    for i in 0..60 {
+        let a = if drive_executor { ex.step(&r, if i == 0 { Some((MoveId::Overhead, p)) } else { None }, DT).targets } else { step };
+        r.apply_targets(&a, DT);
+        out.push(r.sword_capsule().b);
+    }
+    out
+}
