@@ -132,3 +132,22 @@ static RIPOSTE: MoveSpec = MoveSpec { windup: 0.30, active: 0.10, recovery: 0.30
 static SHIELD_BASH: MoveSpec = MoveSpec { windup: 0.25, active: 0.10, recovery: 0.35, required: &[Waist, ShoulderL, ElbowL], energy: 6.0, can_whiff: true };
 static KICK: MoveSpec = MoveSpec { windup: 0.15, active: 0.08, recovery: 0.30, required: &[HipR, KneeR, AnkleR], energy: 5.0, can_whiff: true };
 static BACKSTEP: MoveSpec = MoveSpec { windup: 0.20, active: 0.10, recovery: 0.25, required: &[HipL, HipR, KneeL, KneeR, AnkleL, AnkleR], energy: 4.0, can_whiff: false };
+
+pub fn spec(id: MoveId) -> &'static MoveSpec {
+    match id {
+        MoveId::Idle => &IDLE_SPEC,
+        MoveId::Overhead => &OVERHEAD,
+        MoveId::DiagDown => &DIAG_DOWN,
+        MoveId::DiagUp => &DIAG_UP,
+        MoveId::Sweep => &SWEEP,
+        MoveId::Thrust => &THRUST,
+        MoveId::LowCut => &LOW_CUT,
+        MoveId::Feint => &FEINT,
+        MoveId::Parry => &PARRY,
+        MoveId::Guard => &GUARD,
+        MoveId::Riposte => &RIPOSTE,
+        MoveId::ShieldBash => &SHIELD_BASH,
+        MoveId::Kick => &KICK,
+        MoveId::Backstep => &BACKSTEP,
+    }
+}
