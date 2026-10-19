@@ -154,3 +154,9 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .fv-tally { display: flex; gap: 8px; color: var(--muted); font-size: 12px; }
 .fv-help, .fv-result { position: absolute; left: 50%; transform: translateX(-50%); background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 12px; max-width: 70%; }
 .fv-help { bottom: 8px; } .fv-result { top: 12px; font-weight: 600; }
+.fv-bleed { display: flex; align-items: center; gap: 6px; margin: 2px 0; color: #ff6a5c; font-size: 12px; font-weight: 700; }
+.fv-bleed[hidden], .fv-sd[hidden] { display: none; }
+.fv-bleed-dot { width: 8px; height: 8px; border-radius: 50%; background: #ff3b30; animation: fv-pulse 0.9s ease-in-out infinite; }
+.fv-sd { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); background: #5a0f0a; color: #fff; border: 1px solid #ff3b30; border-radius: var(--radius); padding: 4px 14px; font-weight: 800; letter-spacing: 0.12em; font-size: 13px; animation: fv-pulse 0.9s ease-in-out infinite; pointer-events: none; }
+@keyframes fv-pulse { 50% { opacity: 0.45; } }
+@media (prefers-reduced-motion: reduce) { .fv-bleed-dot, .fv-sd { animation: none; } }
