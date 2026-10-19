@@ -79,3 +79,11 @@ fn min_jerk_path_is_smoother_than_a_ramp_with_velocity_kinks() {
     let step = tip_jerk(&curve(|t| if t < 0.5 { 4.0 * t } else { 2.0 }), PHYS_DT);
     assert!(smooth < step, "min-jerk {} vs step {}", smooth, step);
 }
+
+#[test]
+fn tip_jerk_is_zero_for_constant_velocity_and_scale_sensitive() {
+    approx(tip_jerk(&curve(|t| 3.0 * t), PHYS_DT), 0.0);
+    let small = tip_jerk(&curve(|t| min_jerk(t)), PHYS_DT);
+    let big = tip_jerk(&curve(|t| 2.0 * min_jerk(t)), PHYS_DT);
+    assert!(big > small * 3.5 && big < small * 4.5, "jerk scales with amplitude squared: {} {}", small, big);
+}
