@@ -205,3 +205,19 @@ fn stage_a_is_dummy_and_tier_1_only() {
         approx(weight(g, OppKind::SelfPlay) + weight(g, OppKind::Hof) + weight(g, OppKind::Skill(2)) + weight(g, OppKind::Skill(3)), 0.0);
     }
 }
+
+#[test]
+fn stage_b_has_self_play_then_tier_1_until_55_then_tier_2_and_3() {
+    for g in [30, 40, 54] {
+        approx(weight(g, OppKind::SelfPlay), 0.3);
+        assert!(weight(g, OppKind::Skill(1)) >= 0.4 - 1e-4, "gen {}", g);
+        approx(weight(g, OppKind::Skill(2)) + weight(g, OppKind::Skill(3)), 0.0);
+        approx(weight(g, OppKind::Hof), 0.0);
+    }
+    for g in [55, 70, 79] {
+        approx(weight(g, OppKind::SelfPlay), 0.3);
+        approx(weight(g, OppKind::Skill(2)), 0.4);
+        approx(weight(g, OppKind::Skill(3)), 0.3);
+        approx(weight(g, OppKind::Hof), 0.0);
+    }
+}
