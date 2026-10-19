@@ -23,6 +23,7 @@ export const DEFAULT_GEOMETRY: Geometry = {
 export interface SuddenDeath { startTick: number; speedCm: number; minWidth: number; bleedBase: number; bleedGrowth: number }
 export interface Fight {
   version: 3; arena: Arena; parts: string[]; dt: number; frames: Frame[]; events: FightEvent[];
+  geometry: Geometry; suddenDeath: SuddenDeath | null;
   result: { outcome: string; ticks: number; defence: [Tally, Tally] };
 }
 
