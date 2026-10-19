@@ -76,3 +76,8 @@ impl RuleState {
         self.guard_broken_t
     }
 }
+
+/// Best multiplier (never a product), at least 1.0, capped at MULT_CAP.
+pub fn combine(mults: &[f32]) -> f32 {
+    mults.iter().fold(1.0f32, |a, &m| a.max(m)).min(MULT_CAP)
+}
