@@ -59,3 +59,23 @@ impl MoveId {
     pub fn from_index(i: usize) -> MoveId {
         MoveId::ALL[i.min(N_MOVES - 1)]
     }
+
+    pub fn name(self) -> &'static str {
+        match self {
+            MoveId::Idle => "Idle",
+            MoveId::Overhead => "Overhead",
+            MoveId::DiagDown => "DiagDown",
+            MoveId::DiagUp => "DiagUp",
+            MoveId::Sweep => "Sweep",
+            MoveId::Thrust => "Thrust",
+            MoveId::LowCut => "LowCut",
+            MoveId::Feint => "Feint",
+            MoveId::Parry => "Parry",
+            MoveId::Guard => "Guard",
+            MoveId::Riposte => "Riposte",
+            MoveId::ShieldBash => "ShieldBash",
+            MoveId::Kick => "Kick",
+            MoveId::Backstep => "Backstep",
+        }
+    }
+}
