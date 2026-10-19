@@ -186,3 +186,5 @@ fn score_stats_has_no_new_term() {
 }
 
 // ---- curriculum ----
+
+fn sum(gen: u32) -> f32 { opponent_mix(gen).iter().map(|(_, w)| *w).sum() }
