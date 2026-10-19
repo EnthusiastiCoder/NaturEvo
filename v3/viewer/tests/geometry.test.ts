@@ -12,3 +12,25 @@ const withBlocks = () => ({
   geometry: { head_r: 23, neck_r: 9, shield_len: 70, shield_along: 62, shield_r: 5, shield_orient: 'perpendicular', sword_len: 220, sword_r: 5, radii: [23, 30, 25, 14, 14, 12, 12, 17, 17, 12, 12, 10, 10] },
   sudden_death: { start_tick: 450, speed: 0.6, min_width: 1.6 },
 });
+
+describe('parseFight geometry', () => {
+  it('reads geometry in cm and shield fraction', () => {
+    const g = parseFight(withBlocks()).geometry;
+    expect(g.headR).toBe(23); expect(g.neckR).toBe(9);
+    expect(g.shieldLen).toBe(70); expect(g.shieldAlong).toBeCloseTo(0.62);
+    expect(g.radii[2]).toBe(25); expect(g.radii).toHaveLength(13);
+  });
+  it('falls back to current constants for old logs', () => {
+    const f = parseFight(small());
+    expect(f.geometry).toEqual(DEFAULT_GEOMETRY);
+    expect(f.suddenDeath).toBeNull();
+  });
+  it('ignores malformed blocks', () => {
+    const j = withBlocks(); (j as any).geometry = { head_r: 'x', radii: [1] }; (j as any).sudden_death = { start_tick: 'a' };
+    const f = parseFight(j);
+    expect(f.geometry).toEqual(DEFAULT_GEOMETRY); expect(f.suddenDeath).toBeNull();
+  });
+  it('reads sudden death with min width in cm', () => {
+    expect(parseFight(withBlocks()).suddenDeath).toMatchObject({ startTick: 450, speedCm: 60, minWidth: 160 });
+  });
+});
