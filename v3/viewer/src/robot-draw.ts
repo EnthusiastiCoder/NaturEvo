@@ -1,11 +1,11 @@
 // Vector-only robot drawing: every part is a Graphics capsule. Endpoints come straight from the log.
 import { Graphics } from 'pixi.js';
-import type { FighterFrame, Seg } from './data';
+import { DEFAULT_GEOMETRY, type FighterFrame, type Geometry, type Seg } from './data';
 import { partDamageStyle } from './damage-style';
 
 // order: Head Torso Pelvis UArmL UArmR FArmL FArmR ThighL ThighR ShinL ShinR FootL FootR
-export const HEAD_R_CM = 23, TORSO_R_CM = 30, NECK_R_CM = 9;
-const RADIUS_CM = [HEAD_R_CM, TORSO_R_CM, 26, 11, 11, 10, 10, 15, 15, 12, 12, 9, 9];
+// Fallback sizes (old logs); logs with a `geometry` block override them via DrawOpts.geom.
+export const HEAD_R_CM = DEFAULT_GEOMETRY.headR, TORSO_R_CM = DEFAULT_GEOMETRY.radii[1], NECK_R_CM = DEFAULT_GEOMETRY.neckR;
 const BACK = new Set([3, 5, 7, 9, 11]); // left limbs drawn darker (far side)
 export const PART_Z = [8, 5, 4, 2, 6, 3, 7, 1, 2, 1, 2, 0, 1];
 
@@ -36,7 +36,7 @@ function capsule(g: Graphics, s: Seg, r: number, sc: number, fill: number, line:
 }
 
 /** Shield plate drawn across the forearm axis (perpendicular), centred near the hand. */
-export function shieldPlate(fa: Seg, along = 0.62, len = 70): Seg {
+export function shieldPlate(fa: Seg, along = DEFAULT_GEOMETRY.shieldAlong, len = DEFAULT_GEOMETRY.shieldLen): Seg {
   const dx = fa[2] - fa[0], dy = fa[3] - fa[1], l = Math.hypot(dx, dy) || 1;
   const cx = fa[0] + dx * along, cy = fa[1] + dy * along, nx = -dy / l * len / 2, ny = dx / l * len / 2;
   return [cx - nx, cy - ny, cx + nx, cy + ny];
@@ -61,16 +61,18 @@ export interface DrawOpts {
   color: number; accent: number; scale: number; time: number; // scale = px per cm; time in s for flicker
   detached: boolean[]; flash: number; // flash 0..1 white overlay on struck robot
   partFlash?: number[]; // per-part 0..1 white flash of the struck part
+  geom?: Geometry; // collision geometry from the log (cm); defaults when absent
 }
 
 /** Draw one fighter into g (world px = cm * scale, y flipped; caller positions the container). */
 export function drawRobot(g: Graphics, f: FighterFrame, o: DrawOpts): void {
   g.clear();
+  const geom = o.geom ?? DEFAULT_GEOMETRY, RADIUS_CM = geom.radii;
   const sc = o.scale, lw = Math.max(1.5, Math.min(2, 1.5 * sc * 2));
   const order = PART_Z.map((z, i) => [z, i]).sort((a, b) => a[0] - b[0]).map((p) => p[1]);
   for (const i of order) {
     if (o.detached[i]) continue;
-    if (i === 0 && !o.detached[1]) capsule(g, neckSeg(f.parts[1], f.parts[0]), NECK_R_CM, sc, shade(o.color, 0.55), shade(o.color, 0.3), lw);
+    if (i === 0 && !o.detached[1]) capsule(g, neckSeg(f.parts[1], f.parts[0]), geom.neckR, sc, shade(o.color, 0.55), shade(o.color, 0.3), lw);
     const hp = f.hp[i];
     const st = partDamageStyle(hp, false);
     if (st.limp && Math.floor(o.time * 14) % 3 === 0) continue; // flicker
@@ -94,12 +96,12 @@ export function drawRobot(g: Graphics, f: FighterFrame, o: DrawOpts): void {
   }
   // shield plate then sword
   if (f.hp[5] > 0 && !o.detached[5]) {
-    capsule(g, shieldPlate(f.parts[5]), 5, sc, shade(o.color, 0.8), o.accent, lw);
+    capsule(g, shieldPlate(f.parts[5], geom.shieldAlong, geom.shieldLen), geom.shieldR, sc, shade(o.color, 0.8), o.accent, lw);
   }
   if (f.hp[6] > 0 && !o.detached[6]) {
-    const s = clampSegAboveGround(f.sword, 2.5); // half blade width: tip never pokes below the ground line
-    g.moveTo(s[0] * sc, -s[1] * sc).lineTo(s[2] * sc, -s[3] * sc).stroke({ width: 5 * sc, color: 0x9aa7b3, cap: 'round' });
-    g.moveTo(s[0] * sc, -s[1] * sc).lineTo(s[2] * sc, -s[3] * sc).stroke({ width: Math.max(1.5, 1.5 * sc), color: 0xffffff, cap: 'round' });
+    const s = clampSegAboveGround(f.sword, geom.swordR); // blade radius: tip never pokes below the ground line
+    g.moveTo(s[0] * sc, -s[1] * sc).lineTo(s[2] * sc, -s[3] * sc).stroke({ width: 2 * geom.swordR * sc, color: 0x9aa7b3, cap: 'round' });
+    g.moveTo(s[0] * sc, -s[1] * sc).lineTo(s[2] * sc, -s[3] * sc).stroke({ width: Math.max(1.5, 0.3 * geom.swordR * sc), color: 0xffffff, cap: 'round' });
   }
 }
 
