@@ -31,3 +31,27 @@ import { moveCallout, phaseStyle, openBadge, hudMoveLine, graceModel } from '../
 const load = (n: string) => parseFight(JSON.parse(readFileSync(resolve(__dirname, 'fixtures', n), 'utf8')));
 const fight = () => load('fight_moves.json');
 const frameAt = (f: ReturnType<typeof fight>, t: number) => f.frames.find((fr) => fr.t === t)!;
+
+describe('fixture and parseFight', () => {
+  it('parses the move fixture with mv on every fighter frame and all new events', () => {
+    const f = fight();
+    expect(f.frames).toHaveLength(20);
+    for (const fr of f.frames) for (const g of fr.f) {
+      const mv = (g as any).mv;
+      expect(mv).toBeTruthy();
+      expect(typeof mv.id).toBe('string');
+      expect([0, 1, 2, 3]).toContain(mv.phase);
+      expect(mv.p).toBeGreaterThanOrEqual(0);
+      expect(mv.p).toBeLessThanOrEqual(1);
+      expect(typeof mv.open).toBe('boolean');
+    }
+    const kinds = new Set(f.events.map((e) => e.kind));
+    for (const k of ['move', 'whiff', 'punish', 'guard_break', 'feint', 'counter', 'riposte_open']) expect(kinds.has(k)).toBe(true);
+    expect((f.result as any).moves.usage).toHaveLength(2);
+  });
+  it('tolerates a log without mv (old fight_small.json)', () => {
+    const f = load('fight_small.json');
+    expect(f.frames).toHaveLength(12);
+    expect((f.frames[0].f[0] as any).mv).toBeUndefined();
+  });
+});
