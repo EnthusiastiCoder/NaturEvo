@@ -61,3 +61,11 @@ describe('walls', () => {
     expect(bleedAt(f, 900)).toBeGreaterThan(bleedAt(f, 500));
   });
 });
+
+describe('shield plate from geometry', () => {
+  it('uses logged length and position', () => {
+    const fa: [number, number, number, number] = [0, 0, 100, 0];
+    const s = shieldPlate(fa, 0.5, 40);
+    expect(s).toEqual([50, -20, 50, 20]);
+  });
+});
