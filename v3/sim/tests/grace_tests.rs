@@ -188,3 +188,11 @@ fn score_stats_has_no_new_term() {
 // ---- curriculum ----
 
 fn sum(gen: u32) -> f32 { opponent_mix(gen).iter().map(|(_, w)| *w).sum() }
+
+#[test]
+fn mix_weights_sum_to_one_everywhere() {
+    for g in [0, 15, 29, 30, 54, 55, 79, 80, 150, 200] {
+        approx(sum(g), 1.0);
+        assert!(opponent_mix(g).iter().all(|(_, w)| *w > 0.0), "gen {}", g);
+    }
+}
