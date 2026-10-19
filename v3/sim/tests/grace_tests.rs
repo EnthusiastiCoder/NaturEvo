@@ -254,3 +254,8 @@ fn train_csv(name: &str, threads: usize) -> String {
     let _ = std::fs::remove_dir_all(dir);
     csv
 }
+
+#[test]
+fn training_3_gens_pop_8_twice_gives_identical_csv() {
+    assert_eq!(train_csv("a", 1), train_csv("b", 1));
+}
