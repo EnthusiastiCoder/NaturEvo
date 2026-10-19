@@ -151,3 +151,16 @@ describe('openBadge', () => {
     expect(openBadge(old.frames[0].f[0]).show).toBe(false);
   });
 });
+
+describe('hudMoveLine', () => {
+  const f = fight();
+  it('shows the move name and phase', () => {
+    expect(hudMoveLine(frameAt(f, 12).f[0])).toBe('Overhead · Recovery');
+    expect(hudMoveLine(frameAt(f, 4).f[0])).toBe('Overhead · Windup');
+    expect(hudMoveLine(frameAt(f, 20).f[0])).toBe('ShieldBash · Active');
+  });
+  it('says Idle when idle and is empty for old logs', () => {
+    expect(hudMoveLine(frameAt(f, 0).f[0])).toBe('Idle');
+    expect(hudMoveLine(load('fight_small.json').frames[0].f[0])).toBe('');
+  });
+});
