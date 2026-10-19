@@ -96,3 +96,9 @@ pub enum Phase {
     Active,
     Recovery,
 }
+
+impl Phase {
+    pub fn index(self) -> usize {
+        self as usize
+    }
+}
