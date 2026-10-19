@@ -96,3 +96,7 @@ pub fn punish_mult(st: &RuleState, victim_in_windup_or_active: bool, victim_stag
     }
     combine(&v)
 }
+
+pub fn riposte_windup(st: &RuleState) -> f32 {
+    if st.riposte_open() { RIPOSTE_WINDUP_FAST } else { RIPOSTE_WINDUP_SLOW }
+}
