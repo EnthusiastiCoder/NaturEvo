@@ -14,3 +14,5 @@ or change the test header and the test together, reporting the change.
 | v3/sim/tests/grace_tests.rs | 20 | WS-D | `grace::{whiff_rate, hits_per_swing, punish_rate, move_usage_entropy, tip_jerk, GraceStats, match_grace}`, `curriculum::{OppKind, opponent_mix}`; fitness snapshot and training determinism |
 | v3/viewer/tests/move-fx.test.ts | 22 | WS-E | `src/move-fx.ts: moveCallout(events, frame, tNow, dt), phaseStyle(phase, p), openBadge(fighterFrame), hudMoveLine(fighterFrame), graceModel(result, who)`; `parseFight` tolerance for missing `mv` |
 | v3/viewer/tests/fixtures/fight_moves.json | fixture | WS-E | 20 frames with `mv`, all 7 new events, `result.moves` {usage, whiff, punish, hits_per_swing, jerk} (per-fighter arrays) |
+
+Total: 129 test cases (107 Rust, 22 vitest).
