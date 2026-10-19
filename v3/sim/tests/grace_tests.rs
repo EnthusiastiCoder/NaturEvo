@@ -221,3 +221,11 @@ fn stage_b_has_self_play_then_tier_1_until_55_then_tier_2_and_3() {
         approx(weight(g, OppKind::Hof), 0.0);
     }
 }
+
+#[test]
+fn stage_c_has_hall_of_fame_self_play_and_tier_3_and_no_dummy() {
+    for g in [80, 120, 200] {
+        assert!(weight(g, OppKind::Hof) > 0.0 && weight(g, OppKind::SelfPlay) > 0.0 && weight(g, OppKind::Skill(3)) > 0.0, "gen {}", g);
+        approx(weight(g, OppKind::Dummy), 0.0);
+    }
+}
