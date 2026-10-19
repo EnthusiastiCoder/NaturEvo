@@ -264,3 +264,18 @@ fn training_3_gens_pop_8_twice_gives_identical_csv() {
 fn threaded_training_equals_single_threaded() {
     assert_eq!(train_csv("c", 1), train_csv("d", 4));
 }
+
+#[test]
+fn trained_champions_use_the_19_output_genome_size() {
+    use mech_sim::evolve::{train, TrainConfig};
+    use mech_sim::genome::{Genome, N_WEIGHTS};
+    let dir = tmp("e");
+    let cfg = TrainConfig::new(3, 8, 2, dir.clone());
+    train(&cfg).expect("train");
+    let champ = std::fs::read_dir(&dir).unwrap().map(|e| e.unwrap().path())
+        .find(|p| p.file_name().unwrap().to_string_lossy().starts_with("champion_hero_gen_")).expect("champion file");
+    let g = Genome::from_json(&std::fs::read_to_string(champ).unwrap()).expect("genome json");
+    assert_eq!(g.weights.len(), N_WEIGHTS);
+    assert_eq!(mech_sim::net::N_OUT, 19);
+    let _ = std::fs::remove_dir_all(dir);
+}
