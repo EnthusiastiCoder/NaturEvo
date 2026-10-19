@@ -140,3 +140,11 @@ fn match_grace_is_finite_and_in_range_for_both_fighters() {
     check(&b);
     assert!(a.usage.iter().sum::<f32>() > 0.5, "a skillbot fight must record move usage");
 }
+
+#[test]
+fn match_grace_is_deterministic() {
+    let (_, a1, _) = sample();
+    let (_, a2, _) = sample();
+    assert_eq!(a1.usage, a2.usage);
+    assert_eq!((a1.jerk, a1.whiff_rate, a1.punish_rate, a1.hits_per_swing), (a2.jerk, a2.whiff_rate, a2.punish_rate, a2.hits_per_swing));
+}
