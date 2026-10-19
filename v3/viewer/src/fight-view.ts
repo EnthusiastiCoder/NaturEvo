@@ -1,5 +1,6 @@
 import { parseFight, type Fight } from './data';
 import { FightScene } from './scene';
+import { bleedAt, suddenDeathActive } from './walls';
 import { defenceTallyModel, hudModel } from './hud';
 import { DEFAULT_ACCENT, applyTheme, nextTheme, setAccent, themeIconPath, type Theme } from './theme';
 
@@ -17,7 +18,7 @@ const svg = (p: string) => `<svg viewBox="0 0 24 24" aria-hidden="true">${p}</sv
 // silhouette part centre and half-size (13 parts) in a 40x72 box
 const SIL: [number, number, number, number][] = [[20, 8, 7, 12], [20, 25, 9, 14], [20, 36, 8, 6], [10, 20, 3, 8], [30, 20, 3, 8], [8, 33, 3, 8], [32, 33, 3, 8], [15, 48, 4, 10], [25, 48, 4, 10], [15, 60, 3, 9], [25, 60, 3, 9], [13, 68, 4, 2], [27, 68, 4, 2]];
 const PART_NAMES = ['Head', 'Torso', 'Pelvis', 'Upper arm L', 'Upper arm R', 'Forearm L (shield)', 'Forearm R (sword)', 'Thigh L', 'Thigh R', 'Shin L', 'Shin R', 'Foot L', 'Foot R'];
-const SPEEDS = [0.25, 0.5, 1, 2];
+const SPEEDS = [0.25, 0.5, 1, 2, 4];
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
@@ -36,7 +37,7 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
     <div class="fv-bar bar">
       <a href="#/" class="btn" title="Back to the run list" aria-label="Back">${svg(ICON.home)}</a>
       <h1>${esc(title)}</h1><span class="spacer"></span>
-      <input id="fv-scrub" type="range" min="0" max="1000" value="0" title="Scrub through the fight" aria-label="Scrub">
+      <input id="fv-scrub" type="range" min="0" max="10000" value="0" title="Scrub through the fight" aria-label="Scrub">
       <button id="fv-play" title="Play or pause (Space)" aria-label="Play or pause">${svg(ICON.pause)}</button>
       <button id="fv-restart" title="Restart the fight (R)" aria-label="Restart">${svg(ICON.rotate)}</button>
       <select id="fv-speed" title="Playback speed" aria-label="Speed">${SPEEDS.map((s) => `<option value="${s}"${s === 1 ? ' selected' : ''}>${s}x</option>`).join('')}</select>
@@ -48,6 +49,7 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
     <div class="fv-stage"><div id="fv-canvas"></div>
       <div class="fv-hud" id="fv-hud"></div>
       <div id="fv-help" class="fv-help" hidden>Bars: core HP (green), energy (blue), posture (yellow; full means staggered). Silhouette: each of 13 parts coloured by health; dark red is disabled. Keys: Space pause, R restart, T theme, arrows step.</div>
+      <div id="fv-sd" class="fv-sd" hidden>SUDDEN DEATH</div>
       <div id="fv-result" class="fv-result" hidden></div></div>
   </div>`;
   const $ = <T extends HTMLElement>(id: string) => view.querySelector<T>('#' + id)!;
@@ -60,6 +62,7 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
     <div class="fv-bar-row" title="Core (torso) health"><i class="b hp"></i></div>
     <div class="fv-bar-row" title="Energy: spent by movement and guarding"><i class="b en"></i></div>
     <div class="fv-bar-row" title="Posture: full means staggered"><i class="b po"></i></div>
+    <div class="fv-bleed" hidden title="Sudden death: the torso loses health every second, faster the longer it lasts"><span class="fv-bleed-dot"></span><span class="fv-bleed-t"></span></div>
     <svg class="fv-sil" viewBox="0 0 40 72"><path class="fv-neck" d="M20 12V20" stroke="#888" stroke-width="5" opacity=".7"/>${SIL.map(([x, y, w, h], k) => `<rect x="${x - w}" y="${y - h / 2}" width="${w * 2}" height="${h}" rx="2"><title>${PART_NAMES[k]}</title></rect>`).join('')}</svg>
     <div class="fv-tally"></div></div>`;
   hud.innerHTML = sideHtml(0) + sideHtml(1);
@@ -69,14 +72,19 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
   const scrub = $<HTMLInputElement>('fv-scrub');
   let scrubbing = false;
   scene.onFrame = (fr, tick) => {
-    if (!scrubbing) scrub.value = String(Math.round((tick / (scene.lastTick || 1)) * 1000));
+    if (!scrubbing) scrub.value = String(Math.round((tick / (scene.lastTick || 1)) * 10000));
     const key = `${fr.t}|${Math.round(tick)}`;
     if (key === lastKey) return;
     lastKey = key;
+    const sdOn = suddenDeathActive(fight, tick), bleed = bleedAt(fight, tick);
+    $('fv-sd').hidden = !sdOn;
     const m = hudModel(fr);
     m.fighters.forEach((f, i) => {
       setBar(sides[i], 'hp', f.coreHp); setBar(sides[i], 'en', f.energy); setBar(sides[i], 'po', f.posture);
       sides[i].querySelectorAll<SVGRectElement>('rect').forEach((r, k) => { r.style.fill = f.parts[k].color; });
+      const bl = sides[i].querySelector<HTMLElement>('.fv-bleed')!;
+      bl.hidden = !sdOn || fr.f[i].hp[1] <= 0;
+      if (!bl.hidden) bl.querySelector('.fv-bleed-t')!.textContent = `BLEED -${bleed.toFixed(1)} hp/s`;
       sides[i].querySelector('.fv-state')!.textContent = fr.f[i].state === 'idle' ? '' : fr.f[i].state;
       const items = defenceTallyModel(tallyAt(fight, i, tick)).items;
       sides[i].querySelector('.fv-tally')!.innerHTML = items.map((x) => `<span title="${esc(x.tooltip)}">${x.key} ${x.count}</span>`).join('');
@@ -97,7 +105,7 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
   $('fv-restart').onclick = restart;
   scrub.onpointerdown = () => { scrubbing = true; };
   scrub.onpointerup = () => { scrubbing = false; };
-  scrub.oninput = () => { scene.seek((Number(scrub.value) / 1000) * scene.lastTick); res.hidden = true; };
+  scrub.oninput = () => { scene.seek((Number(scrub.value) / 10000) * scene.lastTick); res.hidden = true; };
   $<HTMLSelectElement>('fv-speed').onchange = (e) => { scene.speed = Number((e.target as HTMLSelectElement).value); };
   $<HTMLInputElement>('fv-accent').oninput = (e) => setAccent(root, (e.target as HTMLInputElement).value);
   $('fv-theme').onclick = () => { theme = nextTheme(theme); syncTheme(); };
