@@ -30,7 +30,7 @@ export function drawGround(g: Graphics, arena: Arena, scale: number, viewW: numb
     const closed = walls.lo > 50.5, pulse = closed ? 0.55 + 0.35 * Math.sin(tick / 6) : 0.35;
     const slab = (xa: number, xb: number, edge: number) => {
       g.rect(xa, 0, xb - xa, gy).fill({ color: 0x3a1a1a, alpha: closed ? 0.92 : 0.6 });
-      for (let y = 0; y < gy; y += 28) g.poly([xa, y + 28, xb, y, xb, y + 14, xa, y + 42]).fill({ color: 0xff3b30, alpha: closed ? 0.18 : 0.08 });
+      for (let y = 0; y + 42 <= gy; y += 28) g.poly([xa, y + 28, xb, y, xb, y + 14, xa, y + 42]).fill({ color: 0xff3b30, alpha: closed ? 0.18 : 0.08 });
       g.rect(edge - 2, 0, 4, gy).fill({ color: 0xff3b30, alpha: pulse });
     };
     slab(x0 - wallW, lx, lx);
