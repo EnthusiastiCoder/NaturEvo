@@ -122,3 +122,32 @@ describe('phaseStyle', () => {
     expect(new Set([phaseStyle(1, 0.5).color, phaseStyle(2, 0.5).color, r.color]).size).toBe(3);
   });
 });
+
+describe('openBadge', () => {
+  const f = fight();
+  it('is hidden for an idle fighter', () => { expect(openBadge(frameAt(f, 0).f[0]).show).toBe(false); });
+  it('shows during an open recovery with the remaining fraction 1 - p', () => {
+    const b = openBadge(frameAt(f, 12).f[0]); // Overhead recovery p 0.25, open
+    expect(b.show).toBe(true);
+    expect(b.arc).toBeGreaterThanOrEqual(0);
+    expect(b.arc).toBeLessThanOrEqual(1);
+    expect(b.arc).toBeCloseTo(0.75, 2);
+  });
+  it('shows for the staggered state in frame 9 of fighter 1', () => {
+    const fr = f.frames[9];
+    expect(fr.f[1].state).toBe('staggered');
+    const b = openBadge(fr.f[1]);
+    expect(b.show).toBe(true);
+    expect(b.arc).toBeGreaterThanOrEqual(0);
+    expect(b.arc).toBeLessThanOrEqual(1);
+  });
+  it('flags the riposte window on the defender', () => {
+    expect(openBadge(frameAt(f, 34).f[0]).riposte).toBe(true);
+    expect(openBadge(frameAt(f, 0).f[0]).riposte).toBe(false);
+  });
+  it('does not throw on frames without mv', () => {
+    const old = load('fight_small.json');
+    expect(() => openBadge(old.frames[0].f[0])).not.toThrow();
+    expect(openBadge(old.frames[0].f[0]).show).toBe(false);
+  });
+});
