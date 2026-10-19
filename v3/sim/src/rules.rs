@@ -81,3 +81,18 @@ impl RuleState {
 pub fn combine(mults: &[f32]) -> f32 {
     mults.iter().fold(1.0f32, |a, &m| a.max(m)).min(MULT_CAP)
 }
+
+/// Damage multiplier on a hit; `st` is the victim's state.
+pub fn punish_mult(st: &RuleState, victim_in_windup_or_active: bool, victim_staggered: bool, riposte_hit: bool) -> f32 {
+    let mut v = vec![st.open_mult()];
+    if victim_in_windup_or_active {
+        v.push(COUNTER_HIT_MULT);
+    }
+    if victim_staggered {
+        v.push(EXPOSED_MULT);
+    }
+    if riposte_hit && (victim_staggered || st.is_open()) {
+        v.push(RIPOSTE_MULT);
+    }
+    combine(&v)
+}
