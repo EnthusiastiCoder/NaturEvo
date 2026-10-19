@@ -3,7 +3,6 @@ import type { Fight, FighterFrame, Frame, Seg } from './data';
 import { cameraFor, lerpCamera, type Camera } from './camera';
 import { blockPlates, debrisPose, drawRobot, PART_Z } from './robot-draw';
 import { drawGround } from './ground';
-import { wallsAt } from './walls';
 import { ageParticles, hitstopTicks, recentEvents, shakeFor, sparkLayers, sparkSpec, spawnParticles, type Particle } from './fx';
 import { blockPoint, floatNumber, hitFx, hitstopPlan, partFlashAt, recoilCm, shakeOffset } from './impact';
 import { rendererOptions } from './renderer';
@@ -172,7 +171,7 @@ export class FightScene {
       }
     }
     if (this.freeze > 0 && !this.reduceMotion) { sx += Math.sin(this.time * 120) * 2.5; sy += Math.cos(this.time * 97) * 2.5; }
-    drawGround(this.ground, this.fight.arena, c.scale, w, h, c.tx, c.ty, this.fight.suddenDeath ? wallsAt(this.fight, this.tick) : undefined, this.tick);
+    drawGround(this.ground, this.fight.arena, c.scale, w, h, c.tx, c.ty);
     this.world.position.set(Math.round(c.tx + sx), Math.round(c.ty + sy));
     const col = [hexNum(this.css('--hero'), 0x56b4e9), hexNum(this.css('--monster'), 0xe69f00)];
     const accent = hexNum(this.css('--accent'), 0x2f9e44);
@@ -274,27 +273,12 @@ export class FightScene {
     this.drawBanner(w, h);
   }
 
-  /** 'SUDDEN DEATH' banner: pops in, holds, fades over 2.5 s; red screen flash at onset. */
-  private suddenBanner(a: number, w: number, h: number): void {
-    const sf = this.screenFx, RED = 0xff3b30;
-    if (!this.reduceMotion && a < 10) sf.rect(0, 0, w, h).fill({ color: RED, alpha: 0.35 * (1 - a / 10) });
-    const pop = a < 10 ? 1.5 - 0.5 * (a / 10) : 1, fit = Math.min(1, w / 760) * (h < 700 ? 0.75 : 1);
-    const alpha = a < 100 ? Math.min(1, a / 3 + 0.2) : Math.max(0, 1 - (a - 100) / 50);
-    this.banner.visible = this.bannerSub.visible = true;
-    this.banner.text = 'SUDDEN DEATH'; this.banner.tint = RED; this.banner.alpha = alpha;
-    this.banner.scale.set(pop * fit * 0.62); this.banner.position.set(w / 2, h * 0.26);
-    this.bannerSub.text = 'walls closing in - torsos bleeding'; this.bannerSub.tint = 0xffffff; this.bannerSub.alpha = alpha;
-    this.bannerSub.scale.set(fit * 0.8); this.bannerSub.position.set(w / 2, h * 0.26 + 62 * fit);
-  }
-
   /** Big K.O. banner from the first ko event onwards (pops in, then holds); a white screen flash on the blow. */
   private drawBanner(w: number, h: number): void {
     const sf = this.screenFx; sf.clear();
     const ko = this.fight.events.find((e) => e.kind === 'ko');
     const a = ko ? this.tick - Math.min(ko.t, this.lastTick) + (ko.t > this.lastTick ? 10 : 0) : -1;
     const on = !!ko && a >= 0;
-    const sd = this.fight.suddenDeath, sa = sd ? this.tick - sd.startTick : -1; // ticks since sudden death began
-    if (!on && sd && sa >= 0 && sa < 150) { this.suddenBanner(sa, w, h); return; }
     this.banner.visible = this.bannerSub.visible = on;
     if (!on || !ko) return;
     if (!this.reduceMotion && a < 8) sf.rect(0, 0, w, h).fill({ color: 0xffffff, alpha: 0.5 * (1 - a / 8) });
