@@ -259,3 +259,8 @@ fn train_csv(name: &str, threads: usize) -> String {
 fn training_3_gens_pop_8_twice_gives_identical_csv() {
     assert_eq!(train_csv("a", 1), train_csv("b", 1));
 }
+
+#[test]
+fn threaded_training_equals_single_threaded() {
+    assert_eq!(train_csv("c", 1), train_csv("d", 4));
+}
