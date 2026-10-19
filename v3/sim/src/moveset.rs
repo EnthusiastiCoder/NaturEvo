@@ -14,3 +14,22 @@ use crate::config::DELAY_MAX;
 use crate::robot::{Joint, STAND_TARGETS};
 
 pub const N_MOVES: usize = 14;
+
+/// Fixed order: it is the net output index.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum MoveId {
+    Idle = 0,
+    Overhead = 1,
+    DiagDown = 2,
+    DiagUp = 3,
+    Sweep = 4,
+    Thrust = 5,
+    LowCut = 6,
+    Feint = 7,
+    Parry = 8,
+    Guard = 9,
+    Riposte = 10,
+    ShieldBash = 11,
+    Kick = 12,
+    Backstep = 13,
+}
