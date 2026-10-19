@@ -33,3 +33,21 @@ pub enum MoveId {
     Kick = 12,
     Backstep = 13,
 }
+
+impl MoveId {
+    pub const ALL: [MoveId; N_MOVES] = [
+        MoveId::Idle,
+        MoveId::Overhead,
+        MoveId::DiagDown,
+        MoveId::DiagUp,
+        MoveId::Sweep,
+        MoveId::Thrust,
+        MoveId::LowCut,
+        MoveId::Feint,
+        MoveId::Parry,
+        MoveId::Guard,
+        MoveId::Riposte,
+        MoveId::ShieldBash,
+        MoveId::Kick,
+        MoveId::Backstep,
+    ];
