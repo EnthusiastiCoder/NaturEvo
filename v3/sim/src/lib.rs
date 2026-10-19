@@ -16,5 +16,6 @@ pub mod moves;
 pub mod net;
 pub mod rng;
 pub mod robot;
+pub mod rules;
 pub mod scripted;
 pub mod sense;
