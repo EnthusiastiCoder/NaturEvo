@@ -120,3 +120,15 @@ fn sample() -> (Match, GraceStats, GraceStats) {
     let b = match_grace(&m, 1);
     (m, a, b)
 }
+
+fn check(g: &GraceStats) {
+    for v in [g.jerk, g.spacing_std, g.hits_per_swing, g.whiff_rate, g.punish_rate, g.recovery_efficiency, g.move_entropy,
+        g.parry_success_rate, g.feint_bait_rate, g.damage_per_energy] {
+        assert!(v.is_finite() && v >= 0.0, "{:?}", v);
+    }
+    for v in [g.whiff_rate, g.punish_rate, g.parry_success_rate, g.feint_bait_rate] { assert!(v <= 1.0 + 1e-5); }
+    assert!(g.move_entropy <= (N_MOVES as f32).ln() + 1e-4);
+    let s: f32 = g.usage.iter().sum();
+    assert!(s == 0.0 || (s - 1.0).abs() < 1e-3, "usage sums to {}", s);
+    assert!(g.usage.iter().all(|u| (0.0..=1.0 + 1e-5).contains(u)));
+}
