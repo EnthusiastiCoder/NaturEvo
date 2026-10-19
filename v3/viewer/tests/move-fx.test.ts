@@ -94,3 +94,31 @@ describe('moveCallout', () => {
     expect(Math.abs(p.x - hx(att))).toBeLessThan(Math.abs(p.x - hx(vic)));
   });
 });
+
+describe('phaseStyle', () => {
+  it('idle has no effects', () => {
+    const s = phaseStyle(0, 0);
+    expect(s.glow).toBe(0);
+    expect(s.trail).toBe(false);
+    expect(s.dim).toBe(false);
+  });
+  it('windup glow grows with progress and has no trail', () => {
+    const a = phaseStyle(1, 0.2), b = phaseStyle(1, 0.9);
+    expect(a.glow).toBeGreaterThan(0);
+    expect(b.glow).toBeGreaterThan(a.glow);
+    expect(b.glow).toBeLessThanOrEqual(1);
+    expect(a.trail).toBe(false);
+  });
+  it('active has a trail and a bright edge', () => {
+    const s = phaseStyle(2, 0.5);
+    expect(s.trail).toBe(true);
+    expect(s.dim).toBe(false);
+    expect(s.color.toLowerCase()).toMatch(/^#f{3,6}$/);
+  });
+  it('recovery is dim with no trail, and the three phases use three colours', () => {
+    const r = phaseStyle(3, 0.5);
+    expect(r.dim).toBe(true);
+    expect(r.trail).toBe(false);
+    expect(new Set([phaseStyle(1, 0.5).color, phaseStyle(2, 0.5).color, r.color]).size).toBe(3);
+  });
+});
