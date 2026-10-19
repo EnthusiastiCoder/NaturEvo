@@ -173,3 +173,14 @@ fn fitness_weights_are_unchanged() {
     approx(KO_BONUS, 1.0);
     assert_eq!(MAX_CREDITED_THREATS, 6);
 }
+
+#[test]
+fn score_stats_has_no_new_term() {
+    // Exhaustive struct literal: adding a field to MatchStats (a new reward input beyond the baseline jerk term) breaks compilation here.
+    let s = MatchStats { win: true, draw: false, ko: true, dmg_dealt_norm: 0.5, dmg_taken_norm: 0.2, defence_credit: 0.5, idle_guard: 0.1, passivity: 0.2, chain_quality: 0.4, jerk: 0.05 };
+    let expect = 4.0 + 1.0 + 3.0 * 0.5 - 2.5 * 0.2 + 2.0 * 0.5 - 0.1 - 0.2 + 0.5 * 0.4 - 8.0 * 0.05;
+    approx(score_stats(&s), expect);
+    // Zeroing every existing term leaves exactly the win bonus: nothing else contributes.
+    let z = MatchStats { win: true, draw: false, ko: false, dmg_dealt_norm: 0.0, dmg_taken_norm: 0.0, defence_credit: 0.0, idle_guard: 0.0, passivity: 0.0, chain_quality: 0.0, jerk: 0.0 };
+    approx(score_stats(&z), 4.0);
+}
