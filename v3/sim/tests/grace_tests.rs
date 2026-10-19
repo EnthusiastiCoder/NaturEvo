@@ -184,3 +184,5 @@ fn score_stats_has_no_new_term() {
     let z = MatchStats { win: true, draw: false, ko: false, dmg_dealt_norm: 0.0, dmg_taken_norm: 0.0, defence_credit: 0.0, idle_guard: 0.0, passivity: 0.0, chain_quality: 0.0, jerk: 0.0 };
     approx(score_stats(&z), 4.0);
 }
+
+// ---- curriculum ----
