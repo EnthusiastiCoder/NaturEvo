@@ -51,3 +51,7 @@ impl MoveId {
         MoveId::Kick,
         MoveId::Backstep,
     ];
+
+    pub fn index(self) -> usize {
+        self as usize
+    }
