@@ -157,3 +157,5 @@ fn a_spammer_against_a_dummy_that_never_defends_lands_hits_a_spammer_in_the_void
     assert!(g.hits_per_swing > 0.0 && g.whiff_rate < 1.0, "spammer vs dummy hits: {:?}", g.whiff_rate);
     assert_eq!(g.usage[MoveId::Overhead as usize] > 0.99, true, "only Overhead used");
 }
+
+// ---- fitness unchanged ----
