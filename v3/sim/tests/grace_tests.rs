@@ -148,3 +148,12 @@ fn match_grace_is_deterministic() {
     assert_eq!(a1.usage, a2.usage);
     assert_eq!((a1.jerk, a1.whiff_rate, a1.punish_rate, a1.hits_per_swing), (a2.jerk, a2.whiff_rate, a2.punish_rate, a2.hits_per_swing));
 }
+
+#[test]
+fn a_spammer_against_a_dummy_that_never_defends_lands_hits_a_spammer_in_the_void_whiffs() {
+    let mut m = Match::new(2, Brain::Spam(MoveId::Overhead), Brain::Dummy);
+    m.run_to_end();
+    let g = match_grace(&m, 0);
+    assert!(g.hits_per_swing > 0.0 && g.whiff_rate < 1.0, "spammer vs dummy hits: {:?}", g.whiff_rate);
+    assert_eq!(g.usage[MoveId::Overhead as usize] > 0.99, true, "only Overhead used");
+}
