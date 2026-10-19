@@ -34,3 +34,30 @@ describe('parseFight geometry', () => {
     expect(parseFight(withBlocks()).suddenDeath).toMatchObject({ startTick: 450, speedCm: 60, minWidth: 160 });
   });
 });
+
+describe('walls', () => {
+  const f = parseFight(withBlocks());
+  it('sit 0.5 m inside the arena until sudden death', () => {
+    expect(wallsAt(f, 0)).toEqual({ lo: 50, hi: 1350 });
+    expect(wallsAt(f, 450)).toEqual({ lo: 50, hi: 1350 });
+  });
+  it('close symmetrically at 0.6 m/s after the start tick', () => {
+    const w = wallsAt(f, 450 + 60);
+    expect(w.lo).toBeCloseTo(110); expect(w.hi).toBeCloseTo(1290);
+  });
+  it('stop at the minimum width 160 cm', () => {
+    const w = wallsAt(f, 6000);
+    expect(w.hi - w.lo).toBeCloseTo(160); expect((w.lo + w.hi) / 2).toBeCloseTo(700);
+  });
+  it('are static without a sudden_death block', () => {
+    const o = parseFight({ ...withBlocks(), sudden_death: undefined });
+    expect(wallsAt(o, 900)).toEqual({ lo: 50, hi: 1350 });
+    expect(suddenDeathActive(o, 900)).toBe(false);
+  });
+  it('active flag and bleed rate', () => {
+    expect(suddenDeathActive(f, 449)).toBe(false);
+    expect(suddenDeathActive(f, 451)).toBe(true);
+    expect(bleedAt(f, 100)).toBe(0);
+    expect(bleedAt(f, 900)).toBeGreaterThan(bleedAt(f, 500));
+  });
+});
