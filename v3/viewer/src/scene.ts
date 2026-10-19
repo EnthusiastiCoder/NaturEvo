@@ -1,7 +1,7 @@
 import { Application, Container, Graphics, Text } from 'pixi.js';
 import type { Fight, FighterFrame, Frame, Seg } from './data';
 import { cameraFor, lerpCamera, type Camera } from './camera';
-import { debrisPose, drawRobot, PART_Z, shieldPlate } from './robot-draw';
+import { blockPlates, debrisPose, drawRobot, PART_Z } from './robot-draw';
 import { drawGround } from './ground';
 import { wallsAt } from './walls';
 import { ageParticles, hitstopTicks, recentEvents, shakeFor, sparkLayers, sparkSpec, spawnParticles, type Particle } from './fx';
@@ -109,7 +109,7 @@ export class FightScene {
   private evPoint(e: Ev): { x: number; y: number } {
     if (e.kind === 'block') {
       const fr = sampleFrame(this.fight, e.t);
-      const [x, y] = blockPoint(e.x, e.y, fr.f.filter((g) => g.hp[5] > 0).map((g) => shieldPlate(g.parts[5], this.fight.geometry.shieldAlong, this.fight.geometry.shieldLen)));
+      const [x, y] = blockPoint(e.x, e.y, blockPlates(fr.f, sampleFrame(this.fight, e.t - 2).f, this.fight.geometry.shieldAlong, this.fight.geometry.shieldLen));
       return { x, y };
     }
     if (e.kind === 'destroyed') {
