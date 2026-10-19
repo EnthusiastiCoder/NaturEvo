@@ -32,3 +32,47 @@ pub struct RuleState {
     riposte_t: f32,
     guard_broken_t: f32,
 }
+
+impl RuleState {
+    pub fn new() -> RuleState {
+        RuleState::default()
+    }
+    pub fn tick(&mut self, dt: f32) {
+        self.open_t = (self.open_t - dt).max(0.0);
+        self.riposte_t = (self.riposte_t - dt).max(0.0);
+        self.guard_broken_t = (self.guard_broken_t - dt).max(0.0);
+    }
+    fn open_for(&mut self, t: f32, m: f32) {
+        self.open_t = t;
+        self.open_m = m;
+    }
+    pub fn begin_recovery(&mut self, whiffed: bool, recovery: f32) {
+        if whiffed {
+            self.open_for(recovery, OPEN_MULT);
+        }
+    }
+    pub fn on_parry_success(&mut self) {
+        self.riposte_t = RIPOSTE_WINDOW;
+    }
+    pub fn on_parry_miss(&mut self) {
+        self.open_for(PARRY_MISS_RECOVERY, PARRY_MISS_OPEN_MULT);
+    }
+    pub fn is_open(&self) -> bool {
+        self.open_t > 0.0
+    }
+    pub fn open_remaining(&self) -> f32 {
+        self.open_t
+    }
+    pub fn open_mult(&self) -> f32 {
+        if self.is_open() { self.open_m } else { 1.0 }
+    }
+    pub fn riposte_open(&self) -> bool {
+        self.riposte_t > 0.0
+    }
+    pub fn riposte_remaining(&self) -> f32 {
+        self.riposte_t
+    }
+    pub fn guard_broken_remaining(&self) -> f32 {
+        self.guard_broken_t
+    }
+}
