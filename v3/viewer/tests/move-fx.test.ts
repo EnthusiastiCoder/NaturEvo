@@ -27,3 +27,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parseFight } from '../src/data';
 import { moveCallout, phaseStyle, openBadge, hudMoveLine, graceModel } from '../src/move-fx';
+
+const load = (n: string) => parseFight(JSON.parse(readFileSync(resolve(__dirname, 'fixtures', n), 'utf8')));
+const fight = () => load('fight_moves.json');
+const frameAt = (f: ReturnType<typeof fight>, t: number) => f.frames.find((fr) => fr.t === t)!;
