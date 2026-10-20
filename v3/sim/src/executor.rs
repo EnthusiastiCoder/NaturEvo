@@ -193,3 +193,34 @@ impl Executor {
         self.start_pose = self.last_pose;
         self.spent += move_energy(id, &p) + extra_cost;
     }
+
+    fn handle_request(&mut self, me: &Robot, id: MoveId, p: MoveParams) {
+        let in_windup = self.phase == Phase::Windup && !self.cancelled;
+        if id == MoveId::Idle || self.phase == Phase::Active {
+            return;
+        }
+        if id == MoveId::Feint {
+            if in_windup && self.progress() < FEINT_CANCEL_FRAC && me.energy >= FEINT_COST {
+                self.cancel();
+                self.spent += FEINT_COST;
+            }
+            return;
+        }
+        if id == MoveId::Backstep && in_windup && self.threat && self.id != MoveId::Backstep {
+            let cost = move_energy(id, &p) + BACKSTEP_CANCEL_COST;
+            if me.energy >= cost && move_possible_id(me, id) {
+                self.begin(id, p, BACKSTEP_CANCEL_COST);
+            }
+            return;
+        }
+        let idle = self.phase == Phase::Idle;
+        let chain = self.phase == Phase::Recovery && self.progress() >= 1.0 - CHAIN_FRAC;
+        if !(idle || chain) || !is_attack(id) {
+            return;
+        }
+        let extra = if chain { CHAIN_COST } else { 0.0 };
+        if me.energy < move_energy(id, &p) + extra || !move_possible_id(me, id) {
+            return;
+        }
+        self.begin(id, p, extra);
+    }
