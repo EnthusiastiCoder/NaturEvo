@@ -317,8 +317,8 @@ pub fn resolve_tick_with(att: &mut Robot, def: &mut Robot, arena: &Arena, mods: 
         Target::Body(part, c) => {
             let impact = strike_impact(att, &c);
             let zone = def.zone_mult(part);
-            let damage = def.damage_part(part, impact);
-            def.add_posture(impact * 0.05);
+            let damage = def.damage_part(part, impact * mods.impact_mult);
+            def.add_posture(impact * 0.05 * mods.posture_mult);
             let knockback = KNOCKBACK_K * impact * c.normal[0] / def.total_mass();
             def.x = arena.clamp_x(def.x + knockback * 0.1);
             def.apply_impulse(knockback * 0.3);
