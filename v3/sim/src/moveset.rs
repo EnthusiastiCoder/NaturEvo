@@ -262,3 +262,11 @@ fn keyframes(id: MoveId, p: &MoveParams) -> ([f32; 12], [f32; 12]) {
         ),
     }
 }
+
+fn blend(a: &[f32; 12], b: &[f32; 12], s: f32) -> [f32; 12] {
+    let mut o = [0.0; 12];
+    for i in 0..12 {
+        o[i] = lerp(a[i], b[i], s).clamp(-1.0, 1.0);
+    }
+    o
+}
