@@ -184,3 +184,11 @@ pub const REST: [f32; 12] = STAND_TARGETS;
 fn lerp(a: f32, b: f32, s: f32) -> f32 {
     a + (b - a) * s
 }
+
+fn mk(edits: &[(Joint, f32)]) -> [f32; 12] {
+    let mut t = REST;
+    for (j, v) in edits {
+        t[*j as usize] = v.clamp(-1.0, 1.0);
+    }
+    t
+}
