@@ -225,7 +225,7 @@ pub fn resolve_tick_with(att: &mut Robot, def: &mut Robot, arena: &Arena, mods: 
             }
         }
     }
-    if def.shield_active() {
+    if def.shield_active() && !mods.shield_ignored {
         if let Some(c) = swept_hit(sp, sc, def.shield_capsule()) {
             if len(c.velocity) / PHYS_DT >= MIN_SPEED {
                 consider(c.t, 1, Target::Shield(c));
