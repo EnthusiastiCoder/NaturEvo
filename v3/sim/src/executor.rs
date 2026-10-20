@@ -120,3 +120,18 @@ impl Executor {
     pub fn cancelling(&self) -> bool {
         self.cancelled
     }
+
+    fn cur_dur(&self) -> f32 {
+        match self.phase {
+            Phase::Idle => 0.0,
+            Phase::Windup => self.dur[0],
+            Phase::Active => self.dur[1],
+            Phase::Recovery => {
+                if self.cancelled {
+                    CANCEL_RECOVER
+                } else {
+                    self.dur[2]
+                }
+            }
+        }
+    }
