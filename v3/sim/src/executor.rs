@@ -42,3 +42,7 @@ impl Default for Executor {
 fn is_attack(id: MoveId) -> bool {
     !matches!(id, MoveId::Idle | MoveId::Feint)
 }
+
+fn move_energy(id: MoveId, p: &MoveParams) -> f32 {
+    spec(id).energy * (0.6 + 0.8 * p.speed.clamp(0.0, 1.0)) + DRAG_COST * p.delay.clamp(0.0, 1.0)
+}
