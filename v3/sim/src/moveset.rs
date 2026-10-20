@@ -192,3 +192,73 @@ fn mk(edits: &[(Joint, f32)]) -> [f32; 12] {
     }
     t
 }
+
+/// (windup pose, strike pose) keyframes of a move for the given params.
+fn keyframes(id: MoveId, p: &MoveParams) -> ([f32; 12], [f32; 12]) {
+    let r = p.reach.clamp(0.0, 1.0);
+    let a = p.arc.clamp(0.0, 1.0);
+    match id {
+        // Scheitelhau: vertical cut from above. Arc tilts the waist follow-through.
+        MoveId::Overhead => (
+            mk(&[(ShoulderR, 0.3), (ElbowR, 0.4), (Waist, -0.4), (HipR, -0.1)]),
+            mk(&[(ShoulderR, 0.1), (ElbowR, lerp(-0.2, -1.0, r)), (Waist, lerp(0.2, 0.6, a)), (HipR, 0.0)]),
+        ),
+        // Zornhau: diagonal cut, arc tilts the angle.
+        MoveId::DiagDown => (
+            mk(&[(ShoulderR, 0.35), (ElbowR, 0.0), (Waist, -0.5), (HipR, -0.1)]),
+            mk(&[(ShoulderR, lerp(0.1, -0.5, a)), (ElbowR, lerp(-0.1, -0.8, r)), (Waist, 0.4), (HipR, 0.0)]),
+        ),
+        // Rising cut from low.
+        MoveId::DiagUp => (
+            mk(&[(ShoulderR, -0.8), (ElbowR, 0.1), (Waist, -0.4), (HipR, -0.2)]),
+            mk(&[(ShoulderR, lerp(-0.2, 0.3, a)), (ElbowR, lerp(-0.2, -0.8, r)), (Waist, 0.4), (HipR, 0.0)]),
+        ),
+        // Zwerchhau: wide horizontal arc, arc picks the height.
+        MoveId::Sweep => (
+            mk(&[(ShoulderR, lerp(-0.1, 0.4, a)), (ElbowR, 0.0), (Waist, -0.7), (HipR, -0.1)]),
+            mk(&[(ShoulderR, lerp(-0.1, 0.4, a)), (ElbowR, lerp(-0.1, -0.8, r)), (Waist, 0.7), (HipR, 0.0)]),
+        ),
+        // Pflug: straight thrust with a lunge; reach straightens the arm.
+        MoveId::Thrust => (
+            mk(&[(ShoulderR, -0.2), (ElbowR, 0.0), (Waist, -0.3), (HipR, -0.3)]),
+            mk(&[(ShoulderR, lerp(-0.2, 0.2, a)), (ElbowR, lerp(-0.3, -0.8, r)), (Waist, 0.4), (HipR, 0.0), (KneeR, -0.6)]),
+        ),
+        // Krumphau: low cut at the legs.
+        MoveId::LowCut => (
+            mk(&[(ShoulderR, 0.1), (ElbowR, 0.1), (Waist, -0.5), (HipR, -0.1)]),
+            mk(&[(ShoulderR, lerp(-0.8, -0.4, a)), (ElbowR, lerp(-0.2, -0.8, r)), (Waist, 0.6), (HipR, 0.2), (KneeR, -0.7)]),
+        ),
+        // Request-only: never runs as a move of its own.
+        MoveId::Idle | MoveId::Feint => (REST, REST),
+        // Deflect: sword comes up and across in front.
+        MoveId::Parry => (
+            mk(&[(ShoulderR, -0.2), (ElbowR, 0.0), (Waist, -0.1)]),
+            mk(&[(ShoulderR, lerp(0.1, 0.5, a)), (ElbowR, lerp(-0.1, -0.5, r)), (Waist, 0.2)]),
+        ),
+        // Shield raised in front (GUARD_TARGETS on the left arm).
+        MoveId::Guard => (
+            mk(&[(ShoulderL, 0.1), (ElbowL, 0.29)]),
+            mk(&[(ShoulderL, lerp(0.05, 0.3, a)), (ElbowL, lerp(0.2, 0.5, r))]),
+        ),
+        // Quick counter cut after a parry; a straight-ish stab.
+        MoveId::Riposte => (
+            mk(&[(ShoulderR, 0.2), (ElbowR, 0.3), (Waist, -0.3), (HipR, -0.2)]),
+            mk(&[(ShoulderR, lerp(0.0, 0.5, a)), (ElbowR, lerp(-0.3, -1.0, r)), (Waist, 0.4), (HipR, 0.1)]),
+        ),
+        // Shield plate driven forward.
+        MoveId::ShieldBash => (
+            mk(&[(ShoulderL, -0.8), (ElbowL, 0.6), (Waist, -0.3)]),
+            mk(&[(ShoulderL, lerp(0.0, 0.4, a)), (ElbowL, lerp(0.2, -0.3, r)), (Waist, 0.3)]),
+        ),
+        // Foot strike with the right leg.
+        MoveId::Kick => (
+            mk(&[(HipR, -0.4), (KneeR, 0.0), (AnkleR, -0.2)]),
+            mk(&[(HipR, lerp(0.1, 0.5, r)), (KneeR, -0.8), (AnkleR, 0.2)]),
+        ),
+        // Crouch then push off backwards (the drive is added by the executor).
+        MoveId::Backstep => (
+            mk(&[(HipL, -0.4), (HipR, -0.4), (KneeL, 0.0), (KneeR, 0.0)]),
+            mk(&[(HipL, lerp(-0.3, 0.1, r)), (HipR, lerp(-0.3, 0.1, r)), (KneeL, -0.5), (KneeR, -0.5)]),
+        ),
+    }
+}
