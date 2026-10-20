@@ -49,7 +49,7 @@ fn a_timeout_is_never_a_win() {
 }
 
 #[test]
-fn walls_close_in_after_the_grace_period_to_a_minimum_width() {
+fn arena_width_is_constant_through_a_fight() {
     let mut m = Match::new(1, Brain::Dummy, Brain::Dummy);
     let (lo0, hi0) = m.bounds();
     assert!((hi0 - lo0 - (ARENA_WIDTH - 1.0)).abs() < 1e-3);
