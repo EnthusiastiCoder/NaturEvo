@@ -3,6 +3,7 @@
 //! Outputs (19): 14 move logits, 4 move params (reach, speed, arc, delay), 1 drive; all tanh, see `decode`.
 //! Weight layout: W1[N_HID*(N_IN+N_CTX)], b1[N_HID], W2[N_OUT*N_HID], b2[N_OUT].
 use crate::genome::Genome;
+use crate::moveset::{MoveId, MoveParams, N_MOVES};
 use crate::sense::N_IN;
 
 pub const N_OUT: usize = 13;
