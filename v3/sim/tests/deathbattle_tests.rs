@@ -16,11 +16,9 @@ fn dummies_that_never_fight_hit_the_cap_not_a_forced_death() {
     // No walls, no bleed: nothing forces a death, so two passive fighters run to the emergency cap.
     let mut m = Match::new(1, Brain::Dummy, Brain::Dummy);
     let r = m.run_to_end();
-    assert!(dead(&m), "ended at {} without a death", r.ticks);
-    assert!(r.ticks > SUDDEN_DEATH_START, "nothing forces a death before sudden death: {}", r.ticks);
-    assert!(r.ticks < HARD_CAP_TICKS);
-    assert!(!r.capped);
-    assert!(r.sudden_death);
+    assert!(!dead(&m), "nothing may kill passive fighters (ended at {})", r.ticks);
+    assert_eq!(r.ticks, HARD_CAP_TICKS);
+    assert!(r.capped && r.outcome == Outcome::Draw);
 }
 
 #[test]
