@@ -41,3 +41,11 @@ pub struct SkillBot {
     flail_t: f32,
     opp_idle: f32,
 }
+
+impl SkillBot {
+    pub fn new(seed: u64, tier: u8) -> SkillBot {
+        let tier = tier.clamp(1, 3);
+        let mut rng = Rng::new(seed ^ 0x51C1_1B07 ^ ((tier as u64) << 32));
+        let wait = rng.range(0.1, 0.5);
+        SkillBot { tier, rng, wait, react: -1.0, reacted: false, bait: None, follow: false, close_plan: 0.0, down: false, was_stag: false, flail_t: 0.0, opp_idle: 0.0 }
+    }
