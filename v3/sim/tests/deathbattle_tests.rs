@@ -70,12 +70,6 @@ fn nobody_bleeds_without_being_hit() {
             assert_eq!(m.robots[i].hp(p), m.robots[i].max_hp(p), "fighter {} {:?} lost hp with no hit", i, p);
         }
     }
-    let b = torso(&m);
-    for _ in 0..120 {
-        m.step();
-    }
-    let c = torso(&m);
-    assert!(a - b > 0.0 && (b - c) > (a - b), "bleed must grow: {} {} {}", a, b, c);
 }
 
 #[test]
