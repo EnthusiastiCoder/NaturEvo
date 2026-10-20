@@ -18,3 +18,7 @@ const FLAIL_TIME: f32 = 1.0;
 const FLAIL_DIST: f32 = 3.5;
 const FLAIL_IDLE: f32 = 2.0;
 const LOW_MOVE_P: f32 = 0.1;
+
+pub fn is_attack(id: MoveId) -> bool {
+    !matches!(id, MoveId::Idle | MoveId::Feint | MoveId::Guard | MoveId::Parry | MoveId::Backstep)
+}
