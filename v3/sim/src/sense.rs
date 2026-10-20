@@ -103,6 +103,11 @@ fn line_of_sight_blocked(a: f32, b: f32, arena: &Arena) -> bool {
 }
 
 pub fn observe(me: &Robot, opp: &Robot, arena: &Arena) -> [f32; N_IN] {
+    let d = MoveInfo::default();
+    observe_moves(me, opp, arena, &d, &d)
+}
+
+pub fn observe_moves(me: &Robot, opp: &Robot, arena: &Arena, mine: &MoveInfo, theirs: &MoveInfo) -> [f32; N_IN] {
     let mut w = W { x: [0.0; N_IN], i: 0 };
     let f = if me.facing >= 0.0 { 1.0 } else { -1.0 };
     let o = mid(&me.capsule(Part::Torso));
