@@ -3,6 +3,7 @@
 //! inputs; a disabled head blinds the fighter (opponent inputs are zero).
 use crate::arena::Arena;
 use crate::config::PHYS_DT;
+use crate::moveset::{MoveId, Phase};
 use crate::rng::Rng;
 use crate::robot::{Capsule, Joint, Part, Robot, State};
 use std::ops::Range;
