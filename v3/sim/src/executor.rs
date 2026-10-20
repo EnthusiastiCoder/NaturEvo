@@ -235,3 +235,29 @@ impl Executor {
         self.whiffed = false;
         self.contact = false;
     }
+
+    /// One fixed-dt tick. `req` is this tick's decision; requests the executor cannot accept are ignored.
+    pub fn step(&mut self, me: &Robot, req: Option<(MoveId, MoveParams)>, dt: f32) -> Action {
+        self.facing = if me.facing >= 0.0 { 1.0 } else { -1.0 };
+        let pose;
+        if !me.can_act() {
+            self.reset_move();
+            pose = REST;
+        } else {
+            self.advance(dt);
+            if let Some((id, p)) = req {
+                self.handle_request(me, id, p);
+            }
+            pose = self.pose();
+        }
+        // Jerk energy: |second difference| / dt (= |d2 target/dt2| integrated over the tick).
+        let mut j = 0.0;
+        for i in 0..12 {
+            j += (pose[i] - 2.0 * self.hist1[i] + self.hist2[i]).abs();
+        }
+        self.spent += JERK_COST * j / dt;
+        self.hist2 = self.hist1;
+        self.hist1 = pose;
+        self.last_pose = pose;
+        Action { targets: pose, drive: self.drive() }
+    }
