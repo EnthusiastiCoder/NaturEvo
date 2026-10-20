@@ -5,3 +5,5 @@ use crate::moveset::{MoveId, MoveParams, Phase};
 use crate::rng::Rng;
 use crate::robot::{Robot, State};
 use crate::sense::MoveInfo;
+
+pub type Request = Option<(MoveId, MoveParams)>;
