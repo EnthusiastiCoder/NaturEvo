@@ -38,3 +38,7 @@ impl Default for Executor {
         Executor::new()
     }
 }
+
+fn is_attack(id: MoveId) -> bool {
+    !matches!(id, MoveId::Idle | MoveId::Feint)
+}
