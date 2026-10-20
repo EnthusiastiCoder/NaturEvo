@@ -224,6 +224,30 @@ pub fn observe_moves(me: &Robot, opp: &Robot, arena: &Arena, mine: &MoveInfo, th
     w.put(ahead / 14.0);
     w.put(behind / 14.0);
     w.put(if line_of_sight_blocked(o[0], mid(&opp.capsule(Part::Torso))[0], arena) { 1.0 } else { 0.0 });
+    debug_assert_eq!(w.i, BASE_IN);
+    // Own move state (always known to the fighter).
+    for k in 0..14 {
+        w.put(if mine.id.index() == k { 1.0 } else { 0.0 });
+    }
+    for k in 0..4 {
+        w.put(if mine.phase.index() == k { 1.0 } else { 0.0 });
+    }
+    w.put(mine.progress);
+    w.put(if mine.committed { 1.0 } else { 0.0 });
+    w.put(if mine.open { 1.0 } else { 0.0 });
+    w.put(mine.riposte_remaining / 0.6);
+    w.put(mine.guard_broken_remaining / 0.4);
+    w.put(mine.last_cost / 30.0);
+    // Opponent telegraph (zero when blind).
+    for k in 0..14 {
+        w.put(if !blind && theirs.id.index() == k { 1.0 } else { 0.0 });
+    }
+    for k in 0..4 {
+        w.put(if !blind && theirs.phase.index() == k { 1.0 } else { 0.0 });
+    }
+    w.put(if blind { 0.0 } else { theirs.progress });
+    w.put(if !blind && theirs.open { 1.0 } else { 0.0 });
+    w.put(if blind { 0.0 } else { theirs.recovery_remaining / 0.5 });
     debug_assert_eq!(w.i, N_IN);
     w.x
 }
