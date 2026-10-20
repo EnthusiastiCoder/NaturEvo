@@ -116,7 +116,7 @@ fn a_death_win_beats_every_non_death_result() {
 
 #[test]
 fn log_contains_the_whole_fight_to_the_death() {
-    let mut m = Match::new(1, Brain::Dummy, Brain::Dummy);
+    let mut m = Match::new(6, Brain::Scripted, Brain::Dummy);
     m.enable_log();
     let r = m.run_to_end();
     let j = fight_json(&m);
