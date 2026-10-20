@@ -135,3 +135,13 @@ impl Executor {
             }
         }
     }
+
+    fn reset_move(&mut self) {
+        self.id = MoveId::Idle;
+        self.phase = Phase::Idle;
+        self.elapsed = 0.0;
+        self.committed = false;
+        self.cancelled = false;
+        self.whiffed = false;
+        self.contact = false;
+    }
