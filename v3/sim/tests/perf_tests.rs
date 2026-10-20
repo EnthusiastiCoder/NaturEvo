@@ -15,5 +15,7 @@ fn nine_hundred_tick_match_under_25_ms() {
     let r = m.run_to_end();
     let ms = t.elapsed().as_secs_f64() * 1000.0;
     assert!(r.ticks > 0);
-    assert!(ms < 25.0, "{:.1} ms for {} ticks", ms, r.ticks);
+    // Per 900 ticks: a fight with no forcing rule may run to the 6000-tick cap.
+    let per900 = ms * 900.0 / r.ticks as f64;
+    assert!(per900 < 25.0, "{:.1} ms per 900 ticks ({} ticks)", per900, r.ticks);
 }
