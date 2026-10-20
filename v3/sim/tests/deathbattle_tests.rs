@@ -122,7 +122,8 @@ fn log_contains_the_whole_fight_to_the_death() {
     let j = fight_json(&m);
     assert_eq!(j.matches("\"f\":[").count() as u32, r.ticks / 2 + 1, "one frame per 2 ticks plus the final state");
     assert!(j.contains("\"kind\":\"ko\""), "the killing blow is logged");
-    assert!(j.contains("\"kind\":\"sudden_death\""));
-    assert!(j.contains("\"sudden_death\":{\"start_tick\":"));
+    assert!(!j.contains("sudden_death"), "no sudden-death block or event");
+    assert!(j.contains("\"geometry\":"), "the geometry block stays");
+    assert!(j.contains("\"capped\":false"));
     assert!(j.contains("\"state\":\"ko\""), "the last frame shows the dead fighter");
 }
