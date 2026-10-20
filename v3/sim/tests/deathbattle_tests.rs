@@ -1,4 +1,4 @@
-// Job 3: fights are death battles. They end only when someone dies; sudden death forces engagement.
+// Job 3: fights are death battles. They end only when someone dies; nothing forces engagement in-fight; only the capped-loss fitness pushes it.
 use mech_sim::config::*;
 use mech_sim::duel::{Brain, Match, Outcome};
 use mech_sim::fitness::{score_stats, MatchStats};
