@@ -46,3 +46,27 @@ fn is_attack(id: MoveId) -> bool {
 fn move_energy(id: MoveId, p: &MoveParams) -> f32 {
     spec(id).energy * (0.6 + 0.8 * p.speed.clamp(0.0, 1.0)) + DRAG_COST * p.delay.clamp(0.0, 1.0)
 }
+
+impl Executor {
+    pub fn new() -> Executor {
+        Executor {
+            id: MoveId::Idle,
+            params: DEFAULT_PARAMS,
+            phase: Phase::Idle,
+            elapsed: 0.0,
+            dur: [0.0; 3],
+            contact: false,
+            whiffed: false,
+            committed: false,
+            cancelled: false,
+            cancel_from: REST,
+            start_pose: REST,
+            spent: 0.0,
+            hist1: REST,
+            hist2: REST,
+            last_pose: REST,
+            threat: false,
+            riposte_open: false,
+            facing: 1.0,
+        }
+    }
