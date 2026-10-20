@@ -22,3 +22,7 @@ const LOW_MOVE_P: f32 = 0.1;
 pub fn is_attack(id: MoveId) -> bool {
     !matches!(id, MoveId::Idle | MoveId::Feint | MoveId::Guard | MoveId::Parry | MoveId::Backstep)
 }
+
+fn p(reach: f32, speed: f32, arc: f32, delay: f32) -> MoveParams {
+    MoveParams { reach, speed, arc, delay }
+}
