@@ -293,3 +293,8 @@ pub fn windup_from(id: MoveId, p: &MoveParams, from: &[f32; 12], t: f32) -> [f32
     let (w, _) = keyframes(id, p);
     blend(from, &w, min_jerk(t))
 }
+
+/// Interpolate any pose toward the ready pose with the minimum-jerk profile.
+pub fn relax_to_rest(from: &[f32; 12], t: f32) -> [f32; 12] {
+    blend(from, &REST, min_jerk(t))
+}
