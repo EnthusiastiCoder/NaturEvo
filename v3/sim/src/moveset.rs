@@ -171,3 +171,9 @@ pub fn phase_durations(id: MoveId, p: &MoveParams) -> [f32; 3] {
 
 /// Strike amplitude at speed 0 (1.0 at speed 1).
 pub const STRIKE_AMP_SLOW: f32 = 0.4;
+
+/// Minimum-jerk quintic, 0 -> 1 with zero velocity and acceleration at both ends.
+pub fn min_jerk(p: f32) -> f32 {
+    let p = p.clamp(0.0, 1.0);
+    10.0 * p.powi(3) - 15.0 * p.powi(4) + 6.0 * p.powi(5)
+}
