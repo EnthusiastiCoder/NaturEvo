@@ -261,3 +261,19 @@ impl Executor {
         self.last_pose = pose;
         Action { targets: pose, drive: self.drive() }
     }
+
+    fn pose(&self) -> [f32; 12] {
+        let t = self.progress();
+        match self.phase {
+            Phase::Idle => REST,
+            Phase::Windup => windup_from(self.id, &self.params, &self.start_pose, t),
+            Phase::Active => pose_at(self.id, &self.params, Phase::Active, t),
+            Phase::Recovery => {
+                if self.cancelled {
+                    relax_to_rest(&self.cancel_from, t)
+                } else {
+                    pose_at(self.id, &self.params, Phase::Recovery, t)
+                }
+            }
+        }
+    }
