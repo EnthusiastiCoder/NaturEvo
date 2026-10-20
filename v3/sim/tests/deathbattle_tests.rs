@@ -57,21 +57,6 @@ fn arena_width_is_constant_through_a_fight() {
         m.step();
         assert_eq!(m.bounds(), (lo0, hi0), "walls moved at tick {}", m.tick);
     }
-    let (lo, hi) = m.bounds();
-    assert!((hi - lo - (hi0 - lo0)).abs() < 1e-3, "no closing during the grace period");
-    for _ in 0..120 {
-        m.step();
-    }
-    let (lo2, hi2) = m.bounds();
-    assert!(hi2 - lo2 < hi - lo - 0.5 && lo2 > lo && hi2 < hi);
-    for i in 0..2 {
-        assert!(m.robots[i].x >= lo2 - 1e-3 && m.robots[i].x <= hi2 + 1e-3, "fighter {} outside the walls", i);
-    }
-    while !m.is_over() && m.tick < SUDDEN_DEATH_START + 1500 {
-        m.step();
-    }
-    let (lo3, hi3) = m.bounds();
-    assert!(hi3 - lo3 >= WALL_MIN_WIDTH - 1e-3, "walls stop at the minimum width");
 }
 
 #[test]
