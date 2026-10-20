@@ -91,3 +91,35 @@ pub fn move_possible(r: &Robot, m: Move) -> bool {
         Move::Dodge => parts_ok(r, &[Part::Pelvis]),
     }
 }
+
+/// Map a vocabulary move onto the legacy move used for equipment checks (sword, shield, legs).
+fn legacy(id: MoveId) -> Move {
+    match id {
+        MoveId::Thrust => Move::Thrust,
+        MoveId::Parry => Move::Parry,
+        MoveId::Guard => Move::Guard,
+        MoveId::ShieldBash => Move::ShieldBash,
+        MoveId::Kick => Move::KickR,
+        MoveId::Backstep => Move::Dodge,
+        _ => Move::Slash,
+    }
+}
+
+/// Required joints of a vocabulary move (proximal to distal).
+pub fn required_joints_id(id: MoveId) -> &'static [Joint] {
+    spec(id).required
+}
+
+/// Can the robot perform this vocabulary move: its own required joints are intact and the legacy equipment checks pass.
+pub fn move_possible_id(r: &Robot, id: MoveId) -> bool {
+    if id == MoveId::Idle {
+        return true;
+    }
+    if matches!(r.state(), State::Ko) {
+        return false;
+    }
+    if !required_joints_id(id).iter().all(|j| !r.is_disabled(j.part())) {
+        return false;
+    }
+    move_possible(r, legacy(id))
+}
