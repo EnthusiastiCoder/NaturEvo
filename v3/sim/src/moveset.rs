@@ -180,3 +180,7 @@ pub fn min_jerk(p: f32) -> f32 {
 
 /// Ready pose: the standing pose (the sword arm is not pre-raised, so a windup travels a physically feasible arc).
 pub const REST: [f32; 12] = STAND_TARGETS;
+
+fn lerp(a: f32, b: f32, s: f32) -> f32 {
+    a + (b - a) * s
+}
