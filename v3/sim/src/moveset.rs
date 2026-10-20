@@ -270,3 +270,20 @@ fn blend(a: &[f32; 12], b: &[f32; 12], s: f32) -> [f32; 12] {
     }
     o
 }
+
+/// Normalised joint targets at progress `t` (0..=1) inside `phase`. Adjacent phases share a keyframe exactly.
+pub fn pose_at(id: MoveId, p: &MoveParams, phase: Phase, t: f32) -> [f32; 12] {
+    let s = min_jerk(t);
+    let (w, mut k) = keyframes(id, p);
+    // Speed also scales the strike amplitude: a lazy swing travels less than a fast one (rate limits make this physical).
+    let amp = STRIKE_AMP_SLOW + (1.0 - STRIKE_AMP_SLOW) * p.speed.clamp(0.0, 1.0);
+    for i in 0..12 {
+        k[i] = lerp(w[i], k[i], amp);
+    }
+    match phase {
+        Phase::Idle => REST,
+        Phase::Windup => blend(&REST, &w, s),
+        Phase::Active => blend(&w, &k, s),
+        Phase::Recovery => blend(&k, &REST, s),
+    }
+}
