@@ -62,7 +62,7 @@ fn arena_width_is_constant_through_a_fight() {
 #[test]
 fn nobody_bleeds_without_being_hit() {
     let mut m = Match::new(1, Brain::Dummy, Brain::Dummy);
-    while m.tick < SUDDEN_DEATH_START + 60 {
+    while m.tick < 1500 {
         m.step();
     }
     let torso = |m: &Match| m.robots[0].hp(Part::Torso);
