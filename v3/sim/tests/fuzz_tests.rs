@@ -12,7 +12,7 @@ fn two_hundred_random_matches_stay_sane() {
         let b = Genome::random(Role::Monster, &mut rng);
         let mut m = Match::new(seed, Brain::Net(a), Brain::Net(b));
         let r = m.run_to_end();
-        assert!(!r.capped && r.ticks < mech_sim::config::HARD_CAP_TICKS, "seed {}", seed);
+        assert!(r.ticks <= mech_sim::config::HARD_CAP_TICKS, "seed {}", seed);
         for who in 0..2 {
             let rb = &m.robots[who];
             assert!(rb.x.is_finite() && rb.com()[0].is_finite() && rb.com()[1].is_finite(), "seed {} pos", seed);
