@@ -161,3 +161,10 @@ pub fn speed_mult(speed: f32) -> f32 {
         1.0 - 0.6 * (s - 0.5)
     }
 }
+
+/// [windup (including the Drag delay), active, recovery] in seconds.
+pub fn phase_durations(id: MoveId, p: &MoveParams) -> [f32; 3] {
+    let s = spec(id);
+    let m = speed_mult(p.speed);
+    [s.windup * m + DELAY_MAX * p.delay.clamp(0.0, 1.0), s.active * m, s.recovery * m]
+}
