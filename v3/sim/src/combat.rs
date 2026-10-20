@@ -177,6 +177,29 @@ enum Target {
 /// knockback) and returns the events. Call twice with roles swapped for a full tick.
 /// Not modelled here: kick and shield-bash sweeps (no previous-tick capsules for feet or shield).
 pub fn resolve_tick(att: &mut Robot, def: &mut Robot, arena: &Arena) -> Vec<CombatEvent> {
+    resolve_tick_with(att, def, arena, &Mods::default())
+}
+
+/// Rule modifiers for one resolved swing (see `rules.rs`): all neutral by default.
+#[derive(Clone, Copy, Debug)]
+pub struct Mods {
+    /// Extra factor on the impact of a body hit (the defender's own exposed factor is applied by `damage_part`).
+    pub impact_mult: f32,
+    /// Factor on the posture a body hit adds.
+    pub posture_mult: f32,
+    /// Factor on the posture a shield hit adds to the defender.
+    pub block_posture_mult: f32,
+    /// The shield cannot be hit (guard broken): the swing passes to the body.
+    pub shield_ignored: bool,
+}
+
+impl Default for Mods {
+    fn default() -> Self {
+        Mods { impact_mult: 1.0, posture_mult: 1.0, block_posture_mult: 1.0, shield_ignored: false }
+    }
+}
+
+pub fn resolve_tick_with(att: &mut Robot, def: &mut Robot, arena: &Arena, mods: &Mods) -> Vec<CombatEvent> {
     let mut events = Vec::new();
     if !att.has_sword() || !att.can_act() || def.is_ko() {
         return events;
