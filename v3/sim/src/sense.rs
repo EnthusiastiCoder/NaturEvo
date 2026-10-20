@@ -9,7 +9,14 @@ use crate::robot::{Capsule, Joint, Part, Robot, State};
 use std::ops::Range;
 
 /// Number of normalised network inputs.
-pub const N_IN: usize = 104;
+pub const BASE_IN: usize = 104;
+/// Own move one-hot (14), phase one-hot (4), then progress, committed, open, riposte window, guard-broken, last cost (6).
+pub const OWN_MOVE: Range<usize> = 104..118;
+pub const OWN_PHASE: Range<usize> = 118..122;
+/// Opponent move one-hot (14), phase one-hot (4), then progress, open, recovery remaining (3): the telegraph.
+pub const OPP_MOVE: Range<usize> = 128..142;
+pub const OPP_PHASE: Range<usize> = 142..146;
+pub const N_IN: usize = 149;
 
 /// Opponent key points (8 points, x then y each) in own frame, relative to own torso centre.
 pub const OPP_POINTS: Range<usize> = 64..80;
