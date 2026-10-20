@@ -224,3 +224,14 @@ impl Executor {
         }
         self.begin(id, p, extra);
     }
+
+    /// Abandon the windup: relax from the current pose to the ready pose. Not a whiff, never Active.
+    fn cancel(&mut self) {
+        self.cancelled = true;
+        self.cancel_from = self.last_pose;
+        self.phase = Phase::Recovery;
+        self.elapsed = 0.0;
+        self.committed = false;
+        self.whiffed = false;
+        self.contact = false;
+    }
