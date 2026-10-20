@@ -53,7 +53,7 @@ fn arena_width_is_constant_through_a_fight() {
     let mut m = Match::new(1, Brain::Dummy, Brain::Dummy);
     let (lo0, hi0) = m.bounds();
     assert!((hi0 - lo0 - (ARENA_WIDTH - 1.0)).abs() < 1e-3);
-    while m.tick < SUDDEN_DEATH_START {
+    while m.tick < 2000 {
         m.step();
     }
     let (lo, hi) = m.bounds();
