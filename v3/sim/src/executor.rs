@@ -175,3 +175,21 @@ impl Executor {
             }
         }
     }
+
+    fn begin(&mut self, id: MoveId, p: MoveParams, extra_cost: f32) {
+        let mut d = phase_durations(id, &p);
+        if id == MoveId::Riposte && self.riposte_open {
+            d[0] = RIPOSTE_WINDUP_OPEN * speed_mult(p.speed) + DELAY_MAX * p.delay.clamp(0.0, 1.0);
+        }
+        self.id = id;
+        self.params = p;
+        self.dur = d;
+        self.phase = Phase::Windup;
+        self.elapsed = 0.0;
+        self.committed = false;
+        self.cancelled = false;
+        self.whiffed = false;
+        self.contact = false;
+        self.start_pose = self.last_pose;
+        self.spent += move_energy(id, &p) + extra_cost;
+    }
