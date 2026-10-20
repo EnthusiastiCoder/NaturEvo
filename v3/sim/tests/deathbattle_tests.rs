@@ -65,10 +65,10 @@ fn nobody_bleeds_without_being_hit() {
     while m.tick < 1500 {
         m.step();
     }
-    let torso = |m: &Match| m.robots[0].hp(Part::Torso);
-    let a = torso(&m);
-    for _ in 0..120 {
-        m.step();
+    for i in 0..2 {
+        for p in Part::ALL {
+            assert_eq!(m.robots[i].hp(p), m.robots[i].max_hp(p), "fighter {} {:?} lost hp with no hit", i, p);
+        }
     }
     let b = torso(&m);
     for _ in 0..120 {
