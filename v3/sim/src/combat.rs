@@ -311,7 +311,7 @@ pub fn resolve_tick_with(att: &mut Robot, def: &mut Robot, arena: &Arena, mods: 
             def.shield_integrity = (def.shield_integrity - 0.3 * raw).max(0.0);
             def.damage_part(Part::FArmL, reduced);
             att.add_posture(10.0);
-            def.add_posture(10.0 * (1.0 - frac * 0.5));
+            def.add_posture(10.0 * (1.0 - frac * 0.5) * mods.block_posture_mult);
             events.push(CombatEvent::Block { raw, reduced, point: c.point, normal: c.normal });
         }
         Target::Body(part, c) => {
