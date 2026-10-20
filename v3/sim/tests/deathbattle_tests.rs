@@ -127,3 +127,49 @@ fn log_contains_the_whole_fight_to_the_death() {
     assert!(j.contains("\"capped\":false"));
     assert!(j.contains("\"state\":\"ko\""), "the last frame shows the dead fighter");
 }
+
+#[test]
+fn log_marks_a_capped_fight() {
+    let mut m = Match::new(1, Brain::Dummy, Brain::Dummy);
+    m.enable_log();
+    let r = m.run_to_end();
+    assert!(r.capped);
+    assert!(fight_json(&m).contains("\"capped\":true"));
+}
+
+#[test]
+fn stall_penalty_is_monotone_in_stall_time_and_zero_for_frequent_hits() {
+    assert_eq!(stall_units(0), 0.0);
+    assert_eq!(stall_units(STALL_GRACE_TICKS), 0.0, "a short no-hit stretch is free");
+    let mut prev = 0.0;
+    for len in (STALL_GRACE_TICKS..6000).step_by(300) {
+        let u = stall_units(len);
+        assert!(u >= prev, "monotone at {}", len);
+        prev = u;
+    }
+    assert!(stall_units(2000) > 2.0 * stall_units(1000) - 1e-6, "superlinear: long stalls cost more than the same time in pieces");
+    let some = MatchStats { stall: stall_units(1500), ..Default::default() };
+    let none = MatchStats::default();
+    assert!(score_stats(&some) < score_stats(&none));
+    let more = MatchStats { stall: stall_units(3000), ..Default::default() };
+    assert!(score_stats(&more) < score_stats(&some));
+    let huge = MatchStats { stall: 1e6, ..Default::default() };
+    assert!(score_stats(&huge) >= score_stats(&none) - W_STALL_MAX - 1e-4, "bounded");
+    let worst_loss = MatchStats { dmg_taken_norm: 1.0, idle_guard: 1.0, passivity: 1.0, jerk: 0.3, stall: 1e6, ..Default::default() };
+    let capped = MatchStats { capped: true, draw: true, dmg_dealt_norm: 0.0, dmg_taken_norm: 0.0, ..Default::default() };
+    assert!(score_stats(&capped) < score_stats(&worst_loss), "capped stays the worst case");
+}
+
+#[test]
+fn stall_is_measured_per_fight_for_both_and_changes_nothing_in_the_fight() {
+    let mut m = Match::new(1, Brain::Dummy, Brain::Dummy);
+    let r = m.run_to_end();
+    assert!(r.stall > 0.0 && (r.stall - stall_units(HARD_CAP_TICKS)).abs() < 1e-3, "{}", r.stall);
+    assert_eq!(mech_sim::fitness::stats_for(&r, 0).stall, mech_sim::fitness::stats_for(&r, 1).stall);
+    // Busy fight: hits keep landing, the stall is far smaller than a whole-fight stall.
+    let busy = Match::new(6, Brain::Scripted, Brain::Dummy).run_to_end();
+    assert!(busy.stall < stall_units(busy.ticks));
+    // Reading the fitness changes nothing: identical fights score-independently.
+    let a = Match::new(6, Brain::Scripted, Brain::Dummy).run_to_end();
+    assert_eq!((a.ticks, a.hits), (busy.ticks, busy.hits));
+}
