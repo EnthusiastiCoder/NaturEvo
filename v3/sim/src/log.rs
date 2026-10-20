@@ -1,6 +1,5 @@
 //! Fight log (plan section 6): hand-rolled JSON consumed by the viewer. Frames every 2 physics ticks,
 //! capsule endpoints in integer centimetres, events with point, direction and impact.
-use crate::config::{SUDDEN_DEATH_START, WALL_MIN_WIDTH, WALL_SPEED};
 use crate::duel::{Match, Outcome};
 use crate::robot::{Capsule, Part, Robot, State};
 use std::fmt::Write;
@@ -127,17 +126,12 @@ pub fn fight_json(m: &Match) -> String {
     }
     s.push_str("],");
     geometry_json(&mut s);
-    let _ = write!(
-        s,
-        ",\"sudden_death\":{{\"start_tick\":{},\"speed\":{},\"min_width\":{}}}",
-        SUDDEN_DEATH_START, f2(WALL_SPEED), f2(WALL_MIN_WIDTH)
-    );
     s.push_str(",\"dt\":0.0333,\"frames\":[");
     s.push_str(&log.frames.join(","));
     s.push_str("],\"events\":[");
     s.push_str(&log.events.join(","));
     let r = m.result();
-    let _ = write!(s, "],\"result\":{{\"outcome\":\"{}\",\"ticks\":{},\"defence\":[", outcome_name(r.outcome), r.ticks);
+    let _ = write!(s, "],\"result\":{{\"outcome\":\"{}\",\"ticks\":{},\"capped\":{},\"defence\":[", outcome_name(r.outcome), r.ticks, r.capped);
     for (i, d) in r.defence.iter().enumerate() {
         if i > 0 {
             s.push(',');
