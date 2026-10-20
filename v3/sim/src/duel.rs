@@ -1,4 +1,4 @@
-//! Duel loop: two robots, brains, combat per tick, threat tracking, anti-stalemate bleed, outcome.
+//! Duel loop: two robots, brains, combat per tick, threat tracking, no forcing rule, outcome.
 use crate::arena::Arena;
 use crate::combat::{resolve_tick, CombatEvent, ClashKind};
 use crate::fitness::{self, ThreatOutcome, zone_weight};
@@ -96,10 +96,10 @@ pub struct MatchResult {
     pub hits: [u32; 2],
     /// Mean per-tick |change of joint speed| / max speed, over joints and ticks, per fighter.
     pub jerk: [f32; 2],
-    /// The emergency hard tick cap ended the fight (a Draw; should never happen).
+    /// The emergency hard tick cap ended the fight (a mutual loss, scored far below any death).
     pub capped: bool,
-    /// Sudden death (closing walls + escalating bleed) began.
-    pub sudden_death: bool,
+    /// Training-only: summed stall units of all no-hit stretches (both sides), see `fitness::stall_units`.
+    pub stall: f32,
 }
 
 /// First-order low-pass of an action vector: `prev + alpha * (target - prev)`.
@@ -173,6 +173,8 @@ pub struct Match {
     jerk_sum: [f32; 2],
     adv_ticks: u32,
     capped: bool,
+    stretch_start: u32,
+    stall_acc: f32,
     last_hit: Option<u32>,
     passive_ticks: u32,
     pub log: Option<FightLog>,
@@ -225,6 +227,8 @@ impl Match {
             jerk_sum: [0.0; 2],
             adv_ticks: 0,
             capped: false,
+            stretch_start: 0,
+            stall_acc: 0.0,
             last_hit: None,
             passive_ticks: 0,
             log: None,
@@ -277,16 +281,9 @@ impl Match {
         }
     }
 
-    /// Arena walls (lo, hi). They close in symmetrically after the sudden-death grace period.
+    /// Arena walls (lo, hi). Fixed for the whole fight.
     pub fn bounds(&self) -> (f32, f32) {
-        let w = self.arena.width;
-        let max_shrink = ((w - 1.0 - WALL_MIN_WIDTH) * 0.5).max(0.0);
-        let shrink = if self.tick > SUDDEN_DEATH_START {
-            (WALL_SPEED * (self.tick - SUDDEN_DEATH_START) as f32 * PHYS_DT).min(max_shrink)
-        } else {
-            0.0
-        };
-        (0.5 + shrink, w - 0.5 - shrink)
+        (0.5, self.arena.width - 0.5)
     }
 
     /// End the match as if the emergency cap fired (tests).
@@ -316,7 +313,6 @@ impl Match {
             self.run_combat();
         }
         self.update_threats_post();
-        self.bleed();
         self.track_idle_guard();
         self.track_passivity();
         self.track_states();
@@ -512,6 +508,8 @@ impl Match {
                         self.quality_sum[att] += self.robots[att].strike_quality;
                         self.hits[att] += 1;
                         self.last_hit = Some(t);
+                        self.stall_acc += fitness::stall_units(t - self.stretch_start);
+                        self.stretch_start = t;
                         for th in self.threats.iter_mut().rev() {
                             if th.attacker == att && matches!(th.resolution, Some(Resolution::Parried | Resolution::Blocked | Resolution::Dodged)) && t.saturating_sub(th.end_tick) <= 30 {
                                 th.followup_hit = true;
@@ -574,23 +572,6 @@ impl Match {
             if self.threats[k].resolution.is_none() {
                 self.expire(k);
             }
-        }
-    }
-
-    /// Sudden death: after the grace period the torso bleeds at a rate that grows every second.
-    fn bleed(&mut self) {
-        if self.tick < SUDDEN_DEATH_START {
-            return;
-        }
-        if self.tick == SUDDEN_DEATH_START {
-            let t = self.tick;
-            self.emit(format!("{{\"t\":{},\"kind\":\"sudden_death\"}}", t));
-        }
-        let secs = (self.tick - SUDDEN_DEATH_START) as f32 * PHYS_DT;
-        let rate = SD_BLEED_BASE * (1.0 + SD_BLEED_GROWTH * secs);
-        for r in self.robots.iter_mut() {
-            let hp = r.hp(Part::Torso);
-            r.set_hp(Part::Torso, hp - rate * PHYS_DT);
         }
     }
 
@@ -683,7 +664,7 @@ impl Match {
                 [self.jerk_sum[0] / d, self.jerk_sum[1] / d]
             },
             capped: self.capped,
-            sudden_death: self.tick > SUDDEN_DEATH_START,
+            stall: self.stall_acc + fitness::stall_units(self.tick.saturating_sub(self.stretch_start)),
         }
     }
 
