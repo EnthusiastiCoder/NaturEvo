@@ -35,7 +35,7 @@ fn no_fight_ends_without_a_death_or_the_cap_across_many_matchups() {
         };
         let mut m = Match::new(seed, ba, bb);
         let r = m.run_to_end();
-        assert!(dead(&m) && !r.capped, "seed {} ended at {} without a death", seed, r.ticks);
+        assert!(dead(&m) != r.capped, "seed {} ended at {}: a fight ends by a death XOR the cap", seed, r.ticks);
     }
 }
 
