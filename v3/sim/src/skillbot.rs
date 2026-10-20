@@ -26,3 +26,18 @@ pub fn is_attack(id: MoveId) -> bool {
 fn p(reach: f32, speed: f32, arc: f32, delay: f32) -> MoveParams {
     MoveParams { reach, speed, arc, delay }
 }
+
+pub struct SkillBot {
+    tier: u8,
+    rng: Rng,
+    wait: f32,
+    react: f32,
+    reacted: bool,
+    bait: Option<f32>,
+    follow: bool,
+    close_plan: f32,
+    down: bool,
+    was_stag: bool,
+    flail_t: f32,
+    opp_idle: f32,
+}
