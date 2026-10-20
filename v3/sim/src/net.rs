@@ -76,3 +76,28 @@ impl Net {
         out
     }
 }
+
+/// A decoded net output: the requested move, its params and the footwork drive.
+#[derive(Clone, Copy, Debug)]
+pub struct Decoded {
+    pub mv: MoveId,
+    pub params: MoveParams,
+    pub drive: f32,
+}
+
+/// Argmax over the 14 logits (ties to the lowest index); a non-Idle move needs `MOVE_MARGIN` over Idle.
+pub fn decode(out: &[f32; N_OUT]) -> Decoded {
+    let mut best = 0;
+    for i in 1..N_MOVES {
+        if out[i] > out[best] {
+            best = i;
+        }
+    }
+    let mv = if best != 0 && out[best] > out[0] + MOVE_MARGIN { MoveId::from_index(best) } else { MoveId::Idle };
+    let u = |v: f32| ((v + 1.0) * 0.5).clamp(0.0, 1.0);
+    Decoded {
+        mv,
+        params: MoveParams { reach: u(out[14]), speed: u(out[15]), arc: u(out[16]), delay: u(out[17]) },
+        drive: out[18].clamp(-1.0, 1.0),
+    }
+}
