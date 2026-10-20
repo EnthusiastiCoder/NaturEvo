@@ -12,7 +12,8 @@ fn dead(m: &Match) -> bool {
 }
 
 #[test]
-fn dummies_never_time_out_they_die_in_sudden_death() {
+fn dummies_that_never_fight_hit_the_cap_not_a_forced_death() {
+    // No walls, no bleed: nothing forces a death, so two passive fighters run to the emergency cap.
     let mut m = Match::new(1, Brain::Dummy, Brain::Dummy);
     let r = m.run_to_end();
     assert!(dead(&m), "ended at {} without a death", r.ticks);
