@@ -18,6 +18,31 @@ pub const OPP_MOVE: Range<usize> = 128..142;
 pub const OPP_PHASE: Range<usize> = 142..146;
 pub const N_IN: usize = 149;
 
+/// What the executor and rules know about one fighter's current move.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct MoveInfo {
+    pub id: MoveId,
+    pub phase: Phase,
+    pub progress: f32,
+    pub committed: bool,
+    pub open: bool,
+    pub riposte_remaining: f32,
+    pub guard_broken_remaining: f32,
+    pub last_cost: f32,
+    pub recovery_remaining: f32,
+}
+
+impl Default for MoveId {
+    fn default() -> Self {
+        MoveId::Idle
+    }
+}
+impl Default for Phase {
+    fn default() -> Self {
+        Phase::Idle
+    }
+}
+
 /// Opponent key points (8 points, x then y each) in own frame, relative to own torso centre.
 pub const OPP_POINTS: Range<usize> = 64..80;
 /// Opponent sword tip velocity (2), speed toward me, time to contact, threat height.
