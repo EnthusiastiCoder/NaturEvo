@@ -7,3 +7,14 @@ use crate::robot::{Robot, State};
 use crate::sense::MoveInfo;
 
 pub type Request = Option<(MoveId, MoveParams)>;
+
+const SLASHES: [MoveId; 6] = [MoveId::Overhead, MoveId::DiagDown, MoveId::Sweep, MoveId::Thrust, MoveId::DiagUp, MoveId::LowCut];
+/// Torso distance band a bot swings from, metres.
+const RANGE_LO: f32 = 1.9;
+const RANGE_HI: f32 = 2.2;
+const CLOSE: f32 = 1.35;
+/// Retreat briefly after a passive opponent staggers, to avoid its recoil sweep.
+const FLAIL_TIME: f32 = 1.0;
+const FLAIL_DIST: f32 = 3.5;
+const FLAIL_IDLE: f32 = 2.0;
+const LOW_MOVE_P: f32 = 0.1;
