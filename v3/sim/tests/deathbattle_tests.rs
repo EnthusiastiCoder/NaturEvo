@@ -55,6 +55,7 @@ fn arena_width_is_constant_through_a_fight() {
     assert!((hi0 - lo0 - (ARENA_WIDTH - 1.0)).abs() < 1e-3);
     while m.tick < 2000 {
         m.step();
+        assert_eq!(m.bounds(), (lo0, hi0), "walls moved at tick {}", m.tick);
     }
     let (lo, hi) = m.bounds();
     assert!((hi - lo - (hi0 - lo0)).abs() < 1e-3, "no closing during the grace period");
