@@ -1,5 +1,5 @@
 //! Fitness. There is no block bit and no guard bonus: defence pays only through per-threat credit.
-use crate::config::{DRAW_SCORE, IMPACT_REF};
+use crate::config::{STALL_GRACE_TICKS, STALL_REF_TICKS, W_STALL, W_STALL_MAX, CAPPED_SCORE, DRAW_SCORE, IMPACT_REF};
 use crate::duel::{MatchResult, Outcome, Resolution};
 use crate::robot::Part;
 
@@ -19,6 +19,10 @@ pub const MAX_CREDITED_THREATS: usize = 6;
 pub struct MatchStats {
     pub win: bool,
     pub draw: bool,
+    /// The emergency cap ended the fight: a mutual loss, scored below everything else.
+    pub capped: bool,
+    /// Summed stall units over the fight's no-hit stretches (see `stall_units`).
+    pub stall: f32,
     pub ko: bool,
     pub dmg_dealt_norm: f32,
     pub dmg_taken_norm: f32,
@@ -64,7 +68,19 @@ pub fn defence_credit(threats: &[ThreatOutcome]) -> f32 {
     sum
 }
 
+/// Stall units of one no-hit stretch of `len` ticks: free up to the grace, then superlinear.
+pub fn stall_units(len: u32) -> f32 {
+    if len <= STALL_GRACE_TICKS {
+        return 0.0;
+    }
+    ((len - STALL_GRACE_TICKS) as f32 / STALL_REF_TICKS).powf(1.5)
+}
+
 pub fn score_stats(s: &MatchStats) -> f32 {
+    if s.capped {
+        // Mutual loss: far below any death-loss (>= -6.1) and a draw (-6); damage keeps a small gradient.
+        return CAPPED_SCORE + W_DEALT * s.dmg_dealt_norm - W_TAKEN * s.dmg_taken_norm;
+    }
     if s.draw {
         return DRAW_SCORE;
     }
@@ -72,6 +88,7 @@ pub fn score_stats(s: &MatchStats) -> f32 {
         - W_IDLE_GUARD * s.idle_guard
         - W_PASSIVITY * s.passivity
         - W_JERK * s.jerk
+        - (W_STALL * s.stall).min(W_STALL_MAX)
         + W_CHAIN * s.chain_quality;
     if s.win {
         v += W_WIN;
@@ -87,6 +104,8 @@ pub fn stats_for(r: &MatchResult, who: usize) -> MatchStats {
     MatchStats {
         win: r.outcome == mine,
         draw: r.outcome == Outcome::Draw,
+        capped: r.capped,
+        stall: r.stall,
         ko: r.outcome == mine && r.ko[1 - who],
         dmg_dealt_norm: r.dmg_dealt_norm[who],
         dmg_taken_norm: r.dmg_dealt_norm[1 - who].min(1.0),
