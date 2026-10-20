@@ -277,3 +277,19 @@ impl Executor {
             }
         }
     }
+
+    /// Footwork carried by the move: Thrust lunges forward, Backstep drives back (both bell-shaped over Active).
+    fn drive(&self) -> f32 {
+        if self.phase != Phase::Active {
+            return 0.0;
+        }
+        let p = self.progress();
+        let bell = 4.0 * p * (1.0 - p);
+        let amp = 0.3 + 0.7 * self.params.reach.clamp(0.0, 1.0);
+        match self.id {
+            MoveId::Thrust => self.facing * amp * bell,
+            MoveId::Backstep => -self.facing * amp * bell,
+            _ => 0.0,
+        }
+    }
+}
