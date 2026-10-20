@@ -22,7 +22,7 @@ fn dummies_that_never_fight_hit_the_cap_not_a_forced_death() {
 }
 
 #[test]
-fn no_fight_ends_without_a_death_across_many_matchups() {
+fn no_fight_ends_without_a_death_or_the_cap_across_many_matchups() {
     for seed in 0..60u64 {
         let mut rng = Rng::new(seed * 11 + 3);
         let a = Genome::random(Role::Hero, &mut rng);
