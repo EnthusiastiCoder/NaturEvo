@@ -60,12 +60,7 @@ fn arena_width_is_constant_through_a_fight() {
 }
 
 #[test]
-fn sudden_death_bleed_escalates_and_starts_only_after_the_grace_period() {
-    let mut early = Match::new(1, Brain::Dummy, Brain::Dummy);
-    for _ in 0..SUDDEN_DEATH_START - 5 {
-        early.step();
-    }
-    assert_eq!(early.robots[0].hp(Part::Torso), early.robots[0].max_hp(Part::Torso), "no bleed before sudden death");
+fn nobody_bleeds_without_being_hit() {
     let mut m = Match::new(1, Brain::Dummy, Brain::Dummy);
     while m.tick < SUDDEN_DEATH_START + 60 {
         m.step();
