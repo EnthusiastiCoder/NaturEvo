@@ -49,3 +49,7 @@ impl SkillBot {
         let wait = rng.range(0.1, 0.5);
         SkillBot { tier, rng, wait, react: -1.0, reacted: false, bait: None, follow: false, close_plan: 0.0, down: false, was_stag: false, flail_t: 0.0, opp_idle: 0.0 }
     }
+
+    pub fn tier(&self) -> u8 {
+        self.tier
+    }
