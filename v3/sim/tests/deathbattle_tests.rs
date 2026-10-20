@@ -1,7 +1,7 @@
 // Job 3: fights are death battles. They end only when someone dies; nothing forces engagement in-fight; only the capped-loss fitness pushes it.
 use mech_sim::config::*;
 use mech_sim::duel::{Brain, Match, Outcome};
-use mech_sim::fitness::{score_stats, MatchStats};
+use mech_sim::fitness::{score_stats, stall_units, MatchStats};
 use mech_sim::genome::Genome;
 use mech_sim::log::fight_json;
 use mech_sim::rng::Rng;
