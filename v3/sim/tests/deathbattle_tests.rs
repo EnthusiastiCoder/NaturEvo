@@ -73,6 +73,39 @@ fn nobody_bleeds_without_being_hit() {
 }
 
 #[test]
+fn stamina_regen_never_changes_over_time() {
+    // No time-based rule: a rested idle fighter regens at the same rate late as early.
+    let regen = |skip: u32| {
+        let mut m = Match::new(1, Brain::Dummy, Brain::Dummy);
+        while m.tick < skip {
+            m.step();
+        }
+        m.robots[0].energy = 10.0;
+        for _ in 0..60 {
+            m.step();
+        }
+        m.robots[0].energy - 10.0
+    };
+    let (early, late) = (regen(10), regen(3000));
+    assert!(early > 3.0 && (early - late).abs() < 1e-3, "early {} late {}", early, late);
+}
+
+#[test]
+fn a_capped_fight_scores_below_a_lost_fight() {
+    let capped = MatchStats { capped: true, draw: true, ..Default::default() };
+    let worst_loss = MatchStats { dmg_taken_norm: 1.0, idle_guard: 1.0, passivity: 1.0, jerk: 0.3, ..Default::default() };
+    assert!(score_stats(&capped) < score_stats(&worst_loss));
+    assert!(score_stats(&capped) < DRAW_SCORE, "below a mutual death too");
+    let busy = MatchStats { capped: true, draw: true, dmg_dealt_norm: 0.0, dmg_taken_norm: 1.0, ..Default::default() };
+    assert!(score_stats(&busy) < score_stats(&worst_loss), "even the worst capped fight loses to the worst death-loss");
+    let mut m = Match::new(2, Brain::Dummy, Brain::Dummy);
+    let r = m.force_cap_for_test();
+    assert!(mech_sim::fitness::score_match(&r, 0) < score_stats(&worst_loss));
+    assert!(mech_sim::fitness::score_match(&r, 1) < score_stats(&worst_loss));
+    assert_eq!(mech_sim::fitness::score_match(&r, 0), mech_sim::fitness::score_match(&r, 1), "mutual");
+}
+
+#[test]
 fn a_death_win_beats_every_non_death_result() {
     let win = MatchStats { win: true, ko: true, ..Default::default() };
     let draw = MatchStats { draw: true, ..Default::default() };
