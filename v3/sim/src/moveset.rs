@@ -168,3 +168,6 @@ pub fn phase_durations(id: MoveId, p: &MoveParams) -> [f32; 3] {
     let m = speed_mult(p.speed);
     [s.windup * m + DELAY_MAX * p.delay.clamp(0.0, 1.0), s.active * m, s.recovery * m]
 }
+
+/// Strike amplitude at speed 0 (1.0 at speed 1).
+pub const STRIKE_AMP_SLOW: f32 = 0.4;
