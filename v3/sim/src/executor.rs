@@ -145,3 +145,33 @@ impl Executor {
         self.whiffed = false;
         self.contact = false;
     }
+
+    fn advance(&mut self, dt: f32) {
+        if self.phase == Phase::Idle {
+            return;
+        }
+        self.elapsed += dt;
+        loop {
+            let d = self.cur_dur();
+            if self.elapsed + 1e-5 < d {
+                break;
+            }
+            self.elapsed = (self.elapsed - d).max(0.0);
+            match self.phase {
+                Phase::Windup => {
+                    self.phase = Phase::Active;
+                    self.committed = true;
+                    self.contact = false;
+                }
+                Phase::Active => {
+                    self.phase = Phase::Recovery;
+                    self.whiffed = spec(self.id).can_whiff && !self.contact;
+                }
+                Phase::Recovery => {
+                    self.reset_move();
+                    break;
+                }
+                Phase::Idle => break,
+            }
+        }
+    }
