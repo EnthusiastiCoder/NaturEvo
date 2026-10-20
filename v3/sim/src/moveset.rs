@@ -287,3 +287,9 @@ pub fn pose_at(id: MoveId, p: &MoveParams, phase: Phase, t: f32) -> [f32; 12] {
         Phase::Recovery => blend(&k, &REST, s),
     }
 }
+
+/// Windup pose that starts from an arbitrary pose instead of the ready pose (chains, cancelled moves).
+pub fn windup_from(id: MoveId, p: &MoveParams, from: &[f32; 12], t: f32) -> [f32; 12] {
+    let (w, _) = keyframes(id, p);
+    blend(from, &w, min_jerk(t))
+}
