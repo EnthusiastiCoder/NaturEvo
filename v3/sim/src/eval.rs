@@ -22,8 +22,6 @@ pub struct EvalMetrics {
     pub hits_per_fight: f32,
     /// Share of fights that ended in a death (not time-out).
     pub death_share: f32,
-    /// Share of fights where sudden death (closing walls) kicked in.
-    pub sudden_death_share: f32,
     /// Share of fights ended by the emergency hard cap (must be 0).
     pub capped_share: f32,
     /// Mean joint jerk of the evaluated champion (|dv|/vmax per tick).
@@ -55,7 +53,6 @@ struct Acc {
     tick_list: Vec<u32>,
     hit_total: u32,
     deaths: u32,
-    sd: u32,
     capped: u32,
     jerk: f32,
     idle: f32,
@@ -82,7 +79,6 @@ impl Acc {
         if r.ko[0] || r.ko[1] {
             self.deaths += 1;
         }
-        self.sd += r.sudden_death as u32;
         self.capped += r.capped as u32;
         self.jerk += r.jerk[who];
         self.idle += r.idle_guard_share[who];
@@ -152,16 +148,15 @@ pub fn evaluate_run(dir: &Path, arena_seeds: u64) -> Result<EvalMetrics, String>
         },
         hits_per_fight: hof.hit_total as f32 / n,
         death_share: hof.deaths as f32 / n,
-        sudden_death_share: hof.sd as f32 / n,
         capped_share: hof.capped as f32 / n,
         jerk: hof.jerk / n,
     })
 }
 
-const KEYS: [&str; 16] = ["win_rate_hof", "defence_rate", "defence_rate_scripted", "hit_rate", "idle_guard", "draw_share", "mean_ticks", "parry_share", "block_share", "dodge_share", "median_ticks", "hits_per_fight", "death_share", "sudden_death_share", "capped_share", "jerk"];
+const KEYS: [&str; 15] = ["win_rate_hof", "defence_rate", "defence_rate_scripted", "hit_rate", "idle_guard", "draw_share", "mean_ticks", "parry_share", "block_share", "dodge_share", "median_ticks", "hits_per_fight", "death_share", "capped_share", "jerk"];
 
-fn values(m: &EvalMetrics) -> [f32; 16] {
-    [m.win_rate_hof, m.defence_rate, m.defence_rate_scripted, m.hit_rate, m.idle_guard, m.draw_share, m.mean_ticks, m.parry_share, m.block_share, m.dodge_share, m.median_ticks, m.hits_per_fight, m.death_share, m.sudden_death_share, m.capped_share, m.jerk]
+fn values(m: &EvalMetrics) -> [f32; 15] {
+    [m.win_rate_hof, m.defence_rate, m.defence_rate_scripted, m.hit_rate, m.idle_guard, m.draw_share, m.mean_ticks, m.parry_share, m.block_share, m.dodge_share, m.median_ticks, m.hits_per_fight, m.death_share, m.capped_share, m.jerk]
 }
 
 /// (mean, min, max) per metric across runs, in KEYS order.
