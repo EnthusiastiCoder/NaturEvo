@@ -107,7 +107,7 @@ impl SkillBot {
         let down = opp.state() == State::Fallen;
         self.down = down;
         let lo = if self.close_plan > 0.0 || down { CLOSE } else { RANGE_LO };
-        let mut drive = if dist > lo + 0.4 { dir } else { 0.0 };
+        let mut drive = if dist > if lo == RANGE_LO { SWING_MAX - 0.1 } else { lo + 0.4 } { dir } else { 0.0 };
         if self.tier >= 2 && !down && dist < RANGE_LO - 0.5 && self.close_plan <= 0.0 && idle {
             drive = -dir * 0.7;
         }
