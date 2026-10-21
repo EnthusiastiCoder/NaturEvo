@@ -64,3 +64,11 @@ impl SkillBot {
             }
         }
     }
+
+    fn pick_attack(&mut self, dist: f32) -> MoveId {
+        if dist < CLOSE && self.rng.f32() < 0.5 {
+            return MoveId::Kick;
+        }
+        if self.rng.f32() < LOW_MOVE_P { return if self.rng.f32() < 0.5 { MoveId::DiagUp } else { MoveId::LowCut }; }
+        SLASHES[(self.rng.next_u64() % 4) as usize]
+    }
