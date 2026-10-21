@@ -210,6 +210,16 @@ pub struct Match {
     prev_destroyed: [[bool; 13]; 2],
     next_threat: u32,
     ended: bool,
+    exec: [Executor; 2],
+    rules: [RuleState; 2],
+    starts: [Vec<MoveId>; 2],
+    last_cost: [f32; 2],
+    prev_phase: [Phase; 2],
+    prev_id: [MoveId; 2],
+    prev_cancel: [bool; 2],
+    contact_seen: [bool; 2],
+    bash_done: [bool; 2],
+    whiff_pending: [bool; 2],
 }
 
 fn make_ctl(b: Brain, seed: u64, salt: u64) -> Ctl {
