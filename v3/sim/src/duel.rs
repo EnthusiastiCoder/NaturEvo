@@ -335,18 +335,18 @@ impl Match {
         let live = self.last_live[i].map_or(false, |t| self.tick.saturating_sub(t) <= 6);
         let tick = self.tick;
         let (me, opp) = (&self.robots[i], &self.robots[1 - i]);
-        match &mut self.ctl[i] {
-            Ctl::Dummy => scripted::dummy(),
-            Ctl::Fixed(a) => *a,
-            Ctl::Scripted(s) => s.act(me, opp, PHYS_DT),
-            Ctl::Net(net, held, smooth) => {
-                if self.tick % DECISION_TICKS == 0 {
-                    let x = observe(me, opp, &self.arena);
-                    let o = net.forward(&x);
-                    let mut t = [0.0f32; 12];
-                    t.copy_from_slice(&o[..12]);
-                    *held = Action { targets: t, drive: o[12] };
-                    self.raw_action[i] = t;
+        let (req, drive): (Request, f32) = match &mut self.ctl[i] {
+            Ctl::Dummy => return scripted::dummy(),
+            Ctl::Fixed(a) => return *a,
+            Ctl::Scripted(s) => return s.act(me, opp, PHYS_DT),
+            Ctl::Net(net, held, hdrive) => {
+                let mut req = None;
+                if tick % DECISION_TICKS == 0 {
+                    let x = observe_moves(me, opp, &self.arena, &mine, &theirs);
+                    let d = decode(&net.forward(&x));
+                    *held = if d.mv == MoveId::Idle { None } else { Some((d.mv, d.params)) };
+                    *hdrive = d.drive;
+                    req = *held;
                 }
                 *smooth = smooth_toward(smooth, &held.targets, ACTION_SMOOTH);
                 Action { targets: *smooth, drive: held.drive }
