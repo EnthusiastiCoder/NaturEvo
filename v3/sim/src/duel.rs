@@ -134,6 +134,7 @@ const THREAT_HORIZON: f32 = 0.4;
 const SWING_COOLDOWN: u32 = 12;
 const IDLE_GUARD_WINDOW: u32 = 36;
 const TURN_TICKS: u32 = 15;
+
 const SPAWN_A: f32 = 4.5;
 const SPAWN_B: f32 = 9.5;
 
