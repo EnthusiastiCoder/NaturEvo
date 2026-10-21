@@ -717,6 +717,10 @@ impl Match {
             if evs.is_empty() {
                 continue;
             }
+            if self.exec[att].phase() == Phase::Active || self.whiff_pending[att] {
+                self.exec[att].notify_contact();
+                self.contact_seen[att] = true;
+            }
             self.cooldown[att] = SWING_COOLDOWN;
             for ev in evs {
                 let t = self.tick;
