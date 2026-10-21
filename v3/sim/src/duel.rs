@@ -350,6 +350,34 @@ impl Match {
                 }
                 (req, *hdrive)
             }
+            Ctl::Skill(b) => b.act(me, opp, &mine, &theirs, live, PHYS_DT),
+            Ctl::Cycle(list, k, pending) => {
+                if *pending && mine.phase != Phase::Idle {
+                    *k += 1;
+                    *pending = false;
+                }
+                let dx = opp.x - me.x;
+                let drive = if dx.abs() > 2.2 { dx.signum() } else { 0.0 };
+                let mut req = None;
+                if mine.phase == Phase::Idle && dx.abs() < 3.0 {
+                    req = Some((list[*k % list.len()], MoveParams { reach: 0.5, speed: 0.5, arc: 0.5, delay: 0.0 }));
+                    *pending = true;
+                }
+                (req, drive)
+            }
+        };
+        let riposte = self.rules[i].riposte_open();
+        let before = self.exec[i].energy_spent();
+        self.exec[i].set_threat(live);
+        self.exec[i].set_riposte_open(riposte);
+        let act = self.exec[i].step(&self.robots[i], req, PHYS_DT);
+        let delta = self.exec[i].energy_spent() - before;
+        if delta > 0.0 {
+            let r = &mut self.robots[i];
+            r.energy = (r.energy - delta).clamp(0.0, ENERGY_MAX);
+            if delta > 0.5 {
+                self.last_cost[i] = delta;
+            }
         }
     }
 
