@@ -712,7 +712,7 @@ impl Match {
             let evs = {
                 let (l, r) = self.robots.split_at_mut(1);
                 let (a, b) = if att == 0 { (&mut l[0], &mut r[0]) } else { (&mut r[0], &mut l[0]) };
-                resolve_tick(a, b, &self.arena)
+                resolve_tick_with(a, b, &self.arena, &mods)
             };
             if evs.is_empty() {
                 continue;
