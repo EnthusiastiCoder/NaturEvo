@@ -306,6 +306,29 @@ impl Match {
         }
     }
 
+    /// Every move the executor of `who` accepted, in order (Feint included).
+    pub fn move_starts(&self, who: usize) -> Vec<MoveId> {
+        self.starts[who].clone()
+    }
+
+    /// What the executor and rules know about fighter `i`'s current move.
+    pub fn move_info(&self, i: usize) -> MoveInfo {
+        let e = &self.exec[i];
+        let r = &self.rules[i];
+        let rec = if e.phase() == Phase::Recovery { (1.0 - e.progress()) * phase_durations(e.move_id(), &e.params())[2] } else { 0.0 };
+        MoveInfo {
+            id: e.move_id(),
+            phase: e.phase(),
+            progress: e.progress(),
+            committed: e.committed(),
+            open: r.is_open(),
+            riposte_remaining: r.riposte_remaining(),
+            guard_broken_remaining: r.guard_broken_remaining(),
+            last_cost: self.last_cost[i],
+            recovery_remaining: rec,
+        }
+    }
+
     fn decide(&mut self, i: usize) -> Action {
         let (me, opp) = (&self.robots[i], &self.robots[1 - i]);
         match &mut self.ctl[i] {
