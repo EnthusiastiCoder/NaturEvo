@@ -8,7 +8,7 @@ use crate::sense::MoveInfo;
 
 pub type Request = Option<(MoveId, MoveParams)>;
 
-const SLASHES: [MoveId; 6] = [MoveId::Overhead, MoveId::DiagDown, MoveId::Sweep, MoveId::Thrust, MoveId::DiagUp, MoveId::LowCut];
+const TORSO: [MoveId; 3] = [MoveId::Overhead, MoveId::DiagDown, MoveId::Thrust];
 /// Torso distance band a bot swings from, metres.
 const RANGE_LO: f32 = 1.9;
 const RANGE_HI: f32 = 2.2;
