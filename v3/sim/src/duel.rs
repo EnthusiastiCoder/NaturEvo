@@ -699,6 +699,16 @@ impl Match {
                 continue;
             }
             let def = 1 - att;
+            let att_id = self.exec[att].move_id();
+            let def_wa = matches!(self.exec[def].phase(), Phase::Windup | Phase::Active) && !self.exec[def].cancelling();
+            let staggered = matches!(self.robots[def].state(), State::Staggered | State::Fallen);
+            let total = rules::punish_mult(&self.rules[def], def_wa, staggered, att_id == MoveId::Riposte);
+            let mods = Mods {
+                impact_mult: total / if staggered { 1.5 } else { 1.0 },
+                posture_mult: if self.rules[def].is_open() { rules::OPEN_POSTURE_MULT } else { 1.0 },
+                block_posture_mult: rules::heavy_block_posture(att_id, 1.0),
+                shield_ignored: self.rules[def].guard_broken_remaining() > 0.0,
+            };
             let evs = {
                 let (l, r) = self.robots.split_at_mut(1);
                 let (a, b) = if att == 0 { (&mut l[0], &mut r[0]) } else { (&mut r[0], &mut l[0]) };
