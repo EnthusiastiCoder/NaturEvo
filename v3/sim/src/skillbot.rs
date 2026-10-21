@@ -21,7 +21,10 @@ const STUCK_RANGE: f32 = 2.55;
 const FLAIL_TIME: f32 = 1.0;
 const FLAIL_DIST: f32 = 3.5;
 const FLAIL_IDLE: f32 = 2.0;
-const LOW_MOVE_P: f32 = 0.1;
+/// Chance a tier 1 or 2 bot swings DiagUp.
+const BRAWLER_UP_P: f32 = 0.55;
+/// A duellist steps back out of reach while the opponent winds up or swings.
+const EVADE_DIST: f32 = 2.9;
 
 pub fn is_attack(id: MoveId) -> bool {
     !matches!(id, MoveId::Idle | MoveId::Feint | MoveId::Guard | MoveId::Parry | MoveId::Backstep)
