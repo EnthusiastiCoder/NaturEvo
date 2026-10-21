@@ -379,6 +379,9 @@ impl Match {
                 self.last_cost[i] = delta;
             }
         }
+        self.raw_action[i] = act.targets;
+        self.after_step(i);
+        Action { targets: act.targets, drive: (drive + act.drive).clamp(-1.0, 1.0) }
     }
 
     /// Arena walls (lo, hi). Fixed for the whole fight.
