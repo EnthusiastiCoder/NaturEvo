@@ -511,6 +511,11 @@ impl Match {
             self.advance_fighters();
             self.update_threats_pre();
             self.run_combat();
+            self.special_contacts();
+            self.resolve_whiffs();
+            for r in self.rules.iter_mut() {
+                r.tick(PHYS_DT);
+            }
         }
         self.update_threats_post();
         self.track_idle_guard();
