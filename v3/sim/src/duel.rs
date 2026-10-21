@@ -740,6 +740,15 @@ impl Match {
                                 break;
                             }
                         }
+                        if total > 1.0 + 1e-4 {
+                            self.emit(format!(
+                                "{{\"t\":{},\"kind\":\"punish\",\"who\":{},\"victim\":{},\"name\":\"{}\",\"mult\":{}}}",
+                                t, att, def, att_id.name(), f2(total)
+                            ));
+                        }
+                        if def_wa {
+                            self.emit(format!("{{\"t\":{},\"kind\":\"counter\",\"who\":{},\"name\":\"{}\"}}", t, att, att_id.name()));
+                        }
                         self.emit(format!(
                             "{{\"t\":{},\"kind\":\"hit\",\"victim\":{},\"part\":\"{}\",\"x\":{},\"y\":{},\"dx\":{},\"dy\":{},\"impact\":{},\"zone\":{},\"dmg\":{}}}",
                             t, def, h.part.name(), f2(h.point[0]), f2(h.point[1]), f2(h.normal[0]), f2(h.normal[1]),
