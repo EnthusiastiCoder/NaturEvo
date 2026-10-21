@@ -175,3 +175,15 @@ impl SkillBot {
         }
         (None, drive)
     }
+
+    fn defend(&mut self, theirs: &MoveInfo) -> (MoveId, MoveParams) {
+        if self.tier == 3 && theirs.id == MoveId::Thrust && self.rng.f32() < 0.5 {
+            return (MoveId::Backstep, p(0.8, 0.9, 0.5, 0.0));
+        }
+        if self.rng.f32() < 0.6 {
+            (MoveId::Guard, p(0.5, 0.8, 0.5, 0.0))
+        } else {
+            (MoveId::Parry, p(0.5, 0.9, 0.5, 0.0))
+        }
+    }
+}
