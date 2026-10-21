@@ -68,8 +68,8 @@ impl SkillBot {
             1 => p(self.rng.range(0.9, 1.0), self.rng.range(0.8, 1.0), self.rng.range(0.4, 0.5), 0.0),
             2 => p(self.rng.range(0.9, 1.0), self.rng.range(0.9, 1.0), self.rng.range(0.4, 0.5), 0.0),
             _ => {
-                let delay = if id != MoveId::Thrust && self.rng.f32() < 0.25 { self.rng.range(0.4, 1.0) } else { 0.0 };
-                p(self.rng.range(0.85, 1.0), self.rng.range(0.8, 1.0), self.rng.range(0.3, 0.6), delay)
+                let delay = if id != MoveId::Thrust && self.rng.f32() < 0.1 { self.rng.range(0.4, 1.0) } else { 0.0 };
+                p(self.rng.range(0.9, 1.0), self.rng.range(0.92, 1.0), self.rng.range(0.4, 0.5), delay)
             }
         }
     }
