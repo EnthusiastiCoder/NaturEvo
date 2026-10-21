@@ -25,3 +25,16 @@ fn ready_pose_is_upright_with_slightly_bent_knees() {
     // Neck keeps the head over the shoulders.
     assert!(r.joint_angle(Joint::Neck).to_degrees().abs() < 8.0);
 }
+
+#[test]
+fn standing_robot_stays_upright_and_balanced() {
+    let mut r = Robot::new(Role::Hero);
+    for i in 0..(5.0 / DT) as usize {
+        r.apply_targets(&STAND_TARGETS, DT);
+        if i > 100 {
+            assert_eq!(r.state(), State::Idle);
+            assert!(torso_tilt(&r) < 8.0 && torso_tilt(&r) > -2.0);
+            assert!(r.balance_margin() > 0.1, "CoM over the feet, margin {}", r.balance_margin());
+        }
+    }
+}
