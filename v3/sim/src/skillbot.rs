@@ -12,6 +12,8 @@ const TORSO: [MoveId; 3] = [MoveId::Overhead, MoveId::DiagDown, MoveId::Thrust];
 /// Torso distance band a bot swings from, metres.
 const RANGE_LO: f32 = 1.9;
 const RANGE_HI: f32 = 2.2;
+/// Longest torso distance a swing still lands (measured: ~90% up to 2.5 m, none beyond 2.6 m).
+const SWING_MAX: f32 = 2.2;
 const CLOSE: f32 = 1.35;
 /// Retreat briefly after a passive opponent staggers, to avoid its recoil sweep.
 const FLAIL_TIME: f32 = 1.0;
