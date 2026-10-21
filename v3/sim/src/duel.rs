@@ -80,6 +80,9 @@ pub struct Threat {
     moved: f32,
     flexed: f32,
     quiet: u32,
+    /// The attacker's move when the threat began, and whether the defender backstepped while it was live.
+    att_move: MoveId,
+    def_backstep: bool,
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
