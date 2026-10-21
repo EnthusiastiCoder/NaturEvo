@@ -803,6 +803,12 @@ impl Match {
         self.threats[k].end_tick = tick;
         if dodged {
             self.emit(format!("{{\"t\":{},\"kind\":\"dodge\",\"who\":{}}}", tick, who));
+            let (att, mv, bs) = (self.threats[k].attacker, self.threats[k].att_move, self.threats[k].def_backstep);
+            if mv == MoveId::Thrust && bs {
+                let (r, st) = (&mut self.robots[att], &mut self.rules[att]);
+                rules::backstep_counter(r, st);
+                self.emit(format!("{{\"t\":{},\"kind\":\"counter\",\"who\":{},\"name\":\"Thrust\"}}", tick, who));
+            }
         }
     }
 
