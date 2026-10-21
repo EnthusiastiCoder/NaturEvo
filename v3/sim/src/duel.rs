@@ -1,6 +1,10 @@
 //! Duel loop: two robots, brains, combat per tick, threat tracking, no forcing rule, outcome.
 use crate::arena::Arena;
-use crate::combat::{resolve_tick, CombatEvent, ClashKind};
+use crate::combat::{resolve_tick_with, ClashKind, CombatEvent, Mods};
+use crate::executor::Executor;
+use crate::moveset::{phase_durations, spec, MoveId, MoveParams, Phase};
+use crate::rules::{self, RuleState};
+use crate::skillbot::{Request, SkillBot};
 use crate::fitness::{self, ThreatOutcome, zone_weight};
 use crate::config::*;
 use crate::genome::Genome;
