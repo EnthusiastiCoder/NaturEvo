@@ -200,11 +200,13 @@ impl Joint {
 
 // Normalised targets (-1..1 over the joint range).
 // Order: Neck, Waist, ShoulderL, ShoulderR, ElbowL, ElbowR, HipL, HipR, KneeL, KneeR, AnkleL, AnkleR.
-pub const STAND_TARGETS: [f32; 12] = [0.0, 0.0, -0.4, -0.4, 0.0, 0.0, -0.2, -0.2, -1.0, -1.0, 0.0, 0.0];
+/// Natural fighting stance: torso ~2 deg forward, head level, knees ~14 deg bent with the hips and ankles set so the
+/// feet stay flat and under the pelvis (hip = knee / 2, ankle = knee / 2).
+pub const STAND_TARGETS: [f32; 12] = [-0.11, 0.07, -0.4, -0.4, 0.0, 0.0, -0.107, -0.107, -0.785, -0.785, 0.233, 0.233];
 /// Left (shield) arm raised: shoulder 80 deg, elbow ~90 deg, forearm nearly vertical in front of the head.
-pub const GUARD_TARGETS: [f32; 12] = [0.0, 0.0, 0.1, -0.4, 0.29, 0.0, -0.2, -0.2, -1.0, -1.0, 0.0, 0.0];
+pub const GUARD_TARGETS: [f32; 12] = [-0.11, 0.07, 0.1, -0.4, 0.29, 0.0, -0.107, -0.107, -0.785, -0.785, 0.233, 0.233];
 /// Staggered recoil: lean back, head back, arms flung out.
-pub const RECOIL_TARGETS: [f32; 12] = [-0.6, -0.8, -0.8, -0.8, -0.3, -0.3, -0.2, -0.2, -1.0, -1.0, 0.0, 0.0];
+pub const RECOIL_TARGETS: [f32; 12] = [-0.6, -0.8, -0.8, -0.8, -0.3, -0.3, -0.107, -0.107, -0.785, -0.785, 0.233, 0.233];
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum State {
