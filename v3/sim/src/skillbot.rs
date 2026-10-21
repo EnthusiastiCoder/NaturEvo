@@ -80,3 +80,22 @@ impl SkillBot {
         let dir = if dx >= 0.0 { 1.0 } else { -1.0 };
         let idle = mine.phase == Phase::Idle;
         self.wait = (self.wait - dt).max(0.0);
+
+        // Footwork: close to the swing band; the smarter tiers also give ground when crowded.
+        let down = opp.state() == State::Fallen;
+        self.down = down;
+        let lo = if self.close_plan > 0.0 || down { CLOSE } else { RANGE_LO };
+        let mut drive = if dist > lo + 0.4 { dir } else { 0.0 };
+        if self.tier >= 2 && !down && dist < RANGE_LO - 0.5 && self.close_plan <= 0.0 && idle {
+            drive = -dir * 0.7;
+        }
+        self.close_plan = (self.close_plan - dt).max(0.0);
+        let stag = opp.state() == State::Staggered;
+        if stag && !self.was_stag { self.flail_t = FLAIL_TIME; }
+        self.was_stag = stag;
+        if theirs.phase != Phase::Idle { self.opp_idle = 0.0 } else { self.opp_idle += dt }
+        self.flail_t = (self.flail_t - dt).max(0.0);
+        let flail = stag && self.opp_idle > FLAIL_IDLE && self.flail_t > 0.0 && dist < FLAIL_DIST;
+        if flail {
+            drive = -dir;
+        }
