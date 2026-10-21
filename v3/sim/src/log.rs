@@ -32,7 +32,8 @@ fn state_name(r: &Robot) -> &'static str {
     }
 }
 
-fn fighter_json(out: &mut String, r: &Robot) {
+fn fighter_json(out: &mut String, m: &Match, i: usize) {
+    let r = &m.robots[i];
     let _ = write!(out, "{{\"fx\":{:.2},\"facing\":{},\"parts\":[", r.x, if r.facing >= 0.0 { 1 } else { -1 });
     for (i, p) in Part::ALL.iter().enumerate() {
         if i > 0 {
@@ -53,10 +54,16 @@ fn fighter_json(out: &mut String, r: &Robot) {
     }
     let _ = write!(
         out,
-        "],\"energy\":{},\"posture\":{},\"state\":\"{}\"}}",
+        "],\"energy\":{},\"posture\":{},\"state\":\"{}\"",
         r.energy.round() as i32,
         r.posture.round() as i32,
         state_name(r)
+    );
+    let mi = m.move_info(i);
+    let _ = write!(
+        out,
+        ",\"mv\":{{\"id\":\"{}\",\"phase\":{},\"p\":{:.2},\"open\":{},\"gb\":{},\"rip\":{}}}}}",
+        mi.id.name(), mi.phase.index(), mi.progress, mi.open, mi.guard_broken_remaining > 0.0, mi.riposte_remaining > 0.0
     );
 }
 
@@ -64,9 +71,9 @@ fn fighter_json(out: &mut String, r: &Robot) {
 pub fn frame_json(m: &Match) -> String {
     let mut s = String::with_capacity(2048);
     let _ = write!(s, "{{\"t\":{},\"f\":[", m.tick);
-    fighter_json(&mut s, &m.robots[0]);
+    fighter_json(&mut s, m, 0);
     s.push(',');
-    fighter_json(&mut s, &m.robots[1]);
+    fighter_json(&mut s, m, 1);
     s.push_str("]}");
     s
 }
