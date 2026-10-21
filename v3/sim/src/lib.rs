@@ -21,3 +21,4 @@ pub mod robot;
 pub mod rules;
 pub mod scripted;
 pub mod sense;
+pub mod skillbot;
