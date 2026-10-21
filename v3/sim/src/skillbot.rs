@@ -78,8 +78,21 @@ impl SkillBot {
         if dist < CLOSE && self.rng.f32() < 0.3 {
             return MoveId::Kick;
         }
-        if self.rng.f32() < LOW_MOVE_P { return if self.rng.f32() < 0.5 { MoveId::DiagUp } else { MoveId::LowCut }; }
-        SLASHES[(self.rng.next_u64() % 4) as usize]
+        // DiagUp is the best finisher (measured: lifts the guard and bites pelvis and torso). The brawler leans on it
+        // less than the duellist, who also mixes in LowCut and Sweep.
+        let r = self.rng.f32();
+        if self.tier == 3 {
+            if r < 0.80 { return MoveId::DiagUp; }
+            if r < 0.85 { return MoveId::LowCut; }
+            if r < 0.90 { return MoveId::Sweep; }
+        } else if r < BRAWLER_UP_P {
+            return MoveId::DiagUp;
+        } else if r < BRAWLER_UP_P + 0.06 {
+            return MoveId::Sweep;
+        } else if r < BRAWLER_UP_P + 0.1 {
+            return MoveId::LowCut;
+        }
+        TORSO[(self.rng.next_u64() % 3) as usize]
     }
 
     /// One tick. Returns the move request (the executor ignores what it cannot start) and the footwork drive.
