@@ -75,3 +75,21 @@ fn scripted_fights_keep_the_torso_near_upright_on_average() {
         assert!(back < 0.12, "tier {tier} leans back >12deg {back} of the time");
     }
 }
+
+#[test]
+fn random_nets_keep_the_torso_near_upright_on_average() {
+    use mech_sim::genome::Genome;
+    use mech_sim::rng::Rng;
+    let mut rng = Rng::new(7);
+    let (mut sum, mut worst) = (0.0f32, 0.0f32);
+    for _ in 0..8 {
+        let a = Genome::random(Role::Hero, &mut rng);
+        let b = Genome::random(Role::Monster, &mut rng);
+        let (mean, _, _) = fight_lean(Brain::Net(a), Brain::Net(b), 1);
+        println!("net mean tilt {mean:.1}");
+        sum += mean;
+        worst = worst.max(mean.abs());
+    }
+    assert!(worst < 10.0, "worst net mean tilt {worst}");
+    assert!((sum / 8.0).abs() < 6.0);
+}
