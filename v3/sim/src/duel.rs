@@ -348,8 +348,7 @@ impl Match {
                     *hdrive = d.drive;
                     req = *held;
                 }
-                *smooth = smooth_toward(smooth, &held.targets, ACTION_SMOOTH);
-                Action { targets: *smooth, drive: held.drive }
+                (req, *hdrive)
             }
         }
     }
