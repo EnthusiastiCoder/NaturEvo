@@ -18,6 +18,9 @@ fn brain(spec: &str) -> Result<Brain, String> {
     match spec {
         "dummy" => Ok(Brain::Dummy),
         "scripted" => Ok(Brain::Scripted),
+        "skill1" => Ok(Brain::Skill(1)),
+        "skill2" => Ok(Brain::Skill(2)),
+        "skill3" => Ok(Brain::Skill(3)),
         path => {
             let text = std::fs::read_to_string(path).map_err(|e| format!("{}: {}", path, e))?;
             Ok(Brain::Net(Genome::from_json(&text)?))
@@ -28,7 +31,7 @@ fn brain(spec: &str) -> Result<Brain, String> {
 fn fight(args: &[String]) -> Result<(), String> {
     let seed: u64 = opt(args, "--seed").unwrap_or("1").parse().map_err(|_| "bad --seed".to_string())?;
     let a = brain(opt(args, "--a").unwrap_or("scripted"))?;
-    let b = brain(opt(args, "--b").unwrap_or("dummy"))?;
+    let b = brain(opt(args, "--b").or_else(|| opt(args, "--opp")).unwrap_or("dummy"))?;
     let mut m = Match::new(seed, a, b);
     m.enable_log();
     m.run_to_end();
