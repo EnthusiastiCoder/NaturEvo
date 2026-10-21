@@ -384,6 +384,103 @@ impl Match {
         Action { targets: act.targets, drive: (drive + act.drive).clamp(-1.0, 1.0) }
     }
 
+    /// Track move starts, feints and the Active -> Recovery edge for fighter `i`.
+    fn after_step(&mut self, i: usize) {
+        let (ph, id, cn) = (self.exec[i].phase(), self.exec[i].move_id(), self.exec[i].cancelling());
+        let t = self.tick;
+        if cn && !self.prev_cancel[i] {
+            self.starts[i].push(MoveId::Feint);
+            self.emit(format!("{{\"t\":{},\"kind\":\"feint\",\"who\":{}}}", t, i));
+        } else if ph == Phase::Windup && !cn && (self.prev_phase[i] != Phase::Windup || self.prev_id[i] != id) {
+            self.starts[i].push(id);
+            self.contact_seen[i] = false;
+            self.bash_done[i] = false;
+            let pr = self.exec[i].params();
+            self.emit(format!(
+                "{{\"t\":{},\"kind\":\"move\",\"who\":{},\"name\":\"{}\",\"reach\":{},\"speed\":{},\"arc\":{},\"delay\":{}}}",
+                t, i, id.name(), f2(pr.reach), f2(pr.speed), f2(pr.arc), f2(pr.delay)
+            ));
+        }
+        if self.prev_phase[i] == Phase::Active && ph == Phase::Recovery && !cn {
+            self.whiff_pending[i] = true;
+        }
+        self.prev_phase[i] = ph;
+        self.prev_id[i] = id;
+        self.prev_cancel[i] = cn;
+    }
+
+    /// After combat: a move whose Active ended with no contact is a whiff and leaves its user Open.
+    fn resolve_whiffs(&mut self) {
+        for i in 0..2 {
+            if !self.whiff_pending[i] {
+                continue;
+            }
+            self.whiff_pending[i] = false;
+            let id = self.exec[i].move_id();
+            if spec(id).can_whiff && !self.contact_seen[i] {
+                let rec = phase_durations(id, &self.exec[i].params())[2];
+                let t = self.tick;
+                self.emit(format!("{{\"t\":{},\"kind\":\"whiff\",\"who\":{},\"name\":\"{}\"}}", t, i, id.name()));
+                if id == MoveId::Parry {
+                    self.rules[i].on_parry_miss();
+                } else {
+                    self.rules[i].begin_recovery(true, rec);
+                }
+            }
+        }
+    }
+
+    /// Kick and shield bash: contacts the sword sweep does not model.
+    fn special_contacts(&mut self) {
+        for att in 0..2 {
+            let def = 1 - att;
+            let e = &self.exec[att];
+            if e.phase() != Phase::Active || self.bash_done[att] || self.robots[def].is_ko() {
+                continue;
+            }
+            let id = e.move_id();
+            let t = self.tick;
+            match id {
+                MoveId::ShieldBash => {
+                    let sh = self.robots[att].shield_capsule();
+                    let d = &self.robots[def];
+                    let mut hit = Part::ALL.iter().any(|p| {
+                        matches!(p, Part::Head | Part::Torso | Part::Pelvis | Part::UArmL | Part::UArmR) && !d.is_detached(*p) && cap_dist(&sh, &d.capsule(*p)) <= 0.05
+                    });
+                    if d.shield_active() && cap_dist(&sh, &d.shield_capsule()) <= 0.05 {
+                        hit = true;
+                    }
+                    if !hit {
+                        continue;
+                    }
+                    self.bash_done[att] = true;
+                    self.contact_seen[att] = true;
+                    self.exec[att].notify_contact();
+                    let guarding = self.robots[def].guard_raised() || (self.exec[def].move_id() == MoveId::Guard && matches!(self.exec[def].phase(), Phase::Windup | Phase::Active));
+                    if guarding {
+                        let (r, st) = (&mut self.robots[def], &mut self.rules[def]);
+                        rules::guard_break(r, st);
+                        self.emit(format!("{{\"t\":{},\"kind\":\"guard_break\",\"who\":{},\"victim\":{}}}", t, att, def));
+                    } else {
+                        self.robots[def].add_posture(15.0);
+                    }
+                }
+                MoveId::Kick => {
+                    let foot = self.robots[att].capsule(Part::FootR);
+                    let d = &self.robots[def];
+                    let hit = [Part::Torso, Part::Pelvis, Part::ThighL, Part::ThighR].iter().any(|p| !d.is_detached(*p) && cap_dist(&foot, &d.capsule(*p)) <= 0.05);
+                    if hit {
+                        self.bash_done[att] = true;
+                        self.contact_seen[att] = true;
+                        self.exec[att].notify_contact();
+                        self.robots[def].add_posture(20.0);
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+
     /// Arena walls (lo, hi). Fixed for the whole fight.
     pub fn bounds(&self) -> (f32, f32) {
         (0.5, self.arena.width - 0.5)
