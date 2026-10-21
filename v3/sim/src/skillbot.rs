@@ -139,3 +139,39 @@ impl SkillBot {
         if self.tier == 3 && mine.riposte_remaining > 0.0 && idle && dist <= RANGE_HI + 0.3 {
             return (Some((MoveId::Riposte, p(0.9, 1.0, 0.5, 0.0))), drive);
         }
+
+        let in_range = dist <= if down { 1.85 } else { RANGE_HI + 0.15 };
+        if self.follow && idle {
+            self.follow = false;
+            if in_range {
+                let id = self.pick_attack(dist);
+                let pr = self.attack_params(id);
+                return (Some((id, pr)), drive);
+            }
+        }
+        if idle && self.wait <= 0.0 && self.react < 0.0 && !(flail) {
+            if self.tier == 3 && theirs.id == MoveId::Guard && theirs.phase == Phase::Active && self.rng.f32() < 0.6 {
+                // Shield bash from close in.
+                if dist <= CLOSE + 0.3 {
+                    self.wait = self.rng.range(0.3, 0.7);
+                    return (Some((MoveId::ShieldBash, p(0.8, 0.9, 0.5, 0.0))), drive);
+                }
+                self.close_plan = 0.6;
+            }
+            if in_range && (dist >= RANGE_LO - 0.5 || down) {
+                let id = self.pick_attack(dist);
+                let pr = self.attack_params(id);
+                let (w0, w1) = match self.tier {
+                    1 => (0.1, 0.45),
+                    2 => (0.7, 1.5),
+                    _ => (0.4, 1.1),
+                };
+                self.wait = self.rng.range(w0, w1);
+                if self.tier == 3 && id != MoveId::Kick && self.rng.f32() < 0.3 {
+                    self.bait = Some(self.rng.range(0.3, 0.55));
+                }
+                return (Some((id, pr)), drive);
+            }
+        }
+        (None, drive)
+    }
