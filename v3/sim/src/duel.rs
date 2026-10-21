@@ -10,7 +10,7 @@ use crate::config::*;
 use crate::genome::Genome;
 use crate::log::{self, f2, FightLog};
 use crate::moves::raw_impact;
-use crate::net::Net;
+use crate::net::{decode, Net};
 use crate::robot::{Capsule, Joint, Part, Robot, Role, State, STAND_TARGETS};
 use crate::scripted::{self, Action, Scripted};
 use crate::sense::observe;
