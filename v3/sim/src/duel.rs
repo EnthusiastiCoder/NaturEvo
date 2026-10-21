@@ -13,7 +13,7 @@ use crate::moves::raw_impact;
 use crate::net::{decode, Net};
 use crate::robot::{Capsule, Joint, Part, Robot, Role, State, STAND_TARGETS};
 use crate::scripted::{self, Action, Scripted};
-use crate::sense::observe;
+use crate::sense::{observe_moves, MoveInfo};
 
 /// Who controls a fighter.
 #[derive(Clone, Debug)]
