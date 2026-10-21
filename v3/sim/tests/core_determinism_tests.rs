@@ -41,9 +41,9 @@ fn rng_same_seed_same_stream_different_seed_differs() {
 
 #[test]
 fn sizes_are_v3_sizes() {
-    assert_eq!(N_OUT, 13, "12 joint targets + drive");
+    assert_eq!(N_OUT, 19, "move logits + params + drive");
     assert_eq!(N_HID, 32);
-    assert!((90..=120).contains(&N_IN), "~100 inputs, got {}", N_IN);
+    assert!((90..=160).contains(&N_IN), "~100 inputs, got {}", N_IN);
     assert!((4000..=7000).contains(&N_PARAMS), "~5k weights, got {}", N_PARAMS);
 }
 
@@ -103,7 +103,7 @@ fn json_roundtrip_exact_and_rejects_garbage() {
 }
 
 #[test]
-fn forward_is_deterministic_bounded_and_13_wide() {
+fn forward_is_deterministic_bounded_and_19_wide() {
     let g = Genome::random(Role::Hero, &mut Rng::new(3));
     let (mut n1, mut n2) = (Net::from_genome(&g), Net::from_genome(&g));
     let mut r = Rng::new(10);
@@ -111,7 +111,7 @@ fn forward_is_deterministic_bounded_and_13_wide() {
         let mut x = [0.0f32; N_IN];
         for v in x.iter_mut() { *v = r.range(-1.0, 1.0); }
         let (a, b) = (n1.forward(&x), n2.forward(&x));
-        assert_eq!(a.len(), 13);
+        assert_eq!(a.len(), 19);
         assert_eq!(a, b);
         assert!(a.iter().all(|v| v.is_finite() && (-1.0..=1.0).contains(v)));
     }
