@@ -157,6 +157,11 @@ fn seg_seg_dist(a: [f32; 2], b: [f32; 2], c: &Capsule) -> f32 {
     best
 }
 
+/// Gap between two capsules (negative when they overlap).
+fn cap_dist(a: &Capsule, b: &Capsule) -> f32 {
+    seg_seg_dist(a.a, a.b, b) - a.r
+}
+
 /// A blade tip at `tip` moving at `vel` is a live threat to `def`: faster than 2.5 m/s and its
 /// predicted path comes within 0.4 m of a defender body capsule within 0.4 s.
 pub fn is_live_threat(tip: [f32; 2], vel: [f32; 2], def: &Robot) -> bool {
