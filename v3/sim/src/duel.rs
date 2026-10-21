@@ -224,7 +224,10 @@ pub struct Match {
 
 fn make_ctl(b: Brain, seed: u64, salt: u64) -> Ctl {
     match b {
-        Brain::Net(g) => Ctl::Net(Box::new(Net::from_genome(&g)), Action { targets: STAND_TARGETS, drive: 0.0 }, STAND_TARGETS),
+        Brain::Net(g) => Ctl::Net(Box::new(Net::from_genome(&g)), None, 0.0),
+        Brain::Skill(t) => Ctl::Skill(Box::new(SkillBot::new(seed.wrapping_add(salt), t))),
+        Brain::Spam(m) => Ctl::Cycle(vec![m], 0, false),
+        Brain::Cycle(l) => Ctl::Cycle(if l.is_empty() { vec![MoveId::Idle] } else { l }, 0, false),
         Brain::Dummy => Ctl::Dummy,
         Brain::Scripted => Ctl::Scripted(Box::new(Scripted::new(seed.wrapping_add(salt)))),
         Brain::Fixed(t) => Ctl::Fixed(Action { targets: t, drive: 0.0 }),
