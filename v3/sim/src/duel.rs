@@ -672,6 +672,8 @@ impl Match {
             moved: 0.0,
             flexed: 0.0,
             quiet: 0,
+            att_move: self.exec[att].move_id(),
+            def_backstep: self.exec[def].move_id() == MoveId::Backstep,
         };
         self.next_threat += 1;
         self.threats.push(t);
