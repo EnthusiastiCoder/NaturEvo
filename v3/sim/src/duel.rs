@@ -583,7 +583,7 @@ impl Match {
                 r.fk();
             }
             let nx = self.robots[i].x;
-            if nx != old_x && self.blocked_by_obstacle(nx) && !self.blocked_by_obstacle(old_x) {
+            if !self.ctl.iter().any(|c| matches!(c, Ctl::Skill(_))) && nx != old_x && self.blocked_by_obstacle(nx) && !self.blocked_by_obstacle(old_x) {
                 self.robots[i].x = old_x;
                 self.robots[i].fk();
             }
