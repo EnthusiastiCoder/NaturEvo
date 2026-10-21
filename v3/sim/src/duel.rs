@@ -34,7 +34,11 @@ pub enum Brain {
 }
 
 enum Ctl {
-    Net(Box<Net>, Action, [f32; 12]),
+    /// Net, last decoded (request, drive).
+    Net(Box<Net>, Request, f32),
+    Skill(Box<SkillBot>),
+    /// Move list, next index, a request is pending acceptance.
+    Cycle(Vec<MoveId>, usize, bool),
     Dummy,
     Scripted(Box<Scripted>),
     Fixed(Action),
