@@ -759,6 +759,12 @@ impl Match {
                     CombatEvent::Clash { kind, point, normal } => {
                         if kind != ClashKind::Clash {
                             self.resolve_threat(att, Resolution::Parried);
+                            if self.exec[def].move_id() == MoveId::Parry && matches!(self.exec[def].phase(), Phase::Windup | Phase::Active) {
+                                self.rules[def].on_parry_success();
+                                self.contact_seen[def] = true;
+                                self.exec[def].notify_contact();
+                                self.emit(format!("{{\"t\":{},\"kind\":\"riposte_open\",\"who\":{}}}", t, def));
+                            }
                         }
                         self.emit(format!(
                             "{{\"t\":{},\"kind\":\"clash\",\"x\":{},\"y\":{},\"dx\":{},\"dy\":{},\"type\":\"{}\"}}",
