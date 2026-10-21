@@ -47,6 +47,8 @@ pub struct SkillBot {
     was_stag: bool,
     flail_t: f32,
     opp_idle: f32,
+    last_x: f32,
+    stuck: f32,
 }
 
 impl SkillBot {
