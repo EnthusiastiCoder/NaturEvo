@@ -629,6 +629,9 @@ impl Match {
                     };
                     let t = &mut self.threats[k];
                     t.potential = t.potential.max(pot);
+                    if self.exec[def].move_id() == MoveId::Backstep {
+                        t.def_backstep = true;
+                    }
                     if !t.would_hit && would_connect(sp, sc, &t.snapshot) {
                         t.would_hit = true;
                     }
