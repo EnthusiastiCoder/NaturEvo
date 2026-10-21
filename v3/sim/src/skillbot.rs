@@ -112,3 +112,30 @@ impl SkillBot {
                 self.bait = None;
             }
         }
+
+        if self.tier >= 2 {
+            let telegraph = is_attack(theirs.id) && matches!(theirs.phase, Phase::Windup | Phase::Active) || (live_threat && theirs.phase != Phase::Recovery);
+            if telegraph {
+                if !self.reacted {
+                    self.reacted = true;
+                    self.react = self.rng.range(0.1, 0.2);
+                }
+            } else {
+                self.reacted = false;
+                self.react = -1.0;
+            }
+            if self.react >= 0.0 {
+                self.react -= dt;
+                if self.react < 0.0 {
+                    return (Some(self.defend(theirs)), drive);
+                }
+            }
+            // Punish an Open opponent with the fastest in-range attack.
+            if theirs.open && idle && dist <= RANGE_HI + 0.15 && dist >= RANGE_LO - 0.5 {
+                let id = if self.rng.f32() < 0.5 { MoveId::DiagUp } else { MoveId::Thrust };
+                return (Some((id, p(0.9, 1.0, 0.5, 0.0))), drive);
+            }
+        }
+        if self.tier == 3 && mine.riposte_remaining > 0.0 && idle && dist <= RANGE_HI + 0.3 {
+            return (Some((MoveId::Riposte, p(0.9, 1.0, 0.5, 0.0))), drive);
+        }
