@@ -112,6 +112,12 @@ impl SkillBot {
             drive = -dir * 0.7;
         }
         self.close_plan = (self.close_plan - dt).max(0.0);
+        let evading = self.tier == 3 && is_attack(theirs.id) && matches!(theirs.phase, Phase::Windup | Phase::Active) && dist < EVADE_DIST;
+        if evading { drive = -dir; }
+        // Navigation: an obstacle stops the walk (there is no jump), so a bot that stops making progress swings across it.
+        if drive != 0.0 && (me.x - self.last_x).abs() < 1e-5 { self.stuck += dt } else { self.stuck = 0.0 }
+        self.last_x = me.x;
+        let stuck = self.stuck > 0.3;
         let stag = opp.state() == State::Staggered;
         if stag && !self.was_stag { self.flail_t = FLAIL_TIME; }
         self.was_stag = stag;
