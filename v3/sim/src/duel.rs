@@ -330,6 +330,10 @@ impl Match {
     }
 
     fn decide(&mut self, i: usize) -> Action {
+        let mine = self.move_info(i);
+        let theirs = self.move_info(1 - i);
+        let live = self.last_live[i].map_or(false, |t| self.tick.saturating_sub(t) <= 6);
+        let tick = self.tick;
         let (me, opp) = (&self.robots[i], &self.robots[1 - i]);
         match &mut self.ctl[i] {
             Ctl::Dummy => scripted::dummy(),
