@@ -15,6 +15,8 @@ const RANGE_HI: f32 = 2.2;
 /// Longest torso distance a swing still lands (measured: ~90% up to 2.5 m, none beyond 2.6 m).
 const SWING_MAX: f32 = 2.2;
 const CLOSE: f32 = 1.35;
+/// Swing from this far when an obstacle blocks the walk.
+const STUCK_RANGE: f32 = 2.55;
 /// Retreat briefly after a passive opponent staggers, to avoid its recoil sweep.
 const FLAIL_TIME: f32 = 1.0;
 const FLAIL_DIST: f32 = 3.5;
