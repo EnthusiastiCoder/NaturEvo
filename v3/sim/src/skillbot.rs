@@ -99,3 +99,16 @@ impl SkillBot {
         if flail {
             drive = -dir;
         }
+
+        // Feint bait in progress: cancel the windup, then strike for real at once.
+        if let Some(at) = self.bait {
+            if mine.phase == Phase::Windup && mine.progress >= at {
+                self.bait = None;
+                self.follow = true;
+                self.wait = 0.0;
+                return (Some((MoveId::Feint, p(0.5, 0.5, 0.5, 0.0))), drive);
+            }
+            if idle {
+                self.bait = None;
+            }
+        }
