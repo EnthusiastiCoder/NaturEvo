@@ -146,7 +146,7 @@ impl SkillBot {
             if telegraph {
                 if !self.reacted {
                     self.reacted = true;
-                    self.react = self.rng.range(0.1, 0.2);
+                    self.react = self.rng.range(0.03, 0.1);
                 }
             } else {
                 self.reacted = false;
