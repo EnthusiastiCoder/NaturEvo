@@ -72,3 +72,11 @@ impl SkillBot {
         if self.rng.f32() < LOW_MOVE_P { return if self.rng.f32() < 0.5 { MoveId::DiagUp } else { MoveId::LowCut }; }
         SLASHES[(self.rng.next_u64() % 4) as usize]
     }
+
+    /// One tick. Returns the move request (the executor ignores what it cannot start) and the footwork drive.
+    pub fn act(&mut self, me: &Robot, opp: &Robot, mine: &MoveInfo, theirs: &MoveInfo, live_threat: bool, dt: f32) -> (Request, f32) {
+        let dx = opp.x - me.x;
+        let dist = dx.abs();
+        let dir = if dx >= 0.0 { 1.0 } else { -1.0 };
+        let idle = mine.phase == Phase::Idle;
+        self.wait = (self.wait - dt).max(0.0);
