@@ -38,3 +38,29 @@ fn standing_robot_stays_upright_and_balanced() {
         }
     }
 }
+
+fn fight_lean(a: Brain, b: Brain, seeds: u64) -> (f32, f32, f32) {
+    let (mut sum, mut n, mut over, mut back) = (0.0f32, 0u32, 0u32, 0u32);
+    for seed in 0..seeds {
+        let mut m = Match::new(seed, a.clone(), b.clone());
+        while !m.is_over() {
+            m.step();
+            for r in &m.robots {
+                if r.state() != State::Idle {
+                    continue;
+                }
+                let t = torso_tilt(r);
+                sum += t;
+                n += 1;
+                if t > 15.0 {
+                    over += 1;
+                }
+                if t < -12.0 {
+                    back += 1;
+                }
+            }
+        }
+    }
+    let n = n.max(1) as f32;
+    (sum / n, over as f32 / n, back as f32 / n)
+}
