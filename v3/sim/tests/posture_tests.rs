@@ -64,3 +64,14 @@ fn fight_lean(a: Brain, b: Brain, seeds: u64) -> (f32, f32, f32) {
     let n = n.max(1) as f32;
     (sum / n, over as f32 / n, back as f32 / n)
 }
+
+#[test]
+fn scripted_fights_keep_the_torso_near_upright_on_average() {
+    for tier in [1u8, 3] {
+        let (mean, fwd, back) = fight_lean(Brain::Skill(tier), Brain::Skill(tier), 6);
+        println!("tier {tier}: mean {mean:.1} fwd>15 {fwd:.3} back<-12 {back:.3}");
+        assert!(mean.abs() < 6.0, "tier {tier} mean tilt {mean}");
+        assert!(fwd < 0.08, "tier {tier} leans forward >15deg {fwd} of the time");
+        assert!(back < 0.12, "tier {tier} leans back >12deg {back} of the time");
+    }
+}
