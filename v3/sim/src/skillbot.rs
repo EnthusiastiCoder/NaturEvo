@@ -155,6 +155,12 @@ impl SkillBot {
             if self.react >= 0.0 {
                 self.react -= dt;
                 if self.react < 0.0 {
+                    if evading {
+                        // Mostly keep backing off; sometimes step back properly or stand and parry.
+                        let r = self.rng.f32();
+                        if r < 0.2 { return (Some((MoveId::Backstep, p(0.8, 0.9, 0.5, 0.0))), drive); }
+                        if r < 0.6 { return (None, drive); }
+                    }
                     return (Some(self.defend(theirs)), drive);
                 }
             }
