@@ -277,6 +277,16 @@ impl Match {
             prev_destroyed: [[false; 13]; 2],
             next_threat: 0,
             ended: false,
+            exec: [Executor::new(), Executor::new()],
+            rules: [RuleState::new(), RuleState::new()],
+            starts: [Vec::new(), Vec::new()],
+            last_cost: [0.0; 2],
+            prev_phase: [Phase::Idle; 2],
+            prev_id: [MoveId::Idle; 2],
+            prev_cancel: [false; 2],
+            contact_seen: [false; 2],
+            bash_done: [false; 2],
+            whiff_pending: [false; 2],
         }
     }
 
