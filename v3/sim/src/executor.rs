@@ -193,6 +193,10 @@ impl Executor {
         if id == MoveId::Riposte && self.riposte_open {
             d[0] = RIPOSTE_WINDUP_OPEN * speed_mult(p.speed) + DELAY_MAX * p.delay.clamp(0.0, 1.0);
         }
+        self.plunge = self.target_down && has_plunge(id);
+        if self.plunge {
+            d[2] *= PLUNGE_RECOVERY_MULT;
+        }
         self.id = id;
         self.params = p;
         self.dur = d;
