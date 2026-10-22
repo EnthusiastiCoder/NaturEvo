@@ -49,6 +49,8 @@ pub struct SkillBot {
     opp_idle: f32,
     last_x: f32,
     stuck: f32,
+    bash_t: f32,
+    was_guard: bool,
 }
 
 impl SkillBot {
