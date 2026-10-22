@@ -370,6 +370,8 @@ impl Match {
         let before = self.exec[i].energy_spent();
         self.exec[i].set_threat(live);
         self.exec[i].set_riposte_open(riposte);
+        let opp_down = self.robots[1 - i].state() == State::Fallen;
+        self.exec[i].set_target_down(opp_down);
         let act = self.exec[i].step(&self.robots[i], req, PHYS_DT);
         let delta = self.exec[i].energy_spent() - before;
         if delta > 0.0 {
@@ -456,7 +458,7 @@ impl Match {
                     self.bash_done[att] = true;
                     self.contact_seen[att] = true;
                     self.exec[att].notify_contact();
-                    let guarding = self.robots[def].guard_raised() || (self.exec[def].move_id() == MoveId::Guard && matches!(self.exec[def].phase(), Phase::Windup | Phase::Active));
+                    let guarding = self.robots[def].guard_raised() || (self.exec[def].move_id() == MoveId::Guard && self.exec[def].phase() != Phase::Idle);
                     if guarding {
                         let (r, st) = (&mut self.robots[def], &mut self.rules[def]);
                         rules::guard_break(r, st);
@@ -702,7 +704,8 @@ impl Match {
             let att_id = self.exec[att].move_id();
             let def_wa = matches!(self.exec[def].phase(), Phase::Windup | Phase::Active) && !self.exec[def].cancelling();
             let staggered = matches!(self.robots[def].state(), State::Staggered | State::Fallen);
-            let total = rules::punish_mult(&self.rules[def], def_wa, staggered, att_id == MoveId::Riposte);
+            let finisher = self.exec[att].plunging() && self.robots[def].state() == State::Fallen;
+            let total = rules::punish_mult_downed(&self.rules[def], def_wa, staggered, att_id == MoveId::Riposte, finisher);
             let mods = Mods {
                 impact_mult: total / if staggered { 1.5 } else { 1.0 },
                 posture_mult: if self.rules[def].is_open() { rules::OPEN_POSTURE_MULT } else { 1.0 },
