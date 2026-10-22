@@ -116,3 +116,27 @@ fn plunge_is_deterministic() {
     };
     assert_eq!(go(), go());
 }
+
+#[test]
+fn plunge_has_windup_active_recovery_and_costs_energy() {
+    let a = standing(Role::Hero, 0.0, 1.0);
+    let mut ex = Executor::new();
+    ex.set_target_down(true);
+    ex.step(&a, Some((MoveId::Overhead, fast())), DT);
+    assert_eq!(ex.phase(), Phase::Windup);
+    assert!(ex.plunging());
+    assert!(ex.energy_spent() > 0.0);
+    let mut seen = [false; 3];
+    let mut r = a;
+    for _ in 0..200 {
+        let act = ex.step(&r, None, DT);
+        r.apply_targets(&act.targets, DT);
+        match ex.phase() {
+            Phase::Windup => seen[0] = true,
+            Phase::Active => seen[1] = true,
+            Phase::Recovery => seen[2] = true,
+            Phase::Idle => {}
+        }
+    }
+    assert_eq!(seen, [true; 3]);
+}
