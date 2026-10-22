@@ -89,8 +89,8 @@ impl SkillBot {
         // less than the duellist, who also mixes in LowCut and Sweep.
         let r = self.rng.f32();
         if self.tier == 3 {
-            if r < 0.80 { return MoveId::DiagUp; }
-            if r < 0.85 { return MoveId::LowCut; }
+            if r < 0.74 { return MoveId::DiagUp; }
+            if r < 0.84 { return MoveId::LowCut; }
             if r < 0.90 { return MoveId::Sweep; }
         } else if r < BRAWLER_UP_P {
             return MoveId::DiagUp;
