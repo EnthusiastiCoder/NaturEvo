@@ -174,7 +174,7 @@ impl SkillBot {
             return (Some((MoveId::Riposte, p(0.9, 1.0, 0.5, 0.0))), drive);
         }
 
-        let in_range = dist <= if down { 1.85 } else { RANGE_HI + 0.15 };
+        let in_range = dist <= if stuck { STUCK_RANGE } else if down { 1.85 } else { SWING_MAX };
         if self.follow && idle {
             self.follow = false;
             if in_range {
