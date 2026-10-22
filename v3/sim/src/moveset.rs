@@ -250,8 +250,8 @@ fn keyframes(id: MoveId, p: &MoveParams, plunge: bool) -> ([f32; 12], [f32; 12])
         ),
         // Shield plate driven forward.
         MoveId::ShieldBash => (
-            mk(&[(ShoulderL, -0.8), (ElbowL, 0.6), (Waist, -0.3)]),
-            mk(&[(ShoulderL, lerp(0.0, 0.4, a)), (ElbowL, lerp(0.2, -0.3, r)), (Waist, 0.3)]),
+            mk(&[(ShoulderL, -0.3), (ElbowL, 0.0), (Waist, -0.3)]),
+            mk(&[(ShoulderL, lerp(0.1, 0.4, a)), (ElbowL, lerp(-0.2, -0.8, r)), (Waist, 0.3)]),
         ),
         // Foot strike with the right leg.
         MoveId::Kick => (
