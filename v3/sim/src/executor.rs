@@ -70,6 +70,8 @@ impl Executor {
             threat: false,
             riposte_open: false,
             facing: 1.0,
+            target_down: false,
+            plunge: false,
         }
     }
 
