@@ -194,7 +194,7 @@ fn mk(edits: &[(Joint, f32)]) -> [f32; 12] {
 }
 
 /// (windup pose, strike pose) keyframes of a move for the given params.
-fn keyframes(id: MoveId, p: &MoveParams) -> ([f32; 12], [f32; 12]) {
+fn keyframes(id: MoveId, p: &MoveParams, plunge: bool) -> ([f32; 12], [f32; 12]) {
     let r = p.reach.clamp(0.0, 1.0);
     let a = p.arc.clamp(0.0, 1.0);
     match id {
