@@ -29,6 +29,8 @@ pub struct Executor {
     threat: bool,
     riposte_open: bool,
     facing: f32,
+    target_down: bool,
+    plunge: bool,
 }
 
 const DEFAULT_PARAMS: MoveParams = MoveParams { reach: 0.5, speed: 0.5, arc: 0.5, delay: 0.0 };
