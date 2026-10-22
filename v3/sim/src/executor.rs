@@ -297,7 +297,7 @@ impl Executor {
         }
     }
 
-    /// Footwork carried by the move: Thrust lunges forward, Backstep drives back (both bell-shaped over Active).
+    /// Footwork carried by the move: Thrust and ShieldBash lunge forward, Backstep drives back (both bell-shaped over Active).
     fn drive(&self) -> f32 {
         if self.phase != Phase::Active {
             return 0.0;
