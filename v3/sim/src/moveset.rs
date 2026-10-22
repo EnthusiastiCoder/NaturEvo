@@ -313,7 +313,7 @@ pub fn pose_at(id: MoveId, p: &MoveParams, phase: Phase, t: f32) -> [f32; 12] {
 /// `pose_at` for the plunge variant when `plunge` is set (see `has_plunge`).
 pub fn pose_at_p(id: MoveId, p: &MoveParams, plunge: bool, phase: Phase, t: f32) -> [f32; 12] {
     let s = min_jerk(t);
-    let (w, mut k) = keyframes(id, p);
+    let (w, mut k) = keyframes(id, p, plunge);
     // Speed also scales the strike amplitude: a lazy swing travels less than a fast one (rate limits make this physical).
     let amp = STRIKE_AMP_SLOW + (1.0 - STRIKE_AMP_SLOW) * p.speed.clamp(0.0, 1.0);
     for i in 0..12 {
