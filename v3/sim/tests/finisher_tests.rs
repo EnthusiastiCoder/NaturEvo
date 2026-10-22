@@ -61,3 +61,28 @@ fn plunge_drives_the_point_lower_than_the_ordinary_move() {
     }
     assert!(lowest[1] < lowest[0] - 0.3, "ordinary {} plunge {}", lowest[0], lowest[1]);
 }
+
+#[test]
+fn plunge_needs_the_crouch_joints() {
+    for broken in [Part::ShinL, Part::ThighL, Part::ShinR] {
+        let mut a = standing(Role::Hero, 0.0, 1.0);
+        a.set_hp(broken, 0.0);
+        let mut ex = Executor::new();
+        ex.set_target_down(true);
+        ex.step(&a, Some((MoveId::Overhead, fast())), DT);
+        assert_eq!(ex.phase(), Phase::Idle, "plunge started with {:?} destroyed", broken);
+        // The ordinary Overhead (no down target) still needs only the arm chain: it starts unless a part it needs is gone.
+        let mut ex2 = Executor::new();
+        ex2.set_target_down(false);
+        ex2.step(&a, Some((MoveId::Overhead, fast())), DT);
+        if !spec(MoveId::Overhead).required.iter().any(|j| j.part() == broken) {
+            assert_eq!(ex2.phase(), Phase::Windup);
+        }
+    }
+    let mut a = standing(Role::Hero, 0.0, 1.0);
+    a.set_hp(Part::UArmR, 0.0);
+    let mut ex = Executor::new();
+    ex.set_target_down(true);
+    ex.step(&a, Some((MoveId::Overhead, fast())), DT);
+    assert_eq!(ex.phase(), Phase::Idle);
+}
