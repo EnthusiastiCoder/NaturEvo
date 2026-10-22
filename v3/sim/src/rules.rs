@@ -97,6 +97,15 @@ pub fn punish_mult(st: &RuleState, victim_in_windup_or_active: bool, victim_stag
     combine(&v)
 }
 
+/// A downward-thrust finisher on a fallen target bites harder than any other punish (still capped by MULT_CAP).
+pub const DOWNED_FINISHER_MULT: f32 = 1.75;
+
+/// `punish_mult` plus the finisher rule: a plunge landing on a downed (fallen) victim.
+pub fn punish_mult_downed(st: &RuleState, victim_in_windup_or_active: bool, victim_staggered: bool, riposte_hit: bool, plunge_on_downed: bool) -> f32 {
+    let base = punish_mult(st, victim_in_windup_or_active, victim_staggered, riposte_hit);
+    if plunge_on_downed && victim_staggered { combine(&[base, DOWNED_FINISHER_MULT]) } else { base }
+}
+
 pub fn riposte_windup(st: &RuleState) -> f32 {
     if st.riposte_open() { RIPOSTE_WINDUP_FAST } else { RIPOSTE_WINDUP_SLOW }
 }
