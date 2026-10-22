@@ -10,3 +10,10 @@ mod common;
 use common::*;
 
 fn fast() -> MoveParams { MoveParams { reach: 1.0, speed: 1.0, arc: 0.5, delay: 0.0 } }
+
+fn fallen_at(x: f32) -> Robot {
+    let mut d = standing(Role::Monster, x, -1.0);
+    d.knock_down();
+    d.fk();
+    d
+}
