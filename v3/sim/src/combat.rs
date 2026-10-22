@@ -218,14 +218,16 @@ pub fn resolve_tick_with(att: &mut Robot, def: &mut Robot, arena: &Arena, mods: 
         }
     };
 
-    if def.has_sword() {
+    // A fighter lying on the ground cannot raise blade or shield: nothing of its own stops a swing at the body.
+    let def_down = def.state() == crate::robot::State::Fallen;
+    if def.has_sword() && !def_down {
         if let Some(c) = swept_pair(sp, sc, def.sword_prev_capsule(), def.sword_capsule()) {
             if len(sub(sc.a, sp.a)) / PHYS_DT >= MIN_SPEED || len(sub(sc.b, sp.b)) / PHYS_DT >= MIN_SPEED {
                 consider(c.t, 0, Target::Clash(c));
             }
         }
     }
-    if def.shield_active() && !mods.shield_ignored {
+    if def.shield_active() && !mods.shield_ignored && !def_down {
         if let Some(c) = swept_hit(sp, sc, def.shield_capsule()) {
             if len(c.velocity) / PHYS_DT >= MIN_SPEED {
                 consider(c.t, 1, Target::Shield(c));
