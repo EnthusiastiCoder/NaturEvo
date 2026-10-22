@@ -183,7 +183,7 @@ impl SkillBot {
                 return (Some((id, pr)), drive);
             }
         }
-        if idle && self.wait <= 0.0 && self.react < 0.0 && !(flail) {
+        if idle && (self.wait <= 0.0 || (self.tier == 3 && stag)) && self.react < 0.0 && !(flail) {
             if self.tier == 3 && theirs.id == MoveId::Guard && theirs.phase == Phase::Active && self.rng.f32() < 0.6 {
                 // Shield bash from close in.
                 if dist <= CLOSE + 0.3 {
