@@ -35,3 +35,13 @@ fn run(id: MoveId, att: &mut Robot, d: &mut Robot, down_flag: bool) -> Vec<(Part
     }
     out
 }
+
+#[test]
+fn standing_robot_hits_a_fallen_torso_with_the_plunge() {
+    for id in [MoveId::Overhead, MoveId::Thrust] {
+        let mut a = standing(Role::Hero, 0.0, 1.0);
+        let mut d = fallen_at(1.3);
+        let hits = run(id, &mut a, &mut d, true);
+        assert!(hits.iter().any(|(p, _)| *p == Part::Torso), "{:?} plunge never hit the torso: {:?}", id, hits);
+    }
+}
