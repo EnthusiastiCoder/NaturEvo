@@ -197,6 +197,9 @@ fn mk(edits: &[(Joint, f32)]) -> [f32; 12] {
 fn keyframes(id: MoveId, p: &MoveParams, plunge: bool) -> ([f32; 12], [f32; 12]) {
     let r = p.reach.clamp(0.0, 1.0);
     let a = p.arc.clamp(0.0, 1.0);
+    if plunge && has_plunge(id) {
+        return plunge_keyframes(id, r);
+    }
     match id {
         // Scheitelhau: vertical cut from above. Arc tilts the waist follow-through.
         MoveId::Overhead => (
