@@ -17,3 +17,21 @@ fn fallen_at(x: f32) -> Robot {
     d.fk();
     d
 }
+
+/// Run `id` from a standing attacker at x=0 against a fallen defender; returns (hit parts, damage, plunge flag seen).
+fn run(id: MoveId, att: &mut Robot, d: &mut Robot, down_flag: bool) -> Vec<(Part, f32)> {
+    let mut ex = Executor::new();
+    let ar = arena();
+    let mut out = Vec::new();
+    for i in 0..160 {
+        ex.set_target_down(down_flag);
+        let a = ex.step(att, if i == 0 { Some((id, fast())) } else { None }, DT);
+        att.apply_targets(&a.targets, DT);
+        for ev in resolve_tick_with(att, d, &ar, &Mods::default()) {
+            if let CombatEvent::Hit(h) = ev {
+                out.push((h.part, h.damage));
+            }
+        }
+    }
+    out
+}
