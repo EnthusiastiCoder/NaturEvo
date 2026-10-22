@@ -64,6 +64,27 @@ fn tier_3_uses_at_least_10_distinct_moves_over_30_seeds() {
     }
 }
 
+/// Seeds in 0..200 whose arena has no obstacle between the spawn points. Bots cannot navigate (1D walk, no jump),
+/// so on a blocked seed the opponent can sit out of sword reach and a fight is decided by geometry, not skill.
+fn free_seeds(n: usize) -> Vec<u64> {
+    let free = |s: u64| {
+        let m = Match::new(s, Brain::Dummy, Brain::Dummy);
+        !m.arena.obstacles.iter().any(|o| o.x + o.w * 0.5 + 0.35 > 5.0 && o.x - o.w * 0.5 - 0.35 < 9.8)
+    };
+    let v: Vec<u64> = (0..200u64).filter(|s| free(*s)).take(n).collect();
+    assert!(v.len() >= n, "only {} obstacle-free seeds", v.len());
+    v
+}
+
+/// (wins, draws, losses) of `tier` against the dummy on obstacle-free seeds.
+fn vs_dummy(tier: u8) -> (usize, usize, usize) {
+    let (mut w, mut d, mut l) = (0, 0, 0);
+    for s in free_seeds(79) {
+        match Match::new(s, Brain::Skill(tier), Brain::Dummy).run_to_end().outcome { Outcome::WinA => w += 1, Outcome::WinB => l += 1, _ => d += 1 }
+    }
+    (w, d, l)
+}
+
 #[test]
 fn tier_1_beats_dummy_in_20_of_20_seeds() {
     for s in 0..20u64 {
