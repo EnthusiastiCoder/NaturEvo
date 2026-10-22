@@ -329,7 +329,11 @@ pub fn pose_at_p(id: MoveId, p: &MoveParams, plunge: bool, phase: Phase, t: f32)
 
 /// Windup pose that starts from an arbitrary pose instead of the ready pose (chains, cancelled moves).
 pub fn windup_from(id: MoveId, p: &MoveParams, from: &[f32; 12], t: f32) -> [f32; 12] {
-    let (w, _) = keyframes(id, p);
+    windup_from_p(id, p, false, from, t)
+}
+
+pub fn windup_from_p(id: MoveId, p: &MoveParams, plunge: bool, from: &[f32; 12], t: f32) -> [f32; 12] {
+    let (w, _) = keyframes(id, p, plunge);
     blend(from, &w, min_jerk(t))
 }
 
