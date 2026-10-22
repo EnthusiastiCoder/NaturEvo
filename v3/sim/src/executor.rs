@@ -120,6 +120,14 @@ impl Executor {
     pub fn set_riposte_open(&mut self, open: bool) {
         self.riposte_open = open;
     }
+    /// The caller reports the opponent is lying on the ground: Overhead and Thrust started now become plunges.
+    pub fn set_target_down(&mut self, down: bool) {
+        self.target_down = down;
+    }
+    /// The running move is a plunge (downward thrust at a fallen opponent).
+    pub fn plunging(&self) -> bool {
+        self.plunge && self.phase != Phase::Idle
+    }
     /// Cancelled windup relaxing back to the ready pose (a feint in progress).
     pub fn cancelling(&self) -> bool {
         self.cancelled
