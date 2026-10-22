@@ -152,3 +152,13 @@ fn rules_give_a_bonus_on_a_downed_target_for_the_finisher_only() {
     assert_eq!(rules::punish_mult_downed(&st, false, false, false, true), rules::punish_mult(&st, false, false, false));
     assert_eq!(rules::punish_mult_downed(&st, false, true, false, false), plain);
 }
+
+#[test]
+fn required_joints_of_the_plunge_include_the_crouch() {
+    for id in [MoveId::Overhead, MoveId::Thrust] {
+        let r = plunge_required(id);
+        for j in [Joint::KneeL, Joint::KneeR, Joint::HipL, Joint::HipR, Joint::Waist, Joint::ShoulderR, Joint::ElbowR] {
+            assert!(r.contains(&j), "{:?} plunge missing {:?}", id, j);
+        }
+    }
+}
