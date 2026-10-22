@@ -192,7 +192,7 @@ impl SkillBot {
                 }
                 self.close_plan = 0.6;
             }
-            if in_range && (dist >= RANGE_LO - 0.5 || down) {
+            if in_range && (dist >= RANGE_LO - 0.5 || down || stuck) {
                 let id = self.pick_attack(dist);
                 let pr = self.attack_params(id);
                 let (w0, w1) = match self.tier {
