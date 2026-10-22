@@ -105,3 +105,14 @@ fn damaged_crouch_degrades_the_plunge() {
     }
     assert!(lowest[1] > lowest[0] + 0.02, "damaged legs should reach less low: healthy {} hurt {}", lowest[0], lowest[1]);
 }
+
+#[test]
+fn plunge_is_deterministic() {
+    let go = || {
+        let mut a = standing(Role::Hero, 0.0, 1.0);
+        let mut d = fallen_at(1.3);
+        let h = run(MoveId::Thrust, &mut a, &mut d, true);
+        (h, a.sword_capsule().b, d.hp(Part::Torso))
+    };
+    assert_eq!(go(), go());
+}
