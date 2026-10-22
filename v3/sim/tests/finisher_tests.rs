@@ -86,3 +86,22 @@ fn plunge_needs_the_crouch_joints() {
     ex.step(&a, Some((MoveId::Overhead, fast())), DT);
     assert_eq!(ex.phase(), Phase::Idle);
 }
+
+#[test]
+fn damaged_crouch_degrades_the_plunge() {
+    let mut healthy = standing(Role::Hero, 0.0, 1.0);
+    let mut hurt = standing(Role::Hero, 0.0, 1.0);
+    hurt.set_hp(Part::ShinR, hurt.max_hp(Part::ShinR) * 0.05);
+    hurt.set_hp(Part::ShinL, hurt.max_hp(Part::ShinL) * 0.05);
+    let mut lowest = [f32::MAX; 2];
+    for (k, r) in [&mut healthy, &mut hurt].into_iter().enumerate() {
+        let mut ex = Executor::new();
+        for i in 0..40 {
+            ex.set_target_down(true);
+            let a = ex.step(r, if i == 0 { Some((MoveId::Overhead, fast())) } else { None }, DT);
+            r.apply_targets(&a.targets, DT);
+            lowest[k] = lowest[k].min(r.sword_capsule().b[1]);
+        }
+    }
+    assert!(lowest[1] > lowest[0] + 0.02, "damaged legs should reach less low: healthy {} hurt {}", lowest[0], lowest[1]);
+}
