@@ -306,7 +306,8 @@ impl Executor {
         let bell = 4.0 * p * (1.0 - p);
         let amp = 0.3 + 0.7 * self.params.reach.clamp(0.0, 1.0);
         match self.id {
-            MoveId::Thrust => self.facing * amp * bell,
+            MoveId::Thrust if !self.plunge => self.facing * amp * bell,
+            MoveId::ShieldBash => self.facing * amp * bell,
             MoveId::Backstep => -self.facing * amp * bell,
             _ => 0.0,
         }
