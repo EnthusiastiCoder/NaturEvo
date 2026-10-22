@@ -140,3 +140,15 @@ fn plunge_has_windup_active_recovery_and_costs_energy() {
     }
     assert_eq!(seen, [true; 3]);
 }
+
+#[test]
+fn rules_give_a_bonus_on_a_downed_target_for_the_finisher_only() {
+    let st = rules::RuleState::new();
+    let plain = rules::punish_mult(&st, false, true, false);
+    let fin = rules::punish_mult_downed(&st, false, true, false, true);
+    assert!(fin > plain, "finisher {} vs plain {}", fin, plain);
+    assert!(fin <= rules::MULT_CAP + 1e-6);
+    // Not downed, or not a finisher: no bonus.
+    assert_eq!(rules::punish_mult_downed(&st, false, false, false, true), rules::punish_mult(&st, false, false, false));
+    assert_eq!(rules::punish_mult_downed(&st, false, true, false, false), plain);
+}
