@@ -45,3 +45,19 @@ fn standing_robot_hits_a_fallen_torso_with_the_plunge() {
         assert!(hits.iter().any(|(p, _)| *p == Part::Torso), "{:?} plunge never hit the torso: {:?}", id, hits);
     }
 }
+
+#[test]
+fn plunge_drives_the_point_lower_than_the_ordinary_move() {
+    let mut lowest = [f32::MAX; 2];
+    for (k, down) in [false, true].into_iter().enumerate() {
+        let mut r = standing(Role::Hero, 0.0, 1.0);
+        let mut ex = Executor::new();
+        for i in 0..160 {
+            ex.set_target_down(down);
+            let a = ex.step(&r, if i == 0 { Some((MoveId::Overhead, fast())) } else { None }, DT);
+            r.apply_targets(&a.targets, DT);
+            lowest[k] = lowest[k].min(r.sword_capsule().b[1]);
+        }
+    }
+    assert!(lowest[1] < lowest[0] - 0.3, "ordinary {} plunge {}", lowest[0], lowest[1]);
+}
