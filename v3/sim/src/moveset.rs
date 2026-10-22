@@ -266,6 +266,37 @@ fn keyframes(id: MoveId, p: &MoveParams, plunge: bool) -> ([f32; 12], [f32; 12])
     }
 }
 
+/// Moves that gain a downward-thrust (plunge) variant against a fallen opponent, in the style of a plunging attack:
+/// the fighter crouches deep and drives the point down at the body on the ground.
+pub fn has_plunge(id: MoveId) -> bool {
+    matches!(id, MoveId::Overhead | MoveId::Thrust)
+}
+
+/// Extra recovery factor of a plunge (the fighter is crouched and committed).
+pub const PLUNGE_RECOVERY_MULT: f32 = 1.25;
+
+static OVERHEAD_PLUNGE_REQ: [Joint; 7] = [HipL, HipR, KneeL, KneeR, Waist, ShoulderR, ElbowR];
+static THRUST_PLUNGE_REQ: [Joint; 7] = [HipL, HipR, KneeL, KneeR, Waist, ShoulderR, ElbowR];
+
+/// Joints the plunge variant needs: the move's own chain plus both legs for the deep crouch.
+pub fn plunge_required(id: MoveId) -> &'static [Joint] {
+    match id {
+        MoveId::Overhead => &OVERHEAD_PLUNGE_REQ,
+        MoveId::Thrust => &THRUST_PLUNGE_REQ,
+        _ => spec(id).required,
+    }
+}
+
+/// (windup, strike) of the plunge: raise the blade, then crouch and drop the point onto a body lying on the ground.
+fn plunge_keyframes(id: MoveId, r: f32) -> ([f32; 12], [f32; 12]) {
+    let knee = lerp(0.4, 1.0, r);
+    let (sh, el) = if id == MoveId::Thrust { (0.0, 0.0) } else { (0.3, 0.4) };
+    (
+        mk(&[(ShoulderR, sh), (ElbowR, el), (Waist, -0.4), (HipR, -0.1), (KneeL, 0.3), (KneeR, 0.3)]),
+        mk(&[(ShoulderR, -0.4), (ElbowR, lerp(-0.2, -0.6, r)), (Waist, -1.0), (HipL, 0.0), (HipR, 0.0), (KneeL, knee), (KneeR, knee), (AnkleL, 0.0), (AnkleR, 0.0)]),
+    )
+}
+
 fn blend(a: &[f32; 12], b: &[f32; 12], s: f32) -> [f32; 12] {
     let mut o = [0.0; 12];
     for i in 0..12 {
