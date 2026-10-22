@@ -285,8 +285,8 @@ impl Executor {
         let t = self.progress();
         match self.phase {
             Phase::Idle => REST,
-            Phase::Windup => windup_from(self.id, &self.params, &self.start_pose, t),
-            Phase::Active => pose_at(self.id, &self.params, Phase::Active, t),
+            Phase::Windup => windup_from_p(self.id, &self.params, self.plunge, &self.start_pose, t),
+            Phase::Active => pose_at_p(self.id, &self.params, self.plunge, Phase::Active, t),
             Phase::Recovery => {
                 if self.cancelled {
                     relax_to_rest(&self.cancel_from, t)
