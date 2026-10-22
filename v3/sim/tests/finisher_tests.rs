@@ -8,3 +8,5 @@ use mech_sim::rules;
 
 mod common;
 use common::*;
+
+fn fast() -> MoveParams { MoveParams { reach: 1.0, speed: 1.0, arc: 0.5, delay: 0.0 } }
