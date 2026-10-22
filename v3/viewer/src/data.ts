@@ -5,6 +5,8 @@ export type Seg = [number, number, number, number];
 export interface FighterFrame {
   fx: number; facing: number; parts: Seg[]; sword: Seg; shield: Seg;
   hp: number[]; energy: number; posture: number; state: 'idle' | 'staggered' | 'fallen' | 'ko';
+  /** Move state; absent in logs written before the move vocabulary. */
+  mv?: { id: string; phase: 0 | 1 | 2 | 3; p: number; open: boolean; gb: boolean; rip: boolean };
 }
 export interface Frame { t: number; f: [FighterFrame, FighterFrame] }
 export type FightEvent = { t: number; kind: string; [k: string]: any };
@@ -22,7 +24,8 @@ export const DEFAULT_GEOMETRY: Geometry = {
 export interface Fight {
   version: 3; arena: Arena; parts: string[]; dt: number; frames: Frame[]; events: FightEvent[];
   geometry: Geometry;
-  result: { outcome: string; ticks: number; defence: [Tally, Tally]; capped?: boolean };
+  result: { outcome: string; ticks: number; defence: [Tally, Tally]; capped?: boolean;
+    moves?: { usage?: any[]; whiff?: number[]; punish?: number[]; hits_per_swing?: number[]; jerk?: number[] } };
 }
 
 const num = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
