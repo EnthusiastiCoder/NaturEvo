@@ -238,6 +238,9 @@ impl Executor {
         if me.energy < move_energy(id, &p) + extra || !move_possible_id(me, id) {
             return;
         }
+        if self.target_down && has_plunge(id) && !plunge_required(id).iter().all(|j| !me.is_disabled(j.part())) {
+            return;
+        }
         self.begin(id, p, extra);
     }
 
