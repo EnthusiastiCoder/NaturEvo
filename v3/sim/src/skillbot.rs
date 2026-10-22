@@ -77,6 +77,11 @@ impl SkillBot {
     }
 
     fn pick_attack(&mut self, dist: f32) -> MoveId {
+        // A fallen opponent: finish with the downward thrust (Overhead or Thrust become plunges).
+        if self.down {
+            let r = self.rng.f32();
+            return if r < 0.4 { MoveId::Overhead } else if r < 0.8 { MoveId::Thrust } else if r < 0.9 { MoveId::LowCut } else if dist < CLOSE { MoveId::Kick } else { MoveId::Overhead };
+        }
         if dist < CLOSE && self.rng.f32() < 0.3 {
             return MoveId::Kick;
         }
