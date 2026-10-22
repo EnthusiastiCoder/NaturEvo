@@ -119,6 +119,24 @@ impl SkillBot {
             drive = -dir * 0.7;
         }
         self.close_plan = (self.close_plan - dt).max(0.0);
+        // Duellist: a raised guard is an invitation to step in and shield-bash it open.
+        let guard_up = theirs.id == MoveId::Guard && theirs.phase != Phase::Idle;
+        if self.tier == 3 && guard_up && !self.was_guard && !down && self.rng.f32() < 0.7 {
+            self.bash_t = 0.9;
+        }
+        self.was_guard = guard_up;
+        self.bash_t = (self.bash_t - dt).max(0.0);
+        if self.bash_t > 0.0 && !guard_up {
+            self.bash_t = 0.0;
+        }
+        if self.bash_t > 0.0 {
+            drive = if dist > CLOSE { dir } else { 0.0 };
+            if idle && dist <= CLOSE + 0.25 {
+                self.bash_t = 0.0;
+                self.wait = self.rng.range(0.3, 0.7);
+                return (Some((MoveId::ShieldBash, p(0.8, 0.9, 0.5, 0.0))), drive);
+            }
+        }
         let evading = self.tier == 3 && is_attack(theirs.id) && matches!(theirs.phase, Phase::Windup | Phase::Active) && dist < EVADE_DIST;
         if evading { drive = -dir; }
         // Navigation: an obstacle stops the walk (there is no jump), so a bot that stops making progress swings across it.
