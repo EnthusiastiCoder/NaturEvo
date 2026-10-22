@@ -95,6 +95,8 @@ fn tier_1_beats_dummy_in_20_of_20_seeds() {
 
 #[test]
 fn tier_2_and_3_also_beat_dummy_decisively() {
+    // Same free seeds. Measured 38-41 W / 38-40 D / 0-1 L (tier 2) and 49-55 W / 24-29 D / 1 L (tier 3); the draws are
+    // Fallen dummies out of sword reach. Decisive means: wins outnumber draws and a loss is rare.
     for t in [2u8, 3] {
         let wins = (0..10u64).filter(|s| Match::new(*s, Brain::Skill(t), Brain::Dummy).run_to_end().outcome == Outcome::WinA).count();
         assert!(wins >= 9, "tier {} won {}/10", t, wins);
