@@ -291,7 +291,7 @@ impl Executor {
                 if self.cancelled {
                     relax_to_rest(&self.cancel_from, t)
                 } else {
-                    pose_at(self.id, &self.params, Phase::Recovery, t)
+                    pose_at_p(self.id, &self.params, self.plunge, Phase::Recovery, t)
                 }
             }
         }
