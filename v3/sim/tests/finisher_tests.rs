@@ -5,3 +5,6 @@ use mech_sim::executor::Executor;
 use mech_sim::moveset::*;
 use mech_sim::robot::{Joint, Part, Role, Robot, DT};
 use mech_sim::rules;
+
+mod common;
+use common::*;
