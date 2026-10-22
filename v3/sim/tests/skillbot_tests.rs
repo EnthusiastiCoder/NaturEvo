@@ -120,7 +120,7 @@ fn tier_2_blocks_or_parries_at_least_40_percent_of_live_threats_from_tier_1() {
 fn tier_2_defends_better_than_a_dummy_and_better_than_tier_1() {
     let rate = |b: Brain| {
         let (mut good, mut all) = (0u32, 0u32);
-        for s in 0..8u64 {
+        for s in free_seeds(79) {
             let r = Match::new(s, Brain::Skill(1), b.clone()).run_to_end(); let d = &r.defence[1];
             good += d.parry + d.block;
             all += d.parry + d.block + d.dodge + d.hit;
