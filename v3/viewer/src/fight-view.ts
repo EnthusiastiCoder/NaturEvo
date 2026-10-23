@@ -1,5 +1,6 @@
 import { parseFight, type Fight } from './data';
 import { FightScene } from './scene';
+import { graceModel, hudMoveLine } from './move-fx';
 import { defenceTallyModel, hudModel } from './hud';
 import { DEFAULT_ACCENT, applyTheme, nextTheme, setAccent, themeIconPath, type Theme } from './theme';
 
@@ -57,6 +58,7 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
   const hud = $('fv-hud');
   const sideHtml = (i: number) => `<div class="fv-side" id="fv-side${i}">
     <div class="fv-name">${i === 0 ? 'Hero' : 'Monster'} <span class="fv-state"></span></div>
+    <div class="fv-move" title="Current sword move and phase"></div>
     <div class="fv-bar-row" title="Core (torso) health"><i class="b hp"></i></div>
     <div class="fv-bar-row" title="Energy: spent by movement and guarding"><i class="b en"></i></div>
     <div class="fv-bar-row" title="Posture: full means staggered"><i class="b po"></i></div>
@@ -78,12 +80,19 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
       setBar(sides[i], 'hp', f.coreHp); setBar(sides[i], 'en', f.energy); setBar(sides[i], 'po', f.posture);
       sides[i].querySelectorAll<SVGRectElement>('rect').forEach((r, k) => { r.style.fill = f.parts[k].color; });
       sides[i].querySelector('.fv-state')!.textContent = fr.f[i].state === 'idle' ? '' : fr.f[i].state;
+      sides[i].querySelector<HTMLElement>('.fv-move')!.textContent = hudMoveLine(fr.f[i]);
       const items = defenceTallyModel(tallyAt(fight, i, tick)).items;
       sides[i].querySelector('.fv-tally')!.innerHTML = items.map((x) => `<span title="${esc(x.tooltip)}">${x.key} ${x.count}</span>`).join('');
     });
   };
   const res = $('fv-result');
   scene.onEnd = () => { res.hidden = false; res.textContent = `Result: ${fight.result.outcome.replace('_', ' ')} after ${(fight.result.ticks / 60).toFixed(1)} s`;
+    const gm = [0, 1].map((i) => graceModel(fight.result, i as 0 | 1));
+    if (gm[0] && gm[1]) {
+      const p = document.createElement('div'); p.className = 'fv-grace';
+      p.innerHTML = [0, 1].map((i) => `<div><b>${i === 0 ? 'Hero' : 'Monster'}</b> ${gm[i]!.rows.map((r) => `<span title="${esc(r.tooltip)}">${esc(r.label)} ${r.value}</span>`).join(' ')}<br><small>${gm[i]!.usage.map((u) => `${esc(u.name)} ${u.count}`).join(', ')}</small></div>`).join('');
+      res.append(p);
+    }
     if (fight.result.capped) { const b = document.createElement('div'); b.className = 'fv-stalemate'; b.textContent = 'stalemate'; res.append(' ', b); } };
 
   const root = document.documentElement;
