@@ -73,7 +73,7 @@ fn mv_ids_are_known_move_names_and_phase_in_0_to_3() {
 #[test]
 fn new_event_kinds_appear_with_required_fields() {
     let mut all = String::new();
-    for s in 0..14u64 {
+    for s in 0..30u64 {
         all.push_str(&logged(Brain::Skill(3), Brain::Skill(2), s));
         all.push_str(&logged(Brain::Skill(3), Brain::Skill(3), s + 100));
         all.push_str(&logged(Brain::Skill(2), Brain::Skill(3), s + 200));
@@ -89,11 +89,7 @@ fn new_event_kinds_appear_with_required_fields() {
     ];
     for (kind, fields) in required {
         let evs = events_of(&all, kind);
-        // riposte_open needs a Parry-move blade to deflect an attack blade; Parry never intersects
-        // an incoming cut in skillbot fights (0 events before the finisher work too), so its fields
-        // are only checked when it occurs. The rule itself is covered in rules_tests.
-        if kind == "riposte_open" && evs.is_empty() { continue; }
-        assert!(!evs.is_empty(), "no {} event in 42 skillbot fights", kind);
+        assert!(!evs.is_empty(), "no {} event in 90 skillbot fights", kind);
         for e in evs { for f in fields { assert!(e.contains(f), "{} event lacks {}: {}", kind, f, e); } }
     }
 }
