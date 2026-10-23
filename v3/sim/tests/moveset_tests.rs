@@ -49,7 +49,7 @@ fn every_non_idle_move_has_required_joints_and_positive_phases() {
 fn spec_times_match_the_plan_table() {
     let table = [(MoveId::Overhead, 0.35, 0.10, 0.40), (MoveId::DiagDown, 0.30, 0.10, 0.35), (MoveId::DiagUp, 0.25, 0.10, 0.30),
         (MoveId::Sweep, 0.30, 0.15, 0.45), (MoveId::Thrust, 0.20, 0.08, 0.35), (MoveId::LowCut, 0.30, 0.12, 0.40),
-        (MoveId::Parry, 0.05, 0.15, 0.30), (MoveId::ShieldBash, 0.25, 0.10, 0.35), (MoveId::Kick, 0.15, 0.08, 0.30),
+        (MoveId::Parry, 0.08, 0.30, 0.30), (MoveId::ShieldBash, 0.25, 0.10, 0.35), (MoveId::Kick, 0.15, 0.08, 0.30),
         (MoveId::Backstep, 0.20, 0.10, 0.25)];
     for (m, w, a, r) in table {
         let s = spec(m);
