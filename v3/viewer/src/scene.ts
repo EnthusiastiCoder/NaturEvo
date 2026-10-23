@@ -272,6 +272,7 @@ export class FightScene {
       }
     }
     for (let i = n; i < this.labels.length; i++) this.labels[i].visible = false;
+    this.drawMoveFx(g, sc);
     this.drawBanner(w, h);
   }
 
