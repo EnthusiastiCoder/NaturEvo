@@ -35,3 +35,12 @@ export function phaseStyle(phase: 0 | 1 | 2 | 3, p: number): PhaseStyle {
     default: return { glow: 0, trail: false, dim: false, color: '#9aa4b2' };
   }
 }
+
+export interface OpenBadge { show: boolean; x: number; y: number; arc: number; riposte: boolean }
+export function openBadge(f: FighterFrame): OpenBadge {
+  const mv = f.mv;
+  const head = f.parts[0];
+  const show = !!mv?.open || f.state === 'staggered';
+  const arc = mv ? Math.min(1, Math.max(0, 1 - mv.p)) : 1;
+  return { show, x: (head[0] + head[2]) / 2, y: Math.max(head[1], head[3]) + 30, arc, riposte: !!mv?.rip };
+}
