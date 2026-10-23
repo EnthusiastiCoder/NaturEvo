@@ -760,9 +760,14 @@ impl Match {
                         self.emit(format!("{{\"t\":{},\"kind\":\"hitstop\",\"ticks\":{}}}", t, h.hitstop_ticks));
                     }
                     CombatEvent::Clash { kind, point, normal } => {
-                        if kind != ClashKind::Clash {
+                        // A Parry that meets a blade is a parry, whatever the closing speed; the blade lags the executor
+                        // phases, so the early Recovery still counts. Same for every fighter.
+                        let parrying = self.exec[def].move_id() == MoveId::Parry && crate::skillbot::is_attack(self.exec[att].move_id())
+                            && (matches!(self.exec[def].phase(), Phase::Windup | Phase::Active)
+                                || (self.exec[def].phase() == Phase::Recovery && self.exec[def].progress() < 0.5));
+                        if kind != ClashKind::Clash || parrying {
                             self.resolve_threat(att, Resolution::Parried);
-                            if self.exec[def].move_id() == MoveId::Parry && matches!(self.exec[def].phase(), Phase::Windup | Phase::Active) {
+                            if parrying {
                                 self.rules[def].on_parry_success();
                                 self.contact_seen[def] = true;
                                 self.exec[def].notify_contact();
