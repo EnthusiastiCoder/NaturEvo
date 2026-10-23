@@ -44,3 +44,11 @@ export function openBadge(f: FighterFrame): OpenBadge {
   const arc = mv ? Math.min(1, Math.max(0, 1 - mv.p)) : 1;
   return { show, x: (head[0] + head[2]) / 2, y: Math.max(head[1], head[3]) + 30, arc, riposte: !!mv?.rip };
 }
+
+const PHASES = ['Idle', 'Windup', 'Active', 'Recovery'];
+export function hudMoveLine(f: FighterFrame): string {
+  const mv = f.mv;
+  if (!mv) return '';
+  if (mv.phase === 0) return 'Idle';
+  return `${mv.id} · ${PHASES[mv.phase]}`;
+}
