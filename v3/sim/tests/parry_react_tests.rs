@@ -9,3 +9,7 @@ fn run(a: Brain, b: Brain, seed: u64) -> String {
     m.run_to_end();
     fight_json(&m)
 }
+
+fn count(j: &str, kind: &str) -> usize {
+    j.matches(&format!("\"kind\":\"{}\"", kind)).count()
+}
