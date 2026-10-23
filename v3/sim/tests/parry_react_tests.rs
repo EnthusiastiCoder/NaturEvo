@@ -33,3 +33,10 @@ fn no_parry_means_no_riposte_window() {
         assert_eq!(count(&j, "riposte_open"), 0, "seed {}", s);
     }
 }
+
+#[test]
+fn parry_fights_are_deterministic() {
+    let a = run(Brain::Skill(3), Brain::Skill(2), 7);
+    let b = run(Brain::Skill(3), Brain::Skill(2), 7);
+    assert!(a == b);
+}
