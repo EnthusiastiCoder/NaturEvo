@@ -19,3 +19,11 @@ pub fn hits_per_swing(attack_starts: u32, body_hits: u32) -> f32 {
         body_hits as f32 / attack_starts as f32
     }
 }
+
+pub fn punish_rate(punish_hits: u32, open_windows: u32) -> f32 {
+    if open_windows == 0 {
+        0.0
+    } else {
+        (punish_hits as f32 / open_windows as f32).clamp(0.0, 1.0)
+    }
+}
