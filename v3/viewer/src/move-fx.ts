@@ -24,3 +24,14 @@ export function moveCallout(events: FightEvent[], frame: Frame, tNow: number, dt
   const k = KINDS[best.kind];
   return { text: k.text(best), x: (head[0] + head[2]) / 2, y: Math.max(head[1], head[3]) + 60, alpha, color: k.color, kind: best.kind as Callout['kind'] };
 }
+
+export interface PhaseStyle { glow: number; trail: boolean; dim: boolean; color: string }
+export function phaseStyle(phase: 0 | 1 | 2 | 3, p: number): PhaseStyle {
+  const q = Math.min(1, Math.max(0, p));
+  switch (phase) {
+    case 1: return { glow: Math.min(1, 0.15 + 0.85 * q), trail: false, dim: false, color: '#ffb000' };
+    case 2: return { glow: 1, trail: true, dim: false, color: '#ffffff' };
+    case 3: return { glow: 0, trail: false, dim: true, color: '#7a8594' };
+    default: return { glow: 0, trail: false, dim: false, color: '#9aa4b2' };
+  }
+}
