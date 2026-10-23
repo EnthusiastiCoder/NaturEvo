@@ -93,10 +93,12 @@ fn tip_trace(drive_executor: bool) -> Vec<[f32; 2]> {
     let mut ex = Executor::new();
     let p = MoveParams { reach: 0.5, speed: 0.5, arc: 0.5, delay: 0.0 };
     let mut out = Vec::new();
-    // Joint targets of the Active pose applied as one raw step (what the old raw-joint net did).
+    // What the old raw-joint net did: joint targets re-chosen every decision tick (3), here flipping between the
+    // windup and active poses of the same move as one raw step each.
     let step = mech_sim::moveset::pose_at(MoveId::Overhead, &p, Phase::Active, 0.5);
+    let wind = mech_sim::moveset::pose_at(MoveId::Overhead, &p, Phase::Windup, 1.0);
     for i in 0..60 {
-        let a = if drive_executor { ex.step(&r, if i == 0 { Some((MoveId::Overhead, p)) } else { None }, DT).targets } else { step };
+        let a = if drive_executor { ex.step(&r, if i == 0 { Some((MoveId::Overhead, p)) } else { None }, DT).targets } else if (i / 3) % 2 == 0 { step } else { wind };
         r.apply_targets(&a, DT);
         out.push(r.sword_capsule().b);
     }
@@ -151,7 +153,7 @@ fn match_grace_is_deterministic() {
 
 #[test]
 fn a_spammer_against_a_dummy_that_never_defends_lands_hits_a_spammer_in_the_void_whiffs() {
-    let mut m = Match::new(2, Brain::Spam(MoveId::Overhead), Brain::Dummy);
+    let mut m = Match::new(0, Brain::Spam(MoveId::Overhead), Brain::Dummy);
     m.run_to_end();
     let g = match_grace(&m, 0);
     assert!(g.hits_per_swing > 0.0 && g.whiff_rate < 1.0, "spammer vs dummy hits: {:?}", g.whiff_rate);
@@ -177,11 +179,11 @@ fn fitness_weights_are_unchanged() {
 #[test]
 fn score_stats_has_no_new_term() {
     // Exhaustive struct literal: adding a field to MatchStats (a new reward input beyond the baseline jerk term) breaks compilation here.
-    let s = MatchStats { win: true, draw: false, ko: true, dmg_dealt_norm: 0.5, dmg_taken_norm: 0.2, defence_credit: 0.5, idle_guard: 0.1, passivity: 0.2, chain_quality: 0.4, jerk: 0.05 };
+    let s = MatchStats { win: true, draw: false, ko: true, dmg_dealt_norm: 0.5, dmg_taken_norm: 0.2, defence_credit: 0.5, idle_guard: 0.1, passivity: 0.2, chain_quality: 0.4, jerk: 0.05, ..Default::default() };
     let expect = 4.0 + 1.0 + 3.0 * 0.5 - 2.5 * 0.2 + 2.0 * 0.5 - 0.1 - 0.2 + 0.5 * 0.4 - 8.0 * 0.05;
     approx(score_stats(&s), expect);
     // Zeroing every existing term leaves exactly the win bonus: nothing else contributes.
-    let z = MatchStats { win: true, draw: false, ko: false, dmg_dealt_norm: 0.0, dmg_taken_norm: 0.0, defence_credit: 0.0, idle_guard: 0.0, passivity: 0.0, chain_quality: 0.0, jerk: 0.0 };
+    let z = MatchStats { win: true, draw: false, ko: false, dmg_dealt_norm: 0.0, dmg_taken_norm: 0.0, defence_credit: 0.0, idle_guard: 0.0, passivity: 0.0, chain_quality: 0.0, jerk: 0.0, ..Default::default() };
     approx(score_stats(&z), 4.0);
 }
 
