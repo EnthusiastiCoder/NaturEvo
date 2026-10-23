@@ -74,10 +74,10 @@ describe('moveCallout', () => {
     const mid = at(4 + Math.round(ticks / 2))!;
     expect(mid.alpha).toBeGreaterThan(0.3);
     expect(mid.alpha).toBeLessThan(0.7);
+    // the punish at t=14 is still live at 23, so the move callout is gone (replaced), never lingering
     const end = at(4 + Math.ceil(ticks) + 1);
-    expect(end === null || end.alpha === 0).toBe(true);
-    const later = at(10);
-    expect(later === null || later.kind !== 'move' || later.alpha < 0.4).toBe(true);
+    expect(end === null || end.alpha === 0 || end.kind !== 'move').toBe(true);
+    expect(at(10)!.alpha).toBeCloseTo(1 - 6 / ticks, 1); // linear fade
   });
   it('PUNISH, COUNTER and GUARD BREAK variants are distinct', () => {
     const p = at(14)!, c = at(30)!, g = at(20)!, m = at(4)!;
