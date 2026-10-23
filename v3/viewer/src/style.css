@@ -156,3 +156,8 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .fv-help { bottom: 8px; } .fv-result { top: 12px; font-weight: 600; }
 /* end-of-fight note when the sim hit its tick cap */
 .fv-stalemate { margin-top: 4px; font-size: 12px; font-weight: 500; opacity: 0.75; letter-spacing: 0.06em; text-transform: uppercase; }
+
+.fv-move { font-size: 11px; opacity: .85; min-height: 14px; }
+.fv-grace { margin-top: 6px; font-size: 12px; line-height: 1.4; }
+.fv-grace span { margin-right: 8px; }
+.fv-grace small { opacity: .8; }
