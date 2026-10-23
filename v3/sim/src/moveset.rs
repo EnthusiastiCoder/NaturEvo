@@ -126,7 +126,7 @@ static SWEEP: MoveSpec = MoveSpec { windup: 0.30, active: 0.15, recovery: 0.45, 
 static THRUST: MoveSpec = MoveSpec { windup: 0.20, active: 0.08, recovery: 0.35, required: &[HipR, KneeR, Waist, ShoulderR, ElbowR], energy: 6.0, can_whiff: true };
 static LOW_CUT: MoveSpec = MoveSpec { windup: 0.30, active: 0.12, recovery: 0.40, required: &[HipR, KneeR, Waist, ShoulderR, ElbowR], energy: 6.0, can_whiff: true };
 static FEINT: MoveSpec = MoveSpec { windup: 0.10, active: 0.05, recovery: 0.15, required: &[Waist, ShoulderR, ElbowR], energy: 8.0, can_whiff: false };
-static PARRY: MoveSpec = MoveSpec { windup: 0.05, active: 0.15, recovery: 0.30, required: &[ShoulderR, ElbowR, Waist], energy: 3.0, can_whiff: true };
+static PARRY: MoveSpec = MoveSpec { windup: 0.08, active: 0.30, recovery: 0.30, required: &[ShoulderR, ElbowR, Waist], energy: 3.0, can_whiff: true };
 static GUARD: MoveSpec = MoveSpec { windup: 0.10, active: 0.40, recovery: 0.10, required: &[ShoulderL, ElbowL], energy: 2.0, can_whiff: false };
 static RIPOSTE: MoveSpec = MoveSpec { windup: 0.30, active: 0.10, recovery: 0.30, required: &[HipR, Waist, ShoulderR, ElbowR], energy: 6.0, can_whiff: true };
 static SHIELD_BASH: MoveSpec = MoveSpec { windup: 0.25, active: 0.10, recovery: 0.35, required: &[Waist, ShoulderL, ElbowL], energy: 6.0, can_whiff: true };
@@ -233,10 +233,13 @@ fn keyframes(id: MoveId, p: &MoveParams, plunge: bool) -> ([f32; 12], [f32; 12])
         ),
         // Request-only: never runs as a move of its own.
         MoveId::Idle | MoveId::Feint => (REST, REST),
-        // Deflect: sword comes up and across in front.
+        // Deflect: measured against the cuts that actually land (blade from the attacker's hand through the torso, rising
+        // away from the attacker), a blade square to them has the hand pulled back and low with the point up and forward.
+        // The blade starts raised and is swept down into that line, against the cut's motion (a deflect needs the blades
+        // nearly square and the parry blade moving toward the cut). Arc raises the hand a little, reach lowers the elbow.
         MoveId::Parry => (
-            mk(&[(ShoulderR, -0.2), (ElbowR, 0.0), (Waist, -0.1)]),
-            mk(&[(ShoulderR, lerp(0.1, 0.5, a)), (ElbowR, lerp(-0.1, -0.5, r)), (Waist, 0.2)]),
+            mk(&[(ShoulderR, -0.7), (ElbowR, 0.6), (Waist, 0.0)]),
+            mk(&[(ShoulderR, lerp(-1.0, -0.85, a)), (ElbowR, lerp(0.8, 0.65, r)), (Waist, 0.0)]),
         ),
         // Shield raised in front (GUARD_TARGETS on the left arm).
         MoveId::Guard => (
