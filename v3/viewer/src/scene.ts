@@ -276,6 +276,41 @@ export class FightScene {
     this.drawBanner(w, h);
   }
 
+  private mfLabel(i: number, text: string, x: number, y: number, tint: number, size: number, alpha: number): void {
+    let t = this.mfText[i];
+    if (!t) { t = this.mfText[i] = new Text({ text: '', style: { fontFamily: 'system-ui, Segoe UI, sans-serif', fontWeight: '900', fontSize: 34, fill: 0xffffff, stroke: { color: 0x000000, width: 5, join: 'round' } } }); t.anchor.set(0.5); this.world.addChild(t); }
+    if (t.text !== text) t.text = text;
+    t.tint = tint; t.alpha = alpha; t.scale.set(size); t.position.set(x, y); t.visible = true;
+  }
+
+  /** Move telegraph, OPEN badge and move-name callout: pure functions of the sampled frame and tick, so scrub and pause stay exact. */
+  private drawMoveFx(g: Graphics, sc: number): void {
+    const fr = this.sampleNow(), fight = this.fight;
+    let used = 0;
+    for (let i = 0; i < 2; i++) {
+      const f = fr.f[i];
+      if (!f.mv) continue; // older log: nothing to show
+      const st = phaseStyle(f.mv.phase, f.mv.p), sw = f.sword;
+      const tip = { x: sw[2] * sc, y: -sw[3] * sc };
+      if (f.mv.phase === 1) { // wind-up telegraph: amber glow along the blade, growing
+        g.moveTo(sw[0] * sc, -sw[1] * sc).lineTo(tip.x, tip.y).stroke({ width: (6 + 14 * st.glow) * sc, color: hexNum(st.color, 0xffb000), alpha: 0.18 + 0.4 * st.glow, cap: 'round' });
+        g.circle(tip.x, tip.y, (14 + 22 * st.glow) * sc).stroke({ width: 3, color: hexNum(st.color, 0xffb000), alpha: 0.4 + 0.5 * st.glow });
+      } else if (st.trail) {
+        g.moveTo(sw[0] * sc, -sw[1] * sc).lineTo(tip.x, tip.y).stroke({ width: 5 * sc + 2, color: 0xffffff, alpha: 0.85, cap: 'round' });
+      }
+      const b = openBadge(f);
+      if (b.show) {
+        const cx = b.x * sc, cy = -(b.y - 30) * sc, r = 44 * sc;
+        const col = b.riposte ? 0x4ac8ff : 0xffb000;
+        g.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.max(0.02, b.arc)).stroke({ width: 4, color: col, alpha: 0.95, cap: 'round' });
+        this.mfLabel(used++, b.riposte ? 'RIPOSTE' : 'OPEN', cx + r + 34 * sc, cy, col, 0.5, 0.95);
+      }
+    }
+    const c = moveCallout(fight.events, fr, this.tick, fight.dt || 1 / 60);
+    if (c) this.mfLabel(used++, c.text, c.x * sc, -(c.y + 50) * sc, hexNum(c.color, 0xffffff), 0.75, c.alpha);
+    for (let i = used; i < this.mfText.length; i++) this.mfText[i].visible = false;
+  }
+
   /** Big K.O. banner from the first ko event onwards (pops in, then holds); a white screen flash on the blow. */
   private drawBanner(w: number, h: number): void {
     const sf = this.screenFx; sf.clear();
