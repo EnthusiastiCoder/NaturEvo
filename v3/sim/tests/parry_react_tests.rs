@@ -13,3 +13,14 @@ fn run(a: Brain, b: Brain, seed: u64) -> String {
 fn count(j: &str, kind: &str) -> usize {
     j.matches(&format!("\"kind\":\"{}\"", kind)).count()
 }
+
+#[test]
+fn skillbot_parries_open_riposte_windows() {
+    let mut n = 0;
+    for tier in [(2u8, 2u8), (3, 2), (2, 3), (3, 3)] {
+        for s in 0..20u64 {
+            n += count(&run(Brain::Skill(tier.0), Brain::Skill(tier.1), s), "riposte_open");
+        }
+    }
+    assert!(n >= 8, "riposte_open fired only {} times in 80 skillbot fights", n);
+}
