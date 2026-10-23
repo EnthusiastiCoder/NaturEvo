@@ -167,7 +167,8 @@ impl SkillBot {
         }
 
         if self.tier >= 2 {
-            let telegraph = is_attack(theirs.id) && matches!(theirs.phase, Phase::Windup | Phase::Active) || (live_threat && theirs.phase != Phase::Recovery);
+            // A blade only threatens when it belongs to an attack (a parry sweep is not a cut to answer).
+            let telegraph = theirs.id != MoveId::Parry && (is_attack(theirs.id) && matches!(theirs.phase, Phase::Windup | Phase::Active) || (live_threat && theirs.phase != Phase::Recovery));
             if telegraph {
                 if !self.reacted {
                     self.reacted = true;
