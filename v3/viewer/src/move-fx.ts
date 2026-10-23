@@ -52,3 +52,22 @@ export function hudMoveLine(f: FighterFrame): string {
   if (mv.phase === 0) return 'Idle';
   return `${mv.id} · ${PHASES[mv.phase]}`;
 }
+
+export interface GraceRow { key: 'whiff' | 'punish' | 'hits_per_swing' | 'jerk'; label: string; value: string; tooltip: string }
+export function graceModel(result: Fight['result'], who: 0 | 1): { rows: GraceRow[]; usage: { name: string; count: number }[] } | null {
+  const m = result.moves;
+  if (!m) return null;
+  const pct = (a?: number[]) => `${Math.round((a?.[who] ?? 0) * 100)}%`;
+  const two = (a?: number[]) => (a?.[who] ?? 0).toFixed(2);
+  const rows: GraceRow[] = [
+    { key: 'whiff', label: 'Whiff', value: pct(m.whiff), tooltip: 'Share of swings that hit nothing' },
+    { key: 'punish', label: 'Punish', value: pct(m.punish), tooltip: 'Share of opponent recoveries this fighter punished' },
+    { key: 'hits_per_swing', label: 'Hits per swing', value: two(m.hits_per_swing), tooltip: 'Average hits landed per swing' },
+    { key: 'jerk', label: 'Jerk', value: two(m.jerk), tooltip: 'Motion roughness; lower is smoother' },
+  ];
+  const u = m.usage?.[who];
+  const usage = Array.isArray(u) ? u.map((x: any) => ({ name: String(x.name), count: Number(x.count) }))
+    : Object.entries(u ?? {}).map(([name, count]) => ({ name, count: Number(count) }));
+  usage.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+  return { rows, usage };
+}
