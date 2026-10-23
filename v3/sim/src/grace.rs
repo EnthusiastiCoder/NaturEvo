@@ -39,3 +39,24 @@ pub fn move_usage_entropy(counts: &[u32; N_MOVES]) -> f32 {
         -p * p.ln()
     }).sum::<f32>().max(0.0)
 }
+
+/// Mean squared third derivative of the tip path (finite differences).
+pub fn tip_jerk(tip: &[[f32; 2]], dt: f32) -> f32 {
+    if tip.len() < 4 {
+        return 0.0;
+    }
+    let k = 1.0 / (dt * dt * dt) as f64;
+    let mut sum = 0.0f64;
+    let n = tip.len() - 3;
+    // Third differences below f32 quantisation of the positions are noise, not jerk.
+    let scale = tip.iter().flat_map(|p| p.iter()).fold(1.0f32, |m, v| m.max(v.abs())) as f64;
+    let floor = 16.0 * f32::EPSILON as f64 * scale;
+    for i in 0..n {
+        for a in 0..2 {
+            let d = tip[i + 3][a] as f64 - 3.0 * tip[i + 2][a] as f64 + 3.0 * tip[i + 1][a] as f64 - tip[i][a] as f64;
+            let j = if d.abs() < floor { 0.0 } else { d * k };
+            sum += j * j;
+        }
+    }
+    (sum / n as f64) as f32
+}
