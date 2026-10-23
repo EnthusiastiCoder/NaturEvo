@@ -6,6 +6,7 @@ import { drawGround } from './ground';
 import { ageParticles, hitstopTicks, recentEvents, shakeFor, sparkLayers, sparkSpec, spawnParticles, type Particle } from './fx';
 import { blockPoint, floatNumber, hitFx, hitstopPlan, partFlashAt, recoilCm, shakeOffset } from './impact';
 import { rendererOptions } from './renderer';
+import { moveCallout, openBadge, phaseStyle } from './move-fx';
 
 const hexNum = (css: string, fb: number) => { const m = /^#?([0-9a-f]{6})$/i.exec(css.trim()); return m ? parseInt(m[1], 16) : fb; };
 const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
