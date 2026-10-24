@@ -137,8 +137,9 @@ pub fn evaluate_run(dir: &Path, arena_seeds: u64) -> Result<EvalMetrics, String>
         let eh: Vec<&Genome> = if heroes.len() > 1 { heroes[..heroes.len() - 1].iter().collect() } else { vec![&heroes[0]] };
         let em: Vec<&Genome> = if mons.len() > 1 { mons[..mons.len() - 1].iter().collect() } else { vec![&mons[0]] };
         for m in &em {
-            let r = Match::new(seed, Brain::Net(fh.clone()), Brain::Net((*m).clone())).run_to_end();
-            hof.add(&r, 0);
+            let mut mt = Match::new(seed, Brain::Net(fh.clone()), Brain::Net((*m).clone()));
+            let r = mt.run_to_end();
+            hof.add_match(&mt, &r, 0);
         }
         for h in &eh {
             let r = Match::new(seed, Brain::Net((*h).clone()), Brain::Net(fm.clone())).run_to_end();
