@@ -829,6 +829,7 @@ impl Match {
                             self.resolve_threat(att, Resolution::Parried);
                             if parrying {
                                 self.rules[def].on_parry_success();
+                                self.grace[def].parry_success += 1;
                                 self.contact_seen[def] = true;
                                 self.exec[def].notify_contact();
                                 self.emit(format!("{{\"t\":{},\"kind\":\"riposte_open\",\"who\":{}}}", t, def));
