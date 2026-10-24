@@ -196,11 +196,9 @@ export class FightScene {
     this.onFrame(fr, this.tick);
   }
 
-  private label(i: number, text: string, x: number, y: number, tint: number, size: number, alpha: number): void {
-    let t = this.labels[i];
-    if (!t) { t = this.labels[i] = new Text({ text: '', style: { fontFamily: 'system-ui, Segoe UI, sans-serif', fontWeight: '900', fontSize: 34, fill: 0xffffff, stroke: { color: 0x000000, width: 5, join: 'round' } } }); t.anchor.set(0.5); this.world.addChild(t); }
-    if (t.text !== text) t.text = text;
-    t.tint = tint; t.alpha = alpha; t.scale.set(size); t.position.set(x, Math.max(y, 28 - this.world.y)); t.visible = true;
+  private pending: { id: string; text: string; x: number; y: number; tint: number; size: number; alpha: number; age: number }[] = [];
+  private label(text: string, x: number, y: number, tint: number, size: number, alpha: number, age: number): void {
+    this.pending.push({ id: `${text}|${Math.round(x)}`, text, x, y, tint, size, alpha, age });
   }
 
   private drawFx(dt: number, rec: { e: Ev; a: number }[], w: number, h: number): void {
