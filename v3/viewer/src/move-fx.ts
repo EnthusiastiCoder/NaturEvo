@@ -76,3 +76,37 @@ export function graceModel(result: Fight['result'], who: 0 | 1): { rows: GraceRo
 export function strokeArcFrom<G extends { moveTo(x: number, y: number): G; arc(x: number, y: number, r: number, a0: number, a1: number): G }>(g: G, cx: number, cy: number, r: number, a0: number, a1: number): G {
   return g.moveTo(cx + r * Math.cos(a0), cy + r * Math.sin(a0)).arc(cx, cy, r, a0, a1);
 }
+
+/** Compact number: 195614016 -> "195.6M", 1234 -> "1.23k", 0.12 -> "0.12". */
+export function compactNum(v: number): string {
+  const a = Math.abs(v);
+  if (!Number.isFinite(v)) return '-';
+  const f = (x: number, s: string) => `${x >= 100 ? x.toFixed(0) : x >= 10 ? x.toFixed(1) : x.toFixed(2)}${s}`;
+  if (a >= 1e12) return f(v / 1e12, 'T');
+  if (a >= 1e9) return f(v / 1e9, 'G');
+  if (a >= 1e6) return f(v / 1e6, 'M');
+  if (a >= 1e3) return f(v / 1e3, 'k');
+  return v.toFixed(2);
+}
+
+/** "win_a" -> "Hero wins", "win_b" -> "Monster wins", "draw" -> "Draw". */
+export function outcomeText(o: string): string {
+  if (o === 'win_a') return 'Hero wins';
+  if (o === 'win_b') return 'Monster wins';
+  const s = o.replace(/_/g, ' ');
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+export interface LabelIn { id: string; x: number; y: number; age: number }
+export interface LabelOut extends LabelIn { slot: number }
+/** Deterministic label stack: newest `max` labels survive; each is lifted by `gap` steps until clear of every earlier-placed label within `reach` horizontally. */
+export function layoutLabels(items: LabelIn[], max = 4, gap = 30, reach = 160): LabelOut[] {
+  const keep = [...items].sort((a, b) => a.age - b.age || (a.id < b.id ? -1 : 1)).slice(0, max);
+  const placed: LabelOut[] = [];
+  for (const it of keep) {
+    let y = it.y, slot = 0;
+    while (placed.some((p) => Math.abs(p.x - it.x) < reach && Math.abs(p.y - y) < gap) && slot < max) { y -= gap; slot++; }
+    placed.push({ ...it, y, slot });
+  }
+  return placed;
+}
