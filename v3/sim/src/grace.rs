@@ -60,3 +60,19 @@ pub fn tip_jerk(tip: &[[f32; 2]], dt: f32) -> f32 {
     }
     (sum / n as f64) as f32
 }
+
+/// Per-fighter raw records, filled by `Match` while it runs.
+#[derive(Clone, Debug, Default)]
+pub struct GraceRec {
+    pub whiffs: u32,
+    pub punish_hits: u32,
+    pub open_windows: u32,
+    pub parry_success: u32,
+    pub feints: u32,
+    pub baits: u32,
+    pub recoveries_hit: u32,
+    pub tip: Vec<[f32; 2]>,
+    pub gap_n: u32,
+    pub gap_sum: f64,
+    pub gap_sq: f64,
+}
