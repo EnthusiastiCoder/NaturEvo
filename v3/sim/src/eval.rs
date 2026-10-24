@@ -76,6 +76,14 @@ struct Acc {
 }
 
 impl Acc {
+    fn add_match(&mut self, m: &Match, r: &crate::duel::MatchResult, who: usize) {
+        let g = crate::grace::match_grace(m, who);
+        let v = [g.jerk, g.spacing_std, g.hits_per_swing, g.whiff_rate, g.punish_rate, g.recovery_efficiency, g.move_entropy, g.parry_success_rate, g.feint_bait_rate, g.usage.iter().filter(|u| **u > 0.0).count() as f32];
+        for i in 0..10 {
+            self.g[i] += v[i];
+        }
+        self.add(r, who);
+    }
     fn add(&mut self, r: &crate::duel::MatchResult, who: usize) {
         self.n += 1;
         let mine = if who == 0 { Outcome::WinA } else { Outcome::WinB };
