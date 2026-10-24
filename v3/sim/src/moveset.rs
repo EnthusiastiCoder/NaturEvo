@@ -3,8 +3,7 @@
 //   duel.rs (not in robot.rs apply_targets); joint motors already rate-limit (MOTOR_KP, MOTOR_ACCEL). The
 //   executor therefore feeds its min-jerk keyframe targets into that same single smoother (no second layer here).
 // - Fitness gained a -W_JERK*jerk term (W_JERK 8); it stays, and the executor only adds a physical jerk energy cost.
-// - Deathbattle: no timeout; HARD_CAP_TICKS 6000 is an emergency cap only; SUDDEN_DEATH_START 450 ticks, walls close
-//   (WALL_SPEED, WALL_MIN_WIDTH) and the torso bleeds (SD_BLEED_BASE/GROWTH). No draw wording is relied upon here.
+// - Deathbattle: no timeout and no walls or sudden death; HARD_CAP_TICKS 6000 is an emergency cap only (a mutual loss).
 // - N_IN/N_OUT and DECISION_TICKS (3) are unchanged by that work; this workstream does not touch them.
 //
 //! Sword-and-shield move vocabulary: 13 moves plus Idle, phase timings, required joints and keyframe poses.
