@@ -261,7 +261,7 @@ export class FightScene {
         if ((deflect || perfect) && !seen.has(key)) {
           seen.add(key);
           const f = floatNumber(a);
-          if (f) this.label(n++, perfect ? 'PERFECT PARRY' : 'PARRY', X, Y - (40 + f.rise * 0.6) * sc, perfect ? 0xffe14a : 0x9fe1ff, perfect ? 0.95 : 0.8, f.alpha);
+          if (f) this.label(perfect ? 'PERFECT PARRY' : 'PARRY', X, Y - (40 + f.rise * 0.6) * sc, perfect ? 0xffe14a : 0x9fe1ff, perfect ? 0.95 : 0.8, f.alpha, a);
         }
       } else if (e.kind === 'block') {
         const k = a / 16;
