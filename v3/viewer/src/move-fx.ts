@@ -71,3 +71,8 @@ export function graceModel(result: Fight['result'], who: 0 | 1): { rows: GraceRo
   usage.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
   return { rows, usage };
 }
+
+/** Stroke-ready arc: moves to the arc start first so the path never connects from a previous point. */
+export function strokeArcFrom<G extends { moveTo(x: number, y: number): G; arc(x: number, y: number, r: number, a0: number, a1: number): G }>(g: G, cx: number, cy: number, r: number, a0: number, a1: number): G {
+  return g.moveTo(cx + r * Math.cos(a0), cy + r * Math.sin(a0)).arc(cx, cy, r, a0, a1);
+}
