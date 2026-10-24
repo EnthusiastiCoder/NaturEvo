@@ -11,6 +11,7 @@ pub mod executor;
 pub mod evolve;
 pub mod fitness;
 pub mod genome;
+pub mod grace;
 pub mod log;
 pub mod metrics;
 pub mod moves;
