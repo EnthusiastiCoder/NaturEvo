@@ -43,7 +43,6 @@ export class FightScene {
   private fxg = new Graphics();
   private screenFx = new Graphics();
   private labels: Text[] = [];
-  private mfText: Text[] = [];
   private banner!: Text;
   private bannerSub!: Text;
   private particles: Particle[] = [];
