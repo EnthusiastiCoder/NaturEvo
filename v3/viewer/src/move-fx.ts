@@ -63,7 +63,7 @@ export function graceModel(result: Fight['result'], who: 0 | 1): { rows: GraceRo
     { key: 'whiff', label: 'Whiff', value: pct(m.whiff), tooltip: 'Share of swings that hit nothing' },
     { key: 'punish', label: 'Punish', value: pct(m.punish), tooltip: 'Share of opponent recoveries this fighter punished' },
     { key: 'hits_per_swing', label: 'Hits per swing', value: two(m.hits_per_swing), tooltip: 'Average hits landed per swing' },
-    { key: 'jerk', label: 'Jerk', value: two(m.jerk), tooltip: 'Motion roughness; lower is smoother' },
+    { key: 'jerk', label: 'Jerk', value: compactNum(m.jerk?.[who] ?? 0), tooltip: 'Motion roughness; lower is smoother' },
   ];
   const u = m.usage?.[who];
   const usage = Array.isArray(u) ? u.map((x: any) => ({ name: String(x.name), count: Number(x.count) }))
