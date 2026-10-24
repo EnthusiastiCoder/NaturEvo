@@ -243,7 +243,7 @@ export class FightScene {
         const f = floatNumber(a);
         if (f) {
           const dmg = Math.round(e.dmg ?? 0), nm = PART_SHORT[e.part] ?? e.part;
-          this.label(n++, `${nm} -${dmg}`, X, Y - (30 + f.rise) * sc, dmg >= 40 ? 0xff5a36 : 0xffd166, 0.7 + 0.35 * fx.scale, f.alpha);
+          this.label(`${nm} -${dmg}`, X, Y - (30 + f.rise) * sc, dmg >= 40 ? 0xff5a36 : 0xffd166, 0.7 + 0.35 * fx.scale, f.alpha, a);
         }
       } else if (e.kind === 'clash') {
         const key = `${e.t}|${e.type}`, k = a / 16;
