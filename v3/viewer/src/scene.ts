@@ -282,7 +282,6 @@ export class FightScene {
         if (k < 1) for (const [rr, wd] of [[160, 7], [100, 4]]) g.circle(X, Y, rr * sc * (0.2 + k)).stroke({ width: wd, color: 0xffffff, alpha: 1 - k });
       }
     }
-    for (let i = n; i < this.labels.length; i++) this.labels[i].visible = false;
     this.drawMoveFx(g, sc);
     this.drawBanner(w, h);
   }
