@@ -153,7 +153,7 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .fv-side { position: relative; }
 .fv-tally { display: flex; gap: 8px; color: var(--muted); font-size: 12px; }
 .fv-help, .fv-result { position: absolute; left: 50%; transform: translateX(-50%); background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 12px; max-width: 70%; }
-.fv-help { bottom: 8px; } .fv-result { top: 12px; left: 12px; transform: none; max-width: min(420px, 32%); font-weight: 600; }
+.fv-help { bottom: 8px; } .fv-result { bottom: 12px; left: 50%; transform: translateX(-50%); max-width: min(560px, 60%); font-weight: 600; }
 /* end-of-fight note when the sim hit its tick cap */
 .fv-stalemate { margin-top: 4px; font-size: 12px; font-weight: 500; opacity: 0.75; letter-spacing: 0.06em; text-transform: uppercase; }
 
