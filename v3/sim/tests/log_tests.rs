@@ -78,3 +78,14 @@ fn block_and_clash_events_have_their_fields() {
         assert!(block.contains(k), "{}", block);
     }
 }
+
+#[test]
+fn result_moves_has_grace_arrays_and_usage_per_fighter() {
+    let (j, _) = logged(Brain::Skill(2), Brain::Skill(1), 3);
+    let at = j.find("\"moves\":{").expect("result.moves missing");
+    let m = &j[at..];
+    for k in ["\"whiff\":[", "\"punish\":[", "\"hits_per_swing\":[", "\"jerk\":[", "\"usage\":[[", "\"name\":\"", "\"count\":"] {
+        assert!(m.contains(k), "moves missing {}", k);
+    }
+    assert!(at > j.find("\"result\":{").unwrap());
+}
