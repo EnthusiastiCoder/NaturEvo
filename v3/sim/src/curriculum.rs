@@ -54,3 +54,15 @@ pub fn opponent_mix(gen: u32) -> Vec<(OppKind, f32)> {
         Stage::C => vec![(OppKind::Hof, 0.3), (OppKind::SelfPlay, 0.3), (OppKind::Skill(3), 0.4)],
     }
 }
+
+/// Pick a kind from the mix with a uniform draw in 0..1.
+pub fn pick_kind(mix: &[(OppKind, f32)], u: f32) -> OppKind {
+    let mut acc = 0.0;
+    for (k, w) in mix {
+        acc += w;
+        if u < acc {
+            return *k;
+        }
+    }
+    mix.last().map(|m| m.0).unwrap_or(OppKind::Dummy)
+}
