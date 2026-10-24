@@ -436,6 +436,8 @@ impl Match {
         let t = self.tick;
         if cn && !self.prev_cancel[i] {
             self.starts[i].push(MoveId::Feint);
+            self.grace[i].feints += 1;
+            self.last_feint[i] = Some(t);
             self.emit(format!("{{\"t\":{},\"kind\":\"feint\",\"who\":{}}}", t, i));
         } else if ph == Phase::Windup && !cn && (self.prev_phase[i] != Phase::Windup || self.prev_id[i] != id) {
             self.starts[i].push(id);
