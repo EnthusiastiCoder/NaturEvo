@@ -1,5 +1,5 @@
 //! Co-evolution of hero and monster populations with curriculum, hall of fame and threaded evaluation.
-use crate::curriculum::{hof_enabled, opponents_per_individual, stage_for_gen, Stage};
+use crate::curriculum::{hof_enabled, opponent_mix, pick_kind, stage_for_gen, OppKind, Stage};
 use crate::duel::{Brain, Match, MatchResult, Outcome};
 use crate::fitness::score_match;
 use crate::genome::Genome;
@@ -64,6 +64,8 @@ impl TrainConfig {
     }
 }
 
+const OPPONENTS_PER_INDIVIDUAL: usize = 2;
+
 struct Job {
     hero: Option<usize>,
     mon: Option<usize>,
@@ -72,23 +74,34 @@ struct Job {
     seed: u64,
 }
 
+/// Run all jobs; threads pull the next job from a shared counter (fights vary a lot in length), results are
+/// stored by job index so the outcome is identical for any thread count.
 fn run_jobs(jobs: &[Job], threads: usize) -> Vec<MatchResult> {
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::Mutex;
     let n = jobs.len();
-    let mut out: Vec<Option<MatchResult>> = (0..n).map(|_| None).collect();
     let t = threads.max(1).min(n.max(1));
-    let chunk = ((n + t - 1) / t).max(1);
+    let next = AtomicUsize::new(0);
+    let out: Mutex<Vec<Option<MatchResult>>> = Mutex::new((0..n).map(|_| None).collect());
     std::thread::scope(|s| {
-        for (js, os) in jobs.chunks(chunk).zip(out.chunks_mut(chunk)) {
-            s.spawn(move || {
-                for (j, o) in js.iter().zip(os.iter_mut()) {
-                    *o = Some(Match::new(j.seed, j.a.clone(), j.b.clone()).run_to_end());
+        for _ in 0..t {
+            s.spawn(|| loop {
+                let i = next.fetch_add(1, Ordering::Relaxed);
+                if i >= n {
+                    break;
                 }
+                let j = &jobs[i];
+                let mut m = Match::new(j.seed, j.a.clone(), j.b.clone());
+                m.disable_grace_trace();
+                let r = m.run_to_end();
+                out.lock().unwrap()[i] = Some(r);
             });
         }
     });
-    out.into_iter().map(|o| o.expect("job result")).collect()
+    out.into_inner().unwrap().into_iter().map(|o| o.expect("job result")).collect()
 }
 
+#[allow(dead_code)]
 fn permutation(n: usize, rng: &mut Rng) -> Vec<usize> {
     let mut p: Vec<usize> = (0..n).collect();
     for i in (1..n).rev() {
@@ -109,47 +122,35 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
     };
     let brain_h = |i: usize| Brain::Net(heroes[i].clone());
     let brain_m = |i: usize| Brain::Net(mons[i].clone());
-    let k = opponents_per_individual(stage);
-    if stage == Stage::A {
+    // Two sampled opponents per individual per side keeps 1000 gens x pop 64 under 10 minutes; the mix supplies variety.
+    let k = OPPONENTS_PER_INDIVIDUAL;
+    let mix = opponent_mix(gen);
+    let use_hof = hof_enabled(stage) && !hof_h.is_empty() && !hof_m.is_empty();
+    for hero_side in [true, false] {
         for i in 0..n {
             for _ in 0..k {
-                let opp = if rng.f32() < 0.7 { Brain::Dummy } else { Brain::Scripted };
-                jobs.push(Job { hero: Some(i), mon: None, a: brain_h(i), b: opp, seed: next_seed() });
+                let mut kind = pick_kind(&mix, rng.f32());
+                if kind == OppKind::Hof && !use_hof {
+                    kind = OppKind::SelfPlay;
+                }
+                let opp = match kind {
+                    OppKind::Dummy => Brain::Dummy,
+                    OppKind::Skill(t) => Brain::Skill(t),
+                    OppKind::SelfPlay => {
+                        let j = (rng.next_u64() % n as u64) as usize;
+                        if hero_side { Brain::Net(mons[j].clone()) } else { Brain::Net(heroes[j].clone()) }
+                    }
+                    OppKind::Hof => {
+                        if hero_side { Brain::Net(hof_m.pick(rng).clone()) } else { Brain::Net(hof_h.pick(rng).clone()) }
+                    }
+                };
+                let sd = next_seed();
+                jobs.push(if hero_side {
+                    Job { hero: Some(i), mon: None, a: brain_h(i), b: opp, seed: sd }
+                } else {
+                    Job { hero: None, mon: Some(i), a: opp, b: brain_m(i), seed: sd }
+                });
             }
-            for _ in 0..k {
-                let opp = if rng.f32() < 0.7 { Brain::Dummy } else { Brain::Scripted };
-                jobs.push(Job { hero: None, mon: Some(i), a: opp, b: brain_m(i), seed: next_seed() });
-            }
-        }
-        return jobs;
-    }
-    // Slots per individual: self-play pairs, scripted attackers, hall of fame opponents.
-    let (pairs, scripted, hof) = if stage == Stage::B {
-        let p = if gen % 2 == 0 { 1 } else { 2 };
-        (p, k - p, 0)
-    } else if hof_enabled(stage) && !hof_h.is_empty() && !hof_m.is_empty() {
-        (1, 1, 1)
-    } else {
-        (2, 1, 0)
-    };
-    for _ in 0..pairs {
-        let perm = permutation(n, rng);
-        for i in 0..n {
-            jobs.push(Job { hero: Some(i), mon: Some(perm[i]), a: brain_h(i), b: brain_m(perm[i]), seed: next_seed() });
-        }
-    }
-    for _ in 0..scripted {
-        for i in 0..n {
-            jobs.push(Job { hero: Some(i), mon: None, a: brain_h(i), b: Brain::Scripted, seed: next_seed() });
-            jobs.push(Job { hero: None, mon: Some(i), a: Brain::Scripted, b: brain_m(i), seed: next_seed() });
-        }
-    }
-    for _ in 0..hof {
-        for i in 0..n {
-            let m = hof_m.pick(rng).clone();
-            jobs.push(Job { hero: Some(i), mon: None, a: brain_h(i), b: Brain::Net(m), seed: next_seed() });
-            let h = hof_h.pick(rng).clone();
-            jobs.push(Job { hero: None, mon: Some(i), a: Brain::Net(h), b: brain_m(i), seed: next_seed() });
         }
     }
     jobs
