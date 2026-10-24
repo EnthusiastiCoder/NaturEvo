@@ -26,6 +26,17 @@ pub struct EvalMetrics {
     pub capped_share: f32,
     /// Mean joint jerk of the evaluated champion (|dv|/vmax per tick).
     pub jerk: f32,
+    /// Grace metrics of the evaluated champion (measured only, see grace.rs), means over the hof matches.
+    pub tip_jerk: f32,
+    pub spacing_std: f32,
+    pub hits_per_swing: f32,
+    pub whiff_rate: f32,
+    pub punish_rate: f32,
+    pub recovery_efficiency: f32,
+    pub move_entropy: f32,
+    pub parry_success_rate: f32,
+    pub feint_bait_rate: f32,
+    pub distinct_moves: f32,
 }
 
 fn champions(dir: &Path, role: &str) -> Result<Vec<Genome>, String> {
