@@ -221,6 +221,11 @@ pub struct Match {
     contact_seen: [bool; 2],
     bash_done: [bool; 2],
     whiff_pending: [bool; 2],
+    /// Measured-only grace records (never read by fitness).
+    pub grace: [GraceRec; 2],
+    prev_open: [bool; 2],
+    grace_on: bool,
+    last_feint: [Option<u32>; 2],
 }
 
 fn make_ctl(b: Brain, seed: u64, salt: u64) -> Ctl {
