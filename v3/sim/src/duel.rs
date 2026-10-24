@@ -293,6 +293,10 @@ impl Match {
             contact_seen: [false; 2],
             bash_done: [false; 2],
             whiff_pending: [false; 2],
+            grace: [GraceRec::default(), GraceRec::default()],
+            prev_open: [false; 2],
+            grace_on: true,
+            last_feint: [None; 2],
         }
     }
 
