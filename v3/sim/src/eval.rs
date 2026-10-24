@@ -142,8 +142,9 @@ pub fn evaluate_run(dir: &Path, arena_seeds: u64) -> Result<EvalMetrics, String>
             hof.add_match(&mt, &r, 0);
         }
         for h in &eh {
-            let r = Match::new(seed, Brain::Net((*h).clone()), Brain::Net(fm.clone())).run_to_end();
-            hof.add(&r, 1);
+            let mut mt = Match::new(seed, Brain::Net((*h).clone()), Brain::Net(fm.clone()));
+            let r = mt.run_to_end();
+            hof.add_match(&mt, &r, 1);
         }
         scripted.add(&Match::new(seed, Brain::Net(fh.clone()), Brain::Scripted).run_to_end(), 0);
         scripted.add(&Match::new(seed, Brain::Scripted, Brain::Net(fm.clone())).run_to_end(), 1);
