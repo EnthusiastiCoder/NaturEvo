@@ -91,3 +91,44 @@ pub struct GraceStats {
     pub feint_bait_rate: f32,
     pub damage_per_energy: f32,
 }
+
+pub fn match_grace(m: &Match, who: usize) -> GraceStats {
+    let rec = &m.grace[who];
+    let starts = m.move_starts(who);
+    let mut counts = [0u32; N_MOVES];
+    for id in &starts {
+        counts[*id as usize] += 1;
+    }
+    let total: u32 = counts.iter().sum();
+    let mut usage = [0.0f32; N_MOVES];
+    if total > 0 {
+        for i in 0..N_MOVES {
+            usage[i] = counts[i] as f32 / total as f32;
+        }
+    }
+    let attacks = starts.iter().filter(|&&id| is_attack(id)).count() as u32;
+    let parries = counts[MoveId::Parry as usize];
+    let non_feint = total.saturating_sub(counts[MoveId::Feint as usize]);
+    let spacing_std = if rec.gap_n > 1 {
+        let n = rec.gap_n as f64;
+        let mean = rec.gap_sum / n;
+        ((rec.gap_sq / n - mean * mean).max(0.0)).sqrt() as f32
+    } else {
+        0.0
+    };
+    let energy = m.exec_energy(who);
+    let dealt = m.damage_dealt_weighted(who);
+    GraceStats {
+        jerk: tip_jerk(&rec.tip, DT),
+        spacing_std,
+        hits_per_swing: hits_per_swing(attacks, m.result().hits[who]),
+        whiff_rate: whiff_rate(attacks, rec.whiffs),
+        punish_rate: punish_rate(rec.punish_hits, m.grace[1 - who].open_windows),
+        recovery_efficiency: if non_feint == 0 { 0.0 } else { 1.0 - (rec.recoveries_hit as f32 / non_feint as f32).min(1.0) },
+        move_entropy: move_usage_entropy(&counts),
+        usage,
+        parry_success_rate: if parries == 0 { 0.0 } else { (rec.parry_success as f32 / parries as f32).min(1.0) },
+        feint_bait_rate: if rec.feints == 0 { 0.0 } else { (rec.baits as f32 / rec.feints as f32).min(1.0) },
+        damage_per_energy: if energy > 1e-6 { dealt / energy } else { 0.0 },
+    }
+}
