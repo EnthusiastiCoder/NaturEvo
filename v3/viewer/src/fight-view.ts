@@ -1,6 +1,6 @@
 import { parseFight, type Fight } from './data';
 import { FightScene } from './scene';
-import { graceModel, hudMoveLine } from './move-fx';
+import { compactNum, graceModel, hudMoveLine, outcomeText } from './move-fx';
 import { defenceTallyModel, hudModel } from './hud';
 import { DEFAULT_ACCENT, applyTheme, nextTheme, setAccent, themeIconPath, type Theme } from './theme';
 
@@ -86,7 +86,7 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
     });
   };
   const res = $('fv-result');
-  scene.onEnd = () => { res.hidden = false; res.textContent = `Result: ${fight.result.outcome.replace('_', ' ')} after ${(fight.result.ticks / 60).toFixed(1)} s`;
+  scene.onEnd = () => { res.hidden = false; res.textContent = `${outcomeText(fight.result.outcome)} after ${(fight.result.ticks / 60).toFixed(1)} s`;
     const gm = [0, 1].map((i) => graceModel(fight.result, i as 0 | 1));
     if (gm[0] && gm[1]) {
       const p = document.createElement('div'); p.className = 'fv-grace';
@@ -107,7 +107,7 @@ export async function mountFightView(view: HTMLElement, url: string, title: stri
   $('fv-restart').onclick = restart;
   scrub.onpointerdown = () => { scrubbing = true; };
   scrub.onpointerup = () => { scrubbing = false; };
-  scrub.oninput = () => { scene.seek((Number(scrub.value) / 10000) * scene.lastTick); res.hidden = true; };
+  scrub.oninput = () => { scene.seek((Number(scrub.value) / 10000) * scene.lastTick); if (scene.tick >= scene.lastTick) scene.onEnd(); else res.hidden = true; };
   $<HTMLSelectElement>('fv-speed').onchange = (e) => { scene.speed = Number((e.target as HTMLSelectElement).value); };
   $<HTMLInputElement>('fv-accent').oninput = (e) => setAccent(root, (e.target as HTMLInputElement).value);
   $('fv-theme').onclick = () => { theme = nextTheme(theme); syncTheme(); };
