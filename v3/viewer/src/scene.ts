@@ -6,7 +6,7 @@ import { drawGround } from './ground';
 import { ageParticles, hitstopTicks, recentEvents, shakeFor, sparkLayers, sparkSpec, spawnParticles, type Particle } from './fx';
 import { blockPoint, floatNumber, hitFx, hitstopPlan, partFlashAt, recoilCm, shakeOffset } from './impact';
 import { rendererOptions } from './renderer';
-import { moveCallout, openBadge, phaseStyle } from './move-fx';
+import { moveCallout, openBadge, phaseStyle, strokeArcFrom } from './move-fx';
 
 const hexNum = (css: string, fb: number) => { const m = /^#?([0-9a-f]{6})$/i.exec(css.trim()); return m ? parseInt(m[1], 16) : fb; };
 const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
@@ -302,7 +302,7 @@ export class FightScene {
       if (b.show) {
         const cx = b.x * sc, cy = -(b.y - 30) * sc, r = 44 * sc;
         const col = b.riposte ? 0x4ac8ff : 0xffb000;
-        g.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.max(0.02, b.arc)).stroke({ width: 4, color: col, alpha: 0.95, cap: 'round' });
+        strokeArcFrom(g, cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.max(0.02, b.arc)).stroke({ width: 4, color: col, alpha: 0.95, cap: 'round' });
         this.mfLabel(used++, b.riposte ? 'RIPOSTE' : 'OPEN', cx + r + 34 * sc, cy, col, 0.5, 0.95);
       }
     }
