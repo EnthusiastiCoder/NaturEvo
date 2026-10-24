@@ -30,3 +30,15 @@ pub fn opponents_per_individual(s: Stage) -> usize {
         3
     }
 }
+
+/// Kind of opponent a trainee can meet.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum OppKind {
+    Dummy,
+    /// SkillBot tier 1 to 3 (engaging scripted opponents).
+    Skill(u8),
+    /// A member of the opposite co-evolving population.
+    SelfPlay,
+    /// A hall-of-fame champion.
+    Hof,
+}
