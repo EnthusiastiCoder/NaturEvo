@@ -201,6 +201,20 @@ export class FightScene {
     this.pending.push({ id: `${text}|${Math.round(x)}`, text, x, y, tint, size, alpha, age });
   }
 
+  /** Lay out queued labels deterministically (stagger overlaps, at most 4) and draw them. */
+  private flushLabels(): void {
+    const out = layoutLabels(this.pending, 4, 46, 190 * this.cam.scale + 60);
+    out.forEach((o, i) => {
+      const q = this.pending.find((p) => p.id === o.id)!;
+      let t = this.labels[i];
+      if (!t) { t = this.labels[i] = new Text({ text: '', style: { fontFamily: 'system-ui, Segoe UI, sans-serif', fontWeight: '900', fontSize: 34, fill: 0xffffff, stroke: { color: 0x000000, width: 5, join: 'round' } } }); t.anchor.set(0.5); this.world.addChild(t); }
+      if (t.text !== q.text) t.text = q.text;
+      t.tint = q.tint; t.alpha = q.alpha; t.scale.set(q.size); t.position.set(q.x, Math.max(o.y, 28 - this.world.y)); t.visible = true;
+    });
+    for (let i = out.length; i < this.labels.length; i++) this.labels[i].visible = false;
+    this.pending = [];
+  }
+
   private drawFx(dt: number, rec: { e: Ev; a: number }[], w: number, h: number): void {
     const g = this.fxg, sc = this.cam.scale;
     g.clear();
