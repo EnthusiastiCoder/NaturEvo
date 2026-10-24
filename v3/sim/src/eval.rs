@@ -172,6 +172,16 @@ pub fn evaluate_run(dir: &Path, arena_seeds: u64) -> Result<EvalMetrics, String>
         death_share: hof.deaths as f32 / n,
         capped_share: hof.capped as f32 / n,
         jerk: hof.jerk / n,
+        tip_jerk: hof.g[0] / n,
+        spacing_std: hof.g[1] / n,
+        hits_per_swing: hof.g[2] / n,
+        whiff_rate: hof.g[3] / n,
+        punish_rate: hof.g[4] / n,
+        recovery_efficiency: hof.g[5] / n,
+        move_entropy: hof.g[6] / n,
+        parry_success_rate: hof.g[7] / n,
+        feint_bait_rate: hof.g[8] / n,
+        distinct_moves: hof.g[9] / n,
     })
 }
 
