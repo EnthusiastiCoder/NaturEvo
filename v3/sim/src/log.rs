@@ -149,6 +149,36 @@ pub fn fight_json(m: &Match) -> String {
             d.parry, d.block, d.dodge, d.hit, d.miss
         );
     }
-    s.push_str("]}}");
+    s.push_str("],\"moves\":{");
+    let g = [crate::grace::match_grace(m, 0), crate::grace::match_grace(m, 1)];
+    for (key, f) in [
+        ("whiff", (|x: &crate::grace::GraceStats| x.whiff_rate) as fn(&crate::grace::GraceStats) -> f32),
+        ("punish", |x| x.punish_rate),
+        ("hits_per_swing", |x| x.hits_per_swing),
+        ("jerk", |x| x.jerk),
+    ] {
+        let _ = write!(s, "\"{}\":[{},{}],", key, f2(f(&g[0])), f2(f(&g[1])));
+    }
+    s.push_str("\"usage\":[");
+    for who in 0..2 {
+        if who > 0 {
+            s.push(',');
+        }
+        s.push('[');
+        let starts = m.move_starts(who);
+        let mut first = true;
+        for id in crate::moveset::MoveId::ALL.iter() {
+            let c = starts.iter().filter(|x| *x == id).count();
+            if c > 0 {
+                if !first {
+                    s.push(',');
+                }
+                first = false;
+                let _ = write!(s, "{{\"name\":\"{}\",\"count\":{}}}", id.name(), c);
+            }
+        }
+        s.push(']');
+    }
+    s.push_str("]}}}");
     s
 }
