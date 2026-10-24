@@ -26,7 +26,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parseFight } from '../src/data';
-import { moveCallout, phaseStyle, openBadge, hudMoveLine, graceModel } from '../src/move-fx';
+import { moveCallout, phaseStyle, openBadge, hudMoveLine, graceModel, compactNum, outcomeText, layoutLabels } from '../src/move-fx';
 
 const load = (n: string) => parseFight(JSON.parse(readFileSync(resolve(__dirname, 'fixtures', n), 'utf8')));
 const fight = () => load('fight_moves.json');
@@ -185,5 +185,26 @@ describe('graceModel', () => {
   });
   it('is null when the log has no move summary', () => {
     expect(graceModel(load('fight_small.json').result, 0)).toBeNull();
+  });
+});
+
+describe('viewer polish helpers', () => {
+  it('compactNum shortens large values', () => {
+    expect(compactNum(195614016)).toBe('196M');
+    expect(compactNum(1234)).toBe('1.23k');
+    expect(compactNum(0.12)).toBe('0.12');
+  });
+  it('outcomeText is readable', () => {
+    expect(outcomeText('win_a')).toBe('Hero wins');
+    expect(outcomeText('win_b')).toBe('Monster wins');
+    expect(outcomeText('draw')).toBe('Draw');
+  });
+  it('layoutLabels staggers overlapping labels, caps count, is deterministic', () => {
+    const items = [0, 1, 2, 3, 4, 5].map((i) => ({ id: 'l' + i, x: 100 + i, y: 0, age: i }));
+    const a = layoutLabels(items, 4, 30);
+    expect(a).toHaveLength(4);
+    expect(a.map((l) => l.y)).toEqual([0, -30, -60, -90]);
+    expect(layoutLabels([...items].reverse(), 4, 30)).toEqual(a);
+    expect(layoutLabels([{ id: 'a', x: 0, y: 0, age: 0 }, { id: 'b', x: 900, y: 0, age: 1 }])[1].y).toBe(0);
   });
 });
