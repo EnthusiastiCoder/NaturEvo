@@ -316,6 +316,40 @@ impl Match {
         }
     }
 
+    /// Cumulative executor energy of `who` (measurement only).
+    pub fn exec_energy(&self, who: usize) -> f32 {
+        self.exec[who].energy_spent()
+    }
+
+    /// Zone-weighted damage dealt by `who` (measurement only).
+    pub fn damage_dealt_weighted(&self, who: usize) -> f32 {
+        self.dealt_w[who]
+    }
+
+    /// Skip the per-tick grace trace (training does not read it; the counters stay cheap and on).
+    pub fn disable_grace_trace(&mut self) {
+        self.grace_on = false;
+    }
+
+    fn track_grace(&mut self) {
+        if !self.grace_on {
+            return;
+        }
+        let gap = (self.robots[0].x - self.robots[1].x).abs() as f64;
+        for i in 0..2 {
+            let open = self.rules[i].is_open() || matches!(self.robots[i].state(), State::Staggered | State::Fallen);
+            if open && !self.prev_open[i] {
+                self.grace[i].open_windows += 1;
+            }
+            self.prev_open[i] = open;
+            let tip = self.robots[i].sword_capsule().b;
+            self.grace[i].tip.push(tip);
+            self.grace[i].gap_n += 1;
+            self.grace[i].gap_sum += gap;
+            self.grace[i].gap_sq += gap * gap;
+        }
+    }
+
     /// Every move the executor of `who` accepted, in order (Feint included).
     pub fn move_starts(&self, who: usize) -> Vec<MoveId> {
         self.starts[who].clone()
