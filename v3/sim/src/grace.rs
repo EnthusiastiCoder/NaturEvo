@@ -76,3 +76,18 @@ pub struct GraceRec {
     pub gap_sum: f64,
     pub gap_sq: f64,
 }
+
+#[derive(Clone, Copy, Debug, Default)]
+pub struct GraceStats {
+    pub jerk: f32,
+    pub spacing_std: f32,
+    pub hits_per_swing: f32,
+    pub whiff_rate: f32,
+    pub punish_rate: f32,
+    pub recovery_efficiency: f32,
+    pub move_entropy: f32,
+    pub usage: [f32; N_MOVES],
+    pub parry_success_rate: f32,
+    pub feint_bait_rate: f32,
+    pub damage_per_energy: f32,
+}
