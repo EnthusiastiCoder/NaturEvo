@@ -788,6 +788,12 @@ impl Match {
                         self.dealt_w[att] += h.damage.max(0.0) * zone_weight(h.part);
                         self.quality_sum[att] += self.robots[att].strike_quality;
                         self.hits[att] += 1;
+                        if staggered || self.rules[def].is_open() {
+                            self.grace[att].punish_hits += 1;
+                        }
+                        if self.exec[def].phase() == Phase::Recovery {
+                            self.grace[def].recoveries_hit += 1;
+                        }
                         self.last_hit = Some(t);
                         self.stall_acc += fitness::stall_units(t - self.stretch_start);
                         self.stretch_start = t;
