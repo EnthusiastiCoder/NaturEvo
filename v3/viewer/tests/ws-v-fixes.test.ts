@@ -14,10 +14,10 @@ describe('OPEN ring arc', () => {
 });
 
 describe('result card', () => {
-  it('is anchored to a corner, not the centre where the K.O. banner and labels sit', () => {
+  it('sits at the bottom, clear of the top-corner HUD panels and the K.O. banner', () => {
     const css = readFileSync(resolve(__dirname, '../src/style.css'), 'utf8');
     const rule = [...css.matchAll(/\.fv-result\s*\{[^}]*\}/g)].map((m) => m[0]).pop()!;
-    expect(rule).toMatch(/left\s*:\s*12px/);
-    expect(rule).toMatch(/transform\s*:\s*none/);
+    expect(rule).toMatch(/bottom\s*:\s*12px/);
+    expect(rule).not.toMatch(/top\s*:/);
   });
 });
