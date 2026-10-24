@@ -276,7 +276,7 @@ export class FightScene {
         const k = a / 20;
         if (k < 1) g.circle(X, Y, 70 * sc * (0.3 + k)).stroke({ width: 5, color: 0xff7a2a, alpha: 1 - k });
         const f = floatNumber(a);
-        if (f) this.label(n++, 'PART OFF!', X, Y - (85 + f.rise) * sc, KO_TINT, 0.9, f.alpha);
+        if (f) this.label('PART OFF!', X, Y - (85 + f.rise) * sc, KO_TINT, 0.9, f.alpha, a);
       } else if (e.kind === 'ko') {
         const k = a / 30;
         if (k < 1) for (const [rr, wd] of [[160, 7], [100, 4]]) g.circle(X, Y, rr * sc * (0.2 + k)).stroke({ width: wd, color: 0xffffff, alpha: 1 - k });
