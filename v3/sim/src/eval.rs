@@ -72,6 +72,7 @@ struct Acc {
     dodge: u32,
     hit: u32,
     miss: u32,
+    g: [f32; 10],
 }
 
 impl Acc {
