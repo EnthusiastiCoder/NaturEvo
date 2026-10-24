@@ -271,7 +271,7 @@ export class FightScene {
           g.circle(X, Y, 35 * sc * (0.3 + k)).stroke({ width: 2, color: 0xffffff, alpha: 1 - k });
         }
         const f = floatNumber(a);
-        if (f) this.label(n++, 'BLOCK', X, Y - (40 + f.rise * 0.6) * sc, 0x7fd4ff, 0.8, f.alpha);
+        if (f) this.label('BLOCK', X, Y - (40 + f.rise * 0.6) * sc, 0x7fd4ff, 0.8, f.alpha, a);
       } else if (e.kind === 'destroyed') {
         const k = a / 20;
         if (k < 1) g.circle(X, Y, 70 * sc * (0.3 + k)).stroke({ width: 5, color: 0xff7a2a, alpha: 1 - k });
