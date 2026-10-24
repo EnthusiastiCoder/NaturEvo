@@ -571,6 +571,7 @@ impl Match {
             for r in self.rules.iter_mut() {
                 r.tick(PHYS_DT);
             }
+            self.track_grace();
         }
         self.update_threats_post();
         self.track_idle_guard();
