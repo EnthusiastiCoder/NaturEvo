@@ -227,7 +227,7 @@ export class FightScene {
     this.rings = this.rings.filter((r) => (r.age += dt * 3) < 1);
     for (const r of this.rings) g.circle(r.x * sc, -r.y * sc, r.r * sc * (0.4 + r.age)).stroke({ width: 2, color: r.color, alpha: 1 - r.age });
     // stateless flashes, shockwaves and flares
-    let n = 0;
+    this.pending = [];
     const seen = new Set<string>();
     for (const { e, a } of rec) {
       if (!['hit', 'clash', 'block', 'destroyed', 'ko'].includes(e.kind)) continue;
