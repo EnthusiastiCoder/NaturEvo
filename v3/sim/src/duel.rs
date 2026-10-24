@@ -468,6 +468,13 @@ impl Match {
             if spec(id).can_whiff && !self.contact_seen[i] {
                 let rec = phase_durations(id, &self.exec[i].params())[2];
                 let t = self.tick;
+                self.grace[i].whiffs += 1;
+                if let Some(ft) = self.last_feint[1 - i] {
+                    if t.saturating_sub(ft) <= 40 {
+                        self.grace[1 - i].baits += 1;
+                        self.last_feint[1 - i] = None;
+                    }
+                }
                 self.emit(format!("{{\"t\":{},\"kind\":\"whiff\",\"who\":{},\"name\":\"{}\"}}", t, i, id.name()));
                 if id == MoveId::Parry {
                     self.rules[i].on_parry_miss();
