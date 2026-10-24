@@ -185,7 +185,7 @@ pub fn evaluate_run(dir: &Path, arena_seeds: u64) -> Result<EvalMetrics, String>
     })
 }
 
-const KEYS: [&str; 15] = ["win_rate_hof", "defence_rate", "defence_rate_scripted", "hit_rate", "idle_guard", "draw_share", "mean_ticks", "parry_share", "block_share", "dodge_share", "median_ticks", "hits_per_fight", "death_share", "capped_share", "jerk"];
+const KEYS: [&str; 25] = ["win_rate_hof", "defence_rate", "defence_rate_scripted", "hit_rate", "idle_guard", "draw_share", "mean_ticks", "parry_share", "block_share", "dodge_share", "median_ticks", "hits_per_fight", "death_share", "capped_share", "jerk", "tip_jerk", "spacing_std", "hits_per_swing", "whiff_rate", "punish_rate", "recovery_efficiency", "move_entropy", "parry_success_rate", "feint_bait_rate", "distinct_moves"];
 
 fn values(m: &EvalMetrics) -> [f32; 15] {
     [m.win_rate_hof, m.defence_rate, m.defence_rate_scripted, m.hit_rate, m.idle_guard, m.draw_share, m.mean_ticks, m.parry_share, m.block_share, m.dodge_share, m.median_ticks, m.hits_per_fight, m.death_share, m.capped_share, m.jerk]
