@@ -101,7 +101,7 @@ pub fn stall_units(len: u32) -> f32 {
 pub fn score_stats(s: &MatchStats) -> f32 {
     if s.capped {
         // Mutual loss: far below any death-loss (>= -6.1) and a draw (-6); damage keeps a small gradient.
-        return CAPPED_SCORE + W_DEALT * s.dmg_dealt_norm - W_TAKEN * s.dmg_taken_norm;
+        return CAPPED_SCORE + W_DEALT * s.dmg_dealt_norm - W_TAKEN * s.dmg_taken_norm + W_PRESSURE_CAPPED * s.pressure.clamp(0.0, 1.0);
     }
     if s.draw {
         return DRAW_SCORE;
