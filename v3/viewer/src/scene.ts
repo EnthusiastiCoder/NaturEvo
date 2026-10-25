@@ -308,7 +308,7 @@ export class FightScene {
         const cx = b.x * sc, cy = -(b.y - 30) * sc, r = 44 * sc;
         const col = b.riposte ? 0x4ac8ff : 0xffb000;
         strokeArcFrom(g, cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.max(0.02, b.arc)).stroke({ width: 4, color: col, alpha: 0.95, cap: 'round' });
-        this.mfLabel(used++, b.riposte ? 'RIPOSTE' : 'OPEN', cx + r + 34 * sc, cy, col, 0.5, 0.95);
+        this.mfLabel(b.riposte ? 'RIPOSTE' : 'OPEN', cx + r + 34 * sc, cy, col, 0.5, 0.95, 40);
       }
     }
     const c = moveCallout(fight.events, fr, this.tick, fight.dt || 1 / 60);
