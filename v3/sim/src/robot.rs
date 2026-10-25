@@ -492,6 +492,17 @@ impl Robot {
         }
     }
 
+    /// True on the tick a stagger began (the timer has not yet been decremented).
+    pub fn just_staggered(&self) -> bool {
+        self.stagger_timer >= STAGGER_TIME - 1e-6
+    }
+
+    /// Undo a stagger that began this tick, leaving the fighter on the brink of one.
+    pub fn cancel_stagger(&mut self, posture: f32) {
+        self.stagger_timer = 0.0;
+        self.posture = posture;
+    }
+
     /// Total remaining part health over total maximum (0..1; destroyed parts count as 0).
     pub fn pool_frac(&self) -> f32 {
         let (mut s, mut m) = (0.0, 0.0);
