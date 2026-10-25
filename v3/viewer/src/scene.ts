@@ -292,7 +292,6 @@ export class FightScene {
   /** Move telegraph, OPEN badge and move-name callout: pure functions of the sampled frame and tick, so scrub and pause stay exact. */
   private drawMoveFx(g: Graphics, sc: number): void {
     const fr = this.sampleNow(), fight = this.fight;
-    let used = 0;
     for (let i = 0; i < 2; i++) {
       const f = fr.f[i];
       if (!f.mv) continue; // older log: nothing to show
