@@ -13,6 +13,18 @@ pub const W_CHAIN: f32 = 0.5;
 /// Small cost on jerky joint motion (mean |dv|/vmax per tick); typical net values 0.1, calm 0.01.
 pub const W_JERK: f32 = 8.0;
 pub const KO_BONUS: f32 = 1.0;
+/// Credit for hits per swing (attack moves started, smoothed), for hits on punish windows, and per distinct attack
+/// move that actually landed (saturates at `VARIETY_MAX`). Never paid for guarding, blocking or parrying.
+pub const W_ACCURACY: f32 = 1.0;
+pub const W_PUNISH: f32 = 1.0;
+pub const W_VARIETY: f32 = 0.3;
+pub const VARIETY_MAX: u32 = 4;
+/// Live threats a fighter must create to earn full pressure credit in a capped fight.
+pub const PRESSURE_REF: f32 = 8.0;
+/// Capped fights: the side that threatened the other keeps up to this much of the mutual loss back (stays below any death-loss).
+pub const W_PRESSURE_CAPPED: f32 = 2.5;
+/// Extra KO bonus for a fast finish (scaled by the unused share of the hard cap).
+pub const KO_SPEED_BONUS: f32 = 1.5;
 pub const MAX_CREDITED_THREATS: usize = 6;
 
 #[derive(Clone, Copy, Debug, Default)]
