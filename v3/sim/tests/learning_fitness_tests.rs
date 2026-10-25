@@ -38,3 +38,8 @@ fn accuracy_punish_and_landed_variety_are_paid() {
     assert!(three > one && four > three);
     assert_eq!(nine, four, "variety credit saturates at 4 moves");
 }
+
+#[test]
+fn defence_weight_is_unchanged() {
+    assert_eq!(W_DEFENCE, 2.0);
+}
