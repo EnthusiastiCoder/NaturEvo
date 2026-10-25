@@ -324,9 +324,9 @@ export class FightScene {
     this.banner.visible = this.bannerSub.visible = on;
     if (!on || !ko) return;
     if (!this.reduceMotion && a < 8) sf.rect(0, 0, w, h).fill({ color: 0xffffff, alpha: 0.5 * (1 - a / 8) });
-    const pop = a < 10 ? 1.6 - 0.6 * (a / 10) + Math.sin(a / 10 * Math.PI) * 0.2 : 1, fit = Math.min(1, w / 760) * (h < 700 ? 0.75 : 1);
-    this.banner.text = 'K.O.'; this.banner.tint = KO_TINT; this.banner.alpha = Math.min(1, a / 3 + 0.2);
-    this.banner.scale.set(pop * fit); this.banner.position.set(w / 2, h * 0.3);
+    const pop = a < 10 ? 1.6 - 0.6 * (a / 10) + Math.sin(a / 10 * Math.PI) * 0.2 : 1, fit = Math.min(1, w / 760) * (h < 700 ? 0.75 : 1) * 0.55;
+    this.banner.text = 'K.O.'; this.banner.tint = KO_TINT; this.banner.alpha = Math.min(1, a / 3 + 0.2) * Math.min(1, (150 - a) / 30);
+    this.banner.scale.set(pop * fit); this.banner.position.set(w / 2, h * 0.17);
     this.bannerSub.text = `${ko.who === 0 ? 'HERO' : 'MONSTER'} DOWN`; this.bannerSub.tint = 0xffffff; this.bannerSub.alpha = this.banner.alpha;
     this.bannerSub.scale.set(fit); this.bannerSub.position.set(w / 2, h * 0.3 + 78 * fit);
   }
