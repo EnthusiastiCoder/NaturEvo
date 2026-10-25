@@ -97,15 +97,30 @@ export function outcomeText(o: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-export interface LabelIn { id: string; x: number; y: number; age: number }
+export interface LabelIn { id: string; x: number; y: number; age: number; w?: number; h?: number }
 export interface LabelOut extends LabelIn { slot: number }
-/** Deterministic label stack: newest `max` labels survive; each is lifted by `gap` steps until clear of every earlier-placed label within `reach` horizontally. */
-export function layoutLabels(items: LabelIn[], max = 4, gap = 30, reach = 160): LabelOut[] {
+export interface Rect { x0: number; y0: number; x1: number; y1: number }
+
+/** Screen rectangle the K.O. banner and its sub line can occupy (generous: covers the pop-in scale), mirroring scene.ts drawBanner. */
+export function bannerRect(w: number, h: number): Rect {
+  const fit = Math.min(1, w / 760) * (h < 700 ? 0.75 : 1) * 0.55, cy = h * 0.17;
+  const hw = Math.max(260 * fit, 150 * fit * 1.6) + 8;
+  return { x0: w / 2 - hw, x1: w / 2 + hw, y0: cy - 90 * fit * 1.2, y1: cy + 78 * fit + 30 * fit * 1.2 };
+}
+
+/** Deterministic label stack: newest `max` labels survive; each is lifted by `gap` steps until clear of every earlier-placed label within `reach` horizontally.
+ *  With `avoid` (same space as the labels), a label whose box (w x h, centred) overlaps it drops to just below it and stacks downward from there. */
+export function layoutLabels(items: LabelIn[], max = 4, gap = 30, reach = 160, avoid?: Rect): LabelOut[] {
   const keep = [...items].sort((a, b) => a.age - b.age || (a.id < b.id ? -1 : 1)).slice(0, max);
   const placed: LabelOut[] = [];
+  const hits = (it: LabelIn, y: number) => !!avoid && it.x + (it.w ?? 0) / 2 > avoid.x0 && it.x - (it.w ?? 0) / 2 < avoid.x1 && y + (it.h ?? 0) / 2 > avoid.y0 && y - (it.h ?? 0) / 2 < avoid.y1;
   for (const it of keep) {
-    let y = it.y, slot = 0;
-    while (placed.some((p) => Math.abs(p.x - it.x) < reach && Math.abs(p.y - y) < gap) && slot < max) { y -= gap; slot++; }
+    let y = it.y, slot = 0, dir = -1;
+    for (let n = 0; n < 12; n++) {
+      if (hits(it, y)) { y = avoid!.y1 + (it.h ?? 0) / 2 + 1; dir = 1; }
+      else if (placed.some((p) => Math.abs(p.x - it.x) < reach && Math.abs(p.y - y) < gap) && slot < max) { y += dir * gap; slot++; }
+      else break;
+    }
     placed.push({ ...it, y, slot });
   }
   return placed;
