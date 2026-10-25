@@ -234,6 +234,8 @@ pub struct Match {
     prev_open: [bool; 2],
     grace_on: bool,
     last_feint: [Option<u32>; 2],
+    hit_mask: [u32; 2],
+    open_windows: [u32; 2],
 }
 
 fn make_ctl(b: Brain, seed: u64, salt: u64) -> Ctl {
