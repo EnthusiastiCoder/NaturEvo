@@ -45,13 +45,13 @@ describe('shield plate from geometry', () => {
 });
 
 import { blockPlates } from '../src/robot-draw';
-describe('blockPlates keeps the plate a block just destroyed', () => {
+describe('blockPlates: a plate exists until it is destroyed (detached), not until hp reaches 0', () => {
   const fa = [100, 0, 100, 80] as [number, number, number, number];
-  const mk = (hp5: number) => ({ parts: Array.from({ length: 13 }, () => fa), hp: Array.from({ length: 13 }, (_, i) => (i === 5 ? hp5 : 100)) }) as never;
-  it('uses hp before the event so the plate lost in the same tick still counts', () => {
-    expect(blockPlates([mk(0)], [mk(41)], 0.62, 70)).toHaveLength(1);
+  const mk = () => ({ parts: Array.from({ length: 13 }, () => fa) }) as never;
+  it('keeps a plate that is only disabled (hp 0, not yet destroyed): the sim still blocks with it', () => {
+    expect(blockPlates([mk(), mk()], [false, false], 0.62, 70)).toHaveLength(2);
   });
-  it('skips plates already gone before the event', () => {
-    expect(blockPlates([mk(0)], [mk(0)], 0.62, 70)).toHaveLength(0);
+  it('skips a plate already detached before the event', () => {
+    expect(blockPlates([mk(), mk()], [false, true], 0.62, 70)).toHaveLength(1);
   });
 });
