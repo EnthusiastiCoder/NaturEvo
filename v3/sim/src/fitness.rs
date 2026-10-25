@@ -43,6 +43,16 @@ pub struct MatchStats {
     pub passivity: f32,
     pub chain_quality: f32,
     pub jerk: f32,
+    /// Live threats this fighter created, over `PRESSURE_REF`, clamped 0..1.
+    pub pressure: f32,
+    /// Body hits per attack swing, smoothed: hits / (swings + 2).
+    pub accuracy: f32,
+    /// Hits landed on punish windows over the opponent's windows (0..1).
+    pub punish: f32,
+    /// Distinct attack moves that landed a hit.
+    pub landed_moves: u32,
+    /// Fight length over the hard cap, 0..1.
+    pub ticks_frac: f32,
 }
 
 #[derive(Clone, Copy, Debug)]
