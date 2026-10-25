@@ -30,3 +30,15 @@ fn skillbots_are_rarely_both_staggered() {
         assert!((both as f32) < 0.30 * n as f32, "tier {tier}: {both}/{n} ticks both staggered");
     }
 }
+
+#[test]
+fn trained_nets_are_not_stuck_in_mutual_stagger() {
+    for run in ["slice_s1", "slice_s2", "slice_s3"] {
+        let (Some(h), Some(mo)) = (load(&format!("{run}/champion_hero_gen_999.json")), load(&format!("{run}/champion_monster_gen_999.json"))) else {
+            continue;
+        };
+        let (both, n) = both_staggered(Brain::Net(h), Brain::Net(mo), 4);
+        println!("{run}: both staggered {both}/{n}");
+        assert!((both as f32) < 0.10 * n as f32, "{run}: {both}/{n} ticks both staggered");
+    }
+}
