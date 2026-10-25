@@ -3,3 +3,7 @@
 use mech_sim::curriculum::{opponent_mix, OppKind};
 use mech_sim::duel::{Brain, Match};
 use mech_sim::fitness::*;
+
+fn capped(pressure: f32) -> MatchStats {
+    MatchStats { capped: true, pressure, ..Default::default() }
+}
