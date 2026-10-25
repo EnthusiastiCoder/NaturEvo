@@ -312,8 +312,7 @@ export class FightScene {
       }
     }
     const c = moveCallout(fight.events, fr, this.tick, fight.dt || 1 / 60);
-    if (c) this.mfLabel(used++, c.text, c.x * sc, -(c.y + 50) * sc, hexNum(c.color, 0xffffff), 0.75, c.alpha);
-    for (let i = used; i < this.mfText.length; i++) this.mfText[i].visible = false;
+    if (c) this.mfLabel(c.text, c.x * sc, -(c.y + 50) * sc, hexNum(c.color, 0xffffff), 0.75, c.alpha, (1 - c.alpha) * 36);
   }
 
   /** Big K.O. banner from the first ko event onwards (pops in, then holds); a white screen flash on the blow. */
