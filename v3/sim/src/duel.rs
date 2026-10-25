@@ -1019,6 +1019,10 @@ impl Match {
             },
             capped: self.capped,
             stall: self.stall_acc + fitness::stall_units(self.tick.saturating_sub(self.stretch_start)),
+            swings: [0, 1].map(|i| self.starts[i].iter().filter(|&&id| is_attack(id)).count() as u32),
+            punish_hits: [self.grace[0].punish_hits, self.grace[1].punish_hits],
+            open_windows: self.open_windows,
+            landed_moves: [self.hit_mask[0].count_ones(), self.hit_mask[1].count_ones()],
         }
     }
 
