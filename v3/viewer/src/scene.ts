@@ -328,6 +328,6 @@ export class FightScene {
     this.banner.text = 'K.O.'; this.banner.tint = KO_TINT; this.banner.alpha = Math.min(1, a / 3 + 0.2) * Math.min(1, (150 - a) / 30);
     this.banner.scale.set(pop * fit); this.banner.position.set(w / 2, h * 0.17);
     this.bannerSub.text = `${ko.who === 0 ? 'HERO' : 'MONSTER'} DOWN`; this.bannerSub.tint = 0xffffff; this.bannerSub.alpha = this.banner.alpha;
-    this.bannerSub.scale.set(fit); this.bannerSub.position.set(w / 2, h * 0.3 + 78 * fit);
+    this.bannerSub.scale.set(fit); this.bannerSub.position.set(w / 2, h * 0.17 + 78 * fit);
   }
 }
