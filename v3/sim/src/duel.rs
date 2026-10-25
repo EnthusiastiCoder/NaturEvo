@@ -804,6 +804,9 @@ impl Match {
                         self.dealt_w[att] += h.damage.max(0.0) * zone_weight(h.part);
                         self.quality_sum[att] += self.robots[att].strike_quality;
                         self.hits[att] += 1;
+                        if is_attack(att_id) {
+                            self.hit_mask[att] |= 1 << att_id as u32;
+                        }
                         if staggered || self.rules[def].is_open() {
                             self.grace[att].punish_hits += 1;
                         }
