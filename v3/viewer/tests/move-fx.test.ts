@@ -26,7 +26,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parseFight } from '../src/data';
-import { moveCallout, phaseStyle, openBadge, hudMoveLine, graceModel, compactNum, outcomeText, layoutLabels } from '../src/move-fx';
+import { moveCallout, phaseStyle, openBadge, hudMoveLine, graceModel, compactNum, outcomeText, layoutLabels, bannerRect } from '../src/move-fx';
 
 const load = (n: string) => parseFight(JSON.parse(readFileSync(resolve(__dirname, 'fixtures', n), 'utf8')));
 const fight = () => load('fight_moves.json');
