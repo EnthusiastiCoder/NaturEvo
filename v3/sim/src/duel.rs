@@ -566,6 +566,7 @@ impl Match {
             self.advance_fighters();
             self.update_threats_pre();
             self.run_combat();
+            self.break_mutual_stagger();
             self.special_contacts();
             self.resolve_whiffs();
             for r in self.rules.iter_mut() {
@@ -848,6 +849,27 @@ impl Match {
                         ));
                     }
                 }
+            }
+        }
+    }
+
+    /// Mutual stagger is a state nobody can punish, so a fighter cannot be broken while the opponent is already
+    /// down: the blow leaves them on the brink instead. If both break on the same tick the steadier one (more
+    /// energy) holds. The rule is the same for both sides.
+    fn break_mutual_stagger(&mut self) {
+        let (j0, j1) = (self.robots[0].just_staggered(), self.robots[1].just_staggered());
+        if j0 && j1 {
+            let (e0, e1) = (self.robots[0].energy, self.robots[1].energy);
+            if e0 > e1 {
+                self.robots[0].cancel_stagger(55.0);
+            } else if e1 > e0 {
+                self.robots[1].cancel_stagger(55.0);
+            }
+            return;
+        }
+        for i in 0..2 {
+            if self.robots[i].just_staggered() && self.robots[1 - i].state() == State::Staggered {
+                self.robots[i].cancel_stagger(55.0);
             }
         }
     }
