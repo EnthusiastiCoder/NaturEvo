@@ -18,3 +18,10 @@ fn capped_stays_below_the_worst_death_loss_even_with_full_pressure() {
     let worst_loss = MatchStats { dmg_taken_norm: 1.0, idle_guard: 1.0, passivity: 1.0, stall: 100.0, ..Default::default() };
     assert!(score_stats(&capped(1.0)) < score_stats(&worst_loss), "{} vs {}", score_stats(&capped(1.0)), score_stats(&worst_loss));
 }
+
+#[test]
+fn faster_kill_scores_higher() {
+    let slow = MatchStats { win: true, ko: true, ticks_frac: 0.9, ..Default::default() };
+    let fast = MatchStats { win: true, ko: true, ticks_frac: 0.1, ..Default::default() };
+    assert!(score_stats(&fast) > score_stats(&slow) + 0.5);
+}
