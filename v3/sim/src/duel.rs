@@ -344,10 +344,6 @@ impl Match {
     }
 
     fn track_grace(&mut self) {
-        if !self.grace_on {
-            return;
-        }
-        let gap = (self.robots[0].x - self.robots[1].x).abs() as f64;
         for i in 0..2 {
             let open = self.rules[i].is_open() || matches!(self.robots[i].state(), State::Staggered | State::Fallen);
             if open && !self.prev_open[i] {
