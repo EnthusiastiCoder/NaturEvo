@@ -43,3 +43,14 @@ fn accuracy_punish_and_landed_variety_are_paid() {
 fn defence_weight_is_unchanged() {
     assert_eq!(W_DEFENCE, 2.0);
 }
+
+#[test]
+fn match_result_reports_swings_punish_and_landed_moves() {
+    let r = Match::new(4, Brain::Skill(2), Brain::Dummy).run_to_end();
+    assert!(r.swings[0] > 0);
+    assert!(r.landed_moves[0] >= 1, "hits {:?} swings {:?} skill bot lands at least one move type on a dummy", r.hits, r.swings);
+    assert_eq!(r.swings[1], 0);
+    let s = stats_for(&r, 0);
+    assert!(s.pressure > 0.0 && s.accuracy > 0.0);
+    assert!(s.ticks_frac > 0.0 && s.ticks_frac <= 1.0);
+}
