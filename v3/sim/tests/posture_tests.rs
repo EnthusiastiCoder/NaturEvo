@@ -93,3 +93,21 @@ fn random_nets_keep_the_torso_near_upright_on_average() {
     assert!(worst < 10.0, "worst net mean tilt {worst}");
     assert!((sum / 8.0).abs() < 6.0);
 }
+
+/// Share of fighter-ticks spent staggered, and the share of all ticks (any state) with the torso leaning back > 12 deg.
+fn stagger_and_lean_shares(a: Brain, b: Brain, seeds: u64) -> (f32, f32) {
+    let (mut n, mut stag, mut back) = (0u32, 0u32, 0u32);
+    for seed in 0..seeds {
+        let mut m = Match::new(seed, a.clone(), b.clone());
+        while !m.is_over() {
+            m.step();
+            for r in &m.robots {
+                n += 1;
+                stag += (r.state() == State::Staggered) as u32;
+                back += (torso_tilt(r) < -12.0) as u32;
+            }
+        }
+    }
+    let n = n.max(1) as f32;
+    (stag as f32 / n, back as f32 / n)
+}
