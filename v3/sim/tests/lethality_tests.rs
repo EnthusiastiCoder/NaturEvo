@@ -62,7 +62,7 @@ fn many_scripted_duels_are_long_and_decisive() {
     let mut ticks = Vec::new();
     let mut draws = 0;
     for seed in 1..=8u64 {
-        let r = Match::new(seed, Brain::Scripted, Brain::Scripted).run_to_end();
+        let r = Match::new(seed, Brain::Skill(2), Brain::Skill(2)).run_to_end();
         assert!(r.ticks >= 150, "seed {} ended after {} ticks", seed, r.ticks);
         // Without a forcing rule the scripted bot often cannot finish; every draw must be a capped one.
         assert!(r.outcome != Outcome::Draw || r.capped, "seed {} drew without the cap", seed);
