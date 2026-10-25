@@ -6,7 +6,7 @@ import { drawGround } from './ground';
 import { ageParticles, hitstopTicks, recentEvents, shakeFor, sparkLayers, sparkSpec, spawnParticles, type Particle } from './fx';
 import { blockPoint, floatNumber, hitFx, hitstopPlan, partFlashAt, recoilCm, shakeOffset } from './impact';
 import { rendererOptions } from './renderer';
-import { layoutLabels, moveCallout, openBadge, phaseStyle, strokeArcFrom } from './move-fx';
+import { bannerRect, layoutLabels, moveCallout, openBadge, phaseStyle, strokeArcFrom } from './move-fx';
 
 const hexNum = (css: string, fb: number) => { const m = /^#?([0-9a-f]{6})$/i.exec(css.trim()); return m ? parseInt(m[1], 16) : fb; };
 const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
@@ -196,14 +196,16 @@ export class FightScene {
     this.onFrame(fr, this.tick);
   }
 
-  private pending: { id: string; text: string; x: number; y: number; tint: number; size: number; alpha: number; age: number }[] = [];
+  private pending: { id: string; text: string; x: number; y: number; tint: number; size: number; alpha: number; age: number; w: number; h: number }[] = [];
   private label(text: string, x: number, y: number, tint: number, size: number, alpha: number, age: number): void {
-    this.pending.push({ id: `${text}|${Math.round(x)}`, text, x, y, tint, size, alpha, age });
+    this.pending.push({ id: `${text}|${Math.round(x)}`, text, x, y, tint, size, alpha, age, w: text.length * 20 * size, h: 40 * size });
   }
 
   /** Lay out queued labels deterministically (stagger overlaps, at most 4) and draw them. */
-  private flushLabels(): void {
-    const out = layoutLabels(this.pending, 4, 46, 190 * this.cam.scale + 60);
+  private flushLabels(w: number, h: number): void {
+    const br = bannerRect(w, h), wx = this.world.x, wy = this.world.y;
+    const avoid = this.koBannerOn() ? { x0: br.x0 - wx, x1: br.x1 - wx, y0: br.y0 - wy, y1: br.y1 - wy } : undefined; // labels live in world space, the banner in screen space
+    const out = layoutLabels(this.pending, 4, 46, 190 * this.cam.scale + 60, avoid);
     out.forEach((o, i) => {
       const q = this.pending.find((p) => p.id === o.id)!;
       let t = this.labels[i];
@@ -283,7 +285,7 @@ export class FightScene {
       }
     }
     this.drawMoveFx(g, sc);
-    this.flushLabels();
+    this.flushLabels(w, h);
     this.drawBanner(w, h);
   }
 
@@ -315,12 +317,17 @@ export class FightScene {
     if (c) this.mfLabel(c.text, c.x * sc, -(c.y + 50) * sc, hexNum(c.color, 0xffffff), 0.75, c.alpha, (1 - c.alpha) * 36);
   }
 
+  private koAge(): number {
+    const ko = this.fight.events.find((e) => e.kind === 'ko');
+    return ko ? this.tick - Math.min(ko.t, this.lastTick) + (ko.t > this.lastTick ? 10 : 0) : -1;
+  }
+  private koBannerOn(): boolean { const a = this.koAge(); return a >= 0 && a < 150; }
+
   /** Big K.O. banner from the first ko event onwards (pops in, then holds); a white screen flash on the blow. */
   private drawBanner(w: number, h: number): void {
     const sf = this.screenFx; sf.clear();
     const ko = this.fight.events.find((e) => e.kind === 'ko');
-    const a = ko ? this.tick - Math.min(ko.t, this.lastTick) + (ko.t > this.lastTick ? 10 : 0) : -1;
-    const on = !!ko && a >= 0 && a < 150;
+    const a = this.koAge(), on = !!ko && a >= 0 && a < 150;
     this.banner.visible = this.bannerSub.visible = on;
     if (!on || !ko) return;
     if (!this.reduceMotion && a < 8) sf.rect(0, 0, w, h).fill({ color: 0xffffff, alpha: 0.5 * (1 - a / 8) });
