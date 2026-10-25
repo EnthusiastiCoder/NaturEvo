@@ -283,6 +283,7 @@ export class FightScene {
       }
     }
     this.drawMoveFx(g, sc);
+    this.flushLabels();
     this.drawBanner(w, h);
   }
 
