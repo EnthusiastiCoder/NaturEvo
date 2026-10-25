@@ -307,6 +307,8 @@ impl Match {
             prev_open: [false; 2],
             grace_on: true,
             last_feint: [None; 2],
+            hit_mask: [0; 2],
+            open_windows: [0; 2],
         }
     }
 
