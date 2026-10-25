@@ -121,3 +121,15 @@ fn clashing_blades_do_not_keep_fighters_staggered() {
     assert!(stag < 0.2, "staggered {stag} of the time");
     assert!(back < 0.2, "leaning back >12deg {back} of the time");
 }
+
+#[test]
+fn recoil_pose_is_a_modest_flinch_not_a_deep_lean() {
+    let mut r = Robot::new(Role::Hero);
+    r.add_posture(100.0);
+    for _ in 0..30 {
+        r.apply_targets(&STAND_TARGETS, DT);
+    }
+    assert_eq!(r.state(), State::Staggered);
+    let t = torso_tilt(&r);
+    assert!(t > -12.0, "recoil torso tilt {t} deg");
+}
