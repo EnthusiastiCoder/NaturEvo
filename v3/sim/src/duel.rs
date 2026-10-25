@@ -118,6 +118,14 @@ pub struct MatchResult {
     pub capped: bool,
     /// Training-only: summed stall units of all no-hit stretches (both sides), see `fitness::stall_units`.
     pub stall: f32,
+    /// Attack moves started by each fighter.
+    pub swings: [u32; 2],
+    /// Hits each fighter landed on an open (staggered, fallen or rule-open) opponent.
+    pub punish_hits: [u32; 2],
+    /// Windows in which each fighter was open.
+    pub open_windows: [u32; 2],
+    /// Distinct attack moves each fighter landed a hit with.
+    pub landed_moves: [u32; 2],
 }
 
 /// First-order low-pass of an action vector: `prev + alpha * (target - prev)`.
