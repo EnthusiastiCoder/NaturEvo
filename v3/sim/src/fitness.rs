@@ -111,7 +111,10 @@ pub fn score_stats(s: &MatchStats) -> f32 {
         - W_PASSIVITY * s.passivity
         - W_JERK * s.jerk
         - (W_STALL * s.stall).min(W_STALL_MAX)
-        + W_CHAIN * s.chain_quality;
+        + W_CHAIN * s.chain_quality
+        + W_ACCURACY * s.accuracy
+        + W_PUNISH * s.punish
+        + W_VARIETY * s.landed_moves.min(VARIETY_MAX) as f32;
     if s.win {
         v += W_WIN;
     }
