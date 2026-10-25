@@ -54,3 +54,15 @@ fn match_result_reports_swings_punish_and_landed_moves() {
     assert!(s.pressure > 0.0 && s.accuracy > 0.0);
     assert!(s.ticks_frac > 0.0 && s.ticks_frac <= 1.0);
 }
+
+#[test]
+fn stage_c_mix_has_more_aggressive_bots_and_less_self_play() {
+    let mix = opponent_mix(500);
+    let w = |f: &dyn Fn(OppKind) -> bool| mix.iter().filter(|(k, _)| f(*k)).map(|(_, w)| *w).sum::<f32>();
+    let total: f32 = mix.iter().map(|m| m.1).sum();
+    assert!((total - 1.0).abs() < 1e-5);
+    assert!(w(&|k| k == OppKind::SelfPlay) <= 0.35);
+    assert!(w(&|k| matches!(k, OppKind::Skill(_))) >= 0.4);
+    assert!(mix.iter().any(|(k, _)| *k == OppKind::Skill(2)));
+    assert!(w(&|k| k == OppKind::Hof) >= 0.2);
+}
