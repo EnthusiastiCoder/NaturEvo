@@ -205,8 +205,8 @@ impl Joint {
 pub const STAND_TARGETS: [f32; 12] = [-0.11, 0.07, -0.4, -0.4, 0.0, 0.0, -0.107, -0.107, -0.785, -0.785, 0.233, 0.233];
 /// Left (shield) arm raised: shoulder 80 deg, elbow ~90 deg, forearm nearly vertical in front of the head.
 pub const GUARD_TARGETS: [f32; 12] = [-0.11, 0.07, 0.1, -0.4, 0.29, 0.0, -0.107, -0.107, -0.785, -0.785, 0.233, 0.233];
-/// Staggered recoil: lean back, head back, arms flung out.
-pub const RECOIL_TARGETS: [f32; 12] = [-0.6, -0.8, -0.8, -0.8, -0.3, -0.3, -0.107, -0.107, -0.785, -0.785, 0.233, 0.233];
+/// Staggered recoil: a modest flinch (waist ~9 deg back, head back, arms out); never a deep lean.
+pub const RECOIL_TARGETS: [f32; 12] = [-0.4, -0.3, -0.8, -0.8, -0.3, -0.3, -0.107, -0.107, -0.785, -0.785, 0.233, 0.233];
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum State {
