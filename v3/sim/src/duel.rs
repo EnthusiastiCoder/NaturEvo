@@ -351,6 +351,12 @@ impl Match {
                 self.open_windows[i] += 1;
             }
             self.prev_open[i] = open;
+        }
+        if !self.grace_on {
+            return;
+        }
+        let gap = (self.robots[0].x - self.robots[1].x).abs() as f64;
+        for i in 0..2 {
             let tip = self.robots[i].sword_capsule().b;
             self.grace[i].tip.push(tip);
             self.grace[i].gap_n += 1;
