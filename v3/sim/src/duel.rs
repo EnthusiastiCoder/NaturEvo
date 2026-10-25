@@ -348,6 +348,7 @@ impl Match {
             let open = self.rules[i].is_open() || matches!(self.robots[i].state(), State::Staggered | State::Fallen);
             if open && !self.prev_open[i] {
                 self.grace[i].open_windows += 1;
+                self.open_windows[i] += 1;
             }
             self.prev_open[i] = open;
             let tip = self.robots[i].sword_capsule().b;
