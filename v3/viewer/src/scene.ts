@@ -287,12 +287,7 @@ export class FightScene {
     this.drawBanner(w, h);
   }
 
-  private mfLabel(i: number, text: string, x: number, y: number, tint: number, size: number, alpha: number): void {
-    let t = this.mfText[i];
-    if (!t) { t = this.mfText[i] = new Text({ text: '', style: { fontFamily: 'system-ui, Segoe UI, sans-serif', fontWeight: '900', fontSize: 34, fill: 0xffffff, stroke: { color: 0x000000, width: 5, join: 'round' } } }); t.anchor.set(0.5); this.world.addChild(t); }
-    if (t.text !== text) t.text = text;
-    t.tint = tint; t.alpha = alpha; t.scale.set(size); t.position.set(x, y); t.visible = true;
-  }
+  private mfLabel(text: string, x: number, y: number, tint: number, size: number, alpha: number, age: number): void { this.label(text, x, y, tint, size, alpha, age); }
 
   /** Move telegraph, OPEN badge and move-name callout: pure functions of the sampled frame and tick, so scrub and pause stay exact. */
   private drawMoveFx(g: Graphics, sc: number): void {
