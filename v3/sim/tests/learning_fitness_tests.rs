@@ -7,3 +7,8 @@ use mech_sim::fitness::*;
 fn capped(pressure: f32) -> MatchStats {
     MatchStats { capped: true, pressure, ..Default::default() }
 }
+
+#[test]
+fn capped_fight_pays_the_side_that_pressed_more() {
+    assert!(score_stats(&capped(1.0)) > score_stats(&capped(0.0)) + 1.0);
+}
