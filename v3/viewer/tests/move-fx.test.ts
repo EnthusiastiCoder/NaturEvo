@@ -207,4 +207,29 @@ describe('viewer polish helpers', () => {
     expect(layoutLabels([...items].reverse(), 4, 30)).toEqual(a);
     expect(layoutLabels([{ id: 'a', x: 0, y: 0, age: 0 }, { id: 'b', x: 900, y: 0, age: 1 }])[1].y).toBe(0);
   });
+  it('bannerRect covers the banner text and scales with the viewport', () => {
+    for (const [w, h] of [[1282, 642], [1540, 890]]) {
+      const r = bannerRect(w, h);
+      expect(r.x0).toBeLessThan(w / 2); expect(r.x1).toBeGreaterThan(w / 2);
+      expect(r.y0).toBeLessThan(h * 0.17); expect(r.y1).toBeGreaterThan(h * 0.17 + 40);
+    }
+  });
+  it('layoutLabels keeps labels off the avoid rect (banner), deterministically', () => {
+    for (const [w, h] of [[1282, 642], [1540, 890]]) {
+      const avoid = bannerRect(w, h), cx = w / 2, cy = (avoid.y0 + avoid.y1) / 2;
+      const items = [
+        { id: 'PART OFF!|1', x: cx, y: cy, age: 3, w: 150, h: 34 },
+        { id: 'Torso -110|2', x: cx + 40, y: cy + 20, age: 5, w: 170, h: 30 },
+        { id: 'BLOCK|3', x: cx - 60, y: avoid.y0 - 5, age: 9, w: 90, h: 28 },
+      ];
+      const a = layoutLabels(items, 4, 46, 400, avoid);
+      for (const l of a) {
+        const hw = (l.w ?? 0) / 2, hh = (l.h ?? 0) / 2;
+        const clear = l.x + hw <= avoid.x0 || l.x - hw >= avoid.x1 || l.y + hh <= avoid.y0 || l.y - hh >= avoid.y1;
+        expect(clear).toBe(true);
+      }
+      expect(layoutLabels([...items].reverse(), 4, 46, 400, avoid)).toEqual(a);
+    }
+    expect(layoutLabels([{ id: 'a', x: 5, y: 5, age: 0 }], 4, 30, 160, undefined)[0].y).toBe(5);
+  });
 });
