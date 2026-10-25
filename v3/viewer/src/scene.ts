@@ -320,7 +320,7 @@ export class FightScene {
     const sf = this.screenFx; sf.clear();
     const ko = this.fight.events.find((e) => e.kind === 'ko');
     const a = ko ? this.tick - Math.min(ko.t, this.lastTick) + (ko.t > this.lastTick ? 10 : 0) : -1;
-    const on = !!ko && a >= 0;
+    const on = !!ko && a >= 0 && a < 150;
     this.banner.visible = this.bannerSub.visible = on;
     if (!on || !ko) return;
     if (!this.reduceMotion && a < 8) sf.rect(0, 0, w, h).fill({ color: 0xffffff, alpha: 0.5 * (1 - a / 8) });
