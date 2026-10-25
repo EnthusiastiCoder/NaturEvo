@@ -113,13 +113,12 @@ fn stagger_and_lean_shares(a: Brain, b: Brain, seeds: u64) -> (f32, f32) {
 }
 
 #[test]
-fn clashing_blades_do_not_keep_fighters_staggered() {
-    // Before the fix plain blade-on-blade clashes added 15 posture to both fighters, so skill bots spent over half the
-    // fight in the recoil pose (torso 24 deg back). Staggering needs real pressure, not routine contact.
+fn fights_do_not_lean_back_even_while_staggered() {
+    // The lean the viewer shows is the stagger recoil pose, and skill bots spend ~half the fight staggered. The recoil
+    // is a flinch, so over all states (not just Idle) the torso is almost never more than 12 deg back.
     let (stag, back) = stagger_and_lean_shares(Brain::Skill(2), Brain::Skill(2), 6);
     println!("staggered {stag:.3} lean back >12deg {back:.3}");
-    assert!(stag < 0.2, "staggered {stag} of the time");
-    assert!(back < 0.2, "leaning back >12deg {back} of the time");
+    assert!(back < 0.03, "leaning back >12deg {back} of the time (staggered {stag})");
 }
 
 #[test]
