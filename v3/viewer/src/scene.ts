@@ -109,7 +109,7 @@ export class FightScene {
   private evPoint(e: Ev): { x: number; y: number } {
     if (e.kind === 'block') {
       const fr = sampleFrame(this.fight, e.t);
-      const [x, y] = blockPoint(e.x, e.y, blockPlates(fr.f, sampleFrame(this.fight, e.t - 2).f, this.fight.geometry.shieldAlong, this.fight.geometry.shieldLen));
+      const [x, y] = blockPoint(e.x, e.y, blockPlates(fr.f, [0, 1].map((w) => this.fight.events.some((d) => d.kind === 'destroyed' && d.who === w && d.part === 'FArmL' && d.t < e.t)), this.fight.geometry.shieldAlong, this.fight.geometry.shieldLen));
       return { x, y };
     }
     if (e.kind === 'destroyed') {

@@ -41,9 +41,9 @@ export function shieldPlate(fa: Seg, along = DEFAULT_GEOMETRY.shieldAlong, len =
   const cx = fa[0] + dx * along, cy = fa[1] + dy * along, nx = -dy / l * len / 2, ny = dx / l * len / 2;
   return [cx - nx, cy - ny, cx + nx, cy + ny];
 }
-/** Plates a block can have hit: present in the frame before the event (the block itself may destroy the arm). */
-export function blockPlates(now: FighterFrame[], before: FighterFrame[], along: number, len: number): Seg[] {
-  return now.filter((_, i) => (before[i] ?? now[i]).hp[5] > 0).map((g) => shieldPlate(g.parts[5], along, len));
+/** Plates a block can have hit: every shield not yet destroyed. A disabled arm (hp 0) still blocks in the sim; the block itself may destroy it. */
+export function blockPlates(now: FighterFrame[], gone: boolean[], along: number, len: number): Seg[] {
+  return now.filter((_, i) => !gone[i]).map((g) => shieldPlate(g.parts[5], along, len));
 }
 /** Visual neck: from the torso's upper end to the head centre. */
 export function neckSeg(torso: Seg, head: Seg): Seg {
@@ -99,7 +99,7 @@ export function drawRobot(g: Graphics, f: FighterFrame, o: DrawOpts): void {
     }
   }
   // shield plate then sword
-  if (f.hp[5] > 0 && !o.detached[5]) {
+  if (!o.detached[5]) { // a disabled (hp 0) shield arm is still in the sim's collision until destroyed
     capsule(g, shieldPlate(f.parts[5], geom.shieldAlong, geom.shieldLen), geom.shieldR, sc, shade(o.color, 0.8), o.accent, lw);
   }
   if (f.hp[6] > 0 && !o.detached[6]) {
