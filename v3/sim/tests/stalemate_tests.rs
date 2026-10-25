@@ -21,3 +21,12 @@ fn load(path: &str) -> Option<Genome> {
     let p = format!("{}/../runs/{}", env!("CARGO_MANIFEST_DIR"), path);
     std::fs::read_to_string(p).ok().and_then(|s| Genome::from_json(&s).ok())
 }
+
+#[test]
+fn skillbots_are_rarely_both_staggered() {
+    for tier in [1u8, 2, 3] {
+        let (both, n) = both_staggered(Brain::Skill(tier), Brain::Skill(tier), 6);
+        println!("tier {tier}: both staggered {both}/{n}");
+        assert!((both as f32) < 0.30 * n as f32, "tier {tier}: {both}/{n} ticks both staggered");
+    }
+}
