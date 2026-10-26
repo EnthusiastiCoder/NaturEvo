@@ -70,3 +70,15 @@ pub fn play(a: Brain, b: Brain, seed: u64, s: &mut CapStats, all: &mut CapStats)
         fold(s);
     }
 }
+
+fn load(dir: &Path, role: &str) -> Result<Vec<Genome>, String> {
+    let mut v: Vec<(u32, Genome)> = Vec::new();
+    for e in std::fs::read_dir(dir).map_err(|e| e.to_string())? {
+        let name = e.map_err(|e| e.to_string())?.file_name().to_string_lossy().to_string();
+        if let Some(g) = name.strip_prefix(&format!("champion_{}_gen_", role)).and_then(|r| r.strip_suffix(".json")).and_then(|r| r.parse::<u32>().ok()) {
+            v.push((g, Genome::from_json(&std::fs::read_to_string(dir.join(&name)).map_err(|e| e.to_string())?)?));
+        }
+    }
+    v.sort_by_key(|x| x.0);
+    Ok(v.into_iter().map(|x| x.1).collect())
+}
