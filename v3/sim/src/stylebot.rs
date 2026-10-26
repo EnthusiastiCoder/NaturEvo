@@ -9,3 +9,10 @@ use crate::robot::{Robot, State};
 use crate::rng::Rng;
 use crate::sense::MoveInfo;
 use crate::skillbot::{is_attack, Request};
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum StyleId {
+    Press,
+    Counter,
+    Duelist,
+}
