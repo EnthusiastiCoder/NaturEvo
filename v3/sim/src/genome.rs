@@ -12,12 +12,33 @@ pub struct Genome {
 }
 
 pub const N_WEIGHTS: usize = N_PARAMS;
-pub const W_CLAMP: f32 = 8.0;
+/// Large enough for distilled nets, whose first layer folds in input standardisation.
+pub const W_CLAMP: f32 = 40.0;
 
 impl Genome {
     pub fn random(role: Role, rng: &mut Rng) -> Genome {
         let weights = (0..N_WEIGHTS).map(|_| rng.range(-0.5, 0.5)).collect();
         Genome { role, weights, generation: 0, fitness: 0.0 }
+    }
+
+    /// The same policy for the monster side: the net's drive output is a world-frame direction, so a net trained in
+    /// the fighter's own frame (forward = +) mirrors it by negating the drive unit's output weights.
+    pub fn mirrored_drive(&self, role: Role) -> Genome {
+        use crate::net::{N_CTX, N_HID, N_OUT};
+        use crate::sense::N_IN;
+        let mut g = self.clone();
+        g.role = role;
+        if role == crate::robot::Role::Hero {
+            return g;
+        }
+        let w2 = N_HID * (N_IN + N_CTX) + N_HID;
+        let row = w2 + (N_OUT - 1) * N_HID;
+        for v in g.weights[row..row + N_HID].iter_mut() {
+            *v = -*v;
+        }
+        let last = g.weights.len() - 1;
+        g.weights[last] = -g.weights[last];
+        g
     }
 
     /// Gaussian-ish (sum of uniforms) perturbation of each weight with probability `rate`.
