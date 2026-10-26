@@ -7,3 +7,8 @@ use mech_sim::robot::Role;
 use mech_sim::rng::Rng;
 use mech_sim::stylebot::StyleId;
 use mech_sim::stylematrix::run_pair;
+
+fn flat_win_rate(a: Brain, b: Brain, seeds: u64) -> f64 {
+    let (x, _) = run_pair(&a, &b, seeds, true);
+    x.win_rate()
+}
