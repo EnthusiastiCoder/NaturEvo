@@ -93,3 +93,26 @@ fn line(label: &str, s: &CapStats) -> String {
         s.first[0], s.first[1], s.no_attack
     )
 }
+
+/// Final champions vs earlier champions (the eval setting) for each run; table of capped-fight behaviour.
+pub fn capdiag(runs: &[String], seeds: u64) -> Result<String, String> {
+    let mut out = String::from("| run | fights | mean gap m | swings/100 ticks h/m | parry starts/fight h/m | guard starts/fight h/m | idle starts/fight h/m | first attacker h/m/none |\n|---|---|---|---|---|---|---|---|\n");
+    for r in runs {
+        let dir = Path::new(r);
+        let (h, m) = (load(dir, "hero")?, load(dir, "monster")?);
+        let (fh, fm) = (h.last().unwrap().clone(), m.last().unwrap().clone());
+        let (mut cap, mut all) = (CapStats::default(), CapStats::default());
+        for sd in 0..seeds {
+            for e in &m[..m.len().saturating_sub(1)] {
+                play(Brain::Net(fh.clone()), Brain::Net(e.clone()), 1000 + sd, &mut cap, &mut all);
+            }
+            for e in &h[..h.len().saturating_sub(1)] {
+                play(Brain::Net(e.clone()), Brain::Net(fm.clone()), 1000 + sd, &mut cap, &mut all);
+            }
+        }
+        let name = dir.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default();
+        out.push_str(&line(&format!("{} all", name), &all));
+        out.push_str(&line(&format!("{} capped ({:.3})", name, cap.fights as f64 / all.fights.max(1) as f64), &cap));
+    }
+    Ok(out)
+}
