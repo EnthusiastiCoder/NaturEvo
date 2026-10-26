@@ -18,3 +18,4 @@ pub struct SideAcc {
     pub union_moves: [bool; N_MOVES],
     pub gap_mean: f64,
     pub engaged_gap: f64,
+    pub spacing_std: f64,
