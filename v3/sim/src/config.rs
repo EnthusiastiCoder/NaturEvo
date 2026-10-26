@@ -13,7 +13,7 @@ pub const STALL_GRACE_TICKS: u32 = 180;
 pub const STALL_REF_TICKS: f32 = 1200.0;
 /// Fitness cost per stall unit, bounded by `W_STALL_MAX` (kept small enough that a capped fight stays worst).
 pub const W_STALL: f32 = 1.0;
-pub const W_STALL_MAX: f32 = 2.0;
+pub const W_STALL_MAX: f32 = 3.0;
 /// Fitness score of a capped fight, for both fighters: below a draw and any death-loss.
 pub const CAPPED_SCORE: f32 = -12.0;
 /// Motor velocity gain (1/s): desired joint speed = MOTOR_KP * angle error, capped at the joint max speed.
