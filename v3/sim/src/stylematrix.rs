@@ -11,3 +11,4 @@ use crate::net::N_OUT;
 pub struct SideAcc {
     pub n: u32,
     pub wins: u32,
+    pub draws: u32,
