@@ -50,3 +50,4 @@ impl SideAcc {
         self.distinct += g.usage.iter().filter(|u| **u > 0.0).count() as f64;
         for i in 0..N_MOVES {
             if g.usage[i] > 0.0 {
+                self.union_moves[i] = true;
