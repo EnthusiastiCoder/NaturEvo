@@ -46,3 +46,4 @@ impl SideAcc {
             self.draws += 1;
         }
         self.capped += r.capped as u32;
+        self.ticks += r.ticks as f64;
