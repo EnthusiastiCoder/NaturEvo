@@ -82,3 +82,14 @@ fn load(dir: &Path, role: &str) -> Result<Vec<Genome>, String> {
     v.sort_by_key(|x| x.0);
     Ok(v.into_iter().map(|x| x.1).collect())
 }
+
+fn line(label: &str, s: &CapStats) -> String {
+    let n = s.fights.max(1) as f64;
+    let t = s.ticks.max(1.0);
+    format!(
+        "| {} | {} | {:.2} | {:.2}/{:.2} | {:.1}/{:.1} | {:.1}/{:.1} | {:.1}/{:.1} | {}/{}/{} |\n",
+        label, s.fights, s.gap_sum / s.gap_n.max(1.0), s.swings[0] / t * 100.0, s.swings[1] / t * 100.0,
+        s.parries[0] / n, s.parries[1] / n, s.guards[0] / n, s.guards[1] / n, s.idles[0] / n, s.idles[1] / n,
+        s.first[0], s.first[1], s.no_attack
+    )
+}
