@@ -121,6 +121,16 @@ impl Acc {
     }
 }
 
+/// Latest hero and monster champion genomes of a run directory.
+pub fn final_champions(dir: &Path) -> Result<(Genome, Genome), String> {
+    let h = champions(dir, "hero")?;
+    let m = champions(dir, "monster")?;
+    match (h.last(), m.last()) {
+        (Some(a), Some(b)) => Ok((a.clone(), b.clone())),
+        _ => Err(format!("{}: no champions", dir.display())),
+    }
+}
+
 /// Evaluate the latest hero and monster champions in `dir`.
 pub fn evaluate_run(dir: &Path, arena_seeds: u64) -> Result<EvalMetrics, String> {
     let heroes = champions(dir, "hero")?;
