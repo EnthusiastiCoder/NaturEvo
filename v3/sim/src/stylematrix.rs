@@ -41,3 +41,4 @@ impl SideAcc {
         let mine = if who == 0 { Outcome::WinA } else { Outcome::WinB };
         if r.outcome == mine {
             self.wins += 1;
+        }
