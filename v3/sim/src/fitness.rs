@@ -119,7 +119,7 @@ pub fn score_stats(s: &MatchStats) -> f32 {
         v += W_WIN;
     }
     if s.ko {
-        v += KO_BONUS;
+        v += KO_BONUS + KO_SPEED_BONUS * (1.0 - s.ticks_frac).clamp(0.0, 1.0);
     }
     v
 }
