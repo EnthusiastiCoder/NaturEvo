@@ -375,6 +375,11 @@ impl Match {
             last_feint: [None; 2],
             hit_mask: [0; 2],
             open_windows: [0; 2],
+            hit_list: Vec::new(),
+            gap_total: 0.0,
+            engaged_total: 0.0,
+            engaged_ticks: 0,
+            recorder: None,
         }
     }
 
