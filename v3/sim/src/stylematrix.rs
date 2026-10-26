@@ -33,3 +33,5 @@ pub struct SideAcc {
     pub hits: f64,
     pub usage: [f64; N_MOVES],
 }
+
+impl SideAcc {
