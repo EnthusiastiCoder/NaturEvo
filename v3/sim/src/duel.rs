@@ -44,6 +44,8 @@ enum Ctl {
     /// Net, last decoded (request, drive).
     Net(Box<Net>, Request, f32),
     Skill(Box<SkillBot>),
+    Style(Box<StyleBot>),
+    Student(Box<Net>, Request, f32, Box<StyleBot>),
     /// Move list, next index, a request is pending acceptance.
     Cycle(Vec<MoveId>, usize, bool),
     Dummy,
