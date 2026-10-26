@@ -48,3 +48,4 @@ impl SideAcc {
         self.capped += r.capped as u32;
         self.ticks += r.ticks as f64;
         self.distinct += g.usage.iter().filter(|u| **u > 0.0).count() as f64;
+        for i in 0..N_MOVES {
