@@ -30,3 +30,4 @@ pub struct SideAcc {
     pub jerk: f64,
     pub tip_jerk: f64,
     pub swings: f64,
+    pub hits: f64,
