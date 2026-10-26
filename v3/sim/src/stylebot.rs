@@ -33,3 +33,7 @@ impl StyleId {
         self as usize
     }
 }
+
+fn p(reach: f32, speed: f32, arc: f32, delay: f32) -> MoveParams {
+    MoveParams { reach, speed, arc, delay }
+}
