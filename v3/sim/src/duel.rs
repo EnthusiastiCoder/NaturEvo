@@ -277,6 +277,12 @@ pub struct Match {
     last_feint: [Option<u32>; 2],
     hit_mask: [u32; 2],
     open_windows: [u32; 2],
+    hit_list: Vec<(u32, u8)>,
+    gap_total: f64,
+    engaged_total: f64,
+    engaged_ticks: u32,
+    /// Imitation recording of one fighter's controller (see `Recorder`).
+    pub recorder: Option<Recorder>,
 }
 
 fn make_ctl(b: Brain, seed: u64, salt: u64) -> Ctl {
