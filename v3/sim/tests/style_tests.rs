@@ -54,3 +54,12 @@ fn teacher_fights_are_deterministic() {
     };
     assert_eq!(run(), run());
 }
+
+#[test]
+fn mirrored_drive_roundtrips_and_leaves_hero_alone() {
+    let g = Genome::random(Role::Hero, &mut Rng::new(3));
+    assert_eq!(g.mirrored_drive(Role::Hero).weights, g.weights);
+    let m = g.mirrored_drive(Role::Monster);
+    assert_ne!(m.weights, g.weights);
+    assert_eq!(m.mirrored_drive(Role::Monster).weights, g.weights);
+}
