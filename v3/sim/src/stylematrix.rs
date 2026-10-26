@@ -13,3 +13,4 @@ pub struct SideAcc {
     pub wins: u32,
     pub draws: u32,
     pub capped: u32,
+    pub ticks: f64,
