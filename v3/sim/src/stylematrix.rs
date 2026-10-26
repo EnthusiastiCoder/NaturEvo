@@ -35,3 +35,4 @@ pub struct SideAcc {
 }
 
 impl SideAcc {
+    pub fn add(&mut self, m: &Match, r: &MatchResult, who: usize) {
