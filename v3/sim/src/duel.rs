@@ -143,6 +143,32 @@ pub struct MatchResult {
     pub combo_max: [u32; 2],
 }
 
+/// Ticks between two hits of one fighter that still count as one combo.
+pub const COMBO_GAP: u32 = 90;
+
+/// Mean and longest combo of fighter `who` from the ordered hit list (tick, attacker).
+pub fn combos(hit_list: &[(u32, u8)], who: u8) -> (f32, u32) {
+    let (mut n, mut cur, mut best, mut total, mut last) = (0u32, 0u32, 0u32, 0u32, 0u32);
+    for &(t, a) in hit_list {
+        if a == who {
+            if cur > 0 && t.saturating_sub(last) <= COMBO_GAP {
+                cur += 1;
+            } else {
+                if cur > 0 { n += 1; total += cur; }
+                cur = 1;
+            }
+            last = t;
+            best = best.max(cur);
+        } else if cur > 0 {
+            n += 1;
+            total += cur;
+            cur = 0;
+        }
+    }
+    if cur > 0 { n += 1; total += cur; }
+    (if n == 0 { 0.0 } else { total as f32 / n as f32 }, best)
+}
+
 /// First-order low-pass of an action vector: `prev + alpha * (target - prev)`.
 pub fn smooth_toward(prev: &[f32; 12], target: &[f32; 12], alpha: f32) -> [f32; 12] {
     let mut o = [0.0f32; 12];
