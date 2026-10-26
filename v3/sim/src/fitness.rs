@@ -139,6 +139,14 @@ pub fn stats_for(r: &MatchResult, who: usize) -> MatchStats {
         passivity: r.passivity,
         chain_quality: r.chain_quality[who],
         jerk: r.jerk[who],
+        pressure: {
+            let d = &r.defence[1 - who];
+            ((d.parry + d.block + d.dodge + d.hit + d.miss) as f32 / PRESSURE_REF).min(1.0)
+        },
+        accuracy: r.hits[who] as f32 / (r.swings[who] as f32 + 2.0),
+        punish: if r.open_windows[1 - who] > 0 { (r.punish_hits[who] as f32 / r.open_windows[1 - who] as f32).min(1.0) } else { 0.0 },
+        landed_moves: r.landed_moves[who],
+        ticks_frac: (r.ticks as f32 / crate::config::HARD_CAP_TICKS as f32).min(1.0),
     }
 }
 
