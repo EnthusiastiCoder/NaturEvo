@@ -16,3 +16,20 @@ pub enum StyleId {
     Counter,
     Duelist,
 }
+
+impl StyleId {
+    pub const ALL: [StyleId; 3] = [StyleId::Press, StyleId::Counter, StyleId::Duelist];
+    pub fn name(self) -> &'static str {
+        match self {
+            StyleId::Press => "press",
+            StyleId::Counter => "counter",
+            StyleId::Duelist => "duelist",
+        }
+    }
+    pub fn from_name(s: &str) -> Option<StyleId> {
+        StyleId::ALL.iter().copied().find(|x| x.name() == s)
+    }
+    pub fn index(self) -> usize {
+        self as usize
+    }
+}
