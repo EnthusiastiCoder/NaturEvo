@@ -8,3 +8,4 @@ use crate::net::N_OUT;
 
 /// Behaviour totals of one side across fights (divide by `n` for means).
 #[derive(Clone, Debug, Default)]
+pub struct SideAcc {
