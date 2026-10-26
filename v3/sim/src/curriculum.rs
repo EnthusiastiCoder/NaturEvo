@@ -45,13 +45,14 @@ pub enum OppKind {
 
 /// Opponent mix by generation; weights are each above zero and sum to 1.
 /// A (0..29): Dummy .7, tier 1 .3. B (30..79): self-play .3 with tier 1 .7 until 55, then tier 2 .4 and tier 3 .3.
-/// C (80+): hall of fame .25, self-play .3, tier 2 .15, tier 3 .3 (self-play breeds mutual passivity, so it is the minority).
+/// C (80+): hall of fame .22, self-play .25, dummy .08 and tier 1 .05 (a passive target must still be hunted down and
+/// finished), tier 2 .12, tier 3 .28. Self-play breeds mutual passivity, so it is the minority.
 pub fn opponent_mix(gen: u32) -> Vec<(OppKind, f32)> {
     match stage_for_gen(gen) {
         Stage::A => vec![(OppKind::Dummy, 0.7), (OppKind::Skill(1), 0.3)],
         Stage::B if gen < 55 => vec![(OppKind::SelfPlay, 0.3), (OppKind::Skill(1), 0.7)],
         Stage::B => vec![(OppKind::SelfPlay, 0.3), (OppKind::Skill(2), 0.4), (OppKind::Skill(3), 0.3)],
-        Stage::C => vec![(OppKind::Hof, 0.25), (OppKind::SelfPlay, 0.3), (OppKind::Skill(2), 0.15), (OppKind::Skill(3), 0.3)],
+        Stage::C => vec![(OppKind::Hof, 0.22), (OppKind::SelfPlay, 0.25), (OppKind::Dummy, 0.08), (OppKind::Skill(1), 0.05), (OppKind::Skill(2), 0.12), (OppKind::Skill(3), 0.28)],
     }
 }
 
