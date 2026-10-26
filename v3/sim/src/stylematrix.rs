@@ -29,3 +29,4 @@ pub struct SideAcc {
     pub combo_max: f64,
     pub jerk: f64,
     pub tip_jerk: f64,
+    pub swings: f64,
