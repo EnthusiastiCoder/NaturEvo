@@ -78,3 +78,22 @@ fn distillation_is_accurate_and_deterministic() {
     let r = m.run_to_end();
     assert!(r.swings[0] > 0 || r.outcome != Outcome::Draw, "student never engaged");
 }
+
+#[test]
+fn style_training_runs_and_is_thread_independent() {
+    use mech_sim::evolve::{train, TrainConfig};
+    let (seed, _) = distil(StyleId::Counter, &DistilOpts { per_opp: 2, rounds: 0, epochs: 4, lr: 0.004, seed: 2 });
+    let run = |threads: usize, name: &str| {
+        let out = std::env::temp_dir().join(format!("style_train_{}_{}", std::process::id(), name));
+        let mut cfg = TrainConfig::new(3, 8, 3, out.clone());
+        cfg.threads = threads;
+        cfg.style = Some(StyleId::Counter);
+        cfg.seed_genome = Some(seed.clone());
+        cfg.foes = vec![seed.clone()];
+        train(&cfg).unwrap();
+        let t = std::fs::read_to_string(out.join("champion_hero_gen_2.json")).unwrap();
+        let _ = std::fs::remove_dir_all(&out);
+        t
+    };
+    assert_eq!(run(1, "a"), run(3, "b"));
+}
