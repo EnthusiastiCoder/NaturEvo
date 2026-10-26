@@ -6,6 +6,7 @@ use crate::executor::Executor;
 use crate::moveset::{phase_durations, spec, MoveId, MoveParams, Phase};
 use crate::rules::{self, RuleState};
 use crate::skillbot::{is_attack, Request, SkillBot};
+use crate::stylebot::{StyleBot, StyleId};
 use crate::fitness::{self, ThreatOutcome, zone_weight};
 use crate::config::*;
 use crate::genome::Genome;
