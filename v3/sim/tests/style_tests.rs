@@ -63,3 +63,18 @@ fn mirrored_drive_roundtrips_and_leaves_hero_alone() {
     assert_ne!(m.weights, g.weights);
     assert_eq!(m.mirrored_drive(Role::Monster).weights, g.weights);
 }
+
+#[test]
+fn distillation_is_accurate_and_deterministic() {
+    let o = DistilOpts { per_opp: 4, rounds: 1, epochs: 12, lr: 0.004, seed: 5 };
+    let (g1, s1) = distil(StyleId::Press, &o);
+    let (g2, _) = distil(StyleId::Press, &o);
+    assert_eq!(g1.weights, g2.weights, "distillation must be deterministic");
+    assert!(s1.active_acc > 0.85, "active_acc {}", s1.active_acc);
+    assert!(s1.move_acc > 0.85, "move_acc {}", s1.move_acc);
+    // The student must at least walk to the dummy and not stall.
+    let mut m = Match::new(1, Brain::Net(g1.clone()), Brain::Dummy);
+    m.arena = Arena::flat(m.arena.width);
+    let r = m.run_to_end();
+    assert!(r.swings[0] > 0 || r.outcome != Outcome::Draw, "student never engaged");
+}
