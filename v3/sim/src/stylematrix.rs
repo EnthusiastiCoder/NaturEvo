@@ -26,3 +26,4 @@ pub struct SideAcc {
     pub defences: f64,
     pub parry_defs: f64,
     pub combo_mean: f64,
+    pub combo_max: f64,
