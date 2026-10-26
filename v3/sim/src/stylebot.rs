@@ -61,3 +61,11 @@ fn tune(s: StyleId) -> Tune {
         StyleId::Duelist => Tune { approach: 2.2, retreat: 1.95, react_at: 0.15, strike_max: 2.2 },
     }
 }
+
+pub struct StyleBot {
+    style: StyleId,
+    /// Per-fight personality jitter (spacing and reaction), fixed by the seed.
+    jitter: [f32; 3],
+    last_x: f32,
+    stuck: f32,
+}
