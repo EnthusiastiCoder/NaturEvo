@@ -134,6 +134,13 @@ pub struct MatchResult {
     pub open_windows: [u32; 2],
     /// Distinct attack moves each fighter landed a hit with.
     pub landed_moves: [u32; 2],
+    /// Mean torso distance over the fight, metres.
+    pub gap_mean: f32,
+    /// Mean torso distance over the ticks the fighters were within 4 m of each other.
+    pub engaged_gap: f32,
+    /// Mean and longest combo (hits by one fighter with no hit by the other and gaps of at most `COMBO_GAP` ticks).
+    pub combo_mean: [f32; 2],
+    pub combo_max: [u32; 2],
 }
 
 /// First-order low-pass of an action vector: `prev + alpha * (target - prev)`.
