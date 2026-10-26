@@ -29,6 +29,11 @@ pub enum Brain {
     Fixed([f32; 12]),
     /// Scripted skill tier 1 (Brawler), 2 (Reactive) or 3 (Duellist), driven through the Executor.
     Skill(u8),
+    /// Scripted style teacher (press, counter, duelist), driven through the Executor.
+    Style(StyleId),
+    /// A net that acts while a shadow style teacher watches the same fight; the teacher's choices are only recorded
+    /// (imitation with the student's own state distribution).
+    Student(Genome, StyleId),
     /// Test support: walks in and requests this move whenever the executor can start one; never defends.
     Spam(MoveId),
     /// Test support: as `Spam`, requesting the listed moves in round-robin order.
