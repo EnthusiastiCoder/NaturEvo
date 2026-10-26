@@ -5,3 +5,5 @@ use crate::duel::{Brain, Match, MatchResult, Outcome};
 use crate::grace::match_grace;
 use crate::moveset::N_MOVES;
 use crate::net::N_OUT;
+
+/// Behaviour totals of one side across fights (divide by `n` for means).
