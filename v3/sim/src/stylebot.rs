@@ -133,3 +133,28 @@ impl StyleBot {
             }
         }
     }
+
+    /// Answer to a telegraphed attack, chosen by what is coming.
+    fn defend(&self, theirs: &MoveInfo, dist: f32) -> Request {
+        if dist > 2.7 {
+            return None;
+        }
+        match theirs.id {
+            MoveId::Thrust => {
+                if self.style == StyleId::Press {
+                    Some((MoveId::Parry, p(0.5, 0.9, 0.5, 0.0)))
+                } else {
+                    Some((MoveId::Backstep, p(0.8, 0.9, 0.5, 0.0)))
+                }
+            }
+            MoveId::Overhead | MoveId::DiagDown => Some((MoveId::Parry, p(0.5, 0.9, 0.5, 0.0))),
+            MoveId::DiagUp | MoveId::LowCut | MoveId::Sweep | MoveId::Kick | MoveId::ShieldBash | MoveId::Riposte => {
+                match self.style {
+                    StyleId::Press => None,
+                    StyleId::Counter => Some((MoveId::Parry, p(0.5, 0.9, 0.5, 0.0))),
+                    StyleId::Duelist => Some((MoveId::Guard, p(0.5, 0.8, 0.5, 0.0))),
+                }
+            }
+            _ => None,
+        }
+    }
