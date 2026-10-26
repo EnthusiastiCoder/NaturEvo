@@ -66,3 +66,9 @@ fn stage_c_mix_has_more_aggressive_bots_and_less_self_play() {
     assert!(mix.iter().any(|(k, _)| *k == OppKind::Skill(2)));
     assert!(w(&|k| k == OppKind::Hof) >= 0.2);
 }
+
+#[test]
+fn stage_c_keeps_a_passive_target_so_finishing_is_trained() {
+    let mix = opponent_mix(500);
+    assert!(mix.iter().any(|(k, w)| *k == OppKind::Dummy && *w >= 0.05));
+}
