@@ -12,3 +12,11 @@ fn flat_win_rate(a: Brain, b: Brain, seeds: u64) -> f64 {
     let (x, _) = run_pair(&a, &b, seeds, true);
     x.win_rate()
 }
+
+#[test]
+fn teachers_beat_dummy_on_flat_arena() {
+    for st in StyleId::ALL {
+        let w = flat_win_rate(Brain::Style(st), Brain::Dummy, 20);
+        assert!(w >= 0.9, "{} beat the dummy in {:.2}", st.name(), w);
+    }
+}
