@@ -15,9 +15,9 @@ pub const W_JERK: f32 = 8.0;
 pub const KO_BONUS: f32 = 1.0;
 /// Credit for hits per swing (attack moves started, smoothed), for hits on punish windows, and per distinct attack
 /// move that actually landed (saturates at `VARIETY_MAX`). Never paid for guarding, blocking or parrying.
-pub const W_ACCURACY: f32 = 1.0;
-pub const W_PUNISH: f32 = 1.0;
-pub const W_VARIETY: f32 = 0.3;
+pub const W_ACCURACY: f32 = 2.0;
+pub const W_PUNISH: f32 = 2.0;
+pub const W_VARIETY: f32 = 0.6;
 pub const VARIETY_MAX: u32 = 4;
 /// Live threats a fighter must create to earn full pressure credit in a capped fight.
 pub const PRESSURE_REF: f32 = 8.0;
