@@ -29,3 +29,17 @@ fn teachers_are_decisive_against_skill2() {
         assert!(x.capped_share() <= 0.2, "{} capped {:.2}", st.name(), x.capped_share());
     }
 }
+
+#[test]
+fn style_metrics_differ() {
+    let m = |st: StyleId| {
+        let (x, _) = run_pair(&Brain::Style(st), &Brain::Skill(2), 20, true);
+        (x.hits_per_swing(), x.combo(), x.mean_ticks())
+    };
+    let (p, c, d) = (m(StyleId::Press), m(StyleId::Counter), m(StyleId::Duelist));
+    let spread = |f: &dyn Fn(&(f64, f64, f64)) -> f64| {
+        let v = [f(&p), f(&c), f(&d)];
+        v.iter().cloned().fold(f64::MIN, f64::max) - v.iter().cloned().fold(f64::MAX, f64::min)
+    };
+    assert!(spread(&|t| t.0) > 0.2 || spread(&|t| t.1) > 0.3 || spread(&|t| t.2) > 100.0, "styles are not distinguishable: {:?} {:?} {:?}", p, c, d);
+}
