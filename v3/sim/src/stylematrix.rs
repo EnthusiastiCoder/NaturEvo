@@ -51,3 +51,4 @@ impl SideAcc {
         for i in 0..N_MOVES {
             if g.usage[i] > 0.0 {
                 self.union_moves[i] = true;
+            }
