@@ -22,3 +22,4 @@ pub struct SideAcc {
     pub hits_per_swing: f64,
     pub whiff: f64,
     pub punish: f64,
+    pub parry_hits: f64,
