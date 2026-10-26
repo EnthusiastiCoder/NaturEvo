@@ -10,3 +10,4 @@ use crate::net::N_OUT;
 #[derive(Clone, Debug, Default)]
 pub struct SideAcc {
     pub n: u32,
+    pub wins: u32,
