@@ -465,6 +465,7 @@ impl Match {
         let live = self.last_live[i].map_or(false, |t| self.tick.saturating_sub(t) <= 6);
         let tick = self.tick;
         let (me, opp) = (&self.robots[i], &self.robots[1 - i]);
+        let mut shadow: Option<(Request, f32)> = None;
         let (req, drive): (Request, f32) = match &mut self.ctl[i] {
             Ctl::Dummy => return scripted::dummy(),
             Ctl::Fixed(a) => return *a,
