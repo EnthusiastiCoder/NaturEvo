@@ -43,3 +43,14 @@ fn style_metrics_differ() {
     };
     assert!(spread(&|t| t.0) > 0.2 || spread(&|t| t.1) > 0.3 || spread(&|t| t.2) > 100.0, "styles are not distinguishable: {:?} {:?} {:?}", p, c, d);
 }
+
+#[test]
+fn teacher_fights_are_deterministic() {
+    let run = || {
+        let mut m = Match::new(7, Brain::Style(StyleId::Press), Brain::Style(StyleId::Counter));
+        m.arena = Arena::flat(m.arena.width);
+        let r = m.run_to_end();
+        (r.ticks, r.outcome, r.hits, r.swings)
+    };
+    assert_eq!(run(), run());
+}
