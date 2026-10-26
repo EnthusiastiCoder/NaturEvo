@@ -1,5 +1,6 @@
 //! Mech duel neuroevolution simulator (v3). Zero third-party crates.
 pub mod arena;
+pub mod capdiag;
 pub mod cli;
 pub mod combat;
 pub mod config;
