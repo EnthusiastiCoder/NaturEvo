@@ -36,3 +36,4 @@ pub struct SideAcc {
 
 impl SideAcc {
     pub fn add(&mut self, m: &Match, r: &MatchResult, who: usize) {
+        let g = match_grace(m, who);
