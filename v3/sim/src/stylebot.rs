@@ -80,3 +80,56 @@ impl StyleBot {
     pub fn style(&self) -> StyleId {
         self.style
     }
+
+    /// The attack for the situation: a pure function of distance and the opponent's state.
+    fn pick_attack(&self, dist: f32, theirs: &MoveInfo, opp_open: bool) -> (MoveId, MoveParams) {
+        let guard_up = theirs.id == MoveId::Guard && theirs.phase != Phase::Idle;
+        let st = self.style;
+        if dist < CLOSE {
+            return if guard_up { (MoveId::ShieldBash, p(0.8, 0.9, 0.5, 0.0)) } else { (MoveId::Kick, p(0.8, 0.9, 0.5, 0.0)) };
+        }
+        if guard_up && dist < 1.7 {
+            return (MoveId::ShieldBash, p(0.8, 0.9, 0.5, 0.0));
+        }
+        if opp_open {
+            let id = if dist > 1.7 { MoveId::DiagUp } else { MoveId::Thrust };
+            return (id, p(0.95, 1.0, 0.5, 0.0));
+        }
+        if guard_up {
+            return (MoveId::LowCut, p(0.9, 0.95, 0.5, 0.0));
+        }
+        if theirs.id == MoveId::Backstep && theirs.phase != Phase::Idle {
+            return (MoveId::Sweep, p(1.0, 1.0, 0.5, 0.0));
+        }
+        match st {
+            StyleId::Press => {
+                if dist > 1.95 {
+                    (MoveId::DiagUp, p(0.95, 1.0, 0.45, 0.0))
+                } else if dist > 1.7 {
+                    (MoveId::Overhead, p(0.95, 1.0, 0.45, 0.0))
+                } else if dist > 1.5 {
+                    (MoveId::DiagDown, p(0.95, 1.0, 0.45, 0.0))
+                } else {
+                    (MoveId::Thrust, p(0.9, 1.0, 0.45, 0.0))
+                }
+            }
+            StyleId::Counter => {
+                if dist > 1.9 {
+                    (MoveId::DiagUp, p(0.9, 0.95, 0.45, 0.0))
+                } else if dist > 1.6 {
+                    (MoveId::Overhead, p(0.9, 0.95, 0.45, 0.0))
+                } else {
+                    (MoveId::DiagDown, p(0.9, 0.95, 0.45, 0.0))
+                }
+            }
+            StyleId::Duelist => {
+                if dist > 1.95 {
+                    (MoveId::Thrust, p(1.0, 0.95, 0.5, 0.0))
+                } else if dist > 1.7 {
+                    (MoveId::DiagUp, p(0.95, 0.95, 0.5, 0.55))
+                } else {
+                    (MoveId::DiagDown, p(0.9, 0.95, 0.5, 0.55))
+                }
+            }
+        }
+    }
