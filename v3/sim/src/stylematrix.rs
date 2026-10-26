@@ -45,3 +45,4 @@ impl SideAcc {
         if r.outcome == Outcome::Draw {
             self.draws += 1;
         }
+        self.capped += r.capped as u32;
