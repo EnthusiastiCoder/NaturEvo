@@ -285,6 +285,23 @@ pub struct Match {
     pub recorder: Option<Recorder>,
 }
 
+/// One imitation sample (drive is stored in the fighter's own frame: positive = toward the way it faces): what the fighter sensed on a decision tick and what the teacher asked for in that window.
+#[derive(Clone, Debug)]
+pub struct Sample {
+    pub x: Vec<f32>,
+    pub mv: u8,
+    pub params: [f32; 4],
+    pub drive: f32,
+    pub n: u8,
+}
+
+/// Records the teacher's choices for fighter `side`, one sample per decision tick.
+#[derive(Clone, Debug)]
+pub struct Recorder {
+    pub side: usize,
+    pub samples: Vec<Sample>,
+}
+
 fn make_ctl(b: Brain, seed: u64, salt: u64) -> Ctl {
     match b {
         Brain::Net(g) => Ctl::Net(Box::new(Net::from_genome(&g)), None, 0.0),
