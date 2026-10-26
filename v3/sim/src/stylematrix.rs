@@ -39,3 +39,4 @@ impl SideAcc {
         let g = match_grace(m, who);
         self.n += 1;
         let mine = if who == 0 { Outcome::WinA } else { Outcome::WinB };
+        if r.outcome == mine {
