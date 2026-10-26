@@ -482,6 +482,19 @@ impl Match {
                 (req, *hdrive)
             }
             Ctl::Skill(b) => b.act(me, opp, &mine, &theirs, live, PHYS_DT),
+            Ctl::Style(b) => b.act(me, opp, &mine, &theirs, live, PHYS_DT),
+            Ctl::Student(net, held, hdrive, teacher) => {
+                shadow = Some(teacher.act(me, opp, &mine, &theirs, live, PHYS_DT));
+                let mut req = None;
+                if tick % DECISION_TICKS == 0 {
+                    let x = observe_moves(me, opp, &self.arena, &mine, &theirs);
+                    let d = decode(&net.forward(&x));
+                    *held = if d.mv == MoveId::Idle { None } else { Some((d.mv, d.params)) };
+                    *hdrive = d.drive;
+                    req = *held;
+                }
+                (req, *hdrive)
+            }
             Ctl::Cycle(list, k, pending) => {
                 if *pending && mine.phase != Phase::Idle {
                     *k += 1;
