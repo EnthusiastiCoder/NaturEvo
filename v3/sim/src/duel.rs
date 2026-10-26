@@ -1136,6 +1136,10 @@ impl Match {
             punish_hits: [self.grace[0].punish_hits, self.grace[1].punish_hits],
             open_windows: self.open_windows,
             landed_moves: [self.hit_mask[0].count_ones(), self.hit_mask[1].count_ones()],
+            gap_mean: (self.gap_total / self.adv_ticks.max(1) as f64) as f32,
+            engaged_gap: if self.engaged_ticks > 0 { (self.engaged_total / self.engaged_ticks as f64) as f32 } else { 4.0 },
+            combo_mean: [combos(&self.hit_list, 0).0, combos(&self.hit_list, 1).0],
+            combo_max: [combos(&self.hit_list, 0).1, combos(&self.hit_list, 1).1],
         }
     }
 
