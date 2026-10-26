@@ -21,3 +21,4 @@ pub struct SideAcc {
     pub spacing_std: f64,
     pub hits_per_swing: f64,
     pub whiff: f64,
+    pub punish: f64,
