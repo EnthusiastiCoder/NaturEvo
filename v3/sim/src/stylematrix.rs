@@ -16,3 +16,4 @@ pub struct SideAcc {
     pub ticks: f64,
     pub distinct: f64,
     pub union_moves: [bool; N_MOVES],
+    pub gap_mean: f64,
