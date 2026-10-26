@@ -24,3 +24,4 @@ pub struct SideAcc {
     pub punish: f64,
     pub parry_hits: f64,
     pub defences: f64,
+    pub parry_defs: f64,
