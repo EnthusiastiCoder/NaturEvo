@@ -145,6 +145,12 @@ pub fn run(args: &[String]) -> Result<(), String> {
         Some("train") => train_cmd(&args[1..]),
         Some("eval") => eval_cmd(&args[1..]),
         Some("diag") => diag_cmd(&args[1..]),
+        Some("capdiag") => {
+            let runs: Vec<String> = need(&args[1..], "--runs")?.split(',').map(|s| s.to_string()).collect();
+            let seeds: u64 = opt(&args[1..], "--seeds").unwrap_or("4").parse().map_err(|_| "bad --seeds".to_string())?;
+            print!("{}", crate::capdiag::capdiag(&runs, seeds)?);
+            Ok(())
+        }
         Some("compare") => compare_cmd(&args[1..]),
         Some(other) => Err(format!("unknown command: {}", other)),
         None => Err("usage: mech-sim <fight|train|eval|compare> [options]".to_string()),
