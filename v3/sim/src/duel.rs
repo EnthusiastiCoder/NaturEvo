@@ -510,6 +510,27 @@ impl Match {
                 (req, drive)
             }
         };
+        if self.recorder.as_ref().map_or(false, |r| r.side == i) {
+            let x = if tick % DECISION_TICKS == 0 { Some(observe_moves(&self.robots[i], &self.robots[1 - i], &self.arena, &mine, &theirs)) } else { None };
+            let (req, drive) = shadow.unwrap_or((req, drive));
+            let facing = if self.robots[i].facing >= 0.0 { 1.0 } else { -1.0 };
+            let rec = self.recorder.as_mut().unwrap();
+            if let Some(x) = x {
+                rec.samples.push(Sample { x: x.to_vec(), mv: 0, params: [0.5; 4], drive: 0.0, n: 0 });
+            }
+            if let Some(s) = rec.samples.last_mut() {
+                if s.n < DECISION_TICKS as u8 {
+                    if s.mv == 0 {
+                        if let Some((m, pr)) = req {
+                            s.mv = m.index() as u8;
+                            s.params = [pr.reach, pr.speed, pr.arc, pr.delay];
+                        }
+                    }
+                    s.drive += drive * facing;
+                    s.n += 1;
+                }
+            }
+        }
         let riposte = self.rules[i].riposte_open();
         let before = self.exec[i].energy_spent();
         self.exec[i].set_threat(live);
