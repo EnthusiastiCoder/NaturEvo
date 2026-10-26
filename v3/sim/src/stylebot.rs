@@ -37,3 +37,7 @@ impl StyleId {
 fn p(reach: f32, speed: f32, arc: f32, delay: f32) -> MoveParams {
     MoveParams { reach, speed, arc, delay }
 }
+
+const SWING_MAX: f32 = 2.2;
+const STUCK_RANGE: f32 = 2.55;
+const CLOSE: f32 = 1.35;
