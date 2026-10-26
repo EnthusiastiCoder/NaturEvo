@@ -32,3 +32,4 @@ pub struct SideAcc {
     pub swings: f64,
     pub hits: f64,
     pub usage: [f64; N_MOVES],
+}
