@@ -19,3 +19,4 @@ pub struct SideAcc {
     pub gap_mean: f64,
     pub engaged_gap: f64,
     pub spacing_std: f64,
+    pub hits_per_swing: f64,
