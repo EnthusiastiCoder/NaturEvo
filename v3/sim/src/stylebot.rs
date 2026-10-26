@@ -207,3 +207,41 @@ impl StyleBot {
         }
         self.last_x = me.x;
         let stuck = self.stuck > 0.3;
+
+        // Riposte right after a successful parry (all styles).
+        if mine.riposte_remaining > 0.0 && idle && dist <= SWING_MAX + 0.3 {
+            return (Some((MoveId::Riposte, p(0.9, 1.0, 0.5, 0.0))), drive);
+        }
+        // Feint: the swing would meet a raised parry, so cancel it and strike once the parry is spent.
+        if self.style == StyleId::Duelist && mine.phase == Phase::Windup && mine.progress >= 0.35 && mine.progress <= 0.55 && is_attack(mine.id) && theirs.id == MoveId::Parry && theirs.phase != Phase::Idle {
+            return (Some((MoveId::Feint, p(0.5, 0.5, 0.5, 0.0))), drive);
+        }
+        // Answer a telegraph once it is committed.
+        let telegraph = their_attack && theirs.phase == Phase::Windup && theirs.progress >= t.react_at || their_attack && theirs.phase == Phase::Active;
+        if telegraph && idle && !opp_open {
+            if let Some(d) = self.defend(theirs, dist) {
+                return (Some(d), drive);
+            }
+        }
+        // Counter: a defended swing leaves the attacker in recovery; the counter-fighter answers at once.
+        let in_range = dist <= if stuck { STUCK_RANGE } else if down { 1.85 } else { t.strike_max };
+        let chain = mine.phase == Phase::Recovery && mine.progress >= 0.75 && self.style == StyleId::Press && is_attack(mine.id);
+        if (idle || chain) && in_range {
+            let punishable = opp_open || theirs.phase == Phase::Recovery && is_attack(theirs.id);
+            let allowed = match self.style {
+                StyleId::Press => !their_attack || opp_open,
+                StyleId::Counter => (opp_idle || punishable) && !their_attack,
+                StyleId::Duelist => (opp_idle || punishable || guard_up) && !their_attack,
+            };
+            if down {
+                let (id, pr) = if dist < 1.5 { (MoveId::Thrust, p(0.9, 1.0, 0.5, 0.0)) } else { (MoveId::Overhead, p(0.9, 1.0, 0.5, 0.0)) };
+                return (Some((id, pr)), drive);
+            }
+            if allowed && (dist >= 1.0 || stuck) {
+                let (id, pr) = self.pick_attack(dist, theirs, opp_open || punishable);
+                return (Some((id, pr)), drive);
+            }
+        }
+        (None, drive)
+    }
+}
