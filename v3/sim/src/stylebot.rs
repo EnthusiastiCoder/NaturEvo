@@ -53,3 +53,11 @@ struct Tune {
     /// Strike only from at most this distance.
     strike_max: f32,
 }
+
+fn tune(s: StyleId) -> Tune {
+    match s {
+        StyleId::Press => Tune { approach: 1.75, retreat: 1.1, react_at: 0.75, strike_max: 2.2 },
+        StyleId::Counter => Tune { approach: 2.1, retreat: 1.85, react_at: 0.0, strike_max: 2.15 },
+        StyleId::Duelist => Tune { approach: 2.2, retreat: 1.95, react_at: 0.15, strike_max: 2.2 },
+    }
+}
