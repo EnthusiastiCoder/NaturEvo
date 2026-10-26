@@ -42,3 +42,4 @@ impl SideAcc {
         if r.outcome == mine {
             self.wins += 1;
         }
+        if r.outcome == Outcome::Draw {
