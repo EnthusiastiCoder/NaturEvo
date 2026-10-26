@@ -684,6 +684,12 @@ impl Match {
             self.hitstop -= 1;
         } else {
             self.adv_ticks += 1;
+            let gap = (self.robots[0].x - self.robots[1].x).abs();
+            self.gap_total += gap as f64;
+            if gap < 4.0 {
+                self.engaged_total += gap as f64;
+                self.engaged_ticks += 1;
+            }
             self.advance_fighters();
             self.update_threats_pre();
             self.run_combat();
