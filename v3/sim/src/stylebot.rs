@@ -41,3 +41,15 @@ fn p(reach: f32, speed: f32, arc: f32, delay: f32) -> MoveParams {
 const SWING_MAX: f32 = 2.2;
 const STUCK_RANGE: f32 = 2.55;
 const CLOSE: f32 = 1.35;
+
+/// Per-style tuning: preferred spacing, reaction point and the like.
+struct Tune {
+    /// Walk toward the opponent beyond this torso distance while it is idle.
+    approach: f32,
+    /// Back off below this distance while idle (0 = never).
+    retreat: f32,
+    /// A telegraph is answered once its windup progress passes this.
+    react_at: f32,
+    /// Strike only from at most this distance.
+    strike_max: f32,
+}
