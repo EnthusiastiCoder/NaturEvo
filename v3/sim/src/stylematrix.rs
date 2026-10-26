@@ -15,3 +15,4 @@ pub struct SideAcc {
     pub capped: u32,
     pub ticks: f64,
     pub distinct: f64,
+    pub union_moves: [bool; N_MOVES],
