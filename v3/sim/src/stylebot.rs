@@ -76,3 +76,7 @@ impl StyleBot {
         let jitter = [rng.range(-0.12, 0.12), rng.range(-0.1, 0.1), rng.range(-0.08, 0.08)];
         StyleBot { style, jitter, last_x: f32::NAN, stuck: 0.0 }
     }
+
+    pub fn style(&self) -> StyleId {
+        self.style
+    }
