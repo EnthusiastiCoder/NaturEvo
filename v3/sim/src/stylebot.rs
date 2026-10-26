@@ -158,3 +158,21 @@ impl StyleBot {
             _ => None,
         }
     }
+
+    /// One tick: the move request and the footwork drive.
+    pub fn act(&mut self, me: &Robot, opp: &Robot, mine: &MoveInfo, theirs: &MoveInfo, _live_threat: bool, dt: f32) -> (Request, f32) {
+        let mut t = tune(self.style);
+        t.approach += self.jitter[0];
+        t.retreat += self.jitter[0] * 0.8;
+        t.react_at = (t.react_at + self.jitter[1]).max(0.0);
+        t.strike_max += self.jitter[2];
+        let dx = opp.x - me.x;
+        let dist = dx.abs();
+        let dir = if dx >= 0.0 { 1.0 } else { -1.0 };
+        let idle = mine.phase == Phase::Idle;
+        let down = opp.state() == State::Fallen;
+        let stag = opp.state() == State::Staggered;
+        let opp_open = theirs.open || stag || down;
+        let their_attack = is_attack(theirs.id) && matches!(theirs.phase, Phase::Windup | Phase::Active);
+        let guard_up = theirs.id == MoveId::Guard && theirs.phase != Phase::Idle;
+        let opp_idle = theirs.phase == Phase::Idle;
