@@ -43,3 +43,4 @@ impl SideAcc {
             self.wins += 1;
         }
         if r.outcome == Outcome::Draw {
+            self.draws += 1;
