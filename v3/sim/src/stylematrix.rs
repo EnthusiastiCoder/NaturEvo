@@ -12,3 +12,4 @@ pub struct SideAcc {
     pub n: u32,
     pub wins: u32,
     pub draws: u32,
+    pub capped: u32,
