@@ -176,3 +176,34 @@ impl StyleBot {
         let their_attack = is_attack(theirs.id) && matches!(theirs.phase, Phase::Windup | Phase::Active);
         let guard_up = theirs.id == MoveId::Guard && theirs.phase != Phase::Idle;
         let opp_idle = theirs.phase == Phase::Idle;
+
+        // Footwork.
+        let mut drive = 0.0;
+        if down {
+            if dist > 1.6 {
+                drive = dir;
+            }
+        } else if their_attack && self.style != StyleId::Press && dist < 2.9 {
+            drive = -dir;
+        } else if their_attack && dist > t.strike_max {
+            drive = 0.0;
+        } else if opp_open && dist > 1.8 {
+            drive = dir;
+        } else if guard_up && dist > 1.5 {
+            drive = dir;
+        } else if dist > t.approach {
+            drive = dir;
+        } else if dist < t.retreat && idle && !opp_open {
+            drive = -dir * 0.7;
+        }
+        // After a swing the duelist and counter-fighter slip back out of reach while recovering.
+        if mine.phase == Phase::Recovery && is_attack(mine.id) && matches!(self.style, StyleId::Duelist | StyleId::Counter) && !opp_open {
+            drive = -dir;
+        }
+        if drive != 0.0 && (me.x - self.last_x).abs() < 1e-5 {
+            self.stuck += dt
+        } else {
+            self.stuck = 0.0
+        }
+        self.last_x = me.x;
+        let stuck = self.stuck > 0.3;
