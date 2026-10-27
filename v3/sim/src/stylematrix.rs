@@ -56,3 +56,4 @@ impl SideAcc {
         }
         self.gap_mean += r.gap_mean as f64;
         self.engaged_gap += r.engaged_gap as f64;
+        self.spacing_std += g.spacing_std as f64;
