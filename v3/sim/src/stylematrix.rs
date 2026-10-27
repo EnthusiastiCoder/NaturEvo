@@ -71,3 +71,4 @@ impl SideAcc {
         self.swings += r.swings[who] as f64;
         self.hits += r.hits[who] as f64;
     }
+    fn mean(&self, v: f64) -> f64 {
