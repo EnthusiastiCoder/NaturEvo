@@ -72,3 +72,4 @@ impl SideAcc {
         self.hits += r.hits[who] as f64;
     }
     fn mean(&self, v: f64) -> f64 {
+        v / self.n.max(1) as f64
