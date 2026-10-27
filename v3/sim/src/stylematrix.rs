@@ -59,3 +59,4 @@ impl SideAcc {
         self.spacing_std += g.spacing_std as f64;
         self.hits_per_swing += g.hits_per_swing as f64;
         self.whiff += g.whiff_rate as f64;
+        self.punish += g.punish_rate as f64;
