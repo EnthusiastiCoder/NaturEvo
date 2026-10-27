@@ -64,3 +64,4 @@ impl SideAcc {
         let tot = (d.parry + d.block + d.dodge) as f64;
         self.defences += tot;
         self.parry_defs += d.parry as f64;
+        self.combo_mean += r.combo_mean[who] as f64;
