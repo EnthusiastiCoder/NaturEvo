@@ -61,3 +61,4 @@ impl SideAcc {
         self.whiff += g.whiff_rate as f64;
         self.punish += g.punish_rate as f64;
         let d = &r.defence[who];
+        let tot = (d.parry + d.block + d.dodge) as f64;
