@@ -60,3 +60,4 @@ impl SideAcc {
         self.hits_per_swing += g.hits_per_swing as f64;
         self.whiff += g.whiff_rate as f64;
         self.punish += g.punish_rate as f64;
+        let d = &r.defence[who];
