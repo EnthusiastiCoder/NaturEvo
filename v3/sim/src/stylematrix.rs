@@ -77,3 +77,4 @@ impl SideAcc {
     pub fn win_rate(&self) -> f64 {
         self.mean(self.wins as f64)
     }
+    pub fn distinct_moves(&self) -> f64 {
