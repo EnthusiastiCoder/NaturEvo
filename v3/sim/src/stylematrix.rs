@@ -53,3 +53,4 @@ impl SideAcc {
                 self.union_moves[i] = true;
             }
             self.usage[i] += g.usage[i] as f64;
+        }
