@@ -70,3 +70,4 @@ impl SideAcc {
         self.tip_jerk += g.jerk as f64;
         self.swings += r.swings[who] as f64;
         self.hits += r.hits[who] as f64;
+    }
