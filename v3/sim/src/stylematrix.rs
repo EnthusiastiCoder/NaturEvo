@@ -62,3 +62,4 @@ impl SideAcc {
         self.punish += g.punish_rate as f64;
         let d = &r.defence[who];
         let tot = (d.parry + d.block + d.dodge) as f64;
+        self.defences += tot;
