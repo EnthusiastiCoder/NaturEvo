@@ -68,3 +68,4 @@ impl SideAcc {
         self.combo_max += r.combo_max[who] as f64;
         self.jerk += r.jerk[who] as f64;
         self.tip_jerk += g.jerk as f64;
+        self.swings += r.swings[who] as f64;
