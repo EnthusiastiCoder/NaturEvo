@@ -79,3 +79,4 @@ impl SideAcc {
     }
     pub fn distinct_moves(&self) -> f64 {
         self.mean(self.distinct)
+    }
