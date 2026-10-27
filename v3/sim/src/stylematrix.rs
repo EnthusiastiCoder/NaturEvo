@@ -75,3 +75,4 @@ impl SideAcc {
         v / self.n.max(1) as f64
     }
     pub fn win_rate(&self) -> f64 {
+        self.mean(self.wins as f64)
