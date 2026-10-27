@@ -76,3 +76,4 @@ impl SideAcc {
     }
     pub fn win_rate(&self) -> f64 {
         self.mean(self.wins as f64)
+    }
