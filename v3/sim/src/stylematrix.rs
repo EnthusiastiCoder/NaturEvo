@@ -73,3 +73,4 @@ impl SideAcc {
     }
     fn mean(&self, v: f64) -> f64 {
         v / self.n.max(1) as f64
+    }
