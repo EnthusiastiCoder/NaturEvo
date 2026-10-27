@@ -54,3 +54,4 @@ impl SideAcc {
             }
             self.usage[i] += g.usage[i] as f64;
         }
+        self.gap_mean += r.gap_mean as f64;
