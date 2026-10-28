@@ -87,3 +87,4 @@ impl SideAcc {
         self.mean(self.hits_per_swing)
     }
     pub fn capped_share(&self) -> f64 {
+        self.mean(self.capped as f64)
