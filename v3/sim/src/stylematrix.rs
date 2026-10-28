@@ -89,3 +89,4 @@ impl SideAcc {
     pub fn capped_share(&self) -> f64 {
         self.mean(self.capped as f64)
     }
+    pub fn mean_ticks(&self) -> f64 {
