@@ -126,3 +126,4 @@ pub fn run_pair(a: &Brain, b: &Brain, seeds: u64, flat: bool) -> (SideAcc, SideA
         if flat {
             m.arena = Arena::flat(m.arena.width);
         }
+        let r = m.run_to_end();
