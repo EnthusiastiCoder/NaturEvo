@@ -95,3 +95,4 @@ impl SideAcc {
     pub fn combo(&self) -> f64 {
         self.mean(self.combo_mean)
     }
+    pub fn parry_share(&self) -> f64 {
