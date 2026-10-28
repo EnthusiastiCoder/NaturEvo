@@ -92,3 +92,4 @@ impl SideAcc {
     pub fn mean_ticks(&self) -> f64 {
         self.mean(self.ticks)
     }
+    pub fn combo(&self) -> f64 {
