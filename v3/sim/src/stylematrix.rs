@@ -112,3 +112,4 @@ impl SideAcc {
             (&mut self.hits_per_swing, o.hits_per_swing), (&mut self.whiff, o.whiff), (&mut self.punish, o.punish), (&mut self.parry_hits, o.parry_hits),
             (&mut self.defences, o.defences), (&mut self.parry_defs, o.parry_defs), (&mut self.combo_mean, o.combo_mean), (&mut self.combo_max, o.combo_max),
             (&mut self.jerk, o.jerk), (&mut self.tip_jerk, o.tip_jerk), (&mut self.swings, o.swings), (&mut self.hits, o.hits),
+        ] {
