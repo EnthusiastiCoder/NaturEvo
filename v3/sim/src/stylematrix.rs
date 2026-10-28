@@ -114,3 +114,4 @@ impl SideAcc {
             (&mut self.jerk, o.jerk), (&mut self.tip_jerk, o.tip_jerk), (&mut self.swings, o.swings), (&mut self.hits, o.hits),
         ] {
             *a += b;
+        }
