@@ -101,3 +101,4 @@ impl SideAcc {
     pub fn merge(&mut self, o: &SideAcc) {
         self.n += o.n;
         self.wins += o.wins;
+        self.draws += o.draws;
