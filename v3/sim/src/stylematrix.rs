@@ -106,3 +106,4 @@ impl SideAcc {
         for i in 0..N_MOVES {
             self.union_moves[i] |= o.union_moves[i];
             self.usage[i] += o.usage[i];
+        }
