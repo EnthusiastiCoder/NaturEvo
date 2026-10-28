@@ -108,3 +108,4 @@ impl SideAcc {
             self.usage[i] += o.usage[i];
         }
         for (a, b) in [
+            (&mut self.ticks, o.ticks), (&mut self.distinct, o.distinct), (&mut self.gap_mean, o.gap_mean), (&mut self.engaged_gap, o.engaged_gap), (&mut self.spacing_std, o.spacing_std),
