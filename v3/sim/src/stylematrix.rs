@@ -96,3 +96,4 @@ impl SideAcc {
         self.mean(self.combo_mean)
     }
     pub fn parry_share(&self) -> f64 {
+        if self.defences > 0.0 { self.parry_defs / self.defences } else { 0.0 }
