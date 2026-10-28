@@ -129,3 +129,4 @@ pub fn run_pair(a: &Brain, b: &Brain, seeds: u64, flat: bool) -> (SideAcc, SideA
         let r = m.run_to_end();
         sa.add(&m, &r, 0);
         sb.add(&m, &r, 1);
+    }
