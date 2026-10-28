@@ -117,3 +117,5 @@ impl SideAcc {
         }
     }
 }
+
+/// Fights `a` (slot 0) against `b` (slot 1) on seeds 1000..1000+seeds; `flat` removes the arena obstacles.
