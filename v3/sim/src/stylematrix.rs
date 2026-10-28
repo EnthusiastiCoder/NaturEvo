@@ -132,3 +132,5 @@ pub fn run_pair(a: &Brain, b: &Brain, seeds: u64, flat: bool) -> (SideAcc, SideA
     }
     (sa, sb)
 }
+
+/// One named contestant: the brain it uses in slot 0 and in slot 1.
