@@ -104,3 +104,4 @@ impl SideAcc {
         self.draws += o.draws;
         self.capped += o.capped;
         for i in 0..N_MOVES {
+            self.union_moves[i] |= o.union_moves[i];
