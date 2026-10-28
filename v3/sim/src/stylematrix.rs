@@ -102,3 +102,4 @@ impl SideAcc {
         self.n += o.n;
         self.wins += o.wins;
         self.draws += o.draws;
+        self.capped += o.capped;
