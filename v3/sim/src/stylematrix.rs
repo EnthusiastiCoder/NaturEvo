@@ -83,3 +83,4 @@ impl SideAcc {
     pub fn gap(&self) -> f64 {
         self.mean(self.gap_mean)
     }
+    pub fn hits_per_swing(&self) -> f64 {
