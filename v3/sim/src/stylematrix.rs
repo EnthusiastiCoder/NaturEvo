@@ -90,3 +90,4 @@ impl SideAcc {
         self.mean(self.capped as f64)
     }
     pub fn mean_ticks(&self) -> f64 {
+        self.mean(self.ticks)
