@@ -103,3 +103,4 @@ impl SideAcc {
         self.wins += o.wins;
         self.draws += o.draws;
         self.capped += o.capped;
+        for i in 0..N_MOVES {
