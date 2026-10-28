@@ -82,3 +82,4 @@ impl SideAcc {
     }
     pub fn gap(&self) -> f64 {
         self.mean(self.gap_mean)
+    }
