@@ -122,3 +122,4 @@ impl SideAcc {
 pub fn run_pair(a: &Brain, b: &Brain, seeds: u64, flat: bool) -> (SideAcc, SideAcc) {
     let (mut sa, mut sb) = (SideAcc::default(), SideAcc::default());
     for s in 0..seeds {
+        let mut m = Match::new(1000 + s, a.clone(), b.clone());
