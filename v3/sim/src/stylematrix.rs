@@ -99,3 +99,4 @@ impl SideAcc {
         if self.defences > 0.0 { self.parry_defs / self.defences } else { 0.0 }
     }
     pub fn merge(&mut self, o: &SideAcc) {
+        self.n += o.n;
