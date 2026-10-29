@@ -147,3 +147,4 @@ pub struct Matrix {
     pub wins: Vec<Vec<f64>>,
     pub draws: Vec<Vec<f64>>,
     pub per_style: Vec<SideAcc>,
+}
