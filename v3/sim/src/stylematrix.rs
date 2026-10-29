@@ -142,3 +142,4 @@ pub struct Contestant {
 }
 
 pub struct Matrix {
+    pub names: Vec<String>,
