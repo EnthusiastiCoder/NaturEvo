@@ -162,3 +162,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
             .iter()
             .map(|&(i, j)| {
                 let (a, b) = (cs[i].as_a.clone(), cs[j].as_b.clone());
+                s.spawn(move || {
