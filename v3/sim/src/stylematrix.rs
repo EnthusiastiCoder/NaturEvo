@@ -146,3 +146,4 @@ pub struct Matrix {
     /// wins[i][j]: share of fights i won against j (both slots), draws[i][j] likewise.
     pub wins: Vec<Vec<f64>>,
     pub draws: Vec<Vec<f64>>,
+    pub per_style: Vec<SideAcc>,
