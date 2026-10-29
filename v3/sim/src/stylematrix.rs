@@ -143,3 +143,4 @@ pub struct Contestant {
 
 pub struct Matrix {
     pub names: Vec<String>,
+    /// wins[i][j]: share of fights i won against j (both slots), draws[i][j] likewise.
