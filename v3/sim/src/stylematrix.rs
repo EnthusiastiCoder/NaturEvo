@@ -171,3 +171,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
         hs.into_iter().map(|h| h.join().unwrap()).collect()
     });
     for (i, j, x, y) in results {
+        wins[i][j] += x.wins as f64;
