@@ -139,3 +139,4 @@ pub struct Contestant {
     pub name: String,
     pub as_a: Brain,
     pub as_b: Brain,
+}
