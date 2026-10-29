@@ -161,3 +161,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
         let hs: Vec<_> = jobs
             .iter()
             .map(|&(i, j)| {
+                let (a, b) = (cs[i].as_a.clone(), cs[j].as_b.clone());
