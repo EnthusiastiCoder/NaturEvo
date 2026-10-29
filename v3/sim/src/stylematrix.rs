@@ -148,3 +148,5 @@ pub struct Matrix {
     pub draws: Vec<Vec<f64>>,
     pub per_style: Vec<SideAcc>,
 }
+
+/// All ordered pairs (i in slot 0 against j in slot 1), including i == j, on `seeds` arenas each.
