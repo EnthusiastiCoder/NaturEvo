@@ -166,3 +166,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
                     let (x, y) = run_pair(&a, &b, seeds, flat);
                     (i, j, x, y)
                 })
+            })
