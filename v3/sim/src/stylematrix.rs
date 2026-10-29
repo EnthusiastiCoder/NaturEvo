@@ -138,3 +138,4 @@ pub fn run_pair(a: &Brain, b: &Brain, seeds: u64, flat: bool) -> (SideAcc, SideA
 pub struct Contestant {
     pub name: String,
     pub as_a: Brain,
+    pub as_b: Brain,
