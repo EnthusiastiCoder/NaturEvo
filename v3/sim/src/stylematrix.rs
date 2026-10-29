@@ -159,3 +159,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
     let jobs: Vec<(usize, usize)> = (0..n).flat_map(|i| (0..n).map(move |j| (i, j))).collect();
     let results: Vec<(usize, usize, SideAcc, SideAcc)> = std::thread::scope(|s| {
         let hs: Vec<_> = jobs
+            .iter()
