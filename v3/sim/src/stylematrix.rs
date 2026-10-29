@@ -160,3 +160,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
     let results: Vec<(usize, usize, SideAcc, SideAcc)> = std::thread::scope(|s| {
         let hs: Vec<_> = jobs
             .iter()
+            .map(|&(i, j)| {
