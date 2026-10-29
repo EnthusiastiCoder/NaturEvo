@@ -172,3 +172,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
     });
     for (i, j, x, y) in results {
         wins[i][j] += x.wins as f64;
+        cnt[i][j] += x.n as f64;
