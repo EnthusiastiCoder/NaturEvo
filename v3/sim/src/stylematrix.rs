@@ -164,3 +164,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
                 let (a, b) = (cs[i].as_a.clone(), cs[j].as_b.clone());
                 s.spawn(move || {
                     let (x, y) = run_pair(&a, &b, seeds, flat);
+                    (i, j, x, y)
