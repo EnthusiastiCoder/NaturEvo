@@ -169,3 +169,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
             })
             .collect();
         hs.into_iter().map(|h| h.join().unwrap()).collect()
+    });
