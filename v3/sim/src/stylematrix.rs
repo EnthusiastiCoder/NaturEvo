@@ -167,3 +167,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
                     (i, j, x, y)
                 })
             })
+            .collect();
