@@ -179,3 +179,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
             cnt[j][i] += y.n as f64;
             draws[j][i] += y.draws as f64;
         }
+        per[i].merge(&x);
