@@ -175,3 +175,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
         cnt[i][j] += x.n as f64;
         draws[i][j] += x.draws as f64;
         if i != j {
+            wins[j][i] += y.wins as f64;
