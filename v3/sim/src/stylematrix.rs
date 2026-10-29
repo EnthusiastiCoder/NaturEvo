@@ -155,3 +155,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
     let mut wins = vec![vec![0.0; n]; n];
     let mut draws = vec![vec![0.0; n]; n];
     let mut cnt = vec![vec![0.0f64; n]; n];
+    let mut per = vec![SideAcc::default(); n];
