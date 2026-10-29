@@ -140,3 +140,5 @@ pub struct Contestant {
     pub as_a: Brain,
     pub as_b: Brain,
 }
+
+pub struct Matrix {
