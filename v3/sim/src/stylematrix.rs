@@ -151,3 +151,4 @@ pub struct Matrix {
 
 /// All ordered pairs (i in slot 0 against j in slot 1), including i == j, on `seeds` arenas each.
 pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
+    let n = cs.len();
