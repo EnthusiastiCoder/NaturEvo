@@ -156,3 +156,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
     let mut draws = vec![vec![0.0; n]; n];
     let mut cnt = vec![vec![0.0f64; n]; n];
     let mut per = vec![SideAcc::default(); n];
+    let jobs: Vec<(usize, usize)> = (0..n).flat_map(|i| (0..n).map(move |j| (i, j))).collect();
