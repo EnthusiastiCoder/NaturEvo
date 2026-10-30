@@ -212,3 +212,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         s.push('\n');
     }
     s.push_str("\n| metric |");
+    for n in &m.names {
