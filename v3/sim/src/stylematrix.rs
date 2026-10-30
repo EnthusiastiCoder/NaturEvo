@@ -206,3 +206,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
     s.push('\n');
     for (i, n) in m.names.iter().enumerate() {
         s.push_str(&format!("| {} |", n));
+        for j in 0..m.names.len() {
