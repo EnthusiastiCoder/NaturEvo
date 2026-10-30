@@ -220,3 +220,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         s.push_str("---|");
     }
     s.push('\n');
+    type Row = (&'static str, fn(&SideAcc) -> f64);
