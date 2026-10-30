@@ -180,3 +180,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
             draws[j][i] += y.draws as f64;
         }
         per[i].merge(&x);
+        if i != j {
