@@ -225,3 +225,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         ("win rate (all pairings)", |a| a.win_rate()),
         ("distinct moves per fight", |a| a.distinct_moves()),
         ("distinct moves (union)", |a| a.union_moves.iter().filter(|b| **b).count() as f64),
+        ("mean spacing (m)", |a| a.gap()),
