@@ -204,3 +204,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         s.push_str("---|");
     }
     s.push('\n');
+    for (i, n) in m.names.iter().enumerate() {
