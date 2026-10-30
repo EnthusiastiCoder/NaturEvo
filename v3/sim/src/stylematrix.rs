@@ -209,3 +209,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         for j in 0..m.names.len() {
             s.push_str(&format!(" {:.2} (draw {:.2}) |", m.wins[i][j], m.draws[i][j]));
         }
+        s.push('\n');
