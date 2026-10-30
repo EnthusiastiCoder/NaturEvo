@@ -185,3 +185,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
         }
     }
     for i in 0..n {
+        for j in 0..n {
