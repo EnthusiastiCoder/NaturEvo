@@ -184,3 +184,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
             per[j].merge(&y);
         }
     }
+    for i in 0..n {
