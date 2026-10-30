@@ -193,3 +193,5 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
     }
     Matrix { names: cs.iter().map(|c| c.name.clone()).collect(), wins, draws, per_style: per }
 }
+
+pub fn markdown(title: &str, m: &Matrix) -> String {
