@@ -191,3 +191,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
             draws[i][j] /= c;
         }
     }
+    Matrix { names: cs.iter().map(|c| c.name.clone()).collect(), wins, draws, per_style: per }
