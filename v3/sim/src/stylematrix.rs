@@ -219,3 +219,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
     for _ in &m.names {
         s.push_str("---|");
     }
+    s.push('\n');
