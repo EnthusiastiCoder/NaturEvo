@@ -196,3 +196,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
 
 pub fn markdown(title: &str, m: &Matrix) -> String {
     let mut s = format!("## {}\n\nWin rate of the row style against the column style (both slots, draws count as no win).\n\n| row \\ col |", title);
+    for n in &m.names {
