@@ -187,3 +187,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
     for i in 0..n {
         for j in 0..n {
             let c = cnt[i][j].max(1.0);
+            wins[i][j] /= c;
