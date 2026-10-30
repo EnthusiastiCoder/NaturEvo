@@ -190,3 +190,4 @@ pub fn matrix(cs: &[Contestant], seeds: u64, flat: bool) -> Matrix {
             wins[i][j] /= c;
             draws[i][j] /= c;
         }
+    }
