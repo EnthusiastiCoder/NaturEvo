@@ -230,3 +230,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         ("spacing std (m)", |a| a.spacing_std / a.n.max(1) as f64),
         ("hits per swing", |a| a.hits_per_swing()),
         ("whiff rate", |a| a.whiff / a.n.max(1) as f64),
+        ("punish rate", |a| a.punish / a.n.max(1) as f64),
