@@ -232,3 +232,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         ("whiff rate", |a| a.whiff / a.n.max(1) as f64),
         ("punish rate", |a| a.punish / a.n.max(1) as f64),
         ("parry share of defences", |a| a.parry_share()),
+        ("combo length (mean)", |a| a.combo()),
