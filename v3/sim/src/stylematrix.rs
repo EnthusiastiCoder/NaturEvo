@@ -228,3 +228,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         ("mean spacing (m)", |a| a.gap()),
         ("engaged spacing (m, within 4 m)", |a| a.engaged_gap / a.n.max(1) as f64),
         ("spacing std (m)", |a| a.spacing_std / a.n.max(1) as f64),
+        ("hits per swing", |a| a.hits_per_swing()),
