@@ -382,3 +382,9 @@ pub struct DistilOpts {
     pub lr: f32,
     pub seed: u64,
 }
+
+impl Default for DistilOpts {
+    fn default() -> Self {
+        DistilOpts { per_opp: 24, rounds: 3, epochs: 30, lr: 0.004, seed: 1 }
+    }
+}
