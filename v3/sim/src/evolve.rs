@@ -98,6 +98,9 @@ fn run_jobs(jobs: &[Job], threads: usize) -> Vec<MatchResult> {
                 }
                 let j = &jobs[i];
                 let mut m = Match::new(j.seed, j.a.clone(), j.b.clone());
+                if j.flat {
+                    m.arena = crate::arena::Arena::flat(m.arena.width);
+                }
                 m.disable_grace_trace();
                 let r = m.run_to_end();
                 out.lock().unwrap()[i] = Some(r);
