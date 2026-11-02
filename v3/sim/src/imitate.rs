@@ -388,3 +388,19 @@ impl Default for DistilOpts {
         DistilOpts { per_opp: 24, rounds: 3, epochs: 30, lr: 0.004, seed: 1 }
     }
 }
+
+/// Teacher -> net. Returns the genome and the loss on the full (teacher + student-state) dataset.
+pub fn distil(style: StyleId, o: &DistilOpts) -> (Genome, FitStats) {
+    let mut rng = Rng::new(o.seed ^ 0xD157_111);
+    let mut w = init_weights(&mut rng);
+    let mut data = collect_teacher(style, o.per_opp, o.seed.wrapping_mul(31));
+    let norm = Norm::from_data(&data);
+    let mut stats = fit(&mut w, &data, &norm, &FitOpts { epochs: o.epochs, lr: o.lr, seed: o.seed });
+    for r in 0..o.rounds {
+        let g = Genome { role: Role::Hero, weights: norm.fold(&w), generation: 0, fitness: 0.0 };
+        let extra = collect_student(style, &g, (o.per_opp / 2).max(2), o.seed.wrapping_mul(131).wrapping_add(r as u64 * 977));
+        data.extend(extra);
+        stats = fit(&mut w, &data, &norm, &FitOpts { epochs: (o.epochs / 2).max(4), lr: o.lr * 0.5, seed: o.seed + 1 + r as u64 });
+    }
+    (Genome { role: Role::Hero, weights: norm.fold(&w), generation: 0, fitness: stats.loss }, stats)
+}
