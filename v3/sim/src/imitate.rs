@@ -169,3 +169,8 @@ fn collect(me: [Brain; 2], per_opp: usize, seed: u64) -> Dataset {
 pub fn collect_teacher(style: StyleId, per_opp: usize, seed: u64) -> Dataset {
     collect([Brain::Style(style), Brain::Style(style)], per_opp, seed)
 }
+
+/// Fights of a student net with the teacher shadowing it (DAgger round).
+pub fn collect_student(style: StyleId, student: &Genome, per_opp: usize, seed: u64) -> Dataset {
+    collect([Brain::Student(student.mirrored_drive(Role::Hero), style), Brain::Student(student.mirrored_drive(Role::Monster), style)], per_opp, seed)
+}
