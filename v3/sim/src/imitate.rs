@@ -373,3 +373,12 @@ pub fn evaluate(w: &[f32], data: &Dataset, norm: &Norm) -> FitStats {
     }
     FitStats { loss: (loss / cnt.max(1) as f64) as f32, move_acc: ok as f32 / cnt.max(1) as f32, active_acc: act_ok as f32 / act.max(1) as f32, samples: cnt }
 }
+
+pub struct DistilOpts {
+    pub per_opp: usize,
+    /// DAgger rounds after the first fit (each adds student-state data).
+    pub rounds: usize,
+    pub epochs: usize,
+    pub lr: f32,
+    pub seed: u64,
+}
