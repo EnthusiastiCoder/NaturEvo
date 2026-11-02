@@ -351,3 +351,25 @@ pub fn fit(w: &mut Vec<f32>, data: &Dataset, norm: &Norm, opts: &FitOpts) -> Fit
     }
     evaluate(w, data, norm)
 }
+
+/// Loss and accuracy of the weights on a dataset.
+pub fn evaluate(w: &[f32], data: &Dataset, norm: &Norm) -> FitStats {
+    let (mut loss, mut ok, mut act, mut act_ok, mut cnt) = (0.0f64, 0usize, 0usize, 0usize, 0usize);
+    for seq in &data.seqs {
+        let mut ctx = [0.0f32; N_CTX];
+        for s in seq {
+            let xn = norm.apply(&s.x);
+            let f = forward(w, &xn, &ctx);
+            loss += loss_and_dout(&f.out, s).0 as f64;
+            let hit = decode_mv(&f.out) == s.mv as usize;
+            ok += hit as usize;
+            if s.mv != 0 {
+                act += 1;
+                act_ok += hit as usize;
+            }
+            cnt += 1;
+            ctx.copy_from_slice(&f.h[..N_CTX]);
+        }
+    }
+    FitStats { loss: (loss / cnt.max(1) as f64) as f32, move_acc: ok as f32 / cnt.max(1) as f32, active_acc: act_ok as f32 / act.max(1) as f32, samples: cnt }
+}
