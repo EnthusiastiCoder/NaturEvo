@@ -152,6 +152,40 @@ fn compare_cmd(args: &[String]) -> Result<(), String> {
     Ok(())
 }
 
+/// Style matrix. `--teachers` adds the three scripted teachers; `--dirs press=DIR,counter=DIR,...` adds trained styles
+/// (hero champion in slot 0, monster champion in slot 1, latest generation). `--flat` removes arena obstacles.
+fn styles_cmd(args: &[String]) -> Result<(), String> {
+    use crate::stylematrix::*;
+    let seeds: u64 = opt(args, "--seeds").unwrap_or("8").parse().map_err(|_| "bad --seeds".to_string())?;
+    let flat = args.iter().any(|a| a == "--flat");
+    let mut cs: Vec<Contestant> = Vec::new();
+    if args.iter().any(|a| a == "--teachers") {
+        for st in crate::stylebot::StyleId::ALL {
+            cs.push(Contestant { name: format!("teacher_{}", st.name()), as_a: Brain::Style(st), as_b: Brain::Style(st) });
+        }
+    }
+    if let Some(d) = opt(args, "--dirs") {
+        for kv in d.split(',') {
+            let (name, dir) = kv.split_once('=').ok_or("--dirs needs name=dir")?;
+            let (h, m) = eval::final_champions(std::path::Path::new(dir))?;
+            cs.push(Contestant { name: name.to_string(), as_a: Brain::Net(h), as_b: Brain::Net(m) });
+        }
+    }
+    if let Some(d) = opt(args, "--extra") {
+        for n in d.split(',') {
+            cs.push(Contestant { name: n.to_string(), as_a: brain(n)?, as_b: brain(n)? });
+        }
+    }
+    let m = matrix(&cs, seeds, flat);
+    let title = format!("Style matrix ({} seeds per ordered pair{})", seeds, if flat { ", flat arena" } else { "" });
+    let md = markdown(&title, &m);
+    println!("{}", md);
+    if let Some(p) = opt(args, "--md") {
+        std::fs::write(p, md).map_err(|e| format!("{}: {}", p, e))?;
+    }
+    Ok(())
+}
+
 pub fn run(args: &[String]) -> Result<(), String> {
     match args.first().map(|s| s.as_str()) {
         Some("fight") => fight(&args[1..]),
