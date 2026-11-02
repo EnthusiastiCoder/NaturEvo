@@ -336,6 +336,18 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
     let mut rng = Rng::new(cfg.seed);
     let mut heroes: Vec<Genome> = (0..cfg.pop).map(|_| Genome::random(Role::Hero, &mut rng)).collect();
     let mut mons: Vec<Genome> = (0..cfg.pop).map(|_| Genome::random(Role::Monster, &mut rng)).collect();
+    if let Some(base) = &cfg.seed_genome {
+        // Distilled seed: a few unmutated copies, the rest lightly perturbed.
+        for i in 0..cfg.pop {
+            let (mut h, mut m) = (base.mirrored_drive(Role::Hero), base.mirrored_drive(Role::Monster));
+            if i >= 4 {
+                h.mutate(&mut rng, 0.05, 0.03);
+                m.mutate(&mut rng, 0.05, 0.03);
+            }
+            heroes[i] = h;
+            mons[i] = m;
+        }
+    }
     let mut hof_h = HallOfFame::new(8);
     let mut hof_m = HallOfFame::new(8);
     let mut csv = csv_header(&["gen", "stage", "hero_best", "hero_mean", "monster_best", "monster_mean", "defence_rate", "idle_guard", "draw_share", "mean_ticks", "capped_share", "jerk"]);
