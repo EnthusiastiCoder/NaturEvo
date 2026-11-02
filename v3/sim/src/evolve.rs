@@ -56,6 +56,10 @@ pub struct TrainConfig {
     pub sigma_start: f32,
     pub sigma_end: f32,
     pub name: String,
+    /// Style training: teacher style, ego-frame seed genome (distilled) and frozen ego-frame foes from other styles.
+    pub style: Option<StyleId>,
+    pub seed_genome: Option<Genome>,
+    pub foes: Vec<Genome>,
 }
 
 impl TrainConfig {
