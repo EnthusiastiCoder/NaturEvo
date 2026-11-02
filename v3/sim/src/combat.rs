@@ -218,16 +218,8 @@ pub fn resolve_tick_with(att: &mut Robot, def: &mut Robot, arena: &Arena, mods: 
     let sp = att.sword_prev_capsule();
     let sc = att.sword_capsule();
 
-    let mut best: Option<(f32, u8, Target)> = None;
-    let mut consider = |t: f32, pri: u8, tg: Target| {
-        let better = match &best {
-            None => true,
-            Some((bt, bp, _)) => t < *bt - 1e-6 || ((t - *bt).abs() <= 1e-6 && pri < *bp),
-        };
-        if better {
-            best = Some((t, pri, tg));
-        }
-    };
+    let mut cands: Vec<(f32, u8, Target)> = Vec::new();
+    let mut consider = |t: f32, pri: u8, tg: Target| cands.push((t, pri, tg));
 
     // A fighter lying on the ground cannot raise blade or shield: nothing of its own stops a swing at the body.
     let def_down = def.state() == crate::robot::State::Fallen;
