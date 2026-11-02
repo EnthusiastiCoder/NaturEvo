@@ -234,3 +234,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         ("parry share of defences", |a| a.parry_share()),
         ("combo length (mean)", |a| a.combo()),
         ("combo length (longest)", |a| a.combo_max / a.n.max(1) as f64),
+        ("jerk", |a| a.jerk / a.n.max(1) as f64),
