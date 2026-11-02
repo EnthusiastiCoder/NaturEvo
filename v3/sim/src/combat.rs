@@ -225,7 +225,8 @@ pub fn resolve_tick_with(att: &mut Robot, def: &mut Robot, arena: &Arena, mods: 
     let def_down = def.state() == crate::robot::State::Fallen;
     if def.has_sword() && !def_down && !mods.ignore_blade {
         if let Some(c) = swept_pair(sp, sc, def.sword_prev_capsule(), def.sword_capsule()) {
-            if len(sub(sc.a, sp.a)) / PHYS_DT >= MIN_SPEED || len(sub(sc.b, sp.b)) / PHYS_DT >= MIN_SPEED {
+            // Two blades only meet when the attacker actually swings: walking onto a held blade is no clash.
+            if (len(sub(sc.a, sp.a)) / PHYS_DT >= MIN_SPEED || len(sub(sc.b, sp.b)) / PHYS_DT >= MIN_SPEED) && (own_blade_speed(att) >= MIN_STRIKE_SPEED || own_blade_speed(def) >= MIN_STRIKE_SPEED) {
                 consider(c.t, 0, Target::Clash(c));
             }
         }
