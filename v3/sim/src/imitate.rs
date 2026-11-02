@@ -117,3 +117,40 @@ struct Job {
     seed: u64,
     side: usize,
 }
+
+fn run_jobs(jobs: &[Job]) -> Vec<Vec<Sample>> {
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::Mutex;
+    let n = jobs.len();
+    let threads = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(1).min(n.max(1));
+    let next = AtomicUsize::new(0);
+    let out: Mutex<Vec<Option<Vec<Sample>>>> = Mutex::new((0..n).map(|_| None).collect());
+    std::thread::scope(|s| {
+        for _ in 0..threads {
+            s.spawn(|| loop {
+                let i = next.fetch_add(1, Ordering::Relaxed);
+                if i >= n {
+                    break;
+                }
+                let j = &jobs[i];
+                let (a, b) = if j.side == 0 { (j.me[0].clone(), j.opp.clone()) } else { (j.opp.clone(), j.me[1].clone()) };
+                let mut m = Match::new(j.seed, a, b);
+                if j.flat {
+                    m.arena = Arena::flat(m.arena.width);
+                }
+                m.disable_grace_trace();
+                m.recorder = Some(crate::duel::Recorder { side: j.side, samples: Vec::new() });
+                m.run_to_end();
+                let mut samples = m.recorder.take().unwrap().samples;
+                samples.truncate(MAX_SEQ);
+                for s in samples.iter_mut() {
+                    if s.n > 0 {
+                        s.drive /= s.n as f32;
+                    }
+                }
+                out.lock().unwrap()[i] = Some(samples);
+            });
+        }
+    });
+    out.into_inner().unwrap().into_iter().map(|o| o.expect("job")).collect()
+}
