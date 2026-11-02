@@ -154,3 +154,13 @@ fn run_jobs(jobs: &[Job]) -> Vec<Vec<Sample>> {
     });
     out.into_inner().unwrap().into_iter().map(|o| o.expect("job")).collect()
 }
+
+fn collect(me: [Brain; 2], per_opp: usize, seed: u64) -> Dataset {
+    let mut jobs = Vec::new();
+    for (k, (opp, flat)) in opponents().into_iter().enumerate() {
+        for i in 0..per_opp {
+            jobs.push(Job { me: me.clone(), opp: opp.clone(), flat, seed: seed.wrapping_add((k * 1000 + i) as u64 * 7919), side: i % 2 });
+        }
+    }
+    Dataset { seqs: run_jobs(&jobs).into_iter().filter(|s| !s.is_empty()).collect() }
+}
