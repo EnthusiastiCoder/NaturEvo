@@ -165,6 +165,115 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
     jobs
 }
 
+#[derive(Clone, Copy, PartialEq)]
+enum SKind {
+    Dummy,
+    Skill(u8),
+    Teacher(StyleId),
+    SelfPlay,
+    Hof,
+    Foe,
+}
+
+fn style_mix(gen: u32, gens: u32, own: StyleId, has_foes: bool) -> Vec<(SKind, f32)> {
+    let others: Vec<StyleId> = StyleId::ALL.into_iter().filter(|s| *s != own).collect();
+    if gen * 10 < gens {
+        return vec![(SKind::Dummy, 0.3), (SKind::Skill(1), 0.3), (SKind::Teacher(own), 0.4)];
+    }
+    let foe = if has_foes { 0.12 } else { 0.0 };
+    vec![
+        (SKind::Dummy, 0.08),
+        (SKind::Skill(1), 0.04),
+        (SKind::Skill(2), 0.1),
+        (SKind::Skill(3), 0.14),
+        (SKind::Teacher(own), 0.12),
+        (SKind::Teacher(others[0]), 0.08),
+        (SKind::Teacher(others[1]), 0.08),
+        (SKind::SelfPlay, 0.14),
+        (SKind::Hof, 0.10 + (0.12 - foe)),
+        (SKind::Foe, foe),
+    ]
+}
+
+/// Per-style extra fitness (never paid for guarding): spacing target, and style-specific credit on landed play.
+pub fn style_bonus(style: StyleId, r: &MatchResult, who: usize) -> f32 {
+    if r.capped || r.outcome == Outcome::Draw {
+        return 0.0;
+    }
+    let (target, w_sp) = match style {
+        StyleId::Press => (1.8f32, 0.6f32),
+        StyleId::Counter => (2.6, 0.6),
+        StyleId::Duelist => (2.3, 0.6),
+    };
+    let mut v = -w_sp * (r.engaged_gap - target).abs().min(3.0);
+    let mine = if who == 0 { Outcome::WinA } else { Outcome::WinB };
+    let swings = r.swings[who] as f32;
+    let acc = r.hits[who] as f32 / (swings + 2.0);
+    let pun = if r.open_windows[1 - who] > 0 { (r.punish_hits[who] as f32 / r.open_windows[1 - who] as f32).min(1.0) } else { 0.0 };
+    match style {
+        StyleId::Press => {
+            v += 0.4 * r.combo_mean[who].min(4.0) + 0.4 * (swings / 6.0).min(1.0);
+            if r.outcome == mine {
+                v += 1.0 * (1.0 - r.ticks as f32 / crate::config::HARD_CAP_TICKS as f32).clamp(0.0, 1.0);
+            }
+        }
+        StyleId::Counter => v += 1.5 * pun + 1.0 * acc,
+        StyleId::Duelist => v += 0.3 * r.landed_moves[who].min(4) as f32 - 3.0 * r.jerk[who],
+    }
+    v
+}
+
+#[allow(clippy::too_many_arguments)]
+fn make_style_jobs(gen: u32, cfg: &TrainConfig, style: StyleId, heroes: &[Genome], mons: &[Genome], hof_h: &HallOfFame, hof_m: &HallOfFame, rng: &mut Rng) -> Vec<Job> {
+    let n = heroes.len();
+    let mut jobs = Vec::new();
+    let mut sd = cfg.seed ^ ((gen as u64 + 1).wrapping_mul(0x9E37_79B9_7F4A_7C15));
+    let mix = style_mix(gen, cfg.gens, style, !cfg.foes.is_empty());
+    let hof_ok = !hof_h.is_empty() && !hof_m.is_empty();
+    for hero_side in [true, false] {
+        for i in 0..n {
+            for _ in 0..OPPONENTS_PER_INDIVIDUAL {
+                let mut acc = 0.0;
+                let u = rng.f32();
+                let mut kind = mix.last().unwrap().0;
+                for (k, w) in &mix {
+                    acc += w;
+                    if u < acc {
+                        kind = *k;
+                        break;
+                    }
+                }
+                if kind == SKind::Hof && !hof_ok {
+                    kind = SKind::SelfPlay;
+                }
+                let role = if hero_side { Role::Monster } else { Role::Hero };
+                let mut flat = false;
+                let opp = match kind {
+                    SKind::Dummy => {
+                        flat = true;
+                        Brain::Dummy
+                    }
+                    SKind::Skill(t) => Brain::Skill(t),
+                    SKind::Teacher(st) => Brain::Style(st),
+                    SKind::SelfPlay => {
+                        let j = (rng.next_u64() % n as u64) as usize;
+                        Brain::Net(if hero_side { mons[j].clone() } else { heroes[j].clone() })
+                    }
+                    SKind::Hof => Brain::Net(if hero_side { hof_m.pick(rng).clone() } else { hof_h.pick(rng).clone() }),
+                    SKind::Foe => Brain::Net(cfg.foes[(rng.next_u64() % cfg.foes.len() as u64) as usize].mirrored_drive(role)),
+                };
+                sd = sd.wrapping_add(0x1234_5677);
+                jobs.push(if hero_side {
+                    Job { hero: Some(i), mon: None, a: Brain::Net(heroes[i].clone()), b: opp, seed: sd, flat }
+                } else {
+                    Job { hero: None, mon: Some(i), a: opp, b: Brain::Net(mons[i].clone()), seed: sd, flat }
+                });
+            }
+        }
+    }
+    jobs
+}
+
 fn breed(pop: &mut Vec<Genome>, fit: &[f32], cfg: &TrainConfig, gen: u32, rng: &mut Rng) {
     let n = pop.len();
     let mut idx: Vec<usize> = (0..n).collect();
