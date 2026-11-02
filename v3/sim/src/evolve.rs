@@ -77,6 +77,7 @@ struct Job {
     a: Brain,
     b: Brain,
     seed: u64,
+    flat: bool,
 }
 
 /// Run all jobs; threads pull the next job from a shared counter (fights vary a lot in length), results are
