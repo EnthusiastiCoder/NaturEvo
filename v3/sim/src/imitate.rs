@@ -277,3 +277,77 @@ pub struct FitOpts {
     pub lr: f32,
     pub seed: u64,
 }
+
+/// Adam over fight sequences (one update per sequence, sequences shuffled each epoch).
+pub fn fit(w: &mut Vec<f32>, data: &Dataset, norm: &Norm, opts: &FitOpts) -> FitStats {
+    let n = w.len();
+    let (mut m1, mut m2) = (vec![0.0f32; n], vec![0.0f32; n]);
+    let mut grad = vec![0.0f32; n];
+    let mut rng = Rng::new(opts.seed);
+    let mut order: Vec<usize> = (0..data.seqs.len()).collect();
+    let (b1c, b2c, eps) = (0.9f32, 0.999f32, 1e-8f32);
+    let mut t = 0i32;
+    let n1 = w1_len();
+    let total = (opts.epochs * data.seqs.len()).max(1);
+    let mut done = 0usize;
+    for _ in 0..opts.epochs {
+        for i in (1..order.len()).rev() {
+            let j = (rng.next_u64() % (i as u64 + 1)) as usize;
+            order.swap(i, j);
+        }
+        for &si in &order {
+            let seq = &data.seqs[si];
+            grad.iter_mut().for_each(|g| *g = 0.0);
+            let mut ctx = [0.0f32; N_CTX];
+            for s in seq {
+                let xn = norm.apply(&s.x);
+                let f = forward(w, &xn, &ctx);
+                let (_, dout) = loss_and_dout(&f.out, s);
+                // Backward: output layer.
+                let mut dh = [0.0f32; N_HID];
+                let w2_off = n1 + N_HID;
+                let b2_off = w2_off + N_OUT * N_HID;
+                for o in 0..N_OUT {
+                    let dz = dout[o] * (1.0 - f.out[o] * f.out[o]);
+                    if dz == 0.0 {
+                        continue;
+                    }
+                    grad[b2_off + o] += dz;
+                    for j in 0..N_HID {
+                        grad[w2_off + o * N_HID + j] += dz * f.h[j];
+                        dh[j] += dz * w[w2_off + o * N_HID + j];
+                    }
+                }
+                for j in 0..N_HID {
+                    let dz = dh[j] * (1.0 - f.h[j] * f.h[j]);
+                    if dz == 0.0 {
+                        continue;
+                    }
+                    grad[n1 + j] += dz;
+                    let base = j * (N_IN + N_CTX);
+                    for i in 0..N_IN {
+                        grad[base + i] += dz * xn[i];
+                    }
+                    for k in 0..N_CTX {
+                        grad[base + N_IN + k] += dz * ctx[k];
+                    }
+                }
+                ctx.copy_from_slice(&f.h[..N_CTX]);
+            }
+            let inv = 1.0 / seq.len().max(1) as f32;
+            t += 1;
+            // Cosine-ish decay of the learning rate over the whole fit.
+            let frac = done as f32 / total as f32;
+            let lr = opts.lr * (0.1 + 0.9 * 0.5 * (1.0 + (std::f32::consts::PI * frac).cos()));
+            done += 1;
+            let (c1, c2) = (1.0 - b1c.powi(t), 1.0 - b2c.powi(t));
+            for k in 0..n {
+                let g = grad[k] * inv;
+                m1[k] = b1c * m1[k] + (1.0 - b1c) * g;
+                m2[k] = b2c * m2[k] + (1.0 - b2c) * g * g;
+                w[k] = (w[k] - lr * (m1[k] / c1) / ((m2[k] / c2).sqrt() + eps)).clamp(-crate::genome::W_CLAMP, crate::genome::W_CLAMP);
+            }
+        }
+    }
+    evaluate(w, data, norm)
+}
