@@ -197,3 +197,32 @@ struct Fwd {
     h: [f32; N_HID],
     out: [f32; N_OUT],
 }
+
+fn forward(w: &[f32], x: &[f32; N_IN], ctx: &[f32; N_CTX]) -> Fwd {
+    let n1 = w1_len();
+    let (w1, rest) = w.split_at(n1);
+    let (b1, rest) = rest.split_at(N_HID);
+    let (w2, b2) = rest.split_at(N_OUT * N_HID);
+    let mut h = [0.0f32; N_HID];
+    for j in 0..N_HID {
+        let row = &w1[j * (N_IN + N_CTX)..(j + 1) * (N_IN + N_CTX)];
+        let mut s = b1[j];
+        for i in 0..N_IN {
+            s += row[i] * x[i];
+        }
+        for k in 0..N_CTX {
+            s += row[N_IN + k] * ctx[k];
+        }
+        h[j] = fast_tanh(s);
+    }
+    let mut out = [0.0f32; N_OUT];
+    for o in 0..N_OUT {
+        let row = &w2[o * N_HID..(o + 1) * N_HID];
+        let mut s = b2[o];
+        for j in 0..N_HID {
+            s += row[j] * h[j];
+        }
+        out[o] = fast_tanh(s);
+    }
+    Fwd { h, out }
+}
