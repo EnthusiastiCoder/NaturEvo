@@ -69,6 +69,15 @@ pub const SHIELD_ALONG: f32 = 0.62;
 pub const SHIELD_R: f32 = 0.05;
 pub const SWORD_LEN: f32 = 2.2;
 pub const SWORD_R: f32 = 0.05;
+/// A blade only wounds (body or shield) when its own swing, without the root's walking or knockback, is at least this
+/// fast (m/s). Pressing a held blade into someone, or walking onto it, is not a strike. Same for every fighter.
+pub const MIN_STRIKE_SPEED: f32 = 3.0;
+/// Total x distance (m) a sword clash pushes the two fighters apart; the less balanced fighter takes the larger share.
+pub const CLASH_PUSH: f32 = 0.3;
+/// A blade whose own motion is below this (m/s) and that is not parrying is inert: a swing beats it aside.
+pub const INERT_BLADE_SPEED: f32 = 1.0;
+/// Share of its impact a swing keeps after beating an inert blade aside.
+pub const BEAT_IMPACT: f32 = 0.75;
 
 // ---- Sword vocabulary executor (WS-A). Design numbers, tunable, not sourced. ----
 /// Energy cost of a Feint (cancels a windup).
@@ -91,3 +100,6 @@ pub const CANCEL_RECOVER: f32 = 0.15;
 pub const RIPOSTE_WINDUP_OPEN: f32 = 0.15;
 /// Extra windup hold at delay param 1.0 (Drag), seconds.
 pub const DELAY_MAX: f32 = 0.2;
+/// Share of a struck blow's impact that becomes hp damage (posture and knockback keep the full impact). Real swings
+/// decide fights now that drift contacts do not wound, so a fight takes several exchanges rather than three.
+pub const STRIKE_DAMAGE: f32 = 1.0;
