@@ -157,7 +157,7 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
                 jobs.push(if hero_side {
                     Job { hero: Some(i), mon: None, a: brain_h(i), b: opp, seed: sd, flat: false }
                 } else {
-                    Job { hero: None, mon: Some(i), a: opp, b: brain_m(i), seed: sd }
+                    Job { hero: None, mon: Some(i), a: opp, b: brain_m(i), seed: sd, flat: false }
                 });
             }
         }
