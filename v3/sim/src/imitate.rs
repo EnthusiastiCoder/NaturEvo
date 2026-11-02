@@ -174,3 +174,7 @@ pub fn collect_teacher(style: StyleId, per_opp: usize, seed: u64) -> Dataset {
 pub fn collect_student(style: StyleId, student: &Genome, per_opp: usize, seed: u64) -> Dataset {
     collect([Brain::Student(student.mirrored_drive(Role::Hero), style), Brain::Student(student.mirrored_drive(Role::Monster), style)], per_opp, seed)
 }
+
+fn w1_len() -> usize {
+    N_HID * (N_IN + N_CTX)
+}
