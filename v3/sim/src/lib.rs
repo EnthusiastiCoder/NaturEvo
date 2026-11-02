@@ -24,3 +24,6 @@ pub mod rules;
 pub mod scripted;
 pub mod sense;
 pub mod skillbot;
+pub mod stylebot;
+pub mod stylematrix;
+pub mod imitate;
