@@ -90,3 +90,13 @@ impl Dataset {
         self.seqs.extend(o.seqs);
     }
 }
+
+#[derive(Clone, Copy, Debug, Default)]
+pub struct FitStats {
+    pub loss: f32,
+    /// Share of samples whose argmax move (with the net's Idle margin) equals the teacher's.
+    pub move_acc: f32,
+    /// The same, over the samples where the teacher asks for a move.
+    pub active_acc: f32,
+    pub samples: usize,
+}
