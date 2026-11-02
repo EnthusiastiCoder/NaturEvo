@@ -54,6 +54,18 @@ fn train_cmd(args: &[String]) -> Result<(), String> {
     let out = PathBuf::from(need(args, "--out")?);
     let mut cfg = TrainConfig::new(seed, pop, gens, out);
     let cores = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(1);
+    if let Some(st) = opt(args, "--style") {
+        cfg.style = Some(crate::stylebot::StyleId::from_name(st).ok_or("bad --style")?);
+    }
+    if let Some(d) = opt(args, "--seed-dir") {
+        cfg.seed_genome = Some(eval::final_champions(std::path::Path::new(d))?.0);
+    }
+    if let Some(f) = opt(args, "--foes") {
+        for p in f.split(',') {
+            let t = std::fs::read_to_string(p).map_err(|e| format!("{}: {}", p, e))?;
+            cfg.foes.push(Genome::from_json(&t)?);
+        }
+    }
     cfg.threads = opt(args, "--threads").map(|t| t.parse().unwrap_or(1)).unwrap_or(cores);
     let t = std::time::Instant::now();
     train(&cfg)?;
