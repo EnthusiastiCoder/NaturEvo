@@ -12,3 +12,12 @@ use crate::rng::Rng;
 use crate::robot::Role;
 use crate::sense::N_IN;
 use crate::stylebot::StyleId;
+
+/// Softmax temperature on the tanh move outputs.
+const K_LOGIT: f32 = 4.0;
+/// Extra weight on samples that ask for a move (Idle dominates the data).
+const W_MOVE: f32 = 2.5;
+const W_PARAM: f32 = 1.0;
+const W_DRIVE: f32 = 1.0;
+/// Longest fight sequence kept (decision steps).
+const MAX_SEQ: usize = 1200;
