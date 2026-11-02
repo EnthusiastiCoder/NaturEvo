@@ -244,3 +244,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         for a in &m.per_style {
             s.push_str(&format!(" {:.3} |", f(a)));
         }
+        s.push('\n');
