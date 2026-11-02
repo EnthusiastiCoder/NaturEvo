@@ -78,3 +78,15 @@ const SD_FLOOR: f32 = 0.03;
 pub struct Dataset {
     pub seqs: Vec<Vec<Sample>>,
 }
+
+impl Dataset {
+    pub fn len(&self) -> usize {
+        self.seqs.iter().map(|s| s.len()).sum()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.seqs.is_empty()
+    }
+    pub fn extend(&mut self, o: Dataset) {
+        self.seqs.extend(o.seqs);
+    }
+}
