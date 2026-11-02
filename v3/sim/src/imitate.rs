@@ -28,3 +28,46 @@ pub struct Norm {
     mu: Vec<f32>,
     sd: Vec<f32>,
 }
+
+impl Norm {
+    pub fn from_data(d: &Dataset) -> Norm {
+        let (mut sum, mut sq, mut n) = (vec![0.0f64; N_IN], vec![0.0f64; N_IN], 0.0f64);
+        for seq in &d.seqs {
+            for s in seq {
+                for i in 0..N_IN {
+                    let v = s.x[i] as f64;
+                    sum[i] += v;
+                    sq[i] += v * v;
+                }
+                n += 1.0;
+            }
+        }
+        let n = n.max(1.0);
+        let mu: Vec<f32> = sum.iter().map(|v| (v / n) as f32).collect();
+        let sd: Vec<f32> = (0..N_IN).map(|i| (((sq[i] / n) - (sum[i] / n).powi(2)).max(0.0).sqrt() as f32).max(SD_FLOOR)).collect();
+        Norm { mu, sd }
+    }
+    fn apply(&self, x: &[f32]) -> [f32; N_IN] {
+        let mut o = [0.0f32; N_IN];
+        for i in 0..N_IN {
+            o[i] = (x[i] - self.mu[i]) / self.sd[i];
+        }
+        o
+    }
+    /// Weights acting on raw inputs that reproduce `w` acting on standardised inputs.
+    pub fn fold(&self, w: &[f32]) -> Vec<f32> {
+        let mut o = w.to_vec();
+        let n1 = w1_len();
+        for j in 0..N_HID {
+            let base = j * (N_IN + N_CTX);
+            let mut shift = 0.0;
+            for i in 0..N_IN {
+                let wi = w[base + i] / self.sd[i];
+                o[base + i] = wi;
+                shift += wi * self.mu[i];
+            }
+            o[n1 + j] -= shift;
+        }
+        o
+    }
+}
