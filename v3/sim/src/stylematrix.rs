@@ -237,3 +237,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         ("jerk", |a| a.jerk / a.n.max(1) as f64),
         ("swings per fight", |a| a.swings / a.n.max(1) as f64),
         ("fight length (ticks)", |a| a.mean_ticks()),
+        ("capped share", |a| a.capped_share()),
