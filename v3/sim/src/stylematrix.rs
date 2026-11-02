@@ -240,3 +240,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         ("capped share", |a| a.capped_share()),
     ];
     for (name, f) in rows.iter() {
+        s.push_str(&format!("| {} |", name));
