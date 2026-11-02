@@ -74,3 +74,7 @@ impl Norm {
 
 /// Smallest input spread used when standardising (keeps folded weights bounded).
 const SD_FLOOR: f32 = 0.03;
+
+pub struct Dataset {
+    pub seqs: Vec<Vec<Sample>>,
+}
