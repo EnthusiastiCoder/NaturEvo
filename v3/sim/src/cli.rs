@@ -198,6 +198,27 @@ pub fn run(args: &[String]) -> Result<(), String> {
             print!("{}", crate::capdiag::capdiag(&runs, seeds)?);
             Ok(())
         }
+        Some("distil") => {
+            let a = &args[1..];
+            let style = crate::stylebot::StyleId::from_name(need(a, "--style")?).ok_or("bad --style")?;
+            let mut o = crate::imitate::DistilOpts::default();
+            let num = |n: &str, d: usize| -> usize { opt(a, n).and_then(|v| v.parse().ok()).unwrap_or(d) };
+            o.per_opp = num("--per-opp", o.per_opp);
+            o.rounds = num("--rounds", o.rounds);
+            o.epochs = num("--epochs", o.epochs);
+            o.seed = num("--seed", 1) as u64;
+            let t = std::time::Instant::now();
+            let (g, st) = crate::imitate::distil(style, &o);
+            eprintln!("distilled {} in {:.1}s: loss {:.4} move_acc {:.3} active_acc {:.3} on {} samples", style.name(), t.elapsed().as_secs_f64(), st.loss, st.move_acc, st.active_acc, st.samples);
+            // --out DIR: champion_hero_gen_0.json and champion_monster_gen_0.json (the drive-mirrored variant).
+            let out = std::path::PathBuf::from(need(a, "--out")?);
+            std::fs::create_dir_all(&out).map_err(|e| e.to_string())?;
+            let hero = g.mirrored_drive(crate::robot::Role::Hero);
+            let mon = g.mirrored_drive(crate::robot::Role::Monster);
+            std::fs::write(out.join("champion_hero_gen_0.json"), hero.to_json()).map_err(|e| e.to_string())?;
+            std::fs::write(out.join("champion_monster_gen_0.json"), mon.to_json()).map_err(|e| e.to_string())
+        }
+        Some("styles") => styles_cmd(&args[1..]),
         Some("compare") => compare_cmd(&args[1..]),
         Some(other) => Err(format!("unknown command: {}", other)),
         None => Err("usage: mech-sim <fight|train|eval|compare> [options]".to_string()),
