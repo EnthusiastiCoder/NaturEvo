@@ -63,7 +63,7 @@ pub struct Contact {
 }
 
 const SAMPLES: usize = 8;
-const KNOCKBACK_K: f32 = 20.0;
+const KNOCKBACK_K: f32 = 4.0;
 const MIN_SPEED: f32 = 1.0;
 const BLOCK_REDUCTION: f32 = 0.85;
 
