@@ -226,3 +226,13 @@ fn forward(w: &[f32], x: &[f32; N_IN], ctx: &[f32; N_CTX]) -> Fwd {
     }
     Fwd { h, out }
 }
+
+fn decode_mv(out: &[f32; N_OUT]) -> usize {
+    let mut best = 0;
+    for i in 1..N_MOVES {
+        if out[i] > out[best] {
+            best = i;
+        }
+    }
+    if best != 0 && out[best] > out[0] + crate::net::MOVE_MARGIN { best } else { 0 }
+}
