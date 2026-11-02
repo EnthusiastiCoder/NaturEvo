@@ -158,6 +158,15 @@ pub fn swept_hit(prev: Capsule, cur: Capsule, target: Capsule) -> Option<Contact
     swept_pair(prev, cur, target, target)
 }
 
+/// Speed (m/s) of the attacker's blade (faster end) that comes from its own swing: the blade's displacement over
+/// the tick minus the root's displacement (walking or knockback is not a strike).
+pub fn own_blade_speed(att: &Robot) -> f32 {
+    let (sp, sc) = (att.sword_prev_capsule(), att.sword_capsule());
+    let rx = att.sword_root_dx();
+    let one = |a: [f32; 2], b: [f32; 2]| len([a[0] - b[0] - rx, a[1] - b[1]]) / PHYS_DT;
+    one(sc.a, sp.a).max(one(sc.b, sp.b))
+}
+
 /// Hit-stop length for an impact: 3..=6 ticks, monotonic.
 pub fn hitstop_ticks(impact: f32) -> u32 {
     3 + (3.0 * (impact / IMPACT_CAP).clamp(0.0, 1.0)).round() as u32
