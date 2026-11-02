@@ -206,7 +206,7 @@ pub struct Mods {
 
 impl Default for Mods {
     fn default() -> Self {
-        Mods { impact_mult: 1.0, posture_mult: 1.0, block_posture_mult: 1.0, shield_ignored: false }
+        Mods { impact_mult: 1.0, posture_mult: 1.0, block_posture_mult: 1.0, shield_ignored: false, ignore_blade: false }
     }
 }
 
