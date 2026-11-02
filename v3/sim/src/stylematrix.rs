@@ -239,3 +239,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         ("fight length (ticks)", |a| a.mean_ticks()),
         ("capped share", |a| a.capped_share()),
     ];
+    for (name, f) in rows.iter() {
