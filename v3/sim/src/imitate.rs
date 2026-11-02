@@ -164,3 +164,8 @@ fn collect(me: [Brain; 2], per_opp: usize, seed: u64) -> Dataset {
     }
     Dataset { seqs: run_jobs(&jobs).into_iter().filter(|s| !s.is_empty()).collect() }
 }
+
+/// Fights of the teacher itself against the opponent pool (`per_opp` fights per opponent, alternating slots).
+pub fn collect_teacher(style: StyleId, per_opp: usize, seed: u64) -> Dataset {
+    collect([Brain::Style(style), Brain::Style(style)], per_opp, seed)
+}
