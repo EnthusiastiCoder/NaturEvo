@@ -21,3 +21,10 @@ const W_PARAM: f32 = 1.0;
 const W_DRIVE: f32 = 1.0;
 /// Longest fight sequence kept (decision steps).
 const MAX_SEQ: usize = 1200;
+
+/// Per-input standardisation used while fitting; folded into the first layer afterwards so the net takes raw inputs.
+#[derive(Clone)]
+pub struct Norm {
+    mu: Vec<f32>,
+    sd: Vec<f32>,
+}
