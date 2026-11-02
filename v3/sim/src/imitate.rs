@@ -271,3 +271,9 @@ fn loss_and_dout(out: &[f32; N_OUT], s: &Sample) -> (f32, [f32; N_OUT]) {
     g[18] = W_DRIVE * 2.0 * d;
     (loss, g)
 }
+
+pub struct FitOpts {
+    pub epochs: usize,
+    pub lr: f32,
+    pub seed: u64,
+}
