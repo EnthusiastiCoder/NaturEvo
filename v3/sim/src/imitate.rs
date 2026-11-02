@@ -100,3 +100,12 @@ pub struct FitStats {
     pub active_acc: f32,
     pub samples: usize,
 }
+
+fn opponents() -> Vec<(Brain, bool)> {
+    // (brain, flat arena): a standing dummy cannot be reached across obstacles, so it meets the teacher on flat ground.
+    let mut v = vec![(Brain::Dummy, true), (Brain::Skill(1), false), (Brain::Skill(2), false), (Brain::Skill(3), false)];
+    for s in StyleId::ALL {
+        v.push((Brain::Style(s), false));
+    }
+    v
+}
