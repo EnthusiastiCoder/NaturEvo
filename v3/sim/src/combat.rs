@@ -200,6 +200,8 @@ pub struct Mods {
     pub block_posture_mult: f32,
     /// The shield cannot be hit (guard broken): the swing passes to the body.
     pub shield_ignored: bool,
+    /// The defender's blade was already beaten aside by this swing: it no longer clashes.
+    pub ignore_blade: bool,
 }
 
 impl Default for Mods {
