@@ -217,9 +217,9 @@ pub enum State {
 }
 
 /// One hit removes at most this fraction of the struck part's max hp (no single hit one-shots a part).
-pub const HIT_DAMAGE_CAP_FRAC: f32 = 0.5;
+pub const HIT_DAMAGE_CAP_FRAC: f32 = 0.34;
 /// A robot dies when its summed part health falls below this fraction of the summed maximum.
-pub const KO_POOL_FRAC: f32 = 0.55;
+pub const KO_POOL_FRAC: f32 = 0.72;
 
 // Per-part table: (mass kg, max hp, armour, zone multiplier).
 const TABLE: [(f32, f32, f32, f32); 13] = [
@@ -284,6 +284,8 @@ pub struct Robot {
     pub sword_moving_since: f32,
     pub strike_quality: f32,
     pub free_regen_time: f32,
+    /// Set by the match each tick: this fighter is in a parry move, so its blade is a real defence even when still.
+    pub parrying: bool,
     pub shield_integrity: f32,
     /// Signed joint angular velocity of the last physics tick, rad/s (sensing).
     pub joint_vel: [f32; 12],
@@ -293,6 +295,9 @@ pub struct Robot {
     caps: [Capsule; 13],
     sword: Capsule,
     sword_prev: Capsule,
+    /// Root x at the last forward-kinematics pass, and at the pass that `sword_prev` came from.
+    sword_x: f32,
+    sword_prev_x: f32,
     shield: Capsule,
     neck: Capsule,
     debris: Vec<Option<Debris>>,
@@ -340,6 +345,7 @@ impl Robot {
             sword_moving_since: 0.0,
             strike_quality: 1.0,
             free_regen_time: 0.0,
+            parrying: false,
             shield_integrity: 100.0,
             joint_vel: [0.0; 12],
             hp,
@@ -348,6 +354,8 @@ impl Robot {
             caps: [ZERO_CAP; 13],
             sword: ZERO_CAP,
             sword_prev: ZERO_CAP,
+            sword_x: 0.0,
+            sword_prev_x: 0.0,
             shield: ZERO_CAP,
             neck: ZERO_CAP,
             debris: vec![None; 13],
@@ -362,6 +370,7 @@ impl Robot {
         };
         r.fk();
         r.sword_prev = r.sword;
+        r.sword_prev_x = r.sword_x;
         r
     }
 
@@ -464,6 +473,11 @@ impl Robot {
     pub fn sword_prev_capsule(&self) -> Capsule {
         self.sword_prev
     }
+    /// How far the root moved (world x, metres) between the previous and the current sword capsule: the part of the
+    /// sword's displacement that is walking or knockback, not the fighter's own swing.
+    pub fn sword_root_dx(&self) -> f32 {
+        self.sword_x - self.sword_prev_x
+    }
     /// Neck hit zone (torso top to head centre); a hit here damages the Head part.
     pub fn neck_capsule(&self) -> Capsule {
         self.neck
@@ -474,6 +488,8 @@ impl Robot {
     pub fn set_sword(&mut self, prev: Capsule, cur: Capsule) {
         self.sword_prev = prev;
         self.sword = cur;
+        self.sword_x = self.x;
+        self.sword_prev_x = self.x;
     }
     pub fn set_shield(&mut self, cap: Capsule) {
         self.shield = cap;
@@ -615,6 +631,7 @@ impl Robot {
         {
             let sd = dir(f, fore_ang[1] + std::f32::consts::FRAC_PI_4);
             self.sword = Capsule { a: hand[1], b: add(hand[1], sd, SWORD_LEN), r: SWORD_R };
+            self.sword_x = self.x;
         }
 
         for (hj, kj, aj, th, sh, ft) in [
@@ -755,6 +772,7 @@ impl Robot {
     /// Advance one physics tick: motors toward targets, energy, posture, balance, falling.
     pub fn apply_targets(&mut self, targets: &[f32; 12], dt: f32) {
         self.sword_prev = self.sword;
+        self.sword_prev_x = self.sword_x;
         let prev_sword_angle = {
             let s = self.sword;
             (s.b[1] - s.a[1]).atan2((s.b[0] - s.a[0]) * self.facing)
