@@ -247,3 +247,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         s.push('\n');
     }
     let _ = N_OUT;
+    s
