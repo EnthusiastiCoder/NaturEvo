@@ -21,6 +21,7 @@ fn brain(spec: &str) -> Result<Brain, String> {
         "skill1" => Ok(Brain::Skill(1)),
         "skill2" => Ok(Brain::Skill(2)),
         "skill3" => Ok(Brain::Skill(3)),
+        "press" | "counter" | "duelist" => Ok(Brain::Style(crate::stylebot::StyleId::from_name(spec).unwrap())),
         path => {
             let text = std::fs::read_to_string(path).map_err(|e| format!("{}: {}", path, e))?;
             Ok(Brain::Net(Genome::from_json(&text)?))
