@@ -109,3 +109,11 @@ fn opponents() -> Vec<(Brain, bool)> {
     }
     v
 }
+
+struct Job {
+    me: [Brain; 2],
+    opp: Brain,
+    flat: bool,
+    seed: u64,
+    side: usize,
+}
