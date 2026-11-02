@@ -2,7 +2,7 @@
 //! knockback, hit-stop, posture. The attacker sword is swept against the defender sword,
 //! shield plate and body capsules; the earliest contact in the tick wins (ties: clash > block > body).
 use crate::arena::Arena;
-use crate::config::{IMPACT_CAP, PHYS_DT};
+use crate::config::{BEAT_IMPACT, CLASH_PUSH, INERT_BLADE_SPEED, IMPACT_CAP, MIN_STRIKE_SPEED, PHYS_DT, STRIKE_DAMAGE};
 use crate::moves::{alignment, balance_factor, health_factor, raw_impact, Move};
 use crate::robot::{Capsule, Part, Robot};
 
