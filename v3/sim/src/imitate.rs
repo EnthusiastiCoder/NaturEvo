@@ -178,3 +178,17 @@ pub fn collect_student(style: StyleId, student: &Genome, per_opp: usize, seed: u
 fn w1_len() -> usize {
     N_HID * (N_IN + N_CTX)
 }
+
+pub fn init_weights(rng: &mut Rng) -> Vec<f32> {
+    let mut w = vec![0.0f32; N_PARAMS];
+    let s1 = (1.0 / (N_IN + N_CTX) as f32).sqrt() * 1.7;
+    let s2 = (1.0 / N_HID as f32).sqrt() * 1.7;
+    let n1 = w1_len();
+    for v in w[..n1].iter_mut() {
+        *v = rng.range(-s1, s1);
+    }
+    for v in w[n1 + N_HID..n1 + N_HID + N_OUT * N_HID].iter_mut() {
+        *v = rng.range(-s2, s2);
+    }
+    w
+}
