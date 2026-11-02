@@ -235,3 +235,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         ("combo length (mean)", |a| a.combo()),
         ("combo length (longest)", |a| a.combo_max / a.n.max(1) as f64),
         ("jerk", |a| a.jerk / a.n.max(1) as f64),
+        ("swings per fight", |a| a.swings / a.n.max(1) as f64),
