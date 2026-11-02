@@ -255,7 +255,7 @@ pub fn resolve_tick_with(att: &mut Robot, def: &mut Robot, arena: &Arena, mods: 
             }
         }
         if let Some(c) = hit {
-            if len(c.velocity) / PHYS_DT >= MIN_SPEED {
+            if len(c.velocity) / PHYS_DT >= MIN_SPEED && own_blade_speed(att) >= MIN_STRIKE_SPEED {
                 if matches!(p, Part::Head | Part::Torso | Part::Pelvis) {
                     consider(c.t, if p == Part::Torso { 2 } else { 3 }, Target::Body(p, c));
                 } else if limb.as_ref().map_or(true, |(t, _, _)| c.t < *t) {
