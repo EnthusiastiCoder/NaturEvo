@@ -248,3 +248,4 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
     }
     let _ = N_OUT;
     s
+}
