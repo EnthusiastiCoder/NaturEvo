@@ -71,3 +71,6 @@ impl Norm {
         o
     }
 }
+
+/// Smallest input spread used when standardising (keeps folded weights bounded).
+const SD_FLOOR: f32 = 0.03;
