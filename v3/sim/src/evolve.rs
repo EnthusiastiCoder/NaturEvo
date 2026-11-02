@@ -355,7 +355,10 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
     let mut evals: Vec<String> = Vec::new();
     for gen in 0..cfg.gens {
         let stage = stage_for_gen(gen);
-        let jobs = make_jobs(gen, stage, &heroes, &mons, &hof_h, &hof_m, cfg.seed, &mut rng);
+        let jobs = match cfg.style {
+            Some(st) => make_style_jobs(gen, cfg, st, &heroes, &mons, &hof_h, &hof_m, &mut rng),
+            None => make_jobs(gen, stage, &heroes, &mons, &hof_h, &hof_m, cfg.seed, &mut rng),
+        };
         let results = run_jobs(&jobs, cfg.threads);
         let mut sum = [vec![0.0f32; cfg.pop], vec![0.0f32; cfg.pop]];
         let mut cnt = [vec![0u32; cfg.pop], vec![0u32; cfg.pop]];
