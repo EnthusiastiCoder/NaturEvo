@@ -236,3 +236,38 @@ fn decode_mv(out: &[f32; N_OUT]) -> usize {
     }
     if best != 0 && out[best] > out[0] + crate::net::MOVE_MARGIN { best } else { 0 }
 }
+
+/// Loss of one sample and its gradient w.r.t. the 19 outputs.
+fn loss_and_dout(out: &[f32; N_OUT], s: &Sample) -> (f32, [f32; N_OUT]) {
+    let mut g = [0.0f32; N_OUT];
+    let mv = s.mv as usize;
+    let wcls = if mv != 0 { W_MOVE } else { 1.0 };
+    let mut mx = f32::MIN;
+    for i in 0..N_MOVES {
+        mx = mx.max(K_LOGIT * out[i]);
+    }
+    let mut z = 0.0;
+    let mut e = [0.0f32; N_MOVES];
+    for i in 0..N_MOVES {
+        e[i] = (K_LOGIT * out[i] - mx).exp();
+        z += e[i];
+    }
+    let mut loss = wcls * (z.ln() + mx - K_LOGIT * out[mv]);
+    for i in 0..N_MOVES {
+        let p = e[i] / z;
+        g[i] = wcls * K_LOGIT * (p - if i == mv { 1.0 } else { 0.0 });
+    }
+    if mv != 0 {
+        for k in 0..4 {
+            let t = s.params[k] * 2.0 - 1.0;
+            let d = out[14 + k] - t;
+            loss += W_PARAM * d * d;
+            g[14 + k] = W_PARAM * 2.0 * d;
+        }
+    }
+    let t = s.drive.clamp(-1.0, 1.0);
+    let d = out[18] - t;
+    loss += W_DRIVE * d * d;
+    g[18] = W_DRIVE * 2.0 * d;
+    (loss, g)
+}
