@@ -192,3 +192,8 @@ pub fn init_weights(rng: &mut Rng) -> Vec<f32> {
     }
     w
 }
+
+struct Fwd {
+    h: [f32; N_HID],
+    out: [f32; N_OUT],
+}
