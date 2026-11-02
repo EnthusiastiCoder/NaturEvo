@@ -366,7 +366,7 @@ pub fn train(cfg: &TrainConfig) -> Result<(), String> {
         let (mut capped, mut jerk) = (0u32, 0.0f32);
         for (j, r) in jobs.iter().zip(results.iter()) {
             if let Some(i) = j.hero {
-                sum[0][i] += score_match(r, 0);
+                sum[0][i] += score_match(r, 0) + cfg.style.map_or(0.0, |st| style_bonus(st, r, 0));
                 cnt[0][i] += 1;
             }
             if let Some(i) = j.mon {
