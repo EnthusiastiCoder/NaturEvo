@@ -186,6 +186,44 @@ fn styles_cmd(args: &[String]) -> Result<(), String> {
     Ok(())
 }
 
+/// Bind and overlap measurement over all ordered pairs of `--dirs name=dir,...` (and `--teachers`).
+fn binddiag_cmd(args: &[String]) -> Result<(), String> {
+    use crate::binddiag::*;
+    let seeds: u64 = opt(args, "--seeds").unwrap_or("8").parse().map_err(|_| "bad --seeds".to_string())?;
+    let mut cs: Vec<(String, Brain, Brain)> = Vec::new();
+    if args.iter().any(|a| a == "--teachers") {
+        for st in crate::stylebot::StyleId::ALL {
+            cs.push((format!("teacher_{}", st.name()), Brain::Style(st), Brain::Style(st)));
+        }
+    }
+    if let Some(d) = opt(args, "--dirs") {
+        for kv in d.split(',') {
+            let (name, dir) = kv.split_once('=').ok_or("--dirs needs name=dir")?;
+            let (h, m) = eval::final_champions(std::path::Path::new(dir))?;
+            cs.push((name.to_string(), Brain::Net(h), Brain::Net(m)));
+        }
+    }
+    let mut out = String::from(HEAD);
+    let mut all = BindStats::default();
+    for (n1, a, _) in &cs {
+        for (n2, _, b) in &cs {
+            let mut s = BindStats::default();
+            for sd in 0..seeds {
+                play(a.clone(), b.clone(), 1000 + sd, false, &mut s);
+            }
+            out.push_str(&row(&format!("{} v {}", n1, n2), &s));
+            all.fights += s.fights; all.ticks += s.ticks; all.blade_touch += s.blade_touch; all.static_bind += s.static_bind;
+            all.longest_bind += s.longest_bind; all.body_overlap += s.body_overlap; all.swaps += s.swaps; all.swings += s.swings; all.hits += s.hits; all.drift_hits += s.drift_hits;
+        }
+    }
+    out.push_str(&row("ALL", &all));
+    print!("{}", out);
+    if let Some(p) = opt(args, "--md") {
+        std::fs::write(p, out).map_err(|e| format!("{}: {}", p, e))?;
+    }
+    Ok(())
+}
+
 pub fn run(args: &[String]) -> Result<(), String> {
     match args.first().map(|s| s.as_str()) {
         Some("fight") => fight(&args[1..]),
