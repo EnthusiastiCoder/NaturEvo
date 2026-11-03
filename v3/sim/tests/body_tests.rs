@@ -45,3 +45,18 @@ fn overlapping_bodies_are_pushed_apart_equally() {
     let mid = (m.robots[0].x + m.robots[1].x) / 2.0;
     assert!((mid - 6.1).abs() < 0.05, "push must be symmetric, midpoint {mid}");
 }
+
+#[test]
+fn walking_into_each_other_stops_at_body_contact() {
+    // Two scripted walkers heading for each other cannot pass through.
+    let mut m = Match::new(9, Brain::Scripted, Brain::Scripted);
+    m.arena = Arena::flat(m.arena.width);
+    m.robots[0].x = 6.0;
+    m.robots[1].x = 6.3;
+    m.robots[0].fk();
+    m.robots[1].fk();
+    for _ in 0..300 {
+        m.step();
+        assert!(m.robots[1].x - m.robots[0].x >= BODY_MIN_SEP - 1e-3, "tick {} d {}", m.tick, m.robots[1].x - m.robots[0].x);
+    }
+}
