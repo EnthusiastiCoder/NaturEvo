@@ -904,6 +904,7 @@ impl Match {
                 posture_mult: if self.rules[def].is_open() { rules::OPEN_POSTURE_MULT } else { 1.0 },
                 block_posture_mult: rules::heavy_block_posture(att_id, 1.0),
                 shield_ignored: self.rules[def].guard_broken_remaining() > 0.0,
+                ignore_blade: self.beat_blade[att],
             };
             let evs = {
                 let (l, r) = self.robots.split_at_mut(1);
