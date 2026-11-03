@@ -102,7 +102,7 @@ impl Scripted {
             self.still = 0.0;
         }
         self.last_x = me.x;
-        let stuck = self.still > STUCK_S && dist < REACH + 0.7;
+        let stuck = self.still > STUCK_S && dist < REACH + 1.2;
         if dist > REACH + 0.2 && !stuck {
             a.drive = dir;
         } else if dist < REACH - 0.8 {
@@ -110,7 +110,8 @@ impl Scripted {
         } else {
             self.wait -= dt;
             if self.wait <= 0.0 {
-                let kind = match self.rng.next_u64() % 3 {
+                let pick = self.rng.next_u64() % 3;
+                let kind = match if stuck { 2 } else { pick } {
                     0 => Swing::SlashHigh,
                     1 => Swing::SlashLow,
                     _ => Swing::Thrust,
