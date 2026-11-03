@@ -99,3 +99,5 @@ pub fn row(label: &str, s: &BindStats) -> String {
         s.body_overlap / t * 100.0, s.swaps / n, s.swings / n, s.hits / n, s.drift_hits / n
     )
 }
+
+pub const HEAD: &str = "| pair | fights | ticks | blade touch | static bind | longest bind | body overlap | side swaps | swings | hits |\n|---|---|---|---|---|---|---|---|---|---|\n";
