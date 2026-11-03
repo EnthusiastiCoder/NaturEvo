@@ -60,3 +60,21 @@ fn walking_blades_together_is_not_a_clash() {
     let ev = resolve_tick(&mut a, &mut d, &arena());
     assert!(common::clashes(&ev).is_empty(), "{:?}", ev);
 }
+
+#[test]
+fn a_clash_pushes_the_fighters_apart_the_unsteadier_one_further() {
+    let (mut a, mut d) = duel_pair();
+    let still = common::seg(1.0, 0.5, 1.0, 2.5, 0.05);
+    d.set_sword(still, still);
+    d.parrying = true;
+    a.set_sword(common::seg(0.6, 0.5, 0.6, 2.5, 0.05), common::seg(1.1, 0.5, 1.1, 2.5, 0.05));
+    a.x = 3.0;
+    a.posture = 60.0;
+    d.posture = 0.0;
+    let (ax, dx) = (a.x, d.x);
+    let ev = resolve_tick(&mut a, &mut d, &arena());
+    assert!(!common::clashes(&ev).is_empty(), "{:?}", ev);
+    let (ma, md) = (ax - a.x, d.x - dx);
+    assert!(ma > 0.0 && md > 0.0, "both move apart: {} {}", ma, md);
+    assert!(ma > md, "the unsteadier attacker is pushed further: {} vs {}", ma, md);
+}
