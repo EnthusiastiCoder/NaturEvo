@@ -93,3 +93,11 @@ fn beat_setup() -> (mech_sim::robot::Robot, mech_sim::robot::Robot) {
     a.set_sword(common::seg(1.5, tc[1] - 0.8, 1.5, tc[1] + 0.8, 0.05), common::seg(3.5, tc[1] - 0.8, 3.5, tc[1] + 0.8, 0.05));
     (a, d)
 }
+
+#[test]
+fn a_swing_beats_aside_a_blade_that_is_merely_held() {
+    let (mut a, mut d) = beat_setup();
+    let ev = resolve_tick(&mut a, &mut d, &arena());
+    assert_eq!(common::clashes(&ev).len(), 1, "{:?}", ev);
+    assert_eq!(hits(&ev).len(), 1, "the swing carries on to the body: {:?}", ev);
+}
