@@ -9,3 +9,12 @@ fn torso_edge(d: &mech_sim::robot::Robot) -> (f32, f32) {
     let tc = torso_center(d);
     (tc[0] - d.capsule(Part::Torso).r, tc[1])
 }
+
+#[test]
+fn a_real_swing_still_wounds() {
+    let (mut a, mut d) = duel_pair();
+    let (edge, ty) = torso_edge(&d);
+    blade_sweep(&mut a, edge - 0.3, edge + 0.1, ty - 0.9, ty + 0.9);
+    assert!(own_blade_speed(&a) >= MIN_STRIKE_SPEED);
+    assert_eq!(hits(&resolve_tick(&mut a, &mut d, &arena())).len(), 1);
+}
