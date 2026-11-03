@@ -261,6 +261,7 @@ pub struct Match {
     next_threat: u32,
     ended: bool,
     exec: [Executor; 2],
+    beat_blade: [bool; 2],
     rules: [RuleState; 2],
     starts: [Vec<MoveId>; 2],
     last_cost: [f32; 2],
