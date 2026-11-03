@@ -562,6 +562,9 @@ impl Match {
     fn after_step(&mut self, i: usize) {
         let (ph, id, cn) = (self.exec[i].phase(), self.exec[i].move_id(), self.exec[i].cancelling());
         let t = self.tick;
+        // Same window the clash resolution counts as a parry in progress.
+        self.robots[i].parrying = id == MoveId::Parry
+            && (matches!(ph, Phase::Windup | Phase::Active) || (ph == Phase::Recovery && self.exec[i].progress() < 0.5));
         if cn && !self.prev_cancel[i] {
             self.starts[i].push(MoveId::Feint);
             self.grace[i].feints += 1;
