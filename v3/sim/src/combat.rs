@@ -352,6 +352,8 @@ pub fn resolve_tick_with(att: &mut Robot, def: &mut Robot, arena: &Arena, mods: 
             }));
         }
     }
+    break;
+    }
     events
 }
 
