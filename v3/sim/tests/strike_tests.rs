@@ -78,3 +78,18 @@ fn a_clash_pushes_the_fighters_apart_the_unsteadier_one_further() {
     assert!(ma > 0.0 && md > 0.0, "both move apart: {} {}", ma, md);
     assert!(ma > md, "the unsteadier attacker is pushed further: {} vs {}", ma, md);
 }
+
+/// Attacker slashes down across a held vertical defender blade at x=3.0; the defender torso is placed behind it.
+fn beat_setup() -> (mech_sim::robot::Robot, mech_sim::robot::Robot) {
+    let (mut a, mut d) = duel_pair();
+    d.x = 3.4;
+    d.fk();
+    let tc = torso_center(&d);
+    let blade = common::seg(3.0, tc[1] - 0.8, 3.0, tc[1] + 0.8, 0.05);
+    d.set_sword(blade, blade);
+    d.set_shield(common::seg(9.0, 1.0, 9.0, 2.2, 0.05));
+    a.strike_quality = 1.0;
+    // The attack sweeps from the left through the blade and on into the torso in one tick.
+    a.set_sword(common::seg(1.5, tc[1] - 0.8, 1.5, tc[1] + 0.8, 0.05), common::seg(3.5, tc[1] - 0.8, 3.5, tc[1] + 0.8, 0.05));
+    (a, d)
+}
