@@ -22,3 +22,15 @@ pub struct BindStats {
     /// Hits dealt while the attacker was not in an attack move's windup or active phase (blade drift, chip).
     pub drift_hits: f64,
 }
+
+pub fn bodies_overlap(a: &Robot, b: &Robot) -> bool {
+    for p in [Part::Head, Part::Torso, Part::Pelvis] {
+        for q in [Part::Head, Part::Torso, Part::Pelvis] {
+            let (x, y) = (a.capsule(p), b.capsule(q));
+            if swept_pair(x, x, y, y).is_some() {
+                return true;
+            }
+        }
+    }
+    false
+}
