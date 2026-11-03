@@ -257,6 +257,7 @@ pub fn run(args: &[String]) -> Result<(), String> {
             std::fs::write(out.join("champion_monster_gen_0.json"), mon.to_json()).map_err(|e| e.to_string())
         }
         Some("styles") => styles_cmd(&args[1..]),
+        Some("binddiag") => binddiag_cmd(&args[1..]),
         Some("compare") => compare_cmd(&args[1..]),
         Some(other) => Err(format!("unknown command: {}", other)),
         None => Err("usage: mech-sim <fight|train|eval|compare> [options]".to_string()),
