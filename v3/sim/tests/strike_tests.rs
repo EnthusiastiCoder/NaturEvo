@@ -46,3 +46,17 @@ fn walking_a_held_blade_into_the_body_does_not_wound() {
     assert_eq!(events, 0);
     assert!(d.hp_frac(Part::Torso) >= 1.0);
 }
+
+#[test]
+fn walking_blades_together_is_not_a_clash() {
+    let (mut a, mut d) = duel_pair();
+    // d holds its blade still across a's path; a walks into it with the blade held (no swing).
+    let still = common::seg(1.0, 0.5, 1.0, 2.5, 0.05);
+    d.set_sword(still, still);
+    let ahead = common::seg(0.7, 0.5, 0.7, 2.5, 0.05);
+    let ahead2 = common::seg(0.75, 0.5, 0.75, 2.5, 0.05);
+    a.set_sword(ahead, ahead2); // 3 m/s of displacement, all of it root motion
+    a.x += 0.05;
+    let ev = resolve_tick(&mut a, &mut d, &arena());
+    assert!(common::clashes(&ev).is_empty(), "{:?}", ev);
+}
