@@ -265,12 +265,17 @@ pub fn resolve_tick_with(att: &mut Robot, def: &mut Robot, arena: &Arena, mods: 
         }
     }
 
-    let target = match best {
-        Some((_, _, t)) => t,
-        None => match limb {
-            Some((_, p, c)) => Target::Body(p, c),
-            None => return events,
-        },
+    // Earliest contact first (ties: clash > block > body).
+    cands.sort_by(|a, b| if (a.0 - b.0).abs() <= 1e-6 { a.1.cmp(&b.1) } else { a.0.partial_cmp(&b.0).unwrap() });
+    let mut cands: std::collections::VecDeque<Target> = cands.into_iter().map(|c| c.2).collect();
+    if let Some((_, p, c)) = limb {
+        cands.push_back(Target::Body(p, c));
+    }
+    let mut mods = *mods;
+    loop {
+    let target = match cands.pop_front() {
+        Some(t) => t,
+        None => return events,
     };
     match target {
         Target::Clash(c) => {
