@@ -915,6 +915,18 @@ impl Match {
             if evs.is_empty() {
                 continue;
             }
+            // A swing that only met a held blade beats it aside and keeps going: no cooldown, no more clashes with it.
+            if evs.len() == 1 && matches!(evs[0], CombatEvent::Clash { kind: ClashKind::Clash, .. }) && !self.robots[att].parrying && combat::is_inert(&self.robots[def]) {
+                self.beat_blade[att] = true;
+                let t = self.tick;
+                if let CombatEvent::Clash { point, normal, .. } = &evs[0] {
+                    self.emit(format!(
+                        "{{\"t\":{},\"kind\":\"clash\",\"x\":{},\"y\":{},\"dx\":{},\"dy\":{},\"type\":\"clash\"}}",
+                        t, f2(point[0]), f2(point[1]), f2(normal[0]), f2(normal[1])
+                    ));
+                }
+                continue;
+            }
             if self.exec[att].phase() == Phase::Active || self.whiff_pending[att] {
                 self.exec[att].notify_contact();
                 self.contact_seen[att] = true;
