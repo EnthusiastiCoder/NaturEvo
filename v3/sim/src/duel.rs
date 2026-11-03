@@ -385,6 +385,11 @@ impl Match {
         }
     }
 
+    /// Hits so far as (tick, attacker).
+    pub fn hit_log(&self) -> &[(u32, u8)] {
+        &self.hit_list
+    }
+
     pub fn enable_log(&mut self) {
         if self.log.is_none() {
             self.log = Some(FightLog::default());
