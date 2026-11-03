@@ -30,3 +30,18 @@ fn bodies_never_overlap_or_swap_sides() {
         }
     }
 }
+
+#[test]
+fn overlapping_bodies_are_pushed_apart_equally() {
+    let mut m = Match::new(3, Brain::Dummy, Brain::Dummy);
+    m.arena = Arena::flat(m.arena.width);
+    m.robots[0].x = 6.0;
+    m.robots[1].x = 6.2;
+    m.robots[0].fk();
+    m.robots[1].fk();
+    m.step();
+    let d = m.robots[1].x - m.robots[0].x;
+    assert!(d >= BODY_MIN_SEP - 1e-3, "separation {d}");
+    let mid = (m.robots[0].x + m.robots[1].x) / 2.0;
+    assert!((mid - 6.1).abs() < 0.05, "push must be symmetric, midpoint {mid}");
+}
