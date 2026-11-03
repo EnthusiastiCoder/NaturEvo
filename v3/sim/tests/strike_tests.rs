@@ -101,3 +101,12 @@ fn a_swing_beats_aside_a_blade_that_is_merely_held() {
     assert_eq!(common::clashes(&ev).len(), 1, "{:?}", ev);
     assert_eq!(hits(&ev).len(), 1, "the swing carries on to the body: {:?}", ev);
 }
+
+#[test]
+fn an_active_parry_stops_the_swing() {
+    let (mut a, mut d) = beat_setup();
+    d.parrying = true;
+    let ev = resolve_tick(&mut a, &mut d, &arena());
+    assert_eq!(common::clashes(&ev).len(), 1, "{:?}", ev);
+    assert!(hits(&ev).is_empty(), "{:?}", ev);
+}
