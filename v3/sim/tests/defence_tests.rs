@@ -39,9 +39,10 @@ fn every_live_threat_resolves_exactly_once() {
     }
 }
 
+// Seed 7: a real swing meets the shield (seed 11 only blocked through blade drift, which no longer wounds).
 #[test]
 fn scripted_attacker_against_a_held_guard_records_blocked() {
-    let mut m = Match::new(11, Brain::Scripted, Brain::Fixed(GUARD_TARGETS));
+    let mut m = Match::new(7, Brain::Scripted, Brain::Fixed(GUARD_TARGETS));
     let r = m.run_to_end();
     assert!(r.defence[1].block >= 1, "{:?}", r.defence[1]);
     assert!(m.threats.iter().any(|t| t.resolution == Some(Resolution::Blocked)));
