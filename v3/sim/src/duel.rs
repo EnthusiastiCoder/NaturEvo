@@ -361,6 +361,7 @@ impl Match {
             next_threat: 0,
             ended: false,
             exec: [Executor::new(), Executor::new()],
+            beat_blade: [false; 2],
             rules: [RuleState::new(), RuleState::new()],
             starts: [Vec::new(), Vec::new()],
             last_cost: [0.0; 2],
