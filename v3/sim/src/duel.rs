@@ -1,7 +1,7 @@
 //! Duel loop: two robots, brains, combat per tick, threat tracking, no forcing rule, outcome.
 use crate::grace::GraceRec;
 use crate::arena::Arena;
-use crate::combat::{resolve_tick_with, ClashKind, CombatEvent, Mods};
+use crate::combat::{self, resolve_tick_with, ClashKind, CombatEvent, Mods};
 use crate::executor::Executor;
 use crate::moveset::{phase_durations, spec, MoveId, MoveParams, Phase};
 use crate::rules::{self, RuleState};
