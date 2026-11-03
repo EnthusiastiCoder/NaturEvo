@@ -314,6 +314,13 @@ pub fn resolve_tick_with(att: &mut Robot, def: &mut Robot, arena: &Arena, mods: 
                 }
             }
             events.push(CombatEvent::Clash { kind, point: c.point, normal: c.normal });
+            // A blade nobody is driving or parrying with is beaten aside: the swing carries on to what is behind it
+            // (at reduced force). Defending takes an active parry or the shield, never a blade just held there.
+            if kind == ClashKind::Clash && !att.parrying && !def.parrying && is_inert(def) {
+                mods.impact_mult *= BEAT_IMPACT;
+                continue;
+            }
+            bind_push(att, def, arena);
         }
         Target::Shield(c) => {
             let raw = strike_impact(att, &c);
