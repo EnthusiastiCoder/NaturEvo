@@ -573,6 +573,7 @@ impl Match {
         } else if ph == Phase::Windup && !cn && (self.prev_phase[i] != Phase::Windup || self.prev_id[i] != id) {
             self.starts[i].push(id);
             self.contact_seen[i] = false;
+            self.beat_blade[i] = false;
             self.bash_done[i] = false;
             let pr = self.exec[i].params();
             self.emit(format!(
