@@ -89,3 +89,13 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut BindStats) {
     s.swings += (r.swings[0] + r.swings[1]) as f64;
     s.hits += (r.hits[0] + r.hits[1]) as f64;
 }
+
+pub fn row(label: &str, s: &BindStats) -> String {
+    let n = s.fights.max(1) as f64;
+    let t = s.ticks.max(1.0);
+    format!(
+        "| {} | {} | {:.0} | {:.1}% | {:.1}% | {:.0} | {:.1}% | {:.2} | {:.2} | {:.2} | {:.2} |\n",
+        label, s.fights, s.ticks / n, s.blade_touch / t * 100.0, s.static_bind / t * 100.0, s.longest_bind / n,
+        s.body_overlap / t * 100.0, s.swaps / n, s.swings / n, s.hits / n, s.drift_hits / n
+    )
+}
