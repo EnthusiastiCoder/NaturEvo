@@ -357,6 +357,21 @@ pub fn resolve_tick_with(att: &mut Robot, def: &mut Robot, arena: &Arena, mods: 
     events
 }
 
+/// A blade nobody is driving or parrying with.
+pub fn is_inert(def: &Robot) -> bool {
+    !def.parrying && own_blade_speed(def) < INERT_BLADE_SPEED
+}
+
+/// A clash transfers momentum: the two fighters are pushed apart along x by `CLASH_PUSH` in total, the less
+/// balanced one (more posture) further. The same for both sides, so a bind cannot hold both bodies in place.
+pub fn bind_push(att: &mut Robot, def: &mut Robot, arena: &Arena) {
+    let (pa, pd) = (att.posture + 10.0, def.posture + 10.0);
+    let a_share = pa / (pa + pd);
+    let dir = if att.x <= def.x { -1.0 } else { 1.0 };
+    att.x = arena.clamp_x(att.x + dir * CLASH_PUSH * a_share);
+    def.x = arena.clamp_x(def.x - dir * CLASH_PUSH * (1.0 - a_share));
+}
+
 /// Raw impact of the attacker sword at a contact (m_eff = sword plus a share of the arm).
 fn strike_impact(att: &Robot, c: &Contact) -> f32 {
     let v = len(c.velocity) / PHYS_DT;
