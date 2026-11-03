@@ -906,6 +906,7 @@ impl Match {
                 shield_ignored: self.rules[def].guard_broken_remaining() > 0.0,
                 ignore_blade: self.beat_blade[att],
             };
+            let mods = if self.beat_blade[att] { Mods { impact_mult: mods.impact_mult * crate::config::BEAT_IMPACT, ..mods } } else { mods };
             let evs = {
                 let (l, r) = self.robots.split_at_mut(1);
                 let (a, b) = if att == 0 { (&mut l[0], &mut r[0]) } else { (&mut r[0], &mut l[0]) };
