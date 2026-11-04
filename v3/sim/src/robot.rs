@@ -224,7 +224,7 @@ pub enum State {
 }
 
 /// One hit removes at most this fraction of the struck part's max hp (no single hit one-shots a part).
-pub const HIT_DAMAGE_CAP_FRAC: f32 = 0.22;
+pub const HIT_DAMAGE_CAP_FRAC: f32 = 0.05;
 /// A robot dies when its summed part health falls below this fraction of the summed maximum.
 pub const KO_POOL_FRAC: f32 = 0.72;
 
