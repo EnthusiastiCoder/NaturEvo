@@ -831,6 +831,10 @@ impl Robot {
     pub fn apply_targets(&mut self, targets: &[f32; 12], dt: f32) {
         self.sword_prev = self.sword;
         self.sword_prev_x = self.sword_x;
+        // A batted blade's return (the controller pulling it back to its pose) stays a recoil until the arm has settled
+        // or the fighter starts a move of its own.
+        self.recoil = self.batted || (self.recoil && !self.chain_settled);
+        self.batted = false;
         let prev_sword_angle = {
             let s = self.sword;
             (s.b[1] - s.a[1]).atan2((s.b[0] - s.a[0]) * self.facing)
