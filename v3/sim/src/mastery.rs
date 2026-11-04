@@ -5,3 +5,5 @@ use crate::duel::{Brain, Match};
 use crate::moveset::Phase;
 use crate::robot::{Robot, State};
 use crate::skillbot::is_attack;
+
+#[derive(Clone, Debug, Default)]
