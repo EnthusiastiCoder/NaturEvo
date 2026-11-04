@@ -60,3 +60,14 @@ fn walking_into_each_other_stops_at_body_contact() {
         assert!(m.robots[1].x - m.robots[0].x >= BODY_MIN_SEP - 1e-3, "tick {} d {}", m.tick, m.robots[1].x - m.robots[0].x);
     }
 }
+
+fn staggered() -> Robot {
+    let mut r = Robot::new(Role::Hero);
+    r.x = 3.0;
+    r.facing = 1.0;
+    for _ in 0..10 {
+        r.apply_targets(&STAND_TARGETS, DT);
+    }
+    r.add_posture(150.0);
+    r
+}
