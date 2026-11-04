@@ -47,6 +47,11 @@ pub const POSTURE_DECAY: f32 = 15.0;
 pub const POSTURE_DECAY_DELAY: f32 = 0.5;
 pub const STAGGER_TIME: f32 = 0.8;
 pub const STAGGER_RESET: f32 = 40.0;
+/// Seconds after a stagger begins during which the fighter is locked in the recoil; afterwards it may act and defend
+/// while still exposed (x1.5 damage) until `STAGGER_TIME` has passed. Same for both fighters.
+pub const STAGGER_LOCK: f32 = 0.3;
+/// Minimum torso-to-torso distance, metres: bodies are solid.
+pub const BODY_MIN_SEP: f32 = 0.9;
 pub const FALL_TIME: f32 = 1.5;
 /// Seconds of negative balance margin before the robot falls.
 pub const FALL_MARGIN_TIME: f32 = 0.4;
