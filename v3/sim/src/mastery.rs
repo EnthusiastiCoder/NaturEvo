@@ -4,3 +4,4 @@ use crate::combat::swept_pair;
 use crate::duel::{Brain, Match};
 use crate::moveset::Phase;
 use crate::robot::{Robot, State};
+use crate::skillbot::is_attack;
