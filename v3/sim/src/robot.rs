@@ -379,6 +379,9 @@ impl Robot {
             fallen: false,
             fall_timer: 0.0,
             guard_intent: false,
+            batted: false,
+            recoil: false,
+            chain_settled: true,
         };
         r.fk();
         r.sword_prev = r.sword;
