@@ -769,6 +769,9 @@ impl Match {
             let act = self.decide(i);
             self.applied_action[i] = act.targets;
             let old_x = self.robots[i].x;
+            if self.exec[i].phase() != Phase::Idle {
+                self.robots[i].clear_recoil();
+            }
             let r = &mut self.robots[i];
             let before = r.joint_vel;
             r.apply_targets(&act.targets, PHYS_DT);
