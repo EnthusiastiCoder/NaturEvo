@@ -316,6 +316,11 @@ pub struct Robot {
     fallen: bool,
     fall_timer: f32,
     guard_intent: bool,
+    /// The sword was batted aside at the end of the last tick; its return this tick is a recoil, not a swing.
+    batted: bool,
+    recoil: bool,
+    /// The arm chain reached its target at the end of the last tick.
+    chain_settled: bool,
 }
 
 const ZERO_CAP: Capsule = Capsule { a: [0.0, 0.0], b: [0.0, 0.0], r: 0.0 };
