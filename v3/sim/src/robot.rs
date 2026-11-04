@@ -585,7 +585,7 @@ impl Robot {
     /// Dead: torso disabled (no sword move is possible without it), or the whole part-health pool below `KO_POOL_FRAC`.
     /// A destroyed head only blinds (see sense) and disables the neck joint.
     pub fn is_ko(&self) -> bool {
-        self.is_destroyed(Part::Torso) || self.pool_frac() < KO_POOL_FRAC
+        self.is_disabled(Part::Torso) || self.pool_frac() < KO_POOL_FRAC
     }
 
     pub fn state(&self) -> State {
