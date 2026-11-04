@@ -217,7 +217,7 @@ pub enum State {
 }
 
 /// One hit removes at most this fraction of the struck part's max hp (no single hit one-shots a part).
-pub const HIT_DAMAGE_CAP_FRAC: f32 = 0.34;
+pub const HIT_DAMAGE_CAP_FRAC: f32 = 0.22;
 /// A robot dies when its summed part health falls below this fraction of the summed maximum.
 pub const KO_POOL_FRAC: f32 = 0.72;
 
@@ -548,7 +548,12 @@ impl Robot {
     }
 
     pub fn can_act(&self) -> bool {
-        self.state() == State::Idle
+        self.state() == State::Idle || (self.state() == State::Staggered && !self.stagger_locked())
+    }
+
+    /// True while the stagger recoil still holds the fighter (the first `STAGGER_LOCK` seconds).
+    pub fn stagger_locked(&self) -> bool {
+        self.stagger_timer > STAGGER_TIME - STAGGER_LOCK
     }
 
     pub fn knock_down(&mut self) {
@@ -803,7 +808,7 @@ impl Robot {
         }
 
         // Choose targets.
-        let staggered = self.stagger_timer > 0.0;
+        let staggered = self.stagger_locked();
         let eff: [f32; 12] = if staggered && !down { RECOIL_TARGETS } else { *targets };
         let intent_sh = Joint::ShoulderL.to_angle(eff[Joint::ShoulderL as usize]) >= GUARD_SHOULDER;
         let intent_el = Joint::ElbowL.to_angle(eff[Joint::ElbowL as usize]) >= GUARD_ELBOW;
