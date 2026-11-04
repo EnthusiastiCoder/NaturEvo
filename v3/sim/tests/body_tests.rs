@@ -71,3 +71,20 @@ fn staggered() -> Robot {
     r.add_posture(150.0);
     r
 }
+
+#[test]
+fn stagger_lock_is_short_for_both_roles() {
+    assert!(STAGGER_LOCK <= 0.35 && STAGGER_LOCK < STAGGER_TIME);
+    for role in [Role::Hero, Role::Monster] {
+        let mut r = staggered();
+        r = if role == Role::Hero { r } else { let mut m = Robot::new(Role::Monster); m.x = 3.0; m.facing = 1.0; for _ in 0..10 { m.apply_targets(&STAND_TARGETS, DT); } m.add_posture(150.0); m };
+        assert_eq!(r.state(), State::Staggered);
+        assert!(!r.can_act(), "locked right after the blow");
+        let n = (STAGGER_LOCK / DT) as usize + 2;
+        for _ in 0..n {
+            r.apply_targets(&STAND_TARGETS, DT);
+        }
+        assert!(r.can_act(), "{role:?} must act again within {STAGGER_LOCK} s");
+        assert_eq!(r.state(), State::Staggered, "still exposed (x1.5 damage) after the lock");
+    }
+}
