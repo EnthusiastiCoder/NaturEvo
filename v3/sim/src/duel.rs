@@ -787,6 +787,39 @@ impl Match {
         }
     }
 
+    /// Bodies are solid: if the torsos are closer than `BODY_MIN_SEP` (or have crossed), push both apart by the same
+    /// amount, keeping the side each started the tick on. A fighter pinned by a wall or obstacle yields the rest to the other.
+    fn separate_bodies(&mut self, side: f32) {
+        let d = (self.robots[1].x - self.robots[0].x) * side;
+        if d >= BODY_MIN_SEP {
+            return;
+        }
+        let push = (BODY_MIN_SEP - d) * 0.5;
+        let (lo, hi) = self.bounds();
+        let mut moved = [0.0f32; 2];
+        for (i, dir) in [(0usize, -side), (1usize, side)] {
+            let old = self.robots[i].x;
+            let nx = (old + dir * push).clamp(lo, hi);
+            if !self.blocked_by_obstacle(nx) || self.blocked_by_obstacle(old) {
+                self.robots[i].x = nx;
+            }
+            moved[i] = (self.robots[i].x - old).abs();
+        }
+        // Whatever one side could not give, the other gives.
+        let short = push * 2.0 - moved[0] - moved[1];
+        if short > 1e-6 {
+            let i = if moved[0] < moved[1] { 1 } else { 0 };
+            let dir = if i == 0 { -side } else { side };
+            let old = self.robots[i].x;
+            let nx = (old + dir * short).clamp(lo, hi);
+            if !self.blocked_by_obstacle(nx) || self.blocked_by_obstacle(old) {
+                self.robots[i].x = nx;
+            }
+        }
+        self.robots[0].fk();
+        self.robots[1].fk();
+    }
+
     fn tip_state(&self, att: usize) -> ([f32; 2], [f32; 2]) {
         let s = self.robots[att].sword_capsule();
         let p = self.robots[att].sword_prev_capsule();
