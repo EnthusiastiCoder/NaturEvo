@@ -262,6 +262,8 @@ pub struct Match {
     ended: bool,
     exec: [Executor; 2],
     beat_blade: [bool; 2],
+    /// Blade-blade clash events resolved so far (measurement).
+    pub clash_count: u32,
     rules: [RuleState; 2],
     starts: [Vec<MoveId>; 2],
     last_cost: [f32; 2],
