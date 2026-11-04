@@ -7,3 +7,4 @@ use crate::robot::{Robot, State};
 use crate::skillbot::is_attack;
 
 #[derive(Clone, Debug, Default)]
+pub struct Mastery {
