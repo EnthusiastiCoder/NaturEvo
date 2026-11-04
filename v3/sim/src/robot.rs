@@ -482,6 +482,44 @@ impl Robot {
             && self.angles[Joint::ShoulderL as usize] >= GUARD_SHOULDER
             && self.angles[Joint::ElbowL as usize] >= GUARD_ELBOW
     }
+    /// The joints that place the sword (waist, right shoulder and elbow) and the root position, for rolling a tick back.
+    pub fn sword_chain(&self) -> SwordChain {
+        let j = [Joint::Waist as usize, Joint::ShoulderR as usize, Joint::ElbowR as usize];
+        SwordChain { angles: [self.angles[j[0]], self.angles[j[1]], self.angles[j[2]]], x: self.x }
+    }
+
+    /// Put the sword joints (and, if asked, the root) back where `c` recorded them and stop those joints.
+    pub fn restore_sword_chain(&mut self, c: &SwordChain, with_x: bool) {
+        for (k, j) in [Joint::Waist, Joint::ShoulderR, Joint::ElbowR].into_iter().enumerate() {
+            self.angles[j as usize] = c.angles[k];
+            self.joint_vel[j as usize] = 0.0;
+        }
+        if with_x {
+            self.x = c.x;
+        }
+        self.fk();
+    }
+
+    /// Swing the sword aside: rotate the right shoulder by `d` radians (within its range) and stop that joint.
+    pub fn bat_sword_aside(&mut self, d: f32) {
+        let (lo, hi) = Joint::ShoulderR.limits();
+        let i = Joint::ShoulderR as usize;
+        self.angles[i] = (self.angles[i] + d).clamp(lo, hi);
+        self.batted = true;
+        self.joint_vel[i] = 0.0;
+        self.fk();
+    }
+
+    pub fn in_recoil(&self) -> bool {
+        self.recoil
+    }
+    /// The fighter starts a move of its own: whatever follows is a swing again, not a return from being batted.
+    pub fn clear_recoil(&mut self) {
+        self.recoil = false;
+    }
+    pub fn clear_batted(&mut self) {
+        self.batted = false;
+    }
     pub fn sword_capsule(&self) -> Capsule {
         self.sword
     }
