@@ -795,6 +795,93 @@ impl Match {
         }
     }
 
+    fn blades_cross_at_end(&self) -> bool {
+        let (a, b) = (self.robots[0].sword_capsule(), self.robots[1].sword_capsule());
+        combat::blades_conflict(a, a, b, b)
+    }
+
+    fn blades_cross(&self) -> bool {
+        let (a, b) = (&self.robots[0], &self.robots[1]);
+        combat::blades_conflict(a.sword_prev_capsule(), a.sword_capsule(), b.sword_prev_capsule(), b.sword_capsule())
+    }
+
+    /// Blades are solid: a tick never ends with one blade through the other (nor having crossed it on the way).
+    /// A held, undriven blade that a swing runs into is batted aside (the swing carries on); any other meeting stops
+    /// both blades where they were at the start of the tick (then, if the bodies' walking still causes it, the
+    /// walking too). The same rule for both fighters. A blade lying with a fallen or dead fighter is not in play.
+    fn keep_blades_apart(&mut self, chains: &[crate::robot::SwordChain; 2]) {
+        if !self.robots.iter().all(|r| r.has_sword() && !matches!(r.state(), State::Fallen | State::Ko)) || !self.blades_cross() {
+            return;
+        }
+        let (p0, p1) = (self.robots[0].sword_prev_capsule(), self.robots[1].sword_prev_capsule());
+        let started_clear = !combat::blades_conflict(p0, p0, p1, p1);
+        // Blade speed including the walk: a fighter who walks into a blade is moving it.
+        let speed = [0, 1].map(|i| {
+            let (p, c) = (self.robots[i].sword_prev_capsule(), self.robots[i].sword_capsule());
+            let d = |a: [f32; 2], b: [f32; 2]| ((a[0] - b[0]).powi(2) + (a[1] - b[1]).powi(2)).sqrt() / PHYS_DT;
+            // A blade coming back from being batted aside is not driving anything: it yields again.
+            if self.robots[i].in_recoil() { 0.0 } else { d(p.a, c.a).max(d(p.b, c.b)) }
+        });
+        // The slower blade yields: whatever is moving into a blade moves it aside (a held blade, a slower swing), and a
+        // blade held in a parry does not yield. Exactly equal speeds: alternate by tick.
+        let batable = [0, 1].map(|i| !self.robots[i].parrying);
+        let first = if speed[0] == speed[1] { (self.tick % 2) as usize } else if speed[0] < speed[1] { 0 } else { 1 };
+        let order = [first, 1 - first];
+        let apart = |m: &Self| if started_clear { !m.blades_cross() } else { !m.blades_cross_at_end() };
+        // 1. Bat the slower blade aside (swept clear).
+        for k in order {
+            if batable[k] && self.bat_clear(k, &apart) {
+                return;
+            }
+        }
+        // 2. Otherwise both blades stop where they were at the start of the tick (and, if the walking or a push is
+        // what brought them together, the bodies too).
+        if started_clear {
+            for i in 0..2 {
+                self.robots[i].restore_sword_chain(&chains[i], false);
+            }
+            if apart(self) {
+                return;
+            }
+            for i in 0..2 {
+                self.robots[i].restore_sword_chain(&chains[i], true);
+            }
+            if apart(self) {
+                return;
+            }
+        }
+        // 3. Last resort (the tick began overlapped, e.g. a fighter got up over a blade): bat either blade clear.
+        for k in order {
+            if self.bat_clear(k, &apart) {
+                return;
+            }
+        }
+    }
+
+    /// Rotate fighter `k`'s right shoulder in growing steps, either way, until `apart` holds; false (and the blade left
+    /// as it was) if no angle in reach works.
+    fn bat_clear(&mut self, k: usize, apart: &dyn Fn(&Self) -> bool) -> bool {
+        let before = self.robots[k].sword_chain();
+        let prev = self.robots[k].sword_prev_capsule();
+        for step in 1..=24 {
+            for sign in [1.0f32, -1.0] {
+                self.robots[k].restore_sword_chain(&before, false);
+                self.robots[k].bat_sword_aside(sign * 0.1 * step as f32);
+                // A batted blade is put aside, not swept through the other: it counts from where it lands.
+                let landed = self.robots[k].sword_capsule();
+                self.robots[k].set_sword(landed, landed);
+                if apart(self) {
+                    return true;
+                }
+            }
+        }
+        self.robots[k].restore_sword_chain(&before, false);
+        self.robots[k].clear_batted();
+        let cur = self.robots[k].sword_capsule();
+        self.robots[k].set_sword(prev, cur);
+        false
+    }
+
     /// Bodies are solid: if the torsos are closer than `BODY_MIN_SEP` (or have crossed), push both apart by the same
     /// amount, keeping the side each started the tick on. A fighter pinned by a wall or obstacle yields the rest to the other.
     fn separate_bodies(&mut self, side: f32) {
