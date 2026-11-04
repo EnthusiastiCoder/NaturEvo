@@ -874,6 +874,7 @@ impl Robot {
         // Motors: rate-limited toward the target, scaled by health.
         let mut cost = 0.0;
         let mut fast = false;
+        let mut chain_err = 0.0f32;
         for j in Joint::ALL {
             let i = j as usize;
             let (lo, hi) = j.limits();
