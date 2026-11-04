@@ -56,9 +56,9 @@ struct Tune {
 
 fn tune(s: StyleId) -> Tune {
     match s {
-        StyleId::Press => Tune { approach: 1.75, retreat: 1.1, react_at: 0.75, strike_max: 2.2 },
-        StyleId::Counter => Tune { approach: 2.1, retreat: 1.85, react_at: 0.0, strike_max: 2.15 },
-        StyleId::Duelist => Tune { approach: 2.2, retreat: 1.95, react_at: 0.15, strike_max: 2.2 },
+        StyleId::Press => Tune { approach: 1.75, retreat: 1.1, react_at: 0.4, strike_max: 2.2 },
+        StyleId::Counter => Tune { approach: 1.98, retreat: 1.8, react_at: 0.0, strike_max: 2.15 },
+        StyleId::Duelist => Tune { approach: 2.02, retreat: 1.85, react_at: 0.15, strike_max: 2.2 },
     }
 }
 
@@ -227,9 +227,11 @@ impl StyleBot {
         let in_range = dist <= if stuck { STUCK_RANGE } else if down { 1.85 } else { t.strike_max };
         let chain = mine.phase == Phase::Recovery && mine.progress >= 0.75 && self.style == StyleId::Press && is_attack(mine.id);
         if (idle || chain) && in_range {
-            let punishable = opp_open || theirs.phase == Phase::Recovery && is_attack(theirs.id);
+            let parry_up = theirs.id == MoveId::Parry && matches!(theirs.phase, Phase::Windup | Phase::Active);
+            let parry_spent = theirs.id == MoveId::Parry && theirs.phase == Phase::Recovery;
+            let punishable = opp_open || parry_spent || theirs.phase == Phase::Recovery && is_attack(theirs.id);
             let allowed = match self.style {
-                StyleId::Press => !their_attack || opp_open,
+                StyleId::Press => (!their_attack || opp_open) && !parry_up,
                 StyleId::Counter => (opp_idle || punishable) && !their_attack,
                 StyleId::Duelist => (opp_idle || punishable || guard_up) && !their_attack,
             };
