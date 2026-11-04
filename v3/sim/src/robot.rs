@@ -909,6 +909,8 @@ impl Robot {
             }
         }
 
+        self.chain_settled = chain_err < 0.03;
+
         // Energy.
         let guarding = self.guard_intent || self.guard_raised();
         let mut e = self.energy - cost;
