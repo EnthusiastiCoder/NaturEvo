@@ -88,3 +88,32 @@ fn stagger_lock_is_short_for_both_roles() {
         assert_eq!(r.state(), State::Staggered, "still exposed (x1.5 damage) after the lock");
     }
 }
+
+#[test]
+fn staggered_fighters_parry_within_a_third_of_a_second() {
+    // A scripted bot that is staggered raises a parry soon after the lock, in a real fight.
+    let mut found = 0;
+    for seed in 0..12u64 {
+        let mut m = Match::new(700 + seed, Brain::Skill(2), Brain::Skill(2));
+        m.arena = Arena::flat(m.arena.width);
+        let mut since: [Option<u32>; 2] = [None, None];
+        while !m.is_over() {
+            m.step();
+            for i in 0..2 {
+                if m.robots[i].state() == State::Staggered {
+                    if since[i].is_none() {
+                        since[i] = Some(0);
+                    }
+                    let t = since[i].unwrap();
+                    since[i] = Some(t + 1);
+                    if t as f32 * DT > STAGGER_LOCK + 0.1 && m.robots[i].can_act() {
+                        found += 1;
+                    }
+                } else {
+                    since[i] = None;
+                }
+            }
+        }
+    }
+    assert!(found > 0, "no fighter was ever able to act while still staggered");
+}
