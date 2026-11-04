@@ -208,6 +208,13 @@ pub const GUARD_TARGETS: [f32; 12] = [-0.11, 0.07, 0.1, -0.4, 0.29, 0.0, -0.107,
 /// Staggered recoil: a modest flinch (waist ~9 deg back, head back, arms out); never a deep lean.
 pub const RECOIL_TARGETS: [f32; 12] = [-0.4, -0.3, -0.8, -0.8, -0.3, -0.3, -0.107, -0.107, -0.785, -0.785, 0.233, 0.233];
 
+/// Recorded sword joints and root of a robot (see `Robot::sword_chain`).
+#[derive(Clone, Copy, Debug)]
+pub struct SwordChain {
+    angles: [f32; 3],
+    x: f32,
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum State {
     Idle,
