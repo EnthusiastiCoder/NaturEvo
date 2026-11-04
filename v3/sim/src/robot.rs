@@ -884,6 +884,9 @@ impl Robot {
                 (j.to_angle(eff[i]), j.max_speed() * self.torque_scale(j))
             };
             let err = target - self.angles[i];
+            if matches!(j, Joint::Waist | Joint::ShoulderR | Joint::ElbowR) {
+                chain_err = chain_err.max(err.abs());
+            }
             let desired = (MOTOR_KP * err).clamp(-speed, speed);
             let dv = MOTOR_ACCEL * dt;
             let mut v = self.joint_vel[i] + (desired - self.joint_vel[i]).clamp(-dv, dv);
