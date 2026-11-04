@@ -92,7 +92,7 @@ fn unit(a: [f32; 2]) -> Option<[f32; 2]> {
 }
 
 /// Closest points between segments p1-q1 and p2-q2: (s, t, distance).
-fn seg_seg(p1: [f32; 2], q1: [f32; 2], p2: [f32; 2], q2: [f32; 2]) -> (f32, f32, f32) {
+pub fn seg_seg(p1: [f32; 2], q1: [f32; 2], p2: [f32; 2], q2: [f32; 2]) -> (f32, f32, f32) {
     let d1 = sub(q1, p1);
     let d2 = sub(q2, p2);
     let r = sub(p1, p2);
@@ -153,6 +153,20 @@ pub fn swept_pair(prev: Capsule, cur: Capsule, tprev: Capsule, tcur: Capsule) ->
     None
 }
 
+/// True if the two blades, moving linearly from their previous to their current pose, overlap at any of 32 sub-steps of
+/// the tick (end included). Blades are solid: the fight never lets a tick end in this state.
+pub fn blades_conflict(p0: Capsule, c0: Capsule, p1: Capsule, c1: Capsule) -> bool {
+    for i in 1..=32 {
+        let t = i as f32 / 32.0;
+        let (a, b) = (lerp_cap(&p0, &c0, t), lerp_cap(&p1, &c1, t));
+        let (_, _, d) = seg_seg(a.a, a.b, b.a, b.b);
+        if d < a.r + b.r - 0.0005 {
+            return true;
+        }
+    }
+    false
+}
+
 /// Sweep a moving capsule against a static target.
 pub fn swept_hit(prev: Capsule, cur: Capsule, target: Capsule) -> Option<Contact> {
     swept_pair(prev, cur, target, target)
@@ -161,6 +175,9 @@ pub fn swept_hit(prev: Capsule, cur: Capsule, target: Capsule) -> Option<Contact
 /// Speed (m/s) of the attacker's blade (faster end) that comes from its own swing: the blade's displacement over
 /// the tick minus the root's displacement (walking or knockback is not a strike).
 pub fn own_blade_speed(att: &Robot) -> f32 {
+    if att.in_recoil() {
+        return 0.0; // a blade coming back from being batted aside is not being swung
+    }
     let (sp, sc) = (att.sword_prev_capsule(), att.sword_capsule());
     let rx = att.sword_root_dx();
     let one = |a: [f32; 2], b: [f32; 2]| len([a[0] - b[0] - rx, a[1] - b[1]]) / PHYS_DT;
@@ -289,7 +306,7 @@ pub fn resolve_tick_with(att: &mut Robot, def: &mut Robot, arena: &Arena, mods: 
                 None => 0.0,
             };
             let mut kind = ClashKind::Clash;
-            if perp_ok && toward > 1.0 {
+            if perp_ok && toward > 1.0 && !def.in_recoil() && !att.in_recoil() {
                 kind = if def.sword_moving_since > 0.0 && def.sword_moving_since < 0.25 {
                     ClashKind::PerfectParry
                 } else {
