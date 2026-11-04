@@ -711,6 +711,7 @@ impl Match {
             self.run_combat();
             self.break_mutual_stagger();
             self.separate_bodies(side);
+            self.keep_blades_apart(&chains);
             self.special_contacts();
             self.resolve_whiffs();
             for r in self.rules.iter_mut() {
