@@ -705,6 +705,7 @@ impl Match {
                 self.engaged_ticks += 1;
             }
             let side = if self.robots[1].x >= self.robots[0].x { 1.0f32 } else { -1.0 };
+            let chains = [self.robots[0].sword_chain(), self.robots[1].sword_chain()];
             self.advance_fighters();
             self.update_threats_pre();
             self.run_combat();
