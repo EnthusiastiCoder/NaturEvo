@@ -2,3 +2,4 @@
 //! Diagnostics only; nothing here feeds back into fitness.
 use crate::combat::swept_pair;
 use crate::duel::{Brain, Match};
+use crate::moveset::Phase;
