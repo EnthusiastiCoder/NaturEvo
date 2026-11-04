@@ -1045,6 +1045,7 @@ impl Match {
             if evs.is_empty() {
                 continue;
             }
+            self.clash_count += evs.iter().filter(|e| matches!(e, CombatEvent::Clash { .. })).count() as u32;
             // A swing that only met a held blade beats it aside and keeps going: no cooldown, no more clashes with it.
             if evs.len() == 1 && matches!(evs[0], CombatEvent::Clash { kind: ClashKind::Clash, .. }) && !self.robots[att].parrying && combat::is_inert(&self.robots[def]) {
                 self.beat_blade[att] = true;
