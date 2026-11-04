@@ -338,7 +338,7 @@ pub fn resolve_tick_with(att: &mut Robot, def: &mut Robot, arena: &Arena, mods: 
             let damage = def.damage_part(part, impact * mods.impact_mult * STRIKE_DAMAGE);
             def.add_posture(impact * 0.05 * mods.posture_mult);
             let knockback = KNOCKBACK_K * impact * c.normal[0] / def.total_mass();
-            def.x = arena.clamp_x(def.x + knockback * 0.1);
+            def.x = arena.clamp_x(def.x + knockback * 0.03);
             def.apply_impulse(knockback * 0.3);
             events.push(CombatEvent::Hit(HitEvent {
                 part,
