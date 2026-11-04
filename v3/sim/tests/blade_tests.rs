@@ -24,3 +24,17 @@ fn lerp_cap(a: &Capsule, b: &Capsule, t: f32) -> Capsule {
     let l = |p: [f32; 2], q: [f32; 2]| [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t];
     Capsule { a: l(a.a, b.a), b: l(a.b, b.b), r: a.r }
 }
+
+/// Deepest overlap (m) of the blades during this tick, 0 when they never touch (checked at 32 sub-steps).
+fn depth(m: &Match) -> f32 {
+    let (p0, c0) = (m.robots[0].sword_prev_capsule(), m.robots[0].sword_capsule());
+    let (p1, c1) = (m.robots[1].sword_prev_capsule(), m.robots[1].sword_capsule());
+    let mut worst = 0.0f32;
+    for i in 1..=32 {
+        let t = i as f32 / 32.0;
+        let (a, b) = (lerp_cap(&p0, &c0, t), lerp_cap(&p1, &c1, t));
+        let (_, _, d) = seg_seg(a.a, a.b, b.a, b.b);
+        worst = worst.max(a.r + b.r - d);
+    }
+    worst
+}
