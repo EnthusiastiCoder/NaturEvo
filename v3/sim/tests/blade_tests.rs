@@ -38,3 +38,25 @@ fn depth(m: &Match) -> f32 {
     }
     worst
 }
+
+#[test]
+fn blades_never_overlap_or_cross() {
+    let (mut ticks, mut bad) = (0u32, 0u32);
+    let mut deepest = 0.0f32;
+    for (a, b) in fights() {
+        for seed in 0..5u64 {
+            let mut m = Match::new(700 + seed, a.clone(), b.clone());
+            m.arena = Arena::flat(m.arena.width);
+            while !m.is_over() && m.tick < 2500 {
+                m.step();
+                ticks += 1;
+                let d = depth(&m);
+                if d > 0.002 {
+                    bad += 1;
+                    deepest = deepest.max(d);
+                }
+            }
+        }
+    }
+    assert_eq!(bad, 0, "{bad} of {ticks} ticks had the blades overlapping or crossing (deepest {deepest:.3} m)");
+}
