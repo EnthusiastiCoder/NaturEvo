@@ -25,3 +25,4 @@ pub struct Mastery {
     pub longest_idle: f64,
     /// Blade-blade: ticks the blade capsules overlap at the end of the tick, ticks where the blade centre lines truly cross,
     /// of those, ticks with no clash event that tick, and the deepest penetration (m).
+    pub blade_overlap: f64,
