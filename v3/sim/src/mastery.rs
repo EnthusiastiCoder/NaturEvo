@@ -72,3 +72,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
             let (_, _, d) = crate::combat::seg_seg(ca.a, ca.b, cb.a, cb.b);
             let rs = ca.r + cb.r;
             let clashed = m.clash_count != clashes_before;
+            let in_play = !matches!(r0.state(), State::Fallen | State::Ko) && !matches!(r1.state(), State::Fallen | State::Ko);
