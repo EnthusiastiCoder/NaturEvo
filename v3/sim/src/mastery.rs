@@ -95,3 +95,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
                 s.max_depth = s.max_depth.max(depth);
             }
         }
+        let (i0, i1) = (m.move_info(0), m.move_info(1));
