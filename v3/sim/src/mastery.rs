@@ -27,3 +27,4 @@ pub struct Mastery {
     /// of those, ticks with no clash event that tick, and the deepest penetration (m).
     pub blade_overlap: f64,
     pub blade_cross: f64,
+    pub blade_noclash: f64,
