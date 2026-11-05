@@ -63,3 +63,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
         if stag_before[0] && stag_before[1] {
             s.both_stag += 1.0;
         }
+        let (sa, sb) = (r0.sword_capsule(), r1.sword_capsule());
