@@ -75,3 +75,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
             let in_play = !matches!(r0.state(), State::Fallen | State::Ko) && !matches!(r1.state(), State::Fallen | State::Ko);
             if d <= rs && in_play {
                 s.blade_overlap += 1.0;
+                if !clashed {
