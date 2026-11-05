@@ -60,3 +60,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
             }
         }
         let (r0, r1) = (&m.robots[0], &m.robots[1]);
+        if stag_before[0] && stag_before[1] {
