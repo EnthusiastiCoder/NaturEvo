@@ -8,3 +8,4 @@ use crate::skillbot::is_attack;
 
 #[derive(Clone, Debug, Default)]
 pub struct Mastery {
+    pub lens: Vec<u32>,
