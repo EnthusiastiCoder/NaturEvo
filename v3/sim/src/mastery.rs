@@ -67,3 +67,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
         if swept_pair(sa, sa, sb, sb).is_some() && tip_speed(r0) < 1.0 && tip_speed(r1) < 1.0 {
             s.bind += 1.0;
         }
+        {
