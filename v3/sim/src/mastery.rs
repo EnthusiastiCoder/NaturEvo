@@ -50,3 +50,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
     while !m.is_over() {
         let clashes_before = m.clash_count;
         let stag_before = [m.robots[0].state() == State::Staggered, m.robots[1].state() == State::Staggered];
+        m.step();
