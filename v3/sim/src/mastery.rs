@@ -13,3 +13,4 @@ pub struct Mastery {
     pub swings: f64,
     pub hits: f64,
     pub distinct: f64,
+    pub defences: f64,
