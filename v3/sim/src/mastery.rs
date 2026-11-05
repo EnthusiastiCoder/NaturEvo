@@ -53,3 +53,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
         m.step();
         s.ticks += 1.0;
         while seen < m.hit_log().len() {
+            let (_, att) = m.hit_log()[seen];
