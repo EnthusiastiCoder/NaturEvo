@@ -48,3 +48,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
     let mut seen = 0usize;
     let (mut run, mut best) = (0u32, 0u32);
     while !m.is_over() {
+        let clashes_before = m.clash_count;
