@@ -68,3 +68,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
             s.bind += 1.0;
         }
         {
+            let (ca, cb) = (r0.sword_capsule(), r1.sword_capsule());
