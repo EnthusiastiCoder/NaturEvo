@@ -12,3 +12,4 @@ pub struct Mastery {
     pub capped: u32,
     pub swings: f64,
     pub hits: f64,
+    pub distinct: f64,
