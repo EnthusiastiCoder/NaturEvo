@@ -32,3 +32,4 @@ pub struct Mastery {
     pub max_depth: f64,
     pub wins0: u32,
     pub draws: u32,
+}
