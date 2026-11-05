@@ -106,3 +106,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
         }
         let _ = is_attack;
     }
+    let r = m.result();
