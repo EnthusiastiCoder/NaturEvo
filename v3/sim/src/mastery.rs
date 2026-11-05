@@ -73,3 +73,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
             let rs = ca.r + cb.r;
             let clashed = m.clash_count != clashes_before;
             let in_play = !matches!(r0.state(), State::Fallen | State::Ko) && !matches!(r1.state(), State::Fallen | State::Ko);
+            if d <= rs && in_play {
