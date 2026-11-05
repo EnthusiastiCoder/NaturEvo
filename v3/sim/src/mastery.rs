@@ -37,3 +37,4 @@ pub struct Mastery {
 fn tip_speed(r: &Robot) -> f32 {
     let (s, p) = (r.sword_capsule(), r.sword_prev_capsule());
     let d = [s.b[0] - p.b[0], s.b[1] - p.b[1]];
+    (d[0] * d[0] + d[1] * d[1]).sqrt() * 60.0
