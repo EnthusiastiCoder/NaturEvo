@@ -17,3 +17,4 @@ pub struct Mastery {
     pub parries: f64,
     pub ticks: f64,
     pub both_stag: f64,
+    pub bind: f64,
