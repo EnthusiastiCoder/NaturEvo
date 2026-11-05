@@ -11,3 +11,4 @@ pub struct Mastery {
     pub lens: Vec<u32>,
     pub capped: u32,
     pub swings: f64,
+    pub hits: f64,
