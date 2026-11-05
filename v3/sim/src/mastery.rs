@@ -56,3 +56,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
             let (_, att) = m.hit_log()[seen];
             seen += 1;
             if stag_before[1 - att as usize] {
+                s.hits_while_stag += 1.0;
