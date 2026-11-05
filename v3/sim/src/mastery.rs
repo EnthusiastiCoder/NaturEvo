@@ -19,3 +19,4 @@ pub struct Mastery {
     pub both_stag: f64,
     pub bind: f64,
     pub hits_while_stag: f64,
+    /// Ticks with both fighters in an Idle move at torso distance over 1.2 m (nobody doing anything).
