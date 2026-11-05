@@ -33,3 +33,5 @@ pub struct Mastery {
     pub wins0: u32,
     pub draws: u32,
 }
+
+fn tip_speed(r: &Robot) -> f32 {
