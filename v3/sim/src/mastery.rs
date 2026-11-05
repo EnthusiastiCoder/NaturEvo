@@ -99,3 +99,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
         let far = (r0.x - r1.x).abs() > 1.2;
         if far && i0.phase == Phase::Idle && i1.phase == Phase::Idle && r0.state() == State::Idle && r1.state() == State::Idle {
             s.both_idle_far += 1.0;
+            run += 1;
