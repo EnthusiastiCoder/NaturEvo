@@ -23,3 +23,4 @@ pub struct Mastery {
     pub both_idle_far: f64,
     /// Longest run of consecutive both-idle ticks, summed over fights.
     pub longest_idle: f64,
+    /// Blade-blade: ticks the blade capsules overlap at the end of the tick, ticks where the blade centre lines truly cross,
