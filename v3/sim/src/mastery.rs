@@ -77,3 +77,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
                 s.blade_overlap += 1.0;
                 if !clashed {
                     s.blade_noclash += 1.0;
+                }
