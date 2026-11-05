@@ -35,3 +35,4 @@ pub struct Mastery {
 }
 
 fn tip_speed(r: &Robot) -> f32 {
+    let (s, p) = (r.sword_capsule(), r.sword_prev_capsule());
