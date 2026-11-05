@@ -15,3 +15,4 @@ pub struct Mastery {
     pub distinct: f64,
     pub defences: f64,
     pub parries: f64,
+    pub ticks: f64,
