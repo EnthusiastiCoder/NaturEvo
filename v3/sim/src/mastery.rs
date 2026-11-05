@@ -97,3 +97,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
         }
         let (i0, i1) = (m.move_info(0), m.move_info(1));
         let far = (r0.x - r1.x).abs() > 1.2;
+        if far && i0.phase == Phase::Idle && i1.phase == Phase::Idle && r0.state() == State::Idle && r1.state() == State::Idle {
