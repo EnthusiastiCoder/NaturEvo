@@ -84,3 +84,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
                 let la = ((ca.b[0] - ca.a[0]).powi(2) + (ca.b[1] - ca.a[1]).powi(2)).sqrt();
                 let lb = ((cb.b[0] - cb.a[0]).powi(2) + (cb.b[1] - cb.a[1]).powi(2)).sqrt();
                 let depth = if d < 1e-4 {
+                    s.blade_cross += 1.0;
