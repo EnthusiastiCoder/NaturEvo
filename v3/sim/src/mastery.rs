@@ -70,3 +70,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
         {
             let (ca, cb) = (r0.sword_capsule(), r1.sword_capsule());
             let (_, _, d) = crate::combat::seg_seg(ca.a, ca.b, cb.a, cb.b);
+            let rs = ca.r + cb.r;
