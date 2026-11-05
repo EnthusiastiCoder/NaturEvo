@@ -59,3 +59,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
                 s.hits_while_stag += 1.0;
             }
         }
+        let (r0, r1) = (&m.robots[0], &m.robots[1]);
