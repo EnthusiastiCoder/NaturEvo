@@ -64,3 +64,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
             s.both_stag += 1.0;
         }
         let (sa, sb) = (r0.sword_capsule(), r1.sword_capsule());
+        if swept_pair(sa, sa, sb, sb).is_some() && tip_speed(r0) < 1.0 && tip_speed(r1) < 1.0 {
