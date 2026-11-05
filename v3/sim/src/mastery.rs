@@ -44,3 +44,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
     let mut m = Match::new(seed, a, b);
     if flat {
         m.arena = crate::arena::Arena::flat(m.arena.width);
+    }
