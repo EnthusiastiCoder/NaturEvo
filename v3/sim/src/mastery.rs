@@ -18,3 +18,4 @@ pub struct Mastery {
     pub ticks: f64,
     pub both_stag: f64,
     pub bind: f64,
+    pub hits_while_stag: f64,
