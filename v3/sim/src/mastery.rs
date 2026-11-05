@@ -30,3 +30,4 @@ pub struct Mastery {
     pub blade_noclash: f64,
     pub blade_cross_noclash: f64,
     pub max_depth: f64,
+    pub wins0: u32,
