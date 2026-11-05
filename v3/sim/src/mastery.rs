@@ -92,3 +92,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
                 } else {
                     (rs - d) as f64
                 };
+                s.max_depth = s.max_depth.max(depth);
