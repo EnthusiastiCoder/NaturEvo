@@ -94,3 +94,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
                 };
                 s.max_depth = s.max_depth.max(depth);
             }
+        }
