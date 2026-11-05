@@ -91,3 +91,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
                     (rs + (si * la).min((1.0 - si) * la).min(ti * lb).min((1.0 - ti) * lb)) as f64
                 } else {
                     (rs - d) as f64
+                };
