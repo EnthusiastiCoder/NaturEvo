@@ -79,3 +79,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
                     s.blade_noclash += 1.0;
                 }
                 // Penetration: how far one blade reaches past the other's centre line (distance to the nearer blade end
+                // from the closest point), or the capsule overlap when the centre lines do not cross.
