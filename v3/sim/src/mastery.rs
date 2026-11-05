@@ -101,3 +101,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
             s.both_idle_far += 1.0;
             run += 1;
             best = best.max(run);
+        } else {
