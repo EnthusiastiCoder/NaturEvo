@@ -103,3 +103,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
             best = best.max(run);
         } else {
             run = 0;
+        }
