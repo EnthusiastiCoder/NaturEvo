@@ -82,3 +82,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
                 // from the closest point), or the capsule overlap when the centre lines do not cross.
                 let (si, ti, _) = crate::combat::seg_seg(ca.a, ca.b, cb.a, cb.b);
                 let la = ((ca.b[0] - ca.a[0]).powi(2) + (ca.b[1] - ca.a[1]).powi(2)).sqrt();
+                let lb = ((cb.b[0] - cb.a[0]).powi(2) + (cb.b[1] - cb.a[1]).powi(2)).sqrt();
