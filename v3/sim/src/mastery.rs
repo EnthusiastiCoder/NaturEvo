@@ -120,3 +120,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
     }
     s.longest_idle += best as f64;
     match r.outcome {
+        crate::duel::Outcome::WinA => s.wins0 += 1,
