@@ -159,3 +159,4 @@ impl Mastery {
             self.blade_overlap / n, self.blade_cross / n, self.blade_noclash / n, self.blade_cross_noclash / n, self.max_depth
         )
     }
+}
