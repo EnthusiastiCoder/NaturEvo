@@ -147,3 +147,4 @@ impl Mastery {
         if v.is_empty() { 0.0 } else { v[v.len() / 2] as f64 }
     }
     pub fn row(&self, label: &str) -> String {
+        let n = self.lens.len().max(1) as f64;
