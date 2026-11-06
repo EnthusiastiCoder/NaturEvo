@@ -125,3 +125,5 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
         _ => {}
     }
 }
+
+impl Mastery {
