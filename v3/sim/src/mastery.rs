@@ -122,3 +122,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
     match r.outcome {
         crate::duel::Outcome::WinA => s.wins0 += 1,
         crate::duel::Outcome::Draw => s.draws += 1,
+        _ => {}
