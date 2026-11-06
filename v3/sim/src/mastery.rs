@@ -133,3 +133,4 @@ impl Mastery {
         self.max_depth = self.max_depth.max(o.max_depth);
         self.wins0 += o.wins0;
         self.draws += o.draws;
+        for (a, b) in [
