@@ -134,3 +134,4 @@ impl Mastery {
         self.wins0 += o.wins0;
         self.draws += o.draws;
         for (a, b) in [
+            (&mut self.swings, o.swings), (&mut self.hits, o.hits), (&mut self.distinct, o.distinct), (&mut self.defences, o.defences),
