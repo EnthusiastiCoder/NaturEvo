@@ -141,3 +141,4 @@ impl Mastery {
             *a += b;
         }
     }
+    pub fn median(&self) -> f64 {
