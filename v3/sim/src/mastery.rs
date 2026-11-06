@@ -131,3 +131,4 @@ impl Mastery {
         self.lens.extend_from_slice(&o.lens);
         self.capped += o.capped;
         self.max_depth = self.max_depth.max(o.max_depth);
+        self.wins0 += o.wins0;
