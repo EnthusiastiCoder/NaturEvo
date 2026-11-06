@@ -127,3 +127,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
 }
 
 impl Mastery {
+    pub fn merge(&mut self, o: &Mastery) {
