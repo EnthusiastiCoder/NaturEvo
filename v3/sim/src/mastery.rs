@@ -114,3 +114,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
         s.hits += r.hits[who] as f64;
         let g = crate::grace::match_grace(&m, who);
         s.distinct += g.usage.iter().filter(|u| **u > 0.0).count() as f64;
+        let d = &r.defence[who];
