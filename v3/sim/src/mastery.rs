@@ -170,3 +170,4 @@ pub fn table(cs: &[(String, Brain)], seeds: u64, flat: bool) -> String {
         let hs: Vec<_> = jobs
             .iter()
             .map(|&(i, j)| {
+                let (a, b) = (cs[i].1.clone(), cs[j].1.clone());
