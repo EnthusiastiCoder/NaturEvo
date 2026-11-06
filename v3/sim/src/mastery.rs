@@ -168,3 +168,4 @@ pub fn table(cs: &[(String, Brain)], seeds: u64, flat: bool) -> String {
     let jobs: Vec<(usize, usize)> = (0..cs.len()).flat_map(|i| (0..cs.len()).map(move |j| (i, j))).collect();
     let res: Vec<Mastery> = std::thread::scope(|sc| {
         let hs: Vec<_> = jobs
+            .iter()
