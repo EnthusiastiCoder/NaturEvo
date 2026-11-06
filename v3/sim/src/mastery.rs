@@ -140,3 +140,4 @@ impl Mastery {
         ] {
             *a += b;
         }
+    }
