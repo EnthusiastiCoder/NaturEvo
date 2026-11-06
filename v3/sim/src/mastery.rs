@@ -160,3 +160,5 @@ impl Mastery {
         )
     }
 }
+
+pub const HEAD: &str = "| pair | fights | median ticks | mean ticks | capped | swings/fighter | hits/fight | distinct moves/fighter | parry share | both-staggered | bind | both idle far | hits taken while staggered/fight | longest idle run |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n";
