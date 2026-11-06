@@ -165,3 +165,4 @@ pub const HEAD: &str = "| pair | fights | median ticks | mean ticks | capped | s
 
 /// All ordered pairs of `names` (brains given), `seeds` fights each, in parallel over pairs.
 pub fn table(cs: &[(String, Brain)], seeds: u64, flat: bool) -> String {
+    let jobs: Vec<(usize, usize)> = (0..cs.len()).flat_map(|i| (0..cs.len()).map(move |j| (i, j))).collect();
