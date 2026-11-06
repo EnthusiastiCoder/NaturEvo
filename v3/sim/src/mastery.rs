@@ -135,3 +135,4 @@ impl Mastery {
         self.draws += o.draws;
         for (a, b) in [
             (&mut self.swings, o.swings), (&mut self.hits, o.hits), (&mut self.distinct, o.distinct), (&mut self.defences, o.defences),
+            (&mut self.parries, o.parries), (&mut self.ticks, o.ticks), (&mut self.both_stag, o.both_stag), (&mut self.bind, o.bind),
