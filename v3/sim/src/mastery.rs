@@ -148,3 +148,4 @@ impl Mastery {
     }
     pub fn row(&self, label: &str) -> String {
         let n = self.lens.len().max(1) as f64;
+        let t = self.ticks.max(1.0);
