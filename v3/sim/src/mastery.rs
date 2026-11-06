@@ -110,3 +110,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
     s.lens.push(r.ticks);
     s.capped += r.capped as u32;
     for who in 0..2 {
+        s.swings += r.swings[who] as f64;
