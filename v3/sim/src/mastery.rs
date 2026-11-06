@@ -164,3 +164,4 @@ impl Mastery {
 pub const HEAD: &str = "| pair | fights | median ticks | mean ticks | capped | swings/fighter | hits/fight | distinct moves/fighter | parry share | both-staggered | bind | both idle far | hits taken while staggered/fight | longest idle run |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n";
 
 /// All ordered pairs of `names` (brains given), `seeds` fights each, in parallel over pairs.
+pub fn table(cs: &[(String, Brain)], seeds: u64, flat: bool) -> String {
