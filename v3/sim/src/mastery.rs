@@ -156,3 +156,4 @@ impl Mastery {
             self.swings / n / 2.0, self.hits / n, self.distinct / n / 2.0,
             if self.defences > 0.0 { self.parries / self.defences * 100.0 } else { 0.0 },
             self.both_stag / t * 100.0, self.bind / t * 100.0, self.both_idle_far / t * 100.0, self.hits_while_stag / n, self.longest_idle / n,
+            self.blade_overlap / n, self.blade_cross / n, self.blade_noclash / n, self.blade_cross_noclash / n, self.max_depth
