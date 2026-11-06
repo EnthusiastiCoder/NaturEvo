@@ -144,3 +144,4 @@ impl Mastery {
     pub fn median(&self) -> f64 {
         let mut v = self.lens.clone();
         v.sort();
+        if v.is_empty() { 0.0 } else { v[v.len() / 2] as f64 }
