@@ -169,3 +169,4 @@ pub fn table(cs: &[(String, Brain)], seeds: u64, flat: bool) -> String {
     let res: Vec<Mastery> = std::thread::scope(|sc| {
         let hs: Vec<_> = jobs
             .iter()
+            .map(|&(i, j)| {
