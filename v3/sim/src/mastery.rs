@@ -150,3 +150,4 @@ impl Mastery {
         let n = self.lens.len().max(1) as f64;
         let t = self.ticks.max(1.0);
         let mean = self.lens.iter().map(|x| *x as f64).sum::<f64>() / n;
+        format!(
