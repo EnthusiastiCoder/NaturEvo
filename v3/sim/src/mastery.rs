@@ -142,3 +142,4 @@ impl Mastery {
         }
     }
     pub fn median(&self) -> f64 {
+        let mut v = self.lens.clone();
