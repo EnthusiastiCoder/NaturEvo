@@ -173,3 +173,4 @@ pub fn table(cs: &[(String, Brain)], seeds: u64, flat: bool) -> String {
                 let (a, b) = (cs[i].1.clone(), cs[j].1.clone());
                 sc.spawn(move || {
                     let mut s = Mastery::default();
+                    for sd in 0..seeds {
