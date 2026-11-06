@@ -136,3 +136,4 @@ impl Mastery {
         for (a, b) in [
             (&mut self.swings, o.swings), (&mut self.hits, o.hits), (&mut self.distinct, o.distinct), (&mut self.defences, o.defences),
             (&mut self.parries, o.parries), (&mut self.ticks, o.ticks), (&mut self.both_stag, o.both_stag), (&mut self.bind, o.bind),
+            (&mut self.hits_while_stag, o.hits_while_stag), (&mut self.blade_overlap, o.blade_overlap), (&mut self.blade_cross, o.blade_cross), (&mut self.blade_noclash, o.blade_noclash), (&mut self.blade_cross_noclash, o.blade_cross_noclash), (&mut self.both_idle_far, o.both_idle_far), (&mut self.longest_idle, o.longest_idle),
