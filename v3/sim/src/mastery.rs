@@ -152,3 +152,4 @@ impl Mastery {
         let mean = self.lens.iter().map(|x| *x as f64).sum::<f64>() / n;
         format!(
             "| {} | {} | {:.0} | {:.0} | {:.1}% | {:.1} | {:.2} | {:.1} | {:.0}% | {:.1}% | {:.1}% | {:.1}% | {:.2} | {:.0} | {:.2} | {:.2} | {:.2} | {:.2} | {:.3} |\n",
+            label, self.lens.len(), self.median(), mean, self.capped as f64 / n * 100.0,
