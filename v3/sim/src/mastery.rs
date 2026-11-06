@@ -146,3 +146,4 @@ impl Mastery {
         v.sort();
         if v.is_empty() { 0.0 } else { v[v.len() / 2] as f64 }
     }
+    pub fn row(&self, label: &str) -> String {
