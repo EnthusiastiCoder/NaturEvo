@@ -153,3 +153,4 @@ impl Mastery {
         format!(
             "| {} | {} | {:.0} | {:.0} | {:.1}% | {:.1} | {:.2} | {:.1} | {:.0}% | {:.1}% | {:.1}% | {:.1}% | {:.2} | {:.0} | {:.2} | {:.2} | {:.2} | {:.2} | {:.3} |\n",
             label, self.lens.len(), self.median(), mean, self.capped as f64 / n * 100.0,
+            self.swings / n / 2.0, self.hits / n, self.distinct / n / 2.0,
