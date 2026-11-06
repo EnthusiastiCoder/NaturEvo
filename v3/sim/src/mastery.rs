@@ -116,3 +116,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
         s.distinct += g.usage.iter().filter(|u| **u > 0.0).count() as f64;
         let d = &r.defence[who];
         s.defences += (d.parry + d.block + d.dodge) as f64;
+        s.parries += d.parry as f64;
