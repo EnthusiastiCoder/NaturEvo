@@ -109,3 +109,4 @@ pub fn play(a: Brain, b: Brain, seed: u64, flat: bool, s: &mut Mastery) {
     let r = m.result();
     s.lens.push(r.ticks);
     s.capped += r.capped as u32;
+    for who in 0..2 {
