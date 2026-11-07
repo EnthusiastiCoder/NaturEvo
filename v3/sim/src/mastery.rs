@@ -179,3 +179,4 @@ pub fn table(cs: &[(String, Brain)], seeds: u64, flat: bool) -> String {
                     s
                 })
             })
+            .collect();
