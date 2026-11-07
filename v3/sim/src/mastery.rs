@@ -177,3 +177,4 @@ pub fn table(cs: &[(String, Brain)], seeds: u64, flat: bool) -> String {
                         play(a.clone(), b.clone(), 1000 + sd, flat, &mut s);
                     }
                     s
+                })
