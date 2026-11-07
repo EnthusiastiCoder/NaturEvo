@@ -175,3 +175,4 @@ pub fn table(cs: &[(String, Brain)], seeds: u64, flat: bool) -> String {
                     let mut s = Mastery::default();
                     for sd in 0..seeds {
                         play(a.clone(), b.clone(), 1000 + sd, flat, &mut s);
+                    }
