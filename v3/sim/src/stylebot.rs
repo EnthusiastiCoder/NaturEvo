@@ -106,6 +106,9 @@ impl StyleBot {
         if theirs.id == MoveId::Backstep && theirs.phase != Phase::Idle {
             return (MoveId::Sweep, p(1.0, 1.0, 0.5, 0.0));
         }
+        // Neutral attacks rotate through a few moves per distance band, so a fight shows the whole vocabulary.
+        let n = self.count as usize;
+        let pick = |list: &[(MoveId, MoveParams)]| list[n % list.len()];
         match st {
             StyleId::Press => {
                 if dist > 1.95 {
