@@ -68,15 +68,13 @@ pub struct StyleBot {
     jitter: [f32; 3],
     last_x: f32,
     stuck: f32,
-    /// Neutral attacks launched so far (selects the next move of a band's rotation).
-    count: u32,
 }
 
 impl StyleBot {
     pub fn new(style: StyleId, seed: u64) -> StyleBot {
         let mut rng = Rng::new(seed ^ 0x57_1E_B07 ^ ((style.index() as u64) << 40));
         let jitter = [rng.range(-0.12, 0.12), rng.range(-0.1, 0.1), rng.range(-0.08, 0.08)];
-        StyleBot { style, jitter, last_x: f32::NAN, stuck: 0.0, count: 0 }
+        StyleBot { style, jitter, last_x: f32::NAN, stuck: 0.0 }
     }
 
     pub fn style(&self) -> StyleId {
@@ -84,20 +82,20 @@ impl StyleBot {
     }
 
     /// The attack for the situation: a pure function of distance and the opponent's state.
-    fn pick_attack(&self, dist: f32, theirs: &MoveInfo, opp_open: bool) -> (MoveId, MoveParams) {
+    fn pick_attack(&self, dist: f32, theirs: &MoveInfo, mine: &MoveInfo, opp_open: bool) -> (MoveId, MoveParams) {
         let guard_up = theirs.id == MoveId::Guard && theirs.phase != Phase::Idle;
         let st = self.style;
         if dist < CLOSE {
-            return if guard_up || self.count % 3 == 2 { (MoveId::ShieldBash, p(0.8, 0.9, 0.5, 0.0)) } else { (MoveId::Kick, p(0.8, 0.9, 0.5, 0.0)) };
+            return if guard_up || mine.last_move == MoveId::Kick { (MoveId::ShieldBash, p(0.8, 0.9, 0.5, 0.0)) } else { (MoveId::Kick, p(0.8, 0.9, 0.5, 0.0)) };
         }
         if guard_up && dist < 1.7 {
             return (MoveId::ShieldBash, p(0.8, 0.9, 0.5, 0.0));
         }
         if opp_open {
-            let n = self.count as usize;
+            let rot = |list: &[MoveId]| list.iter().position(|&m| m == mine.last_move).map_or(0, |k| (k + 1) % list.len());
             let far = [MoveId::DiagUp, MoveId::Thrust, MoveId::DiagDown, MoveId::Overhead];
             let near = [MoveId::Thrust, MoveId::DiagUp, MoveId::LowCut, MoveId::DiagDown];
-            let id = if dist > 1.7 { far[n % 4] } else { near[n % 4] };
+            let id = if dist > 1.7 { far[rot(&far)] } else { near[rot(&near)] };
             return (id, p(0.95, 1.0, 0.5, 0.0));
         }
         if guard_up {
@@ -107,8 +105,8 @@ impl StyleBot {
             return (MoveId::Sweep, p(1.0, 1.0, 0.5, 0.0));
         }
         // Neutral attacks rotate through a few moves per distance band, so a fight shows the whole vocabulary.
-        let n = self.count as usize;
-        let pick = |list: &[(MoveId, MoveParams)]| list[n % list.len()];
+        // The next move of a band's rotation follows the last move started, which the fighter senses.
+        let pick = |list: &[(MoveId, MoveParams)]| list[list.iter().position(|(m, _)| *m == mine.last_move).map_or(0, |k| (k + 1) % list.len())];
         match st {
             StyleId::Press => {
                 let q = p(0.95, 1.0, 0.45, 0.0);
@@ -251,8 +249,7 @@ impl StyleBot {
                 return (Some((id, pr)), drive);
             }
             if allowed && (dist >= 0.9 || stuck) {
-                let (id, pr) = self.pick_attack(dist, theirs, opp_open || punishable);
-                self.count += 1;
+                let (id, pr) = self.pick_attack(dist, theirs, mine, opp_open || punishable);
                 return (Some((id, pr)), drive);
             }
         }

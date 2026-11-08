@@ -30,6 +30,9 @@ pub struct MoveInfo {
     pub guard_broken_remaining: f32,
     pub last_cost: f32,
     pub recovery_remaining: f32,
+    /// The last move this fighter started (Idle before the first). Shown in the own-move one-hot while the fighter is idle,
+    /// so a rotation through moves is something a net can sense.
+    pub last_move: MoveId,
 }
 
 impl Default for MoveId {
@@ -225,9 +228,10 @@ pub fn observe_moves(me: &Robot, opp: &Robot, arena: &Arena, mine: &MoveInfo, th
     w.put(behind / 14.0);
     w.put(if line_of_sight_blocked(o[0], mid(&opp.capsule(Part::Torso))[0], arena) { 1.0 } else { 0.0 });
     debug_assert_eq!(w.i, BASE_IN);
-    // Own move state (always known to the fighter).
+    // Own move state (always known to the fighter); while idle, the last move started.
+    let own_id = if mine.id == MoveId::Idle { mine.last_move } else { mine.id };
     for k in 0..14 {
-        w.put(if mine.id.index() == k { 1.0 } else { 0.0 });
+        w.put(if own_id.index() == k { 1.0 } else { 0.0 });
     }
     for k in 0..4 {
         w.put(if mine.phase.index() == k { 1.0 } else { 0.0 });

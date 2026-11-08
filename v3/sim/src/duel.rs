@@ -472,6 +472,7 @@ impl Match {
             guard_broken_remaining: r.guard_broken_remaining(),
             last_cost: self.last_cost[i],
             recovery_remaining: rec,
+            last_move: self.starts[i].last().copied().unwrap_or(MoveId::Idle),
         }
     }
 

@@ -170,7 +170,7 @@ fn observations_are_finite_and_in_range_under_fuzz() {
             phase: [Phase::Idle, Phase::Windup, Phase::Active, Phase::Recovery][(rng.next_u64() % 4) as usize],
             progress: rng.f32(), committed: rng.f32() < 0.5, open: rng.f32() < 0.5,
             riposte_remaining: rng.range(0.0, 0.6), guard_broken_remaining: rng.range(0.0, 0.4),
-            last_cost: rng.range(0.0, 30.0), recovery_remaining: rng.range(0.0, 0.5),
+            last_cost: rng.range(0.0, 30.0), recovery_remaining: rng.range(0.0, 0.5), last_move: MoveId::ALL[(rng.next_u64() % 14) as usize],
         };
         let (ma, mb) = (rnd(&mut rng), rnd(&mut rng));
         for x in [observe_moves(&a, &b, &ar, &ma, &mb), observe_moves(&b, &a, &ar, &mb, &ma)] {
