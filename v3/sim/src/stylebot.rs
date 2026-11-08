@@ -250,7 +250,7 @@ impl StyleBot {
                 let (id, pr) = if dist < 1.5 { (MoveId::Thrust, p(0.9, 1.0, 0.5, 0.0)) } else { (MoveId::Overhead, p(0.9, 1.0, 0.5, 0.0)) };
                 return (Some((id, pr)), drive);
             }
-            if allowed && (dist >= 1.0 || stuck) {
+            if allowed && (dist >= 0.9 || stuck) {
                 let (id, pr) = self.pick_attack(dist, theirs, opp_open || punishable);
                 return (Some((id, pr)), drive);
             }
