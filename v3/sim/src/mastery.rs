@@ -180,3 +180,4 @@ pub fn table(cs: &[(String, Brain)], seeds: u64, flat: bool) -> String {
                 })
             })
             .collect();
+        hs.into_iter().map(|h| h.join().unwrap()).collect()
