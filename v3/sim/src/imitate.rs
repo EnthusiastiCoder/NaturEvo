@@ -19,6 +19,8 @@ const K_LOGIT: f32 = 4.0;
 const W_MOVE: f32 = 2.5;
 const W_PARAM: f32 = 1.0;
 const W_DRIVE: f32 = 1.0;
+/// Steps of a fight sequence per weight update (truncated backprop; the context carries over between chunks).
+const CHUNK: usize = 12;
 /// Longest fight sequence kept (decision steps).
 const MAX_SEQ: usize = 1200;
 
