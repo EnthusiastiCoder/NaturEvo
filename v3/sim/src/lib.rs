@@ -15,6 +15,7 @@ pub mod fitness;
 pub mod genome;
 pub mod grace;
 pub mod log;
+pub mod mastery;
 pub mod metrics;
 pub mod moves;
 pub mod moveset;
