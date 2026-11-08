@@ -40,7 +40,7 @@ fn p(reach: f32, speed: f32, arc: f32, delay: f32) -> MoveParams {
 
 const SWING_MAX: f32 = 2.2;
 const STUCK_RANGE: f32 = 2.55;
-const CLOSE: f32 = 1.35;
+const CLOSE: f32 = 1.0;
 
 /// Per-style tuning: preferred spacing, reaction point and the like.
 struct Tune {
