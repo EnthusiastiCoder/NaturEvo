@@ -143,6 +143,9 @@ pub struct MatchResult {
     pub combo_max: [u32; 2],
 }
 
+/// Ticks after an attack move ends during which its blade can still land a blow.
+pub const BLOW_LAG: u32 = 60;
+
 /// Ticks between two hits of one fighter that still count as one combo.
 pub const COMBO_GAP: u32 = 90;
 
@@ -254,6 +257,8 @@ pub struct Match {
     ctl: [Ctl; 2],
     hitstop: u32,
     cooldown: [u32; 2],
+    /// Last tick each fighter was running an attack move (the blade keeps moving a few ticks after the move ends).
+    last_attack_tick: [u32; 2],
     turn: [u32; 2],
     last_live: [Option<u32>; 2],
     prev_state: [State; 2],
@@ -356,6 +361,7 @@ impl Match {
             ctl: [make_ctl(a, seed, 1), make_ctl(b, seed, 2)],
             hitstop: 0,
             cooldown: [0; 2],
+            last_attack_tick: [0; 2],
             turn: [0; 2],
             last_live: [None; 2],
             prev_state,
@@ -1019,12 +1025,21 @@ impl Match {
 
     fn run_combat(&mut self) {
         for att in 0..2 {
+            if is_attack(self.exec[att].move_id()) {
+                self.last_attack_tick[att] = self.tick + 1;
+            }
             if self.cooldown[att] > 0 {
                 self.cooldown[att] -= 1;
                 continue;
             }
             let def = 1 - att;
             let att_id = self.exec[att].move_id();
+            // Only attack moves hurt: a Parry, Guard or Backstep sweep through a body is no blow (same for both fighters).
+            // The blade lags the executor, so a blow still counts for BLOW_LAG ticks after the attack move ends.
+            let raw = matches!(self.ctl[att], Ctl::Dummy | Ctl::Fixed(_) | Ctl::Scripted(_));
+            if !raw && !is_attack(att_id) && self.tick > self.last_attack_tick[att] + BLOW_LAG {
+                continue;
+            }
             let def_wa = matches!(self.exec[def].phase(), Phase::Windup | Phase::Active) && !self.exec[def].cancelling();
             let staggered = matches!(self.robots[def].state(), State::Staggered | State::Fallen);
             let finisher = self.exec[att].plunging() && self.robots[def].state() == State::Fallen;
