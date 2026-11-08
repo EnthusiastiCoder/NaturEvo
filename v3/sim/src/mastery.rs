@@ -189,3 +189,4 @@ pub fn table(cs: &[(String, Brain)], seeds: u64, flat: bool) -> String {
         all.merge(&res[k]);
     }
     out.push_str(&all.row("ALL"));
+    out
