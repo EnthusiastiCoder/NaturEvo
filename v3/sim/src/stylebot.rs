@@ -88,7 +88,7 @@ impl StyleBot {
         let guard_up = theirs.id == MoveId::Guard && theirs.phase != Phase::Idle;
         let st = self.style;
         if dist < CLOSE {
-            return if guard_up { (MoveId::ShieldBash, p(0.8, 0.9, 0.5, 0.0)) } else { (MoveId::Kick, p(0.8, 0.9, 0.5, 0.0)) };
+            return if guard_up || self.count % 3 == 2 { (MoveId::ShieldBash, p(0.8, 0.9, 0.5, 0.0)) } else { (MoveId::Kick, p(0.8, 0.9, 0.5, 0.0)) };
         }
         if guard_up && dist < 1.7 {
             return (MoveId::ShieldBash, p(0.8, 0.9, 0.5, 0.0));
