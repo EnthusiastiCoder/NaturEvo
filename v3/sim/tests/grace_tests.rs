@@ -154,6 +154,7 @@ fn match_grace_is_deterministic() {
 #[test]
 fn a_spammer_against_a_dummy_that_never_defends_lands_hits_a_spammer_in_the_void_whiffs() {
     let mut m = Match::new(0, Brain::Spam(MoveId::Overhead), Brain::Dummy);
+    m.arena = mech_sim::arena::Arena::flat(m.arena.width); // a standing dummy cannot be reached across obstacles
     m.run_to_end();
     let g = match_grace(&m, 0);
     assert!(g.hits_per_swing > 0.0 && g.whiff_rate < 1.0, "spammer vs dummy hits: {:?}", g.whiff_rate);
