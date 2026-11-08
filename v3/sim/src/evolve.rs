@@ -5,6 +5,7 @@ use crate::fitness::score_match;
 use crate::genome::Genome;
 use crate::metrics::csv_header;
 use crate::rng::Rng;
+use crate::moveset::MoveId;
 use crate::robot::Role;
 use crate::stylebot::StyleId;
 use std::path::PathBuf;
@@ -165,32 +166,37 @@ fn make_jobs(gen: u32, stage: Stage, heroes: &[Genome], mons: &[Genome], hof_h: 
     jobs
 }
 
-#[derive(Clone, Copy, PartialEq)]
-enum SKind {
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum SKind {
     Dummy,
     Skill(u8),
     Teacher(StyleId),
     SelfPlay,
     Hof,
     Foe,
+    /// A fighter that requests one move forever (the net must learn to punish and avoid it).
+    Spam(MoveId),
 }
 
-fn style_mix(gen: u32, gens: u32, own: StyleId, has_foes: bool) -> Vec<(SKind, f32)> {
+pub fn style_mix(gen: u32, gens: u32, own: StyleId, has_foes: bool) -> Vec<(SKind, f32)> {
     let others: Vec<StyleId> = StyleId::ALL.into_iter().filter(|s| *s != own).collect();
     if gen * 10 < gens {
         return vec![(SKind::Dummy, 0.3), (SKind::Skill(1), 0.3), (SKind::Teacher(own), 0.4)];
     }
     let foe = if has_foes { 0.12 } else { 0.0 };
     vec![
-        (SKind::Dummy, 0.08),
-        (SKind::Skill(1), 0.04),
+        (SKind::Dummy, 0.06),
+        (SKind::Skill(1), 0.03),
         (SKind::Skill(2), 0.1),
-        (SKind::Skill(3), 0.14),
-        (SKind::Teacher(own), 0.12),
-        (SKind::Teacher(others[0]), 0.08),
-        (SKind::Teacher(others[1]), 0.08),
-        (SKind::SelfPlay, 0.14),
-        (SKind::Hof, 0.10 + (0.12 - foe)),
+        (SKind::Skill(3), 0.12),
+        (SKind::Teacher(own), 0.1),
+        (SKind::Teacher(others[0]), 0.07),
+        (SKind::Teacher(others[1]), 0.07),
+        (SKind::Spam(MoveId::Overhead), 0.03),
+        (SKind::Spam(MoveId::Thrust), 0.03),
+        (SKind::Spam(MoveId::DiagDown), 0.03),
+        (SKind::SelfPlay, 0.12),
+        (SKind::Hof, 0.12 + (0.12 - foe)),
         (SKind::Foe, foe),
     ]
 }
@@ -255,6 +261,7 @@ fn make_style_jobs(gen: u32, cfg: &TrainConfig, style: StyleId, heroes: &[Genome
                     }
                     SKind::Skill(t) => Brain::Skill(t),
                     SKind::Teacher(st) => Brain::Style(st),
+                    SKind::Spam(m) => Brain::Spam(m),
                     SKind::SelfPlay => {
                         let j = (rng.next_u64() % n as u64) as usize;
                         Brain::Net(if hero_side { mons[j].clone() } else { heroes[j].clone() })
