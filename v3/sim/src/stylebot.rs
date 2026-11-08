@@ -129,7 +129,7 @@ impl StyleBot {
                 } else if dist > 1.6 {
                     pick(&[(MoveId::Overhead, q), (MoveId::DiagDown, q), (MoveId::Sweep, q)])
                 } else {
-                    (MoveId::DiagDown, p(0.9, 0.95, 0.45, 0.0))
+                    pick(&[(MoveId::DiagDown, q), (MoveId::Thrust, q), (MoveId::Overhead, q)])
                 }
             }
             StyleId::Duelist => {
