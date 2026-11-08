@@ -111,6 +111,7 @@ impl StyleBot {
         let pick = |list: &[(MoveId, MoveParams)]| list[n % list.len()];
         match st {
             StyleId::Press => {
+                let q = p(0.95, 1.0, 0.45, 0.0);
                 if dist > 1.95 {
                     (MoveId::DiagUp, p(0.95, 1.0, 0.45, 0.0))
                 } else if dist > 1.7 {
