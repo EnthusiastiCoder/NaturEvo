@@ -113,7 +113,7 @@ impl StyleBot {
             StyleId::Press => {
                 let q = p(0.95, 1.0, 0.45, 0.0);
                 if dist > 1.95 {
-                    (MoveId::DiagUp, p(0.95, 1.0, 0.45, 0.0))
+                    pick(&[(MoveId::DiagUp, q), (MoveId::Thrust, q), (MoveId::DiagUp, q), (MoveId::Sweep, q)])
                 } else if dist > 1.7 {
                     (MoveId::Overhead, p(0.95, 1.0, 0.45, 0.0))
                 } else if dist > 1.5 {
