@@ -116,12 +116,13 @@ fn a_death_win_beats_every_non_death_result() {
 
 #[test]
 fn log_contains_the_whole_fight_to_the_death() {
-    let mut m = Match::new(6, Brain::Scripted, Brain::Dummy);
+    let mut m = Match::new(6, Brain::Skill(3), Brain::Dummy);
+    m.arena = mech_sim::arena::Arena::flat(m.arena.width); // a standing dummy cannot be reached across obstacles
     m.enable_log();
     let r = m.run_to_end();
     let j = fight_json(&m);
     assert_eq!(j.matches("\"f\":[").count() as u32, r.ticks / 2 + 1, "one frame per 2 ticks plus the final state");
-    assert!(j.contains("\"kind\":\"ko\""), "the killing blow is logged");
+    assert!(j.contains("\"kind\":\"ko\""), "the killing blow is logged: ticks {} capped {} hits {:?}", r.ticks, r.capped, r.hits);
     assert!(!j.contains("sudden_death"), "no sudden-death block or event");
     assert!(j.contains("\"geometry\":"), "the geometry block stays");
     assert!(j.contains("\"capped\":false"));
