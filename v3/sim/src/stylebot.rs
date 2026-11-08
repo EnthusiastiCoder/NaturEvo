@@ -76,7 +76,7 @@ impl StyleBot {
     pub fn new(style: StyleId, seed: u64) -> StyleBot {
         let mut rng = Rng::new(seed ^ 0x57_1E_B07 ^ ((style.index() as u64) << 40));
         let jitter = [rng.range(-0.12, 0.12), rng.range(-0.1, 0.1), rng.range(-0.08, 0.08)];
-        StyleBot { style, jitter, last_x: f32::NAN, stuck: 0.0 }
+        StyleBot { style, jitter, last_x: f32::NAN, stuck: 0.0, count: 0 }
     }
 
     pub fn style(&self) -> StyleId {
