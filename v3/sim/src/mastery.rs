@@ -183,3 +183,4 @@ pub fn table(cs: &[(String, Brain)], seeds: u64, flat: bool) -> String {
         hs.into_iter().map(|h| h.join().unwrap()).collect()
     });
     let mut out = String::from(HEAD);
+    let mut all = Mastery::default();
