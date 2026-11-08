@@ -68,6 +68,8 @@ pub struct StyleBot {
     jitter: [f32; 3],
     last_x: f32,
     stuck: f32,
+    /// Neutral attacks launched so far (selects the next move of a band's rotation).
+    count: u32,
 }
 
 impl StyleBot {
