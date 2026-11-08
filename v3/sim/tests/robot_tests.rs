@@ -154,10 +154,10 @@ fn damage_formula_exact_and_more_on_damaged_part() {
 
 #[test]
 fn zone_multiplier_scales_damage_and_impact_is_capped() {
-    let head = Robot::new(Role::Hero).damage_part(Part::Head, 10.0);
-    let torso = Robot::new(Role::Hero).damage_part(Part::Torso, 10.0);
-    let foot = Robot::new(Role::Hero).damage_part(Part::FootL, 10.0);
-    let uarm = Robot::new(Role::Hero).damage_part(Part::UArmL, 10.0);
+    let head = Robot::new(Role::Hero).damage_part(Part::Head, 2.0);
+    let torso = Robot::new(Role::Hero).damage_part(Part::Torso, 2.0);
+    let foot = Robot::new(Role::Hero).damage_part(Part::FootL, 2.0);
+    let uarm = Robot::new(Role::Hero).damage_part(Part::UArmL, 2.0);
     assert!(head > torso && torso > foot);
     assert!(head > uarm, "high zone beats limb for the same impact");
     let capped = Robot::new(Role::Hero).damage_part(Part::Torso, IMPACT_CAP);
