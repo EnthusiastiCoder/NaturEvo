@@ -123,6 +123,7 @@ impl StyleBot {
                 }
             }
             StyleId::Counter => {
+                let q = p(0.9, 0.95, 0.45, 0.0);
                 if dist > 1.9 {
                     (MoveId::DiagUp, p(0.9, 0.95, 0.45, 0.0))
                 } else if dist > 1.6 {
