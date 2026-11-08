@@ -216,6 +216,8 @@ pub fn style_bonus(style: StyleId, r: &MatchResult, who: usize) -> f32 {
     let swings = r.swings[who] as f32;
     let acc = r.hits[who] as f32 / (swings + 2.0);
     let pun = if r.open_windows[1 - who] > 0 { (r.punish_hits[who] as f32 / r.open_windows[1 - who] as f32).min(1.0) } else { 0.0 };
+    // r6: a style net that collapses onto one move (counter nets spammed DiagUp) must lose to one that uses its vocabulary.
+    v += 0.35 * r.landed_moves[who].min(6) as f32;
     match style {
         StyleId::Press => {
             v += 0.4 * r.combo_mean[who].min(4.0) + 0.4 * (swings / 6.0).min(1.0);
@@ -224,7 +226,7 @@ pub fn style_bonus(style: StyleId, r: &MatchResult, who: usize) -> f32 {
             }
         }
         StyleId::Counter => v += 1.5 * pun + 1.0 * acc,
-        StyleId::Duelist => v += 0.3 * r.landed_moves[who].min(4) as f32 - 3.0 * r.jerk[who],
+        StyleId::Duelist => v -= 3.0 * r.jerk[who],
     }
     v
 }
