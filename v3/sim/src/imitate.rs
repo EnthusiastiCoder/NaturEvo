@@ -336,6 +336,24 @@ pub fn fit(w: &mut Vec<f32>, data: &Dataset, norm: &Norm, opts: &FitOpts) -> Fit
                     }
                 }
                 ctx.copy_from_slice(&f.h[..N_CTX]);
+                in_chunk += 1;
+                if in_chunk < CHUNK && si_ + 1 < seq.len() {
+                    continue;
+                }
+                let inv = 1.0 / in_chunk as f32;
+                in_chunk = 0;
+                t += 1;
+                // Cosine-ish decay of the learning rate over the whole fit.
+                let frac = done as f32 / total as f32;
+                let lr = opts.lr * (0.1 + 0.9 * 0.5 * (1.0 + (std::f32::consts::PI * frac).cos()));
+                let (c1, c2) = (1.0 - b1c.powi(t), 1.0 - b2c.powi(t));
+                for k in 0..n {
+                    let g = grad[k] * inv;
+                    m1[k] = b1c * m1[k] + (1.0 - b1c) * g;
+                    m2[k] = b2c * m2[k] + (1.0 - b2c) * g * g;
+                    w[k] = (w[k] - lr * (m1[k] / c1) / ((m2[k] / c2).sqrt() + eps)).clamp(-crate::genome::W_CLAMP, crate::genome::W_CLAMP);
+                }
+                grad.iter_mut().for_each(|g| *g = 0.0);
             }
             let inv = 1.0 / seq.len().max(1) as f32;
             t += 1;
