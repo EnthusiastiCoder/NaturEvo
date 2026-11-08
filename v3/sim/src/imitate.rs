@@ -356,13 +356,6 @@ pub fn fit(w: &mut Vec<f32>, data: &Dataset, norm: &Norm, opts: &FitOpts) -> Fit
                 grad.iter_mut().for_each(|g| *g = 0.0);
             }
             done += 1;
-            let (c1, c2) = (1.0 - b1c.powi(t), 1.0 - b2c.powi(t));
-            for k in 0..n {
-                let g = grad[k] * inv;
-                m1[k] = b1c * m1[k] + (1.0 - b1c) * g;
-                m2[k] = b2c * m2[k] + (1.0 - b2c) * g * g;
-                w[k] = (w[k] - lr * (m1[k] / c1) / ((m2[k] / c2).sqrt() + eps)).clamp(-crate::genome::W_CLAMP, crate::genome::W_CLAMP);
-            }
         }
     }
     evaluate(w, data, norm)
