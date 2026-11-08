@@ -137,7 +137,7 @@ impl StyleBot {
                 if dist > 1.95 {
                     pick(&[(MoveId::Thrust, p(1.0, 0.95, 0.5, 0.0)), (MoveId::Thrust, p(1.0, 0.95, 0.5, 0.0)), (MoveId::LowCut, p(0.95, 0.95, 0.5, 0.0))])
                 } else if dist > 1.7 {
-                    (MoveId::DiagUp, p(0.95, 0.95, 0.5, 0.55))
+                    pick(&[(MoveId::DiagUp, q), (MoveId::Overhead, q), (MoveId::Sweep, q)])
                 } else {
                     (MoveId::DiagDown, p(0.9, 0.95, 0.5, 0.55))
                 }
