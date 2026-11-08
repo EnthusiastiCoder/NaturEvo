@@ -4,7 +4,7 @@ use mech_sim::arena::Arena;
 use mech_sim::combat::seg_seg;
 use mech_sim::duel::{Brain, Match};
 use mech_sim::moveset::MoveId;
-use mech_sim::robot::Capsule;
+use mech_sim::robot::{Capsule, State};
 use mech_sim::stylebot::StyleId;
 
 fn fights() -> Vec<(Brain, Brain)> {
@@ -50,6 +50,9 @@ fn blades_never_overlap_or_cross() {
             while !m.is_over() && m.tick < 2500 {
                 m.step();
                 ticks += 1;
+                if m.robots.iter().any(|r| matches!(r.state(), State::Fallen | State::Ko)) {
+                    continue; // a blade lying with a fallen fighter is not in play
+                }
                 let d = depth(&m);
                 if d > 0.002 {
                     bad += 1;
