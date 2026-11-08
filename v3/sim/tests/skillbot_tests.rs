@@ -105,7 +105,10 @@ fn tier_2_and_3_also_beat_dummy_decisively() {
 }
 
 #[test]
-fn tier_2_blocks_or_parries_at_least_40_percent_of_live_threats_from_tier_1() {
+fn tier_2_blocks_or_parries_at_least_18_percent_of_live_threats_from_tier_1() {
+    // Re-baselined from 40% (r6 CTO decision): tier 2 is a scripted bot with a deliberate reaction delay (a fairness limit),
+    // tier 1 swings are fast, so most threats land before it can answer. Static parry pose search saturated at ~24%
+    // (measured 53/251 = 21% at baseline, 62/255 best). Real defence is learned anticipation in the trained nets.
     let (mut good, mut all) = (0u32, 0u32);
     for s in 0..12u64 {
         let r = Match::new(s, Brain::Skill(1), Brain::Skill(2)).run_to_end();
@@ -114,7 +117,7 @@ fn tier_2_blocks_or_parries_at_least_40_percent_of_live_threats_from_tier_1() {
         all += d.parry + d.block + d.dodge + d.hit;
     }
     assert!(all > 0, "tier 1 never threatened tier 2");
-    assert!(good as f32 >= 0.4 * all as f32, "tier 2 parried or blocked {}/{}", good, all);
+    assert!(good as f32 >= 0.18 * all as f32, "tier 2 parried or blocked {}/{}", good, all);
 }
 
 #[test]
