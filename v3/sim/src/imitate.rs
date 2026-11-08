@@ -301,7 +301,8 @@ pub fn fit(w: &mut Vec<f32>, data: &Dataset, norm: &Norm, opts: &FitOpts) -> Fit
             let seq = &data.seqs[si];
             grad.iter_mut().for_each(|g| *g = 0.0);
             let mut ctx = [0.0f32; N_CTX];
-            for s in seq {
+            let mut in_chunk = 0usize;
+            for (si_, s) in seq.iter().enumerate() {
                 let xn = norm.apply(&s.x);
                 let f = forward(w, &xn, &ctx);
                 let (_, dout) = loss_and_dout(&f.out, s);
