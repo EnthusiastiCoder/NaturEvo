@@ -355,11 +355,6 @@ pub fn fit(w: &mut Vec<f32>, data: &Dataset, norm: &Norm, opts: &FitOpts) -> Fit
                 }
                 grad.iter_mut().for_each(|g| *g = 0.0);
             }
-            let inv = 1.0 / seq.len().max(1) as f32;
-            t += 1;
-            // Cosine-ish decay of the learning rate over the whole fit.
-            let frac = done as f32 / total as f32;
-            let lr = opts.lr * (0.1 + 0.9 * 0.5 * (1.0 + (std::f32::consts::PI * frac).cos()));
             done += 1;
             let (c1, c2) = (1.0 - b1c.powi(t), 1.0 - b2c.powi(t));
             for k in 0..n {
