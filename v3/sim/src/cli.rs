@@ -224,6 +224,27 @@ fn binddiag_cmd(args: &[String]) -> Result<(), String> {
     Ok(())
 }
 
+/// Mastery table over ordered pairs of `--set press,counter,duelist,skill2,skill3` (names or genome paths).
+fn mastery_cmd(args: &[String]) -> Result<(), String> {
+    let seeds: u64 = opt(args, "--seeds").unwrap_or("60").parse().map_err(|_| "bad --seeds".to_string())?;
+    let flat = args.iter().any(|a| a == "--flat");
+    let mut cs = Vec::new();
+    for n in opt(args, "--set").unwrap_or("press,counter,duelist,skill2,skill3").split(',') {
+        if let Some((name, dir)) = n.split_once('=') {
+            let (h, _) = eval::final_champions(std::path::Path::new(dir))?;
+            cs.push((name.to_string(), Brain::Net(h)));
+        } else {
+            cs.push((n.to_string(), brain(n)?));
+        }
+    }
+    let out = crate::mastery::table(&cs, seeds, flat);
+    print!("{}", out);
+    if let Some(p) = opt(args, "--md") {
+        std::fs::write(p, out).map_err(|e| format!("{}: {}", p, e))?;
+    }
+    Ok(())
+}
+
 pub fn run(args: &[String]) -> Result<(), String> {
     match args.first().map(|s| s.as_str()) {
         Some("fight") => fight(&args[1..]),
@@ -257,6 +278,7 @@ pub fn run(args: &[String]) -> Result<(), String> {
             std::fs::write(out.join("champion_monster_gen_0.json"), mon.to_json()).map_err(|e| e.to_string())
         }
         Some("styles") => styles_cmd(&args[1..]),
+        Some("mastery") => mastery_cmd(&args[1..]),
         Some("binddiag") => binddiag_cmd(&args[1..]),
         Some("compare") => compare_cmd(&args[1..]),
         Some(other) => Err(format!("unknown command: {}", other)),
