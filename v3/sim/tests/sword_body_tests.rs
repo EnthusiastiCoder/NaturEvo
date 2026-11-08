@@ -25,3 +25,16 @@ fn violations(a: Brain, b: Brain, seed: u64) -> u32 {
     }
     bad
 }
+
+#[test]
+fn no_sword_inside_a_body_outside_strikes() {
+    let mut total = 0;
+    for seed in 1..=6u64 {
+        total += violations(Brain::Style(StyleId::Press), Brain::Style(StyleId::Counter), seed);
+        total += violations(Brain::Style(StyleId::Duelist), Brain::Style(StyleId::Duelist), seed);
+        if let (Some(a), Some(b)) = (net("style_duelist/champion_hero_gen_999.json"), net("style_counter/champion_hero_gen_999.json")) {
+            total += violations(Brain::Net(a), Brain::Net(b), seed);
+        }
+    }
+    assert_eq!(total, 0, "{} strike-free ticks with a sword inside a body", total);
+}
