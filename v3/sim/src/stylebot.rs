@@ -94,7 +94,10 @@ impl StyleBot {
             return (MoveId::ShieldBash, p(0.8, 0.9, 0.5, 0.0));
         }
         if opp_open {
-            let id = if dist > 1.7 { MoveId::DiagUp } else { MoveId::Thrust };
+            let n = self.count as usize;
+            let far = [MoveId::DiagUp, MoveId::Thrust, MoveId::DiagDown, MoveId::Overhead];
+            let near = [MoveId::Thrust, MoveId::DiagUp, MoveId::LowCut, MoveId::DiagDown];
+            let id = if dist > 1.7 { far[n % 4] } else { near[n % 4] };
             return (id, p(0.95, 1.0, 0.5, 0.0));
         }
         if guard_up {
