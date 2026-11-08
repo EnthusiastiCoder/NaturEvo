@@ -92,6 +92,8 @@ pub struct Threat {
     /// The attacker's move when the threat began, and whether the defender backstepped while it was live.
     att_move: MoveId,
     def_backstep: bool,
+    /// Moves the attacker had started when the threat began (identifies the swing).
+    swing: usize,
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -1006,6 +1008,7 @@ impl Match {
             quiet: 0,
             att_move: self.exec[att].move_id(),
             def_backstep: self.exec[def].move_id() == MoveId::Backstep,
+            swing: self.starts[att].len(),
         };
         self.next_threat += 1;
         self.threats.push(t);
@@ -1016,6 +1019,11 @@ impl Match {
         let k = match self.threats.iter().position(|t| t.attacker == att && t.resolution.is_none()) {
             Some(k) => k,
             None => {
+                // A second hit of a swing that already landed is the same threat, not a new one.
+                let n = self.starts[att].len();
+                if res == Resolution::Hit && self.threats.iter().rev().find(|t| t.attacker == att).map_or(false, |t| t.swing == n && t.resolution == Some(Resolution::Hit)) {
+                    return;
+                }
                 let k = self.create_threat(att, 0.0);
                 k
             }
