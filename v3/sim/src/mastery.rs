@@ -185,3 +185,4 @@ pub fn table(cs: &[(String, Brain)], seeds: u64, flat: bool) -> String {
     let mut out = String::from(HEAD);
     let mut all = Mastery::default();
     for (k, &(i, j)) in jobs.iter().enumerate() {
+        out.push_str(&res[k].row(&format!("{} v {}", cs[i].0, cs[j].0)));
