@@ -133,6 +133,7 @@ impl StyleBot {
                 }
             }
             StyleId::Duelist => {
+                let q = p(0.95, 0.95, 0.5, 0.55);
                 if dist > 1.95 {
                     (MoveId::Thrust, p(1.0, 0.95, 0.5, 0.0))
                 } else if dist > 1.7 {
