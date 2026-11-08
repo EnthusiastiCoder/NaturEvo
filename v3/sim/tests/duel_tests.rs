@@ -33,7 +33,8 @@ fn scripted_attacker_damages_a_standing_fighter_who_does_nothing() {
 
 #[test]
 fn match_ends_only_with_a_death() {
-    let mut m = Match::new(6, Brain::Scripted, Brain::Dummy);
+    let mut m = Match::new(6, Brain::Skill(3), Brain::Dummy);
+    m.arena = mech_sim::arena::Arena::flat(m.arena.width); // a standing dummy cannot be reached across obstacles
     let r = m.run_to_end();
     let ko = m.robots.iter().any(|x| x.is_ko());
     assert!(ko && !r.capped, "ended at {} without KO", r.ticks);
