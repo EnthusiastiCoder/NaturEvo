@@ -252,6 +252,7 @@ impl StyleBot {
             }
             if allowed && (dist >= 0.9 || stuck) {
                 let (id, pr) = self.pick_attack(dist, theirs, opp_open || punishable);
+                self.count += 1;
                 return (Some((id, pr)), drive);
             }
         }
