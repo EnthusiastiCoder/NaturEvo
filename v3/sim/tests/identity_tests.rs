@@ -38,3 +38,17 @@ fn move_entropy_is_zero_for_one_move_and_high_for_a_spread() {
     }
     assert!(move_entropy(&many) > 0.85, "{}", move_entropy(&many));
 }
+
+#[test]
+fn match_result_counts_moves_started_per_fighter() {
+    let mut m = Match::new(5, Brain::Skill(2), Brain::Skill(1));
+    let r = m.run_to_end();
+    for i in 0..2 {
+        assert_eq!(r.move_counts[i].iter().map(|&c| c as u32).sum::<u32>(), r.swings[i]);
+    }
+    assert!(r.swings[0] + r.swings[1] > 0);
+    let mut m = Match::new(5, Brain::Skill(2), Brain::Dummy);
+    let r = m.run_to_end();
+    assert_eq!(r.move_counts[1].iter().map(|&c| c as u32).sum::<u32>(), 0);
+    assert!((0.0..=1.0).contains(&r.still_share[1]) && r.still_share[1] > 0.9, "dummy still {}", r.still_share[1]);
+}
