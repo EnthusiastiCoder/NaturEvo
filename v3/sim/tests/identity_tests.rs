@@ -108,3 +108,21 @@ fn press_pays_forward_steps_and_kicks_duelist_pays_spacing_spread() {
     flat.engaged_std = 0.1;
     assert!(style_bonus(StyleId::Duelist, &wide, 0) > style_bonus(StyleId::Duelist, &flat, 0) + 0.3);
 }
+
+#[test]
+fn capped_fights_cost_every_style_and_counter_must_have_converted_a_hit() {
+    for st in StyleId::ALL {
+        let mut cap = base();
+        cap.capped = true;
+        cap.outcome = Outcome::Draw;
+        cap.hits = [0, 0];
+        cap.counter_hits = [0, 0];
+        cap.backstep_hits = [0, 0];
+        let none = style_bonus(st, &cap, 0);
+        assert!(none < -1.0, "{} capped bonus {}", st.name(), none);
+        let mut conv = cap.clone();
+        conv.hits = [3, 0];
+        conv.counter_hits = [3, 0];
+        assert!(style_bonus(st, &conv, 0) > none + 0.5, "{}", st.name());
+    }
+}
