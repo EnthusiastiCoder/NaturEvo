@@ -510,6 +510,16 @@ impl Robot {
         self.fk();
     }
 
+    /// Fold the right elbow by `d` radians (within its range): a last way to take a blade out of a body.
+    pub fn bat_elbow(&mut self, d: f32) {
+        let (lo, hi) = Joint::ElbowR.limits();
+        let i = Joint::ElbowR as usize;
+        self.angles[i] = (self.angles[i] + d).clamp(lo, hi);
+        self.batted = true;
+        self.joint_vel[i] = 0.0;
+        self.fk();
+    }
+
     pub fn in_recoil(&self) -> bool {
         self.recoil
     }
