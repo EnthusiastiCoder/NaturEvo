@@ -15,3 +15,12 @@ describe('fightRoute', () => {
     expect(fightRoute('')).toBeNull();
   });
 });
+
+describe('index lists featured fights', () => {
+  it('collects featured_*.json files at the runs root', async () => {
+    const files = ['featured_a_vs_b.json', 'featured_c_vs_d.json', 'eval.md', 'r1/run.json'];
+    const idx = await buildIndex({ list: () => files, read: async () => '{"name":"r1","generations":1}' }, { mtime: () => undefined });
+    expect(idx.featured).toEqual(['featured_a_vs_b', 'featured_c_vs_d']);
+    expect(idx.runs.length).toBe(1);
+  });
+});
