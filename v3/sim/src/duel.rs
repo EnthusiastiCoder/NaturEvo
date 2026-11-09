@@ -414,6 +414,11 @@ impl Match {
             gap_total: 0.0,
             engaged_total: 0.0,
             engaged_ticks: 0,
+            engaged_sq: 0.0,
+            hit_moves: [[0; 14]; 2],
+            still_ticks: [0; 2],
+            fwd_ticks: [0; 2],
+            backstep_ticks: [Vec::new(), Vec::new()],
             recorder: None,
         }
     }
