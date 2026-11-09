@@ -411,6 +411,28 @@ impl Match {
         self.ended || self.tick >= HARD_CAP_TICKS || self.robots.iter().any(|r| r.is_ko())
     }
 
+    /// Fighter `i` is in a blow: running an attack move, or within `BLOW_LAG` ticks of one (raw controllers always count).
+    pub fn striking(&self, i: usize) -> bool {
+        let raw = matches!(self.ctl[i], Ctl::Dummy | Ctl::Fixed(_) | Ctl::Scripted(_));
+        raw || self.hitstop > 0 || is_attack(self.exec[i].move_id()) || self.tick <= self.last_attack_tick[i] + BLOW_LAG
+    }
+
+    /// `striking` as it will read once this tick has been counted (the fix-up runs before the tick counter advances).
+    fn striking_next(&self, i: usize) -> bool {
+        let raw = matches!(self.ctl[i], Ctl::Dummy | Ctl::Fixed(_) | Ctl::Scripted(_));
+        raw || self.hitstop > 0 || is_attack(self.exec[i].move_id()) || self.tick + 1 <= self.last_attack_tick[i] + BLOW_LAG
+    }
+
+    /// Fighter `i`'s sword overlaps a body part of the opponent.
+    pub fn sword_in_body(&self, i: usize) -> bool {
+        let (me, foe) = (&self.robots[i], &self.robots[1 - i]);
+        if !me.has_sword() || matches!(me.state(), State::Fallen | State::Ko) || matches!(foe.state(), State::Fallen | State::Ko) {
+            return false;
+        }
+        let s = me.sword_capsule();
+        Part::ALL.iter().any(|p| !matches!(p, Part::UArmR | Part::FArmR) && !foe.is_detached(*p) && cap_dist(&s, &foe.capsule(*p)) < 0.0)
+    }
+
     fn emit(&mut self, e: String) {
         if let Some(l) = self.log.as_mut() {
             l.events.push(e);
