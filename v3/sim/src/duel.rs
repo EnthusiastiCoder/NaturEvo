@@ -831,6 +831,13 @@ impl Match {
         }
     }
 
+    /// Fighter `k`'s blade, held where it is now, meets the other blade's path this tick.
+    fn blade_conflict_with_foe(&self, k: usize) -> bool {
+        let (me, foe) = (&self.robots[k], &self.robots[1 - k]);
+        let c = me.sword_capsule();
+        combat::blades_conflict(c, c, foe.sword_prev_capsule(), foe.sword_capsule())
+    }
+
     fn blades_cross_at_end(&self) -> bool {
         let (a, b) = (self.robots[0].sword_capsule(), self.robots[1].sword_capsule());
         combat::blades_conflict(a, a, b, b)
