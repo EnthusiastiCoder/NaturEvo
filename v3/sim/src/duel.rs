@@ -727,6 +727,10 @@ impl Match {
         }
         if self.hitstop > 0 {
             self.hitstop -= 1;
+            if self.hitstop == 0 {
+                let chains = [self.robots[0].sword_chain(), self.robots[1].sword_chain()];
+                self.keep_swords_out_of_bodies(&chains);
+            }
         } else {
             self.adv_ticks += 1;
             let gap = (self.robots[0].x - self.robots[1].x).abs();
