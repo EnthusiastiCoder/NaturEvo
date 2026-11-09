@@ -87,3 +87,24 @@ fn counter_pays_for_converting_a_parry_or_backstep_into_a_hit_not_for_the_parry(
     parried.defence[0].parry += 10;
     assert_eq!(style_bonus(StyleId::Counter, &parried, 0), style_bonus(StyleId::Counter, &none, 0));
 }
+
+#[test]
+fn press_pays_forward_steps_and_kicks_duelist_pays_spacing_spread() {
+    let mut fwd = base();
+    fwd.fwd_share = [0.5, 0.5];
+    let mut stay = base();
+    stay.fwd_share = [0.05, 0.05];
+    assert!(style_bonus(StyleId::Press, &fwd, 0) > style_bonus(StyleId::Press, &stay, 0) + 0.3);
+    let mut kick = base();
+    kick.move_counts[0][MoveId::Kick as usize] = 3;
+    kick.move_counts[0][MoveId::LowCut as usize] = 3;
+    let mut nokick = base();
+    nokick.move_counts[0][MoveId::Kick as usize] = 0;
+    nokick.move_counts[0][MoveId::LowCut as usize] = 0;
+    assert!(style_bonus(StyleId::Press, &kick, 0) > style_bonus(StyleId::Press, &nokick, 0));
+    let mut wide = base();
+    wide.engaged_std = 0.9;
+    let mut flat = base();
+    flat.engaged_std = 0.1;
+    assert!(style_bonus(StyleId::Duelist, &wide, 0) > style_bonus(StyleId::Duelist, &flat, 0) + 0.3);
+}
