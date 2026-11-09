@@ -5,6 +5,7 @@ import { mountFightView } from './fight-view';
 import type { FightScene } from './scene';
 import { loadIndex } from './runs-index';
 import { mountLanding } from './landing';
+import { fightRoute } from './fight-route';
 import { applyRecordMode, isRecordMode } from './record';
 
 applyTheme(document.documentElement, 'dark');
@@ -12,7 +13,7 @@ applyRecordMode(document.documentElement, isRecordMode(location.search));
 
 let scene: FightScene | null = null;
 async function show(): Promise<void> {
-  const m = /^#\/fight\/([^/]+)\/(\d+)$/.exec(location.hash);
+  const m = fightRoute(location.hash);
   const landing = document.getElementById('landing');
   const view = document.getElementById('view');
   if (!view) return;
@@ -22,7 +23,7 @@ async function show(): Promise<void> {
   document.documentElement.dataset.view = m ? 'fight' : 'landing';
   if (landing) landing.hidden = !!m;
   if (!m && landing) { await mountLanding(landing, await loadIndex()); return; }
-  if (m) scene = await mountFightView(view, `/runs/${m[1]}/fight_gen_${m[2]}.json`, `${decodeURIComponent(m[1])} gen ${m[2]}`);
+  if (m) scene = await mountFightView(view, m.url, m.title);
 }
 window.addEventListener('hashchange', () => void show());
 void show();
