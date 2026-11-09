@@ -26,3 +26,15 @@ fn base() -> MatchResult {
     r.backstep_hits = [1, 0];
     r
 }
+
+#[test]
+fn move_entropy_is_zero_for_one_move_and_high_for_a_spread() {
+    let mut one = [0u16; 14];
+    one[MoveId::DiagUp as usize] = 20;
+    assert!(move_entropy(&one) < 0.01);
+    let mut many = [0u16; 14];
+    for k in [1usize, 2, 3, 4, 5, 6] {
+        many[k] = 4;
+    }
+    assert!(move_entropy(&many) > 0.85, "{}", move_entropy(&many));
+}
