@@ -32,6 +32,11 @@ pub struct SideAcc {
     pub swings: f64,
     pub hits: f64,
     pub usage: [f64; N_MOVES],
+    pub starts: [f64; N_MOVES],
+    pub still: f64,
+    pub fwd: f64,
+    pub top_share: f64,
+    pub attack_kinds: f64,
 }
 
 impl SideAcc {
