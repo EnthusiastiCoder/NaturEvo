@@ -19,3 +19,5 @@ Another implementer (impl-v3-motion-hitbox) is editing v3/sim for (1) hitbox/geo
 2. New code lives in NEW files so merge conflicts are impossible: v3/sim/src/{moveset.rs, executor.rs, rules.rs, skillbot.rs, grace.rs}, v3/viewer/src/move-fx.ts. Edits to shared files are small, listed per workstream, and each is its own commit.
 3. If the deathbattle work removed the timeout/draw, all "draw" wording below is read as "n/a" and test cases that mention a draw are skipped; if it kept a bleed, reuse it. Do not re-add a timeout.
 4. If the motion fix changed N_IN/N_OUT or the decision interval, re-baseline the numbers in this plan from its report and note it in the baseline note.
+
+## Design
