@@ -85,6 +85,26 @@ impl SideAcc {
         self.still += r.still_share[who] as f64;
         self.fwd += r.fwd_share[who] as f64;
     }
+    /// Share of all attack moves started, by `MoveId` index.
+    pub fn move_share(&self) -> [f64; N_MOVES] {
+        let t: f64 = self.starts.iter().sum();
+        let mut o = [0.0; N_MOVES];
+        if t > 0.0 {
+            for i in 0..N_MOVES {
+                o[i] = self.starts[i] / t;
+            }
+        }
+        o
+    }
+    pub fn still(&self) -> f64 {
+        self.mean(self.still)
+    }
+    pub fn top_share(&self) -> f64 {
+        self.mean(self.top_share)
+    }
+    pub fn attack_variety(&self) -> f64 {
+        self.mean(self.attack_kinds)
+    }
     fn mean(&self, v: f64) -> f64 {
         v / self.n.max(1) as f64
     }
