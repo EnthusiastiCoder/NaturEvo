@@ -633,6 +633,9 @@ impl Match {
             self.emit(format!("{{\"t\":{},\"kind\":\"feint\",\"who\":{}}}", t, i));
         } else if ph == Phase::Windup && !cn && (self.prev_phase[i] != Phase::Windup || self.prev_id[i] != id) {
             self.starts[i].push(id);
+            if id == MoveId::Backstep {
+                self.backstep_ticks[i].push(t);
+            }
             self.contact_seen[i] = false;
             self.beat_blade[i] = false;
             self.bash_done[i] = false;
