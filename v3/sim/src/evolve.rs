@@ -1,7 +1,7 @@
 //! Co-evolution of hero and monster populations with curriculum, hall of fame and threaded evaluation.
 use crate::curriculum::{hof_enabled, opponent_mix, pick_kind, stage_for_gen, OppKind, Stage};
 use crate::duel::{Brain, Match, MatchResult, Outcome};
-use crate::fitness::score_match;
+use crate::fitness::{move_entropy, score_match};
 use crate::genome::Genome;
 use crate::metrics::csv_header;
 use crate::rng::Rng;
@@ -201,9 +201,19 @@ pub fn style_mix(gen: u32, gens: u32, own: StyleId, has_foes: bool) -> Vec<(SKin
     ]
 }
 
-/// Per-style extra fitness (never paid for guarding): spacing target, and style-specific credit on landed play.
+/// Per-style extra fitness (never paid for guarding, blocking or parrying): spacing target; entropy of the move share
+/// (not the count of moves) and of the landed-hit share, with diminishing returns on one move's share; a cost on standing
+/// still; and the style's own identity credit. A capped fight is a graded mutual loss (training only).
 pub fn style_bonus(style: StyleId, r: &MatchResult, who: usize) -> f32 {
-    if r.capped || r.outcome == Outcome::Draw {
+    if r.capped {
+        // The side that converted hits (counter: parries and backsteps turned into hits) loses less.
+        let conv = match style {
+            StyleId::Counter => r.counter_hits[who] + r.backstep_hits[who],
+            _ => r.hits[who],
+        };
+        return -2.0 * (1.0 - (conv as f32 / 3.0).min(1.0));
+    }
+    if r.outcome == Outcome::Draw {
         return 0.0;
     }
     let (target, w_sp) = match style {
@@ -216,17 +226,35 @@ pub fn style_bonus(style: StyleId, r: &MatchResult, who: usize) -> f32 {
     let swings = r.swings[who] as f32;
     let acc = r.hits[who] as f32 / (swings + 2.0);
     let pun = if r.open_windows[1 - who] > 0 { (r.punish_hits[who] as f32 / r.open_windows[1 - who] as f32).min(1.0) } else { 0.0 };
-    // r6: a style net that collapses onto one move (counter nets spammed DiagUp) must lose to one that uses its vocabulary.
+    // r6: a style net that collapses onto one move must lose to one that uses its vocabulary.
     v += 0.35 * r.landed_moves[who].min(6) as f32;
+    // r7: share entropy over attack moves and landed hits (scaled up to 5 swings so a handful of swings cannot fake it),
+    // diminishing returns above a 30% share for any single move, and a cost on standing still.
+    let counts = &r.move_counts[who];
+    let total: f32 = counts.iter().map(|&c| c as f32).sum();
+    let top = counts.iter().copied().max().unwrap_or(0) as f32;
+    v += 1.5 * move_entropy(counts) * (total / 5.0).min(1.0) + 1.0 * move_entropy(&r.hit_counts[who]);
+    if total >= 4.0 {
+        v -= 4.0 * (top / total - 0.3).max(0.0);
+    }
+    v -= 3.0 * (r.still_share[who] - 0.2).max(0.0);
+    let share = |ids: &[MoveId]| if total > 0.0 { ids.iter().map(|&m| counts[m as usize] as f32).sum::<f32>() / total } else { 0.0 };
     match style {
         StyleId::Press => {
             v += 0.4 * r.combo_mean[who].min(4.0) + 0.4 * (swings / 6.0).min(1.0);
+            v += 1.5 * (r.fwd_share[who] / 0.4).min(1.0) + 1.5 * (share(&[MoveId::Kick, MoveId::LowCut]) / 0.25).min(1.0);
             if r.outcome == mine {
                 v += 1.0 * (1.0 - r.ticks as f32 / crate::config::HARD_CAP_TICKS as f32).clamp(0.0, 1.0);
             }
         }
-        StyleId::Counter => v += 1.5 * pun + 1.0 * acc,
-        StyleId::Duelist => v -= 3.0 * r.jerk[who],
+        StyleId::Counter => {
+            v += 1.5 * pun + 1.0 * acc;
+            v += 1.2 * (r.counter_hits[who] as f32 / 3.0).min(1.0) + 0.8 * (r.backstep_hits[who] as f32 / 2.0).min(1.0);
+        }
+        StyleId::Duelist => {
+            v -= 3.0 * r.jerk[who];
+            v += 1.5 * (r.engaged_std / 0.8).min(1.0) + 1.0 * (share(&[MoveId::Thrust]) / 0.15).min(1.0);
+        }
     }
     v
 }
