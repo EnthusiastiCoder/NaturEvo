@@ -141,6 +141,9 @@ impl SideAcc {
             self.union_moves[i] |= o.union_moves[i];
             self.usage[i] += o.usage[i];
         }
+        for i in 0..N_MOVES {
+            self.starts[i] += o.starts[i];
+        }
         for (a, b) in [
             (&mut self.ticks, o.ticks), (&mut self.distinct, o.distinct), (&mut self.gap_mean, o.gap_mean), (&mut self.engaged_gap, o.engaged_gap), (&mut self.spacing_std, o.spacing_std),
             (&mut self.hits_per_swing, o.hits_per_swing), (&mut self.whiff, o.whiff), (&mut self.punish, o.punish), (&mut self.parry_hits, o.parry_hits),
