@@ -119,6 +119,12 @@ export async function mountLanding(el: HTMLElement, index: RunIndex): Promise<vo
   bar.querySelector<HTMLInputElement>('#ld-accent')!.oninput = (e) => setAccent(root, (e.target as HTMLInputElement).value);
   bar.querySelector<HTMLElement>('#ld-theme')!.onclick = () => { theme = nextTheme(theme); syncTheme(); };
   body.innerHTML = renderLandingHtml(vm, sel);
+  if (index.featured?.length) {
+    const nav = document.createElement('nav');
+    nav.className = 'featured';
+    nav.innerHTML = `<h2>Featured fights</h2>` + index.featured.map((f) => `<a href="#/featured/${f}">${f.replace(/_/g, ' ')}</a>`).join(' ');
+    body.prepend(nav);
+  }
   const results = body.querySelector<HTMLElement>('#landing-results');
   if (!results) return;
 
