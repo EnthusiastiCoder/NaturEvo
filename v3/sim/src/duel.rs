@@ -308,6 +308,11 @@ pub struct Match {
     gap_total: f64,
     engaged_total: f64,
     engaged_ticks: u32,
+    engaged_sq: f64,
+    hit_moves: [[u16; 14]; 2],
+    still_ticks: [u32; 2],
+    fwd_ticks: [u32; 2],
+    backstep_ticks: [Vec<u32>; 2],
     /// Imitation recording of one fighter's controller (see `Recorder`).
     pub recorder: Option<Recorder>,
 }
