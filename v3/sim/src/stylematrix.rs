@@ -75,6 +75,15 @@ impl SideAcc {
         self.tip_jerk += g.jerk as f64;
         self.swings += r.swings[who] as f64;
         self.hits += r.hits[who] as f64;
+        let c = &r.move_counts[who];
+        let tot: f64 = c.iter().map(|&x| x as f64).sum();
+        for i in 0..N_MOVES {
+            self.starts[i] += c[i] as f64;
+        }
+        self.attack_kinds += c.iter().filter(|&&x| x > 0).count() as f64;
+        self.top_share += if tot > 0.0 { c.iter().copied().max().unwrap_or(0) as f64 / tot } else { 0.0 };
+        self.still += r.still_share[who] as f64;
+        self.fwd += r.fwd_share[who] as f64;
     }
     fn mean(&self, v: f64) -> f64 {
         v / self.n.max(1) as f64
