@@ -259,7 +259,7 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
     }
     s.push('\n');
     type Row = (&'static str, fn(&SideAcc) -> f64);
-    let rows: [Row; 16] = [
+    let rows: [Row; 21] = [
         ("win rate (all pairings)", |a| a.win_rate()),
         ("distinct moves per fight", |a| a.distinct_moves()),
         ("distinct moves (union)", |a| a.union_moves.iter().filter(|b| **b).count() as f64),
