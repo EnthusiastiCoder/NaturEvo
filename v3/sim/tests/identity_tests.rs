@@ -74,3 +74,16 @@ fn every_style_penalises_standing_still() {
         assert!(style_bonus(st, &base(), 0) > style_bonus(st, &still, 0) + 0.5, "{}", st.name());
     }
 }
+
+#[test]
+fn counter_pays_for_converting_a_parry_or_backstep_into_a_hit_not_for_the_parry() {
+    let mut none = base();
+    none.counter_hits = [0, 0];
+    none.backstep_hits = [0, 0];
+    let more = base();
+    assert!(style_bonus(StyleId::Counter, &more, 0) > style_bonus(StyleId::Counter, &none, 0) + 0.5);
+    // Parries without a follow-up hit earn nothing extra.
+    let mut parried = none.clone();
+    parried.defence[0].parry += 10;
+    assert_eq!(style_bonus(StyleId::Counter, &parried, 0), style_bonus(StyleId::Counter, &none, 0));
+}
