@@ -276,6 +276,11 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         ("swings per fight", |a| a.swings / a.n.max(1) as f64),
         ("fight length (ticks)", |a| a.mean_ticks()),
         ("capped share", |a| a.capped_share()),
+        ("draw share (mutual KO or capped)", |a| a.draws as f64 / a.n.max(1) as f64),
+        ("attack moves per fight (distinct)", |a| a.attack_variety()),
+        ("top move share per fight", |a| a.top_share()),
+        ("stationary share of ticks", |a| a.still()),
+        ("walking-forward share of ticks", |a| a.fwd / a.n.max(1) as f64),
     ];
     for (name, f) in rows.iter() {
         s.push_str(&format!("| {} |", name));
