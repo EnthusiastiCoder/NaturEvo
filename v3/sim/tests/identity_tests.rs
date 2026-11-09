@@ -65,3 +65,12 @@ fn every_style_prefers_spread_over_one_move_spam() {
         assert!(style_bonus(st, &spread, 0) > style_bonus(st, &spam, 0) + 0.5, "{}", st.name());
     }
 }
+
+#[test]
+fn every_style_penalises_standing_still() {
+    for st in StyleId::ALL {
+        let mut still = base();
+        still.still_share = [0.6, 0.6];
+        assert!(style_bonus(st, &base(), 0) > style_bonus(st, &still, 0) + 0.5, "{}", st.name());
+    }
+}
