@@ -855,6 +855,12 @@ impl Match {
                 r.fk();
             }
             let nx = self.robots[i].x;
+            let dx = nx - old_x;
+            if dx.abs() < 0.004 {
+                self.still_ticks[i] += 1;
+            } else if dx * (self.robots[1 - i].x - old_x) > 0.0 {
+                self.fwd_ticks[i] += 1;
+            }
             if nx != old_x && self.blocked_by_obstacle(nx) && !self.blocked_by_obstacle(old_x) {
                 self.robots[i].x = old_x;
                 self.robots[i].fk();
