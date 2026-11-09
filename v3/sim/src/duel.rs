@@ -901,6 +901,49 @@ impl Match {
         }
     }
 
+    /// Bodies are solid to a sword that is not in a blow: a resting, guarding or parrying blade is pushed out of the
+    /// opponent's body (batted aside, else rolled back to where it was). Same rule for both fighters.
+    fn keep_swords_out_of_bodies(&mut self, chains: &[crate::robot::SwordChain; 2]) {
+        for k in 0..2 {
+            if self.striking_next(k) || !self.sword_in_body(k) {
+                continue;
+            }
+            // First choice: the blade stops against the body where the tick began.
+            self.robots[k].restore_sword_chain(&chains[k], false);
+            if !self.sword_in_body(k) && !self.blade_conflict_with_foe(k) {
+                let cur = self.robots[k].sword_capsule();
+                self.robots[k].set_sword(cur, cur);
+                continue;
+            }
+            let apart = move |m: &Self| !m.sword_in_body(k) && !m.blade_conflict_with_foe(k);
+            if self.bat_clear(k, &apart) {
+                continue;
+            }
+            let before = self.robots[k].sword_chain();
+            let mut cleared = false;
+            'e: for step in 1..=14 {
+                for sign in [1.0f32, -1.0] {
+                    for sh in [0.0f32, 0.3, -0.3] {
+                        self.robots[k].restore_sword_chain(&before, false);
+                        self.robots[k].bat_elbow(sign * 0.1 * step as f32);
+                        if sh != 0.0 {
+                            self.robots[k].bat_sword_aside(sh);
+                        }
+                        if !self.sword_in_body(k) && !self.blade_conflict_with_foe(k) {
+                            cleared = true;
+                            break 'e;
+                        }
+                    }
+                }
+            }
+            if !cleared {
+                self.robots[k].restore_sword_chain(&chains[k], false);
+            }
+            let cur = self.robots[k].sword_capsule();
+            self.robots[k].set_sword(cur, cur);
+        }
+    }
+
     /// Rotate fighter `k`'s right shoulder in growing steps, either way, until `apart` holds; false (and the blade left
     /// as it was) if no angle in reach works.
     fn bat_clear(&mut self, k: usize, apart: &dyn Fn(&Self) -> bool) -> bool {
