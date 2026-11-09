@@ -126,3 +126,14 @@ fn capped_fights_cost_every_style_and_counter_must_have_converted_a_hit() {
         assert!(style_bonus(st, &conv, 0) > none + 0.5, "{}", st.name());
     }
 }
+
+#[test]
+fn side_acc_reports_move_share_stillness_and_top_share() {
+    use mech_sim::stylematrix::run_pair;
+    let (a, _) = run_pair(&Brain::Style(StyleId::Press), &Brain::Skill(2), 4, true);
+    let share: f64 = a.move_share().iter().sum();
+    assert!((share - 1.0).abs() < 1e-6 || share == 0.0, "share sums to {}", share);
+    assert!((0.0..=1.0).contains(&a.still()));
+    assert!(a.top_share() >= 0.0 && a.top_share() <= 1.0);
+    assert!(a.attack_variety() >= 1.0);
+}
