@@ -159,6 +159,9 @@ pub struct MatchResult {
     pub backstep_hits: [u32; 2],
 }
 
+/// Ticks after a parry, dodge or backstep within which a landed hit counts as converting it.
+pub const FOLLOW_TICKS: u32 = 120;
+
 /// Ticks after an attack move ends during which its blade can still land a blow.
 pub const BLOW_LAG: u32 = 60;
 
