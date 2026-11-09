@@ -767,6 +767,7 @@ impl Match {
             self.gap_total += gap as f64;
             if gap < 4.0 {
                 self.engaged_total += gap as f64;
+                self.engaged_sq += (gap as f64) * (gap as f64);
                 self.engaged_ticks += 1;
             }
             let side = if self.robots[1].x >= self.robots[0].x { 1.0f32 } else { -1.0 };
