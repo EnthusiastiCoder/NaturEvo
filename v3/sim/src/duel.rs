@@ -143,6 +143,20 @@ pub struct MatchResult {
     /// Mean and longest combo (hits by one fighter with no hit by the other and gaps of at most `COMBO_GAP` ticks).
     pub combo_mean: [f32; 2],
     pub combo_max: [u32; 2],
+    /// Attack moves started per fighter, by `MoveId` index.
+    pub move_counts: [[u16; 14]; 2],
+    /// Body hits landed per fighter, by the `MoveId` of the blow.
+    pub hit_counts: [[u16; 14]; 2],
+    /// Share of ticks each fighter's root barely moved (under 0.004 m per tick).
+    pub still_share: [f32; 2],
+    /// Share of ticks each fighter walked toward the opponent (at least 0.004 m per tick).
+    pub fwd_share: [f32; 2],
+    /// Std dev of the torso gap over the ticks within 4 m, metres.
+    pub engaged_std: f32,
+    /// Hits landed within `FOLLOW_TICKS` of this fighter parrying or dodging a threat (never counts the parry itself).
+    pub counter_hits: [u32; 2],
+    /// Hits landed within `FOLLOW_TICKS` of this fighter starting a Backstep.
+    pub backstep_hits: [u32; 2],
 }
 
 /// Ticks after an attack move ends during which its blade can still land a blow.
