@@ -153,3 +153,17 @@ pub fn stats_for(r: &MatchResult, who: usize) -> MatchStats {
 pub fn score_match(r: &MatchResult, who: usize) -> f32 {
     score_stats(&stats_for(r, who))
 }
+
+/// Normalised Shannon entropy (0..1) of a move-count histogram over the 8 attack kinds a style can choose between:
+/// 0 when one move is all there is, 1 when the share is even across all of them.
+pub fn move_entropy(counts: &[u16; 14]) -> f32 {
+    let total: f32 = counts.iter().map(|&c| c as f32).sum();
+    if total < 1.0 {
+        return 0.0;
+    }
+    let h: f32 = counts.iter().filter(|&&c| c > 0).map(|&c| {
+        let p = c as f32 / total;
+        -p * p.ln()
+    }).sum();
+    (h / 8.0f32.ln()).clamp(0.0, 1.0)
+}
