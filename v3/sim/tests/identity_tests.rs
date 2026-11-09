@@ -52,3 +52,16 @@ fn match_result_counts_moves_started_per_fighter() {
     assert_eq!(r.move_counts[1].iter().map(|&c| c as u32).sum::<u32>(), 0);
     assert!((0.0..=1.0).contains(&r.still_share[1]) && r.still_share[1] > 0.9, "dummy still {}", r.still_share[1]);
 }
+
+#[test]
+fn every_style_prefers_spread_over_one_move_spam() {
+    for st in StyleId::ALL {
+        let spread = base();
+        let mut spam = base();
+        spam.move_counts[0] = [0; 14];
+        spam.move_counts[0][MoveId::DiagUp as usize] = 12;
+        spam.hit_counts[0] = [0; 14];
+        spam.hit_counts[0][MoveId::DiagUp as usize] = 6;
+        assert!(style_bonus(st, &spread, 0) > style_bonus(st, &spam, 0) + 0.5, "{}", st.name());
+    }
+}
