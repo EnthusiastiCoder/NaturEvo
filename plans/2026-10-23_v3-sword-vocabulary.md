@@ -21,3 +21,23 @@ Another implementer (impl-v3-motion-hitbox) is editing v3/sim for (1) hitbox/geo
 4. If the motion fix changed N_IN/N_OUT or the decision interval, re-baseline the numbers in this plan from its report and note it in the baseline note.
 
 ## Design
+
+### Vocabulary: 13 moves + Idle (research-backed pick, 14 net choices; Drag and Chain are parameter/rule, not moves)
+MoveId order is fixed (it is the net output index): 0 Idle, 1 Overhead, 2 DiagDown, 3 DiagUp, 4 Sweep, 5 Thrust, 6 LowCut, 7 Feint, 8 Parry, 9 Guard, 10 Riposte, 11 ShieldBash, 12 Kick, 13 Backstep. N_MOVES = 14.
+Times in seconds at speed param 0.5 (W windup / A active / R recovery); all in config.rs / moveset.rs table (design proposals, not sourced). Required joints (proximal to distal) drive move_possible; any listed joint's part disabled/destroyed => impossible; partial damage => lower torque_scale => lower tip speed and reach by the existing PD physics (no fake multiplier).
+| id | Move | Origin | W/A/R | Required joints | Delivered by | Counters | Rule specifics |
+|---|---|---|---|---|---|---|---|
+| 1 | Overhead | Scheitelhau / Souls vertical | 0.35/0.10/0.40 | HipR, Waist, ShoulderR, ElbowR | sword | Guard (heavy posture), Parry, Backstep | heavy: x1.4 posture on block; worst-case commitment (R 0.40) |
+| 2 | DiagDown | Zornhau | 0.30/0.10/0.35 | same | sword | Guard, Parry | arc param tilts angle |
+| 3 | DiagUp | Krumphau-style / Mordhau upswing | 0.25/0.10/0.30 | same | sword | low Guard, Backstep | fast, lower mass (damage lower), short R |
+| 4 | Sweep | Zwerchhau / Sekiro sweep | 0.30/0.15/0.45 | Waist, ShoulderR, ElbowR, HipR | sword (wide arc) | Backstep, Parry | widest arc, longest R: biggest whiff penalty |
+| 5 | Thrust | Pflug / Sekiro thrust | 0.20/0.08/0.35 | HipR, KneeR, Waist, ShoulderR, ElbowR | sword tip | Parry, Backstep (mikiri-style counter), sidestep | longest reach, forward lunge step; countered by timed Backstep: attacker posture +30 |
+| 6 | LowCut | Krumphau / Sekiro low | 0.30/0.12/0.40 | HipR, KneeR, Waist, ShoulderR, ElbowR | sword | Guard low, Backstep, Kick | targets legs (disables mobility) |
+| 7 | Feint | Mordhau / For Honor | cancels windup in its last 40% | as the cancelled move | none | reactive Parry | costs 8 energy; a Parry whose active window opens against a feint whiffs |
+| 8 | Parry | Elden Ring / Sekiro deflect | 0.05/0.15/0.30 | ShoulderR, ElbowR, Waist | sword vs sword (existing physical clash logic) | Feint, Drag | success => attacker stagger (existing perfect parry rule) and opens Riposte window 0.6 s; whiff => recovery 0.30 with sword locked, defender Open |
+| 9 | Guard | shield block | 0.10/hold/0.10 | ShoulderL, ElbowL | shield (existing block logic, energy drain 5/s) | ShieldBash, Overhead posture | blocked damage fills posture |
+| 10 | Riposte | Souls/Mordhau | 0.15 only when riposte window open else 0.30 / 0.10 / 0.30 | HipR, Waist, ShoulderR, ElbowR | sword | none while staggered | x1.5 damage when it lands on a staggered/open target |
+| 11 | ShieldBash | For Honor guard break | 0.25/0.10/0.35 | Waist, ShoulderL, ElbowL | shield plate | Backstep, Parry | vs guarding/blocking target: posture +35, guard disabled 0.4 s (Guard-broken) |
+| 12 | Kick | Sekiro/Mordhau kick | 0.15/0.08/0.30 | HipR, KneeR, AnkleR + support leg + balance margin | foot | Backstep | short reach, posture hit, balance cost |
+| 13 | Backstep | mikiri/HEMA tempo | 0.20/0.10/0.25 | HipL, HipR, KneeL, KneeR, AnkleL, AnkleR | no collision; drive back | chase | counter rule: if it evades a Thrust whose path would have connected, attacker posture +30 and attacker Open |
+Params (net outputs tanh mapped to 0..1): reach (scales shoulder/elbow extension and forward lunge step), speed (scales phase durations 0.7x..1.4x; faster = more tip speed = more impact but more energy and wider timing risk), arc (angle/tilt of the cut, height of target zone), delay (extra windup hold 0..0.2 s = Drag; mistimes parries; costs energy 3). Footwork is the continuous `drive` (spacing is the net's job).
