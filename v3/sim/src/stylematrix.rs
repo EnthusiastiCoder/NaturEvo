@@ -289,6 +289,24 @@ pub fn markdown(title: &str, m: &Matrix) -> String {
         }
         s.push('\n');
     }
+    s.push_str("
+| attack move share |");
+    for n in &m.names {
+        s.push_str(&format!(" {} |", n));
+    }
+    s.push_str("
+|---|");
+    for _ in &m.names {
+        s.push_str("---|");
+    }
+    s.push('\n');
+    for id in crate::moveset::MoveId::ALL.iter().filter(|i| crate::skillbot::is_attack(**i) && **i != crate::moveset::MoveId::Idle) {
+        s.push_str(&format!("| {} |", id.name()));
+        for a in &m.per_style {
+            s.push_str(&format!(" {:.3} |", a.move_share()[*id as usize]));
+        }
+        s.push('\n');
+    }
     let _ = N_OUT;
     s
 }
