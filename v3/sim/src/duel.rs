@@ -1435,6 +1435,37 @@ impl Match {
             engaged_gap: if self.engaged_ticks > 0 { (self.engaged_total / self.engaged_ticks as f64) as f32 } else { 4.0 },
             combo_mean: [combos(&self.hit_list, 0).0, combos(&self.hit_list, 1).0],
             combo_max: [combos(&self.hit_list, 0).1, combos(&self.hit_list, 1).1],
+            move_counts: [0, 1].map(|i| {
+                let mut c = [0u16; 14];
+                for &id in self.starts[i].iter().filter(|&&id| is_attack(id)) {
+                    c[id as usize] = c[id as usize].saturating_add(1);
+                }
+                c
+            }),
+            hit_counts: self.hit_moves,
+            still_share: [0, 1].map(|i| self.still_ticks[i] as f32 / self.adv_ticks.max(1) as f32),
+            fwd_share: [0, 1].map(|i| self.fwd_ticks[i] as f32 / self.adv_ticks.max(1) as f32),
+            engaged_std: if self.engaged_ticks > 1 {
+                let n = self.engaged_ticks as f64;
+                let m = self.engaged_total / n;
+                ((self.engaged_sq / n - m * m).max(0.0)).sqrt() as f32
+            } else {
+                0.0
+            },
+            counter_hits: [0, 1].map(|d| {
+                self.hit_list
+                    .iter()
+                    .filter(|&&(t, a)| {
+                        a as usize == d
+                            && self.threats.iter().any(|th| {
+                                th.defender == d && matches!(th.resolution, Some(Resolution::Parried | Resolution::Dodged)) && t > th.end_tick && t - th.end_tick <= FOLLOW_TICKS
+                            })
+                    })
+                    .count() as u32
+            }),
+            backstep_hits: [0, 1].map(|d| {
+                self.hit_list.iter().filter(|&&(t, a)| a as usize == d && self.backstep_ticks[d].iter().any(|&b| t > b && t - b <= FOLLOW_TICKS)).count() as u32
+            }),
         }
     }
 
