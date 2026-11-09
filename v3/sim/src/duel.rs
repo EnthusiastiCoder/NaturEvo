@@ -1213,6 +1213,7 @@ impl Match {
                         self.hit_list.push((t, att as u8));
                         if is_attack(att_id) {
                             self.hit_mask[att] |= 1 << att_id as u32;
+                            self.hit_moves[att][att_id as usize] = self.hit_moves[att][att_id as usize].saturating_add(1);
                         }
                         if staggered || self.rules[def].is_open() {
                             self.grace[att].punish_hits += 1;
