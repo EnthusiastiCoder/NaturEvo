@@ -749,6 +749,7 @@ impl Match {
             self.keep_blades_apart(&chains);
             self.special_contacts();
             self.resolve_whiffs();
+            self.keep_swords_out_of_bodies(&chains);
             for r in self.rules.iter_mut() {
                 r.tick(PHYS_DT);
             }
