@@ -84,3 +84,5 @@ Method: web search summaries plus a few fetched pages. Frame-level data was thin
   - Vor / Nach, strong and weak, and Indes ("in that instant" of blade contact, when feeling decides the next move).
 - Not sourced: half-swording, pommel strike, sword-and-buckler, and tempo specifics. All UNVERIFIED here.
 - Punish rule: in HEMA it is tempo-based. Strike while the opponent's blade is displaced or committed. A displacement that also strikes (Versetzen) has the best tempo. This tempo logic is general HEMA principle, reasoning-level here.
+
+## 2. Rules that make play lethal and punishing
