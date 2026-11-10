@@ -138,3 +138,8 @@ Time is in seconds. W = windup, A = active, R = recovery. Reach is a fraction of
 Mikiri-style anticipation counter: folded into row 14 plus the thrust counter, not a separate move. A dedicated one would need a window that does not exist in the sources I found.
 
 Numbers in rows 1-14 are design proposals, not sourced values, except the guard-break, parry and feint figures in section 2.
+
+Notes for implementation:
+- Seed each move as a joint-target timeline: windup pose, active sweep, recovery pose. The net chooses the move and parameters.
+- Use the posture bar from Sekiro: every block, parry or hit fills it, and it regenerates. Full means stagger, then a punish multiplier.
+- Make recovery uncancellable except by feint or backstep, so whiffs are punishable by rule.
