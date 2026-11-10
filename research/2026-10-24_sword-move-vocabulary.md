@@ -86,3 +86,16 @@ Method: web search summaries plus a few fetched pages. Frame-level data was thin
 - Punish rule: in HEMA it is tempo-based. Strike while the opponent's blade is displaced or committed. A displacement that also strikes (Versetzen) has the best tempo. This tempo logic is general HEMA principle, reasoning-level here.
 
 ## 2. Rules that make play lethal and punishing
+
+| Rule | Typical numbers | Source |
+|---|---|---|
+| Parry window is short | 3-7 frames, 0.10-0.23 s (Elden Ring) | Elden Ring wiki above |
+| Failed or mistimed parry | partial block, stamina drain, some damage | Elden Ring wiki above |
+| Posture / stance break leads to a finisher | full gauge, then deathblow or critical | Sekiro, Elden Ring |
+| Posture regen blocks chip-and-run | "bosses regain posture quickly" | Sekiro, steamcommunity link above |
+| Guard break | 300-400 ms stun. Lights guaranteed, heavies under 800 ms guaranteed | For Honor wiki above |
+| Feint is cheap but not free | cutoff in last ~50 ms of windup, stamina cost | Mordhau wiki above |
+| Lights not feintable | lights are safer, heavies are bait-able | For Honor 2017 patch above |
+| Early parry punished | patch made early parries punishable | For Honor 2017 patch above |
+| Riposte is not guaranteed | needs correct timing | Mordhau, gamepressure link above |
+| Attack-type counters | thrust: mikiri. Sweep: jump. Grab: step | Sekiro |
