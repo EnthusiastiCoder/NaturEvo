@@ -101,3 +101,5 @@ Method: web search summaries plus a few fetched pages. Frame-level data was thin
 | Attack-type counters | thrust: mikiri. Sweep: jump. Grab: step | Sekiro |
 
 Whiff recovery and commitment cost: no sourced numbers. For this project, derive recovery as a fraction of total move time, plus stamina. Make recovery frames non-cancellable except by a feint, which costs stamina.
+
+## 3. Grace metrics (proxies)
