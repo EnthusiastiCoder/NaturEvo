@@ -111,3 +111,6 @@ Acceptance: callouts, phase styles, open badge as in Test cases; old logs withou
 
 ### WS-V Final verify (agent type claude, sonnet, chrome-devtools)
 Real browser screenshots at 1282x642 and 1920x1080 (light and dark) of a vocab champion fight: a move callout, a windup telegraph, an active trail, an OPEN badge during a punish window, a PUNISH banner, a guard break, grace panel; no scroll, no console errors, tooltips present; run all v3 cargo and npm tests plus v2 cargo test and v2/viewer npm test. Verdict PASS or defect list with screenshot paths (scratchpad only).
+
+## Commit plan (one file per commit, tests first)
+1 docs: research/2026-10-24_sword-move-vocabulary.md (docs commit, alone). 2 test: each new test file one commit (moveset_tests, executor_tests, rules_tests, skillbot_tests, vocab_duel_tests, io_tests, grace_tests, move-fx.test.ts + fixture). Then per workstream: config.rs consts; moveset.rs; executor.rs; moves.rs; lib.rs; rules.rs; combat.rs hook; duel.rs hook; net.rs; sense.rs; skillbot.rs; duel.rs decide; log.rs; cli.rs; core_determinism/sense size tests; grace.rs; eval.rs; curriculum.rs; evolve.rs; train_vocab.sh; runs and eval_vocab.md; move-fx.ts; data.ts; hud.ts; fight-view.ts; scene.ts. Never stage v2/sim/src/sense.rs or the other implementer's files.
