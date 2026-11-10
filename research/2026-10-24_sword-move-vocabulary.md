@@ -105,3 +105,11 @@ Whiff recovery and commitment cost: no sourced numbers. For this project, derive
 ## 3. Grace metrics (proxies)
 
 These are reasoning-based proxies, not sourced thresholds.
+
+- Jerk (mean squared third derivative of the tip or joint angles): smooth, committed arcs score low. Biomechanics literature uses minimum-jerk as the smoothness model. Source not fetched, UNVERIFIED.
+- Spacing consistency: variance of distance-to-opponent at the start of attacks, relative to the move's reach. This matches the idea that attacks work from the right range, and the 'Vor/Nach' distinction (Wikipedia link above).
+- Hits per swing: a hit-rate measure. Reward only when the hit is not a trade.
+- Whiff rate: swings that connect with nothing. A direct commitment-cost proxy.
+- Punish rate: share of opponent recovery windows that are hit. Taken from the punish-window rules above.
+- Recovery efficiency: time from the end of the active phase to the next guard-ready state, relative to the move's nominal recovery.
+- Rule: use these for evaluation and logging only. Lethality should come from the rules in section 2, not from fitness terms.
