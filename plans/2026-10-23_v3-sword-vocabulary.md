@@ -95,3 +95,10 @@ Files: v3/sim/src/{skillbot.rs (new), net.rs, sense.rs, duel.rs, log.rs, cli.rs}
 Tests: skillbot_tests.rs, vocab_duel_tests.rs, io_tests.rs, determinism_tests, log_tests, fuzz_tests (200 seeds finite, no panic) all green.
 Acceptance: SkillBot tier 3 uses >= 10 distinct moves over 30 seeds; tier 2 parries/guards a telegraphed attack and punishes an Open net; SkillBot vs Dummy wins decisively; log has `mv` per frame and every new event with required fields; same seed => byte-identical log.
 Verify: full v3 cargo test; `fight` CLI writes a log with move events.
+
+### WS-D Grace metrics, curriculum, training, eval (sonnet)
+Task: grace.rs, eval.rs additions (grace and move-usage metrics, per-seed and 3-seed mean/range), curriculum.rs stage opponents per plan, evolve.rs plumbing for SkillBot opponents, scripts/train_vocab.sh, run it (3 seeds), write v3/runs/eval_vocab.md with measured results and timing; tuning only of rule constants in config.rs, max 2 iterations, each reported. Fitness weights untouched (a test asserts W_* constants equal their current values and no new term in score_stats). Depends WS-C.
+Files: v3/sim/src/{grace.rs (new), eval.rs, curriculum.rs, evolve.rs, config.rs}, v3/scripts/train_vocab.sh (new), v3/runs/vocab_s*/, v3/runs/eval_vocab.md.
+Tests: grace_tests.rs, curriculum_tests (stage->opponent mapping), train_smoke_tests (3 gens pop 8 deterministic), perf_tests (release, 900 ticks < 25 ms) green.
+Acceptance: training time per seed under 10 min release, deterministic, threaded equals single-threaded; targets reported vs measured with honest verdict.
+Verify: `cargo test --release`, run the script, read eval_vocab.md.
