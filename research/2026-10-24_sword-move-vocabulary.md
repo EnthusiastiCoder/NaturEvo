@@ -68,3 +68,19 @@ Method: web search summaries plus a few fetched pages. Frame-level data was thin
 - Hard blows can break or detach limbs.
 - The formula from joint velocity is not published in the pages found. UNVERIFIED.
 - Design takeaway (reasoning, not sourced): effective strikes come from sequencing joint extension and momentum, so a mech move should be a joint-target timeline.
+
+### HEMA (Liechtenauer tradition)
+- Sources: https://en.wikipedia.org/wiki/Johannes_Liechtenauer, https://akban.org/wiki/German_school_of_swordsmanship, https://thearma.org/forum/viewtopic.php?p=8315
+- Guards (Leger): Vom Tag (sword above the shoulder or head), Alber, Ochs (point to the face, hilt by the head), Pflug (hilt at the hip, point to the face).
+- Master cuts:
+  - Zornhau: a diagonal cut from Vom Tag that binds strong-on-strong.
+  - Krumphau.
+  - Zwerchhau: a horizontal cut.
+  - Schielhau.
+  - Scheitelhau: a vertical cut.
+- Winden, other techniques and principles:
+  - Winden are binds and turns. Counts vary by source (8 or 24).
+  - Also: Versetzen (displacement), Absetzen, Durchwechseln, Zucken, Abschneiden, Händedrücken.
+  - Vor / Nach, strong and weak, and Indes ("in that instant" of blade contact, when feeling decides the next move).
+- Not sourced: half-swording, pommel strike, sword-and-buckler, and tempo specifics. All UNVERIFIED here.
+- Punish rule: in HEMA it is tempo-based. Strike while the opponent's blade is displaced or committed. A displacement that also strikes (Versetzen) has the best tempo. This tempo logic is general HEMA principle, reasoning-level here.
