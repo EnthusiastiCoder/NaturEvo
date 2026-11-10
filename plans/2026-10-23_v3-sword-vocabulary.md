@@ -132,3 +132,9 @@ WS-E move-fx.test.ts: moveCallout returns name text near the head, alpha fades t
 6. 3-seed training under 10 min per seed, deterministic; v3/runs/eval_vocab.md reports measured move usage, whiff, punish, hits per swing, jerk, spacing consistency, parry success, defence_rate, idle_guard (mean and range) against the targets, honestly including misses.
 7. Viewer shows move callouts, telegraph, active trail, OPEN punish badge, guard-break and riposte banners, grace panel; WS-V PASS at 1282x642 and 1920x1080 light and dark, no scroll, no console errors.
 8. Commits one file each, tests before implementation, no Co-Authored-By.
+
+## Open questions
+1. Raw joint outputs removed entirely vs kept as a small residual blend (+-0.15 per joint on top of the keyframe)? Recommended: removed first (cleanest grace and credit assignment), add residual in a follow-up only if the net looks robotic. Trade-off: less freedom vs far easier learning.
+2. Opponent move/phase visibility as input: recommended yes (telegraph is fair, humans read it). Trade-off: network learns reaction timing instead of physical path prediction.
+3. Pommel strike was folded into Kick for the side view (HEMA pommel needs a close bind we do not model); Bind/Wrap (winden) are deferred as out of scope for side-view capsules. Confirm.
+4. If the deathbattle work changed the scoring or length, targets in WS-D (duel length, draw) are re-baselined from its report.
