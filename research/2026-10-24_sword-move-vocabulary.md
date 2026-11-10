@@ -30,3 +30,18 @@ Method: web search summaries plus a few fetched pages. Frame-level data was thin
 - Guard break: heavy attacks, guard counters (block, then heavy), and hammer-type weapons do extra stamina damage to blockers.
 - Backstab: circle behind the target. Following a riposte or backstab with a heavy is advised.
 - Dark Souls frame data: not found, UNVERIFIED.
+
+### For Honor
+- Sources: https://forhonor.fandom.com/wiki/Guard_Break, https://www.ubisoft.com/en-us/game/for-honor/news-updates/1IZoiczWorTTTsrEYprgzR/public-test-meta-changes, https://steamcommunity.com/app/304390/discussions/0/1709564547929650327, https://www.gamepressure.com/forhonor/attacks/z796b6
+- Moves: light and heavy attacks, guard directions, feint (cancel a heavy), guard break, counter guard break, parry. Chains, revenge and punishes were not covered by the sources I found and are UNVERIFIED.
+- Timing:
+  - Light attack about 500 ms (one character).
+  - Heavy about 600-800 ms. The 800 ms figure comes from the guard-break wiki, which says heavies faster than 800 ms are guaranteed after a guard break.
+  - Guard break 400 ms, or 300 ms after a feint. The counter-guard-break sweetspot is 300 ms.
+  - Lights are not feintable. These figures are from an older wiki and may be outdated.
+- Counters: parry (matching direction), guard break, counter guard break.
+- Punish rule:
+  - Every light is guaranteed after a guard break.
+  - A parry grants a punish window.
+  - The 2017 patch made parrying too early punishable, and reduced light-parry advantage to match heavy-parry advantage.
+  - The designers wanted parries to pay off without making attacks feel too risky.
