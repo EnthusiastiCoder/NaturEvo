@@ -29,3 +29,6 @@ DiagUp 78% press / 83% duelist, counter 66% Parry; press and duelist look identi
 2. If still not masters, another round from the review's fixes. If good: viewer showcase (opens on a featured long master match between different styles + style/matchup picker), then tell the user briefly and STOP for review.
 3. Low priority, not started: CPU speedups per research/2026-10-26_gpu-utilisation.md (no GPU port); review probed constants (HIT_DAMAGE_CAP_FRAC 0.22, KO_POOL_FRAC 0.72, knockback 0.03, skillbot Guard 0.2).
 4. Housekeeping: untracked zz_*.rs probes, plans/*.md, research/*.md; v2/sim/src/sense.rs modified (not ours); scratch git worktree "base" may remain.
+
+## User context
+User is frustrated by repeated time estimates that slipped (said 3-5h, now 12+ hours since the overnight request). Be honest; get estimates from agents via checkin_agent; do not promise times. Viewer Vite server on 5174 stays running.
