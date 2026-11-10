@@ -136,3 +136,5 @@ Time is in seconds. W = windup, A = active, R = recovery. Reach is a fraction of
 | 14 | Backstep + counter | Mikiri / HEMA tempo | reach 0.0 to 1.0 / fast / retreat then strike | hips, knees, ankles | 0.20 / 0.10 / 0.25 | chase | Punishes the whiff of a committed long move. |
 
 Mikiri-style anticipation counter: folded into row 14 plus the thrust counter, not a separate move. A dedicated one would need a window that does not exist in the sources I found.
+
+Numbers in rows 1-14 are design proposals, not sourced values, except the guard-break, parry and feint figures in section 2.
