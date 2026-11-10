@@ -22,3 +22,6 @@
  - Longest-fight-first job ordering reduces tail: +5-10%.
  - Sim hot loop: avoid per-job `a.clone()`/allocations, fixed-size arrays, f32 nets with SIMD-friendly layout, early termination of dead-draw fights (stall detection): plausible 1.5-2x with profiling. No dependencies needed.
  - Cheap stdlib-only option: build with `-C target-cpu=native` and lto/codegen-units=1 for 5-20%.
+
+## Recommendation
+Do (c): profile one fight (cargo flamegraph / samply from a copy), do the sim hot-loop and tail/serial fixes, and give concurrent trainers thread budgets. Combined expected 1.5-2.5x. Do not do (a). Treat (b) as a separate project only if we need >10x more fights (e.g. pop 1000+); it would require relaxing the zero-dependency rule (wgpu or cuda crate) and accepting non-bit-identical GPU results. (c) and all of the above keep the zero-dependency rule intact.
