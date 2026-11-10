@@ -117,3 +117,20 @@ These are reasoning-based proxies, not sourced thresholds.
 ## 4. Recommended vocabulary (14 moves)
 
 Time is in seconds. W = windup, A = active, R = recovery. Reach is a fraction of arm plus sword length.
+
+| # | Move | Origin | Params (reach / speed / arc / timing) | Joints | W / A / R | Counter | Punish rule |
+|---|---|---|---|---|---|---|---|
+| 1 | Overhead cut | Scheitelhau; Souls vertical | 0.9 / medium / 120 deg descending / commits late | R shoulder, elbow, waist | 0.35 / 0.10 / 0.40 | guard, parry, backstep | Whiff leaves a long recovery, a free punish. A hit on a guard adds big posture damage. |
+| 2 | Diagonal descending | Zornhau | 0.9 / medium / 90 deg / angle param | R shoulder, elbow, waist | 0.30 / 0.10 / 0.35 | guard, parry | Slightly shorter recovery than overhead. |
+| 3 | Diagonal rising | Krumphau-style; Mordhau upswing | 0.8 / fast / 90 deg ascending | R shoulder, elbow, waist | 0.25 / 0.10 / 0.30 | low guard, backstep | Cheap but low damage. |
+| 4 | Horizontal sweep | Zwerchhau; Sekiro sweep | 1.0 / medium / 150 deg / wide | R arm, waist twist | 0.30 / 0.15 / 0.45 | jump or back out of range, parry | Wide arc, worst whiff recovery. |
+| 5 | Thrust / lunge | Pflug; Sekiro thrust | 1.2 / fast / linear / forward step | R arm, hips, knees | 0.20 / 0.08 / 0.35 | mikiri, parry, sidestep | Longest reach. A mikiri hit gives heavy posture damage. |
+| 6 | Feint | Mordhau feint; For Honor feint | same as move it cancels / cancel in last ~50 ms | as the cancelled move | W then cancel / 0 / 0.10 | reactive parry | Costs stamina. Baits a parry, then a punish window. |
+| 7 | Parry | Elden Ring / Sekiro deflect | window 0.10-0.23 s / angle match | sword arm, shield arm | 0.05 / 0.10-0.15 / 0.25 | feint, morph | A success staggers the attacker. A miss means a partial block and stamina loss. |
+| 8 | Riposte | Mordhau, Souls | fast follow-up / only after a successful parry | R arm | 0.15 / 0.10 / 0.30 | none while staggered | Guaranteed on a parried target, so it is the lethal payoff. |
+| 9 | Guard | Shield block | shield-side angle | L shoulder, elbow | 0.10 / hold / 0.10 | guard break, thrust to the side | Blocked damage fills posture, so it is not free. |
+| 10 | Shield bash / guard break | For Honor guard break | 0.5 / fast / forward | L arm, waist | 0.25 / 0.10 / 0.35 | backstep, parry | Breaks a guard for 0.3-0.4 s, then a free light. |
+| 11 | Low sweep / leg cut | Krumphau; Sekiro low | 0.9 / medium / low arc | R arm, waist, knees | 0.30 / 0.12 / 0.40 | hop, guard low | Hits legs, so it costs the target mobility. |
+| 12 | Drag / follow-up chain | Mordhau drag | extra delay param on a swing / retimed hit | any cut | +0.1-0.2 on W | early parry | Mistimes parries. Costs stamina. |
+| 13 | Pommel strike / kick | HEMA pommel; Sekiro kick | 0.4 / fast / short | R wrist or hip | 0.15 / 0.08 / 0.30 | backstep | Close-range posture hit. Short reach. |
+| 14 | Backstep + counter | Mikiri / HEMA tempo | reach 0.0 to 1.0 / fast / retreat then strike | hips, knees, ankles | 0.20 / 0.10 / 0.25 | chase | Punishes the whiff of a committed long move. |
