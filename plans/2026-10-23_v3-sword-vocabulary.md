@@ -81,3 +81,10 @@ Files: v3/sim/src/{moveset.rs,executor.rs} (new), moves.rs, config.rs, lib.rs (e
 Tests that must pass: tests/moveset_tests.rs, tests/executor_tests.rs plus existing robot_tests/moves_tests/combat_tests unchanged and green.
 Acceptance: all 13 moves have a pose function; param monotonicity (reach up => tip reach up; speed up => duration down and tip speed up); min-jerk smoothness; commitment and cancel rules; part dependence (disabled required joint => impossible; ElbowR at 25% hp => measurably lower tip speed in the same move); determinism.
 Verify: `C:\Users\enthu\.cargo\bin\cargo test --test moveset_tests --test executor_tests` in v3/sim, then the full v3 suite.
+
+### WS-B Rules (sonnet)
+Task: rules.rs pure functions + state (Open flag, riposte window, guard-break timer, counter-hit, combined multiplier cap), hooks in combat.rs (damage multiplier and posture additions at hit/block/clash resolution; guard-break on ShieldBash vs guard; parry whiff recovery; heavy-block posture) and duel.rs (executor contact/whiff notification, Backstep counter detection reusing would_connect/is_evasion). Hooks are minimal and separate commits. Depends WS-A.
+Files: v3/sim/src/rules.rs (new), combat.rs, duel.rs, config.rs.
+Tests: tests/rules_tests.rs plus all existing combat/parry/defence tests green.
+Acceptance: a whiffed Overhead takes x1.30 on a hit during its recovery vs x1.0 baseline; hit exposed stacking capped 1.75; parry success opens riposte window 0.6 s and a Riposte inside deals x1.5; ShieldBash vs guard => guard disabled 0.4 s; heavy block posture x1.4; backstep counter vs thrust => posture +30; Feint costs 8 energy; no rule reads fitness or net state.
+Verify: cargo test rules_tests, combat_tests, parry_tests, defence_tests.
