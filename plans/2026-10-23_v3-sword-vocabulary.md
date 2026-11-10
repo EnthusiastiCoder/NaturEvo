@@ -74,3 +74,10 @@ Viewer features (pure functions in src/move-fx.ts, DOM/Pixi wiring minimal in fi
 
 ## Workstreams
 All sonnet. Gate 0 applies to all. Order: WS-A -> WS-B (can overlap after A's moveset.rs signatures land) -> WS-C -> WS-D; WS-E (viewer) develops against a fixture after the log contract above, in parallel with WS-C/D, integrates real logs after WS-C. Each followed by a verifier; final verifier of type claude uses chrome-devtools (read prompts/chrome-devtools-mcp.md; max 6 tabs; shared real browser: no account changes; stop and report if blocked).
+
+### WS-A Moveset data and executor (sonnet)
+Task: baseline note (Gate 0), moveset.rs (MoveId, N_MOVES, MoveParams, Phase, MoveSpec table with required joints, phases, energy, posture factors; pose_at keyframes and min-jerk), executor.rs (state machine, commitment, feint/chain/backstep rules, energy and jerk cost hook, contact/whiff flags), extend moves.rs (`required_joints`/`move_possible` for the new MoveId via a mapping, keep existing Move enum working for old tests), config.rs constants, lib.rs mod lines.
+Files: v3/sim/src/{moveset.rs,executor.rs} (new), moves.rs, config.rs, lib.rs (each its own commit).
+Tests that must pass: tests/moveset_tests.rs, tests/executor_tests.rs plus existing robot_tests/moves_tests/combat_tests unchanged and green.
+Acceptance: all 13 moves have a pose function; param monotonicity (reach up => tip reach up; speed up => duration down and tip speed up); min-jerk smoothness; commitment and cancel rules; part dependence (disabled required joint => impossible; ElbowR at 25% hp => measurably lower tip speed in the same move); determinism.
+Verify: `C:\Users\enthu\.cargo\bin\cargo test --test moveset_tests --test executor_tests` in v3/sim, then the full v3 suite.
