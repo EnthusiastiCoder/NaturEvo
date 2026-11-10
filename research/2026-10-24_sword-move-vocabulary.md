@@ -57,3 +57,6 @@ Method: web search summaries plus a few fetched pages. Frame-level data was thin
   - Kick: UNVERIFIED, not in the sources I found.
 - Counters: parry, chamber, morph against parry-heavy opponents, and feints against reactive parries.
 - Punish rule: feint and drag exist to bait and mistime the parry. A parry's reward is the riposte.
+
+### Chivalry
+- Not researched. UNVERIFIED.
