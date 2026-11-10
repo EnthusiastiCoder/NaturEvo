@@ -18,3 +18,8 @@ I am the CTO (cto-orchestrator). I delegate everything; I never read code, run t
 
 ## Visual review r6 (plans/reports/visual-review-r6-2026-10-26.md): verdict NOT masters
 DiagUp 78% press / 83% duelist, counter 66% Parry; press and duelist look identical; stationary 33-60%; counter 14/50 draws; idle sword inside opponent body 30+ ticks; backward sword 3-30%; viewer route only opens fight_gen_N (not featured fights). No facing-away, no frozen binds, lean fine.
+
+## Running now
+- impl-v3-masters-r7-l (started ~1h before this save; plan plans/2026-10-26_v3-masters-r7-identity.md): entropy-based move-share fitness, per-style identity bonuses, footwork/range credit, counter-stalemate training fitness, sword-vs-body collision, retrain, featured fights openable in viewer, eval_styles.md, full tests. Acceptance: 6+ moves/fight, no move >40%, stationary <25%, counter draws <5%, capped <5%, styles distinct.
+- I asked it for an estimate (answer not yet seen) and sent a message to find and stop a stale 436-minute background shell ("cd .../v3; gr...") from earlier rounds; the 'until' polling shells are the agents' own waiters.
+- Verify with ListAgents; if it hands off (handoff path), spawn successor impl-v3-masters-r7-l-2.
