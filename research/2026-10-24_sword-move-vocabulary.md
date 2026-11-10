@@ -134,3 +134,5 @@ Time is in seconds. W = windup, A = active, R = recovery. Reach is a fraction of
 | 12 | Drag / follow-up chain | Mordhau drag | extra delay param on a swing / retimed hit | any cut | +0.1-0.2 on W | early parry | Mistimes parries. Costs stamina. |
 | 13 | Pommel strike / kick | HEMA pommel; Sekiro kick | 0.4 / fast / short | R wrist or hip | 0.15 / 0.08 / 0.30 | backstep | Close-range posture hit. Short reach. |
 | 14 | Backstep + counter | Mikiri / HEMA tempo | reach 0.0 to 1.0 / fast / retreat then strike | hips, knees, ankles | 0.20 / 0.10 / 0.25 | chase | Punishes the whiff of a committed long move. |
+
+Mikiri-style anticipation counter: folded into row 14 plus the thrust counter, not a separate move. A dedicated one would need a window that does not exist in the sources I found.
