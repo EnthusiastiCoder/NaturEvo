@@ -23,3 +23,9 @@ DiagUp 78% press / 83% duelist, counter 66% Parry; press and duelist look identi
 - impl-v3-masters-r7-l (started ~1h before this save; plan plans/2026-10-26_v3-masters-r7-identity.md): entropy-based move-share fitness, per-style identity bonuses, footwork/range credit, counter-stalemate training fitness, sword-vs-body collision, retrain, featured fights openable in viewer, eval_styles.md, full tests. Acceptance: 6+ moves/fight, no move >40%, stationary <25%, counter draws <5%, capped <5%, styles distinct.
 - I asked it for an estimate (answer not yet seen) and sent a message to find and stop a stale 436-minute background shell ("cd .../v3; gr...") from earlier rounds; the 'until' polling shells are the agents' own waiters.
 - Verify with ListAgents; if it hands off (handoff path), spawn successor impl-v3-masters-r7-l-2.
+
+## Next
+1. When r7 reports: spawn visual-review agent (type claude, chrome-devtools, viewer http://localhost:5174/, write plans/reports/visual-review-r7-<date>.md) and a verifier (cto-orchestrator:verifier, plan path + implementer's name) in parallel.
+2. If still not masters, another round from the review's fixes. If good: viewer showcase (opens on a featured long master match between different styles + style/matchup picker), then tell the user briefly and STOP for review.
+3. Low priority, not started: CPU speedups per research/2026-10-26_gpu-utilisation.md (no GPU port); review probed constants (HIT_DAMAGE_CAP_FRAC 0.22, KO_POOL_FRAC 0.72, knockback 0.03, skillbot Guard 0.2).
+4. Housekeeping: untracked zz_*.rs probes, plans/*.md, research/*.md; v2/sim/src/sense.rs modified (not ours); scratch git worktree "base" may remain.
