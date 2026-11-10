@@ -113,3 +113,5 @@ These are reasoning-based proxies, not sourced thresholds.
 - Punish rate: share of opponent recovery windows that are hit. Taken from the punish-window rules above.
 - Recovery efficiency: time from the end of the active phase to the next guard-ready state, relative to the move's nominal recovery.
 - Rule: use these for evaluation and logging only. Lethality should come from the rules in section 2, not from fitness terms.
+
+## 4. Recommended vocabulary (14 moves)
