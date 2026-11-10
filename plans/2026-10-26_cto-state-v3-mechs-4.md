@@ -10,3 +10,8 @@ I am the CTO (cto-orchestrator). I delegate everything; I never read code, run t
 - Phase 2 (tile arena/campaign) only when the user says so. Run /introspect at session end.
 - Handoff chain: checkin_agent past 100k; handoff_agent when projected over ~200k; successor prompt "Continue the task described in <path>. Read that file first: it is your full context."
 - Implementers keep stopping early with PARTIAL: always say "do not stop early", time-box rabbit holes.
+
+## Done and verified
+- r6 (impl-v3-masters-r6-l) verified PASS by ver-v3-masters-r6 (cargo test, vitest 255, tsc, fresh eval matches). Report: plans/reports/2026-10-26T13-05-27_ver-v3-masters-r6/index.md.
+- Fixed earlier: parry/guard/backstep sweeps no damage; distillation accuracy 0.966; exploit; mutual stagger; blade solidity; body collision; recoil lean; viewer defects. Tier_2 parry test re-baselined (~0.2) with justification (stated decision).
+- r6 numbers: swings per fighter 22/16/27 (press/counter/duelist), capped 0.3/4.8/2.7%, per-fight distinct moves 4.0/2.3/3.7 (target 8+), union 7/5/8. DiagUp spam still wins 21-42% vs nets (verifier: balance item).
