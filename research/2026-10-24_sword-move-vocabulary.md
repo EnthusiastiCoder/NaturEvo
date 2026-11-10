@@ -115,3 +115,5 @@ These are reasoning-based proxies, not sourced thresholds.
 - Rule: use these for evaluation and logging only. Lethality should come from the rules in section 2, not from fitness terms.
 
 ## 4. Recommended vocabulary (14 moves)
+
+Time is in seconds. W = windup, A = active, R = recovery. Reach is a fraction of arm plus sword length.
