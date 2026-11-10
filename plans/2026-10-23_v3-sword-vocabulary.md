@@ -108,3 +108,6 @@ Task: src/move-fx.ts pure functions and wiring, fixture tests/fixtures/fight_mov
 Files: v3/viewer/src/{move-fx.ts (new), data.ts (parse tolerant of mv/events), hud.ts, fight-view.ts, scene.ts}, tests/move-fx.test.ts, tests/fixtures/fight_moves.json.
 Tests: move-fx.test.ts plus all existing viewer tests green; `npm test`, `npm run build`, `npm run typecheck`.
 Acceptance: callouts, phase styles, open badge as in Test cases; old logs without `mv` still render unchanged.
+
+### WS-V Final verify (agent type claude, sonnet, chrome-devtools)
+Real browser screenshots at 1282x642 and 1920x1080 (light and dark) of a vocab champion fight: a move callout, a windup telegraph, an active trail, an OPEN badge during a punish window, a PUNISH banner, a guard break, grace panel; no scroll, no console errors, tooltips present; run all v3 cargo and npm tests plus v2 cargo test and v2/viewer npm test. Verdict PASS or defect list with screenshot paths (scratchpad only).
