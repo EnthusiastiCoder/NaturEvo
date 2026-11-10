@@ -88,3 +88,10 @@ Files: v3/sim/src/rules.rs (new), combat.rs, duel.rs, config.rs.
 Tests: tests/rules_tests.rs plus all existing combat/parry/defence tests green.
 Acceptance: a whiffed Overhead takes x1.30 on a hit during its recovery vs x1.0 baseline; hit exposed stacking capped 1.75; parry success opens riposte window 0.6 s and a Riposte inside deals x1.5; ShieldBash vs guard => guard disabled 0.4 s; heavy block posture x1.4; backstep counter vs thrust => posture +30; Feint costs 8 energy; no rule reads fitness or net state.
 Verify: cargo test rules_tests, combat_tests, parry_tests, defence_tests.
+
+### WS-C Net IO, sensing, SkillBot, log (sonnet)
+Task: net.rs N_OUT 19 and output decode (move argmax with margin, params, drive), sense.rs new inputs (N_IN ~140), duel.rs `decide` branch: Ctl::Net runs Executor; new Brain::Skill(tier) and Ctl::Skill; skillbot.rs tiers 1-3; log.rs additive `mv` and events; update core_determinism_tests ranges (N_OUT==19, N_IN 90..=160) and sense_tests expectations that hard-code sizes; add cli `fight --opp skill1|skill2|skill3`. Depends WS-A, WS-B.
+Files: v3/sim/src/{skillbot.rs (new), net.rs, sense.rs, duel.rs, log.rs, cli.rs}, tests/core_determinism_tests.rs and sense_tests.rs (size assertions only).
+Tests: skillbot_tests.rs, vocab_duel_tests.rs, io_tests.rs, determinism_tests, log_tests, fuzz_tests (200 seeds finite, no panic) all green.
+Acceptance: SkillBot tier 3 uses >= 10 distinct moves over 30 seeds; tier 2 parries/guards a telegraphed attack and punishes an Open net; SkillBot vs Dummy wins decisively; log has `mv` per frame and every new event with required fields; same seed => byte-identical log.
+Verify: full v3 cargo test; `fight` CLI writes a log with move events.
