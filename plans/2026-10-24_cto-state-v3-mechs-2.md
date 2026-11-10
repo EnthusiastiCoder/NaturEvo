@@ -31,3 +31,9 @@ Index: `plans/reports/2026-10-23T23-02-47_plan-v3-movelib/index.md`. 129 failing
 - `impl-v3-posture` (a729ffa70f7a421c6): fixing hunched posture (user screenshot images/14.png: "they dont even stand straight bruh"; torso 25 to 30 degrees forward, head low, stiff legs, low sword V). Diagnose first (ready pose STAND_TARGETS, joint limits, balance, net drive/ACTION_SMOOTH, viewer angle drawing), tests first, no in-fight timers, may add training-side posture cost. Existing runs will need retraining after it.
 - `impl-v3-skillbot-fix-4` (a267344578130dd37): wrap-up described above; must re-measure bots after posture changes.
 - Both edit v3/sim concurrently; expect minor merge friction.
+
+## Next steps (in order)
+1. When posture and skillbot-fix-4 report: spawn a verifier for each (cto-orchestrator:verifier, sonnet, low).
+2. Spawn WS-D implementer (training, grace metrics, curriculum, under 10 min per seed, retrain slice_s1..s3 in v3/runs, 3-seed eval), then verifier. Spawn WS-E viewer implementer in parallel (v3/viewer only), then a browser-loop visual verifier at 1282x642 and 1540x890 and a final whole-plan verifier.
+3. Then tell the user briefly; STOP for the user's review. Phase 2 (WS8 tile arena and campaign, WS9 map and zoom viewer, WS10 verify) starts only on the user's go.
+4. Open questions to raise only if relevant: shield sparks vs drawn plate for broken arm; timeouts shown as "stalemate"; light theme in fight view was checked, record mode tested; run `/introspect` at the end.
