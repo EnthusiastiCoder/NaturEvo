@@ -18,3 +18,15 @@ Method: web search summaries plus a few fetched pages. Frame-level data was thin
   - Posture fills from attacks and deflects, and the guard breaks when it is full. A broken guard allows a deathblow.
   - Posture regenerates quickly, so chip-and-retreat does not work. Pressure is required.
   - A mikiri only leads to a deathblow if it fills posture.
+
+### Elden Ring / Dark Souls
+- Sources: https://eldenring.wiki.gg/wiki/Skill:_Golden_Parry, https://eldenring.wiki.gg/wiki/Skill:_Buckler_Parry, https://eldenring.wiki.gg/wiki/Skill:_Parry
+- Parry windows (Elden Ring wiki):
+  - Golden Parry: 3 frames (0.10 s), starting at 0.17 s.
+  - Buckler Parry: 5 frames (0.17 s), starting at 0.17 s.
+  - Standard Parry: 7 frames (0.23 s), starting at 0.13 s.
+- Mistimed parry: becomes a partial block with heavy stamina drain and some damage.
+- Successful parry: stagger, then a critical riposte. Bosses often need 2-3 parries to break stance.
+- Guard break: heavy attacks, guard counters (block, then heavy), and hammer-type weapons do extra stamina damage to blockers.
+- Backstab: circle behind the target. Following a riposte or backstab with a heavy is advised.
+- Dark Souls frame data: not found, UNVERIFIED.
