@@ -60,3 +60,11 @@ Method: web search summaries plus a few fetched pages. Frame-level data was thin
 
 ### Chivalry
 - Not researched. UNVERIFIED.
+
+### Toribash
+- Sources: https://www.linuxlinks.com/Toribash/, https://tvtropes.org/pmwiki/pmwiki.php/VideoGame/ToriBash
+- Joint states: relaxed, held, contracting, expanding, set per turn.
+- Damage is scored in points. Some body parts are worth more points and some limbs break more easily.
+- Hard blows can break or detach limbs.
+- The formula from joint velocity is not published in the pages found. UNVERIFIED.
+- Design takeaway (reasoning, not sourced): effective strikes come from sequencing joint extension and momentum, so a mech move should be a joint-target timeline.
