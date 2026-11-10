@@ -103,3 +103,5 @@ Method: web search summaries plus a few fetched pages. Frame-level data was thin
 Whiff recovery and commitment cost: no sourced numbers. For this project, derive recovery as a fraction of total move time, plus stamina. Make recovery frames non-cancellable except by a feint, which costs stamina.
 
 ## 3. Grace metrics (proxies)
+
+These are reasoning-based proxies, not sourced thresholds.
