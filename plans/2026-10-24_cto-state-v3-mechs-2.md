@@ -26,3 +26,8 @@ Index: `plans/reports/2026-10-23T23-02-47_plan-v3-movelib/index.md`. 129 failing
 - WS-D (NOT STARTED): grace metrics, curriculum (open against engaging SkillBot tier opponents), 3-seed training, `eval_vocab.md`, within 10 min per seed (currently 12). grace_tests currently do not compile (belong to WS-D). Must include: training-only graded stall penalty already done by impl-v3-nowalls; no guard/block bonuses; defence stays learned.
 - WS-E (NOT STARTED): viewer `move-fx.ts` (move callouts, telegraph, OPEN badge, grace panel) to make `tests/move-fx.test.ts` and its fixture pass.
 - WS-V: final verifier of the plan. Then browser verify (real Brave via chrome-devtools agent type `claude`, window may be maximized, state size tested).
+
+## Agents running right now
+- `impl-v3-posture` (a729ffa70f7a421c6): fixing hunched posture (user screenshot images/14.png: "they dont even stand straight bruh"; torso 25 to 30 degrees forward, head low, stiff legs, low sword V). Diagnose first (ready pose STAND_TARGETS, joint limits, balance, net drive/ACTION_SMOOTH, viewer angle drawing), tests first, no in-fight timers, may add training-side posture cost. Existing runs will need retraining after it.
+- `impl-v3-skillbot-fix-4` (a267344578130dd37): wrap-up described above; must re-measure bots after posture changes.
+- Both edit v3/sim concurrently; expect minor merge friction.
