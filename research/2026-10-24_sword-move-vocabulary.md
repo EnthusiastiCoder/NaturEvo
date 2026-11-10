@@ -99,3 +99,5 @@ Method: web search summaries plus a few fetched pages. Frame-level data was thin
 | Early parry punished | patch made early parries punishable | For Honor 2017 patch above |
 | Riposte is not guaranteed | needs correct timing | Mordhau, gamepressure link above |
 | Attack-type counters | thrust: mikiri. Sweep: jump. Grab: step | Sekiro |
+
+Whiff recovery and commitment cost: no sourced numbers. For this project, derive recovery as a fraction of total move time, plus stamina. Make recovery frames non-cancellable except by a feint, which costs stamina.
