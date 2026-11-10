@@ -45,3 +45,15 @@ Method: web search summaries plus a few fetched pages. Frame-level data was thin
   - A parry grants a punish window.
   - The 2017 patch made parrying too early punishable, and reduced light-parry advantage to match heavy-parry advantage.
   - The designers wanted parries to pay off without making attacks feel too risky.
+
+### Mordhau
+- Sources: https://www.gamepressure.com/mordhau/combat/zac3ca, https://mordhau.fandom.com/wiki/Combat?oldid=3196, https://primagames.com/gaming/how-to-1v1-in-mordhau
+- Moves:
+  - Feint: cancel during windup. One wiki page puts the cutoff at the last 50 ms of windup. It costs stamina.
+  - Morph: switch swing to stab, or the reverse, mid-windup. The window is smaller than the feint window.
+  - Drag / accel: change when the hit lands by turning. A drag delays the hit, an accel brings it earlier. Over-dragging reduces damage.
+  - Riposte: a fast attack right after a parry. It is not guaranteed.
+  - Chamber: an advanced parry that is also an attack. Its timing windows were not found, UNVERIFIED.
+  - Kick: UNVERIFIED, not in the sources I found.
+- Counters: parry, chamber, morph against parry-heavy opponents, and feints against reactive parries.
+- Punish rule: feint and drag exist to bait and mistime the parry. A parry's reward is the riposte.
