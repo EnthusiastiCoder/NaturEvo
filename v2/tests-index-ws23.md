@@ -1,0 +1,29 @@
+# Test index WS2 and WS3 (combat depth)
+
+Files in v2/sim/tests (APIs as in plans/handoffs/2026-10-23T08-46-32_tests-v2-combat-depth_1.md; shared helpers in tests/common/mod.rs).
+
+| File | Cases | Notes |
+|---|---|---|
+| sense_tests.rs (updated, `mod common;`) | 12 | N_IN 80, all `sense::idx` consts, fuzz in [-1,1] with random statuses/attack_kind, enemy block 31..=67 zero when unseen (13 tiles, with status and windup), seen Warrior windup shows state/atk one-hot, phase (0,1] and advances, species one-hots, stunned scenario, status fractions linear and mirrored to enemy, IN_RANGE, bias |
+| net_tests.rs (updated) | 10 | N_OUT 9, N_HID 24, N_PARAMS = formula = 2745, attack_kind argmax of outputs 6..=8, ties to lowest, determinism |
+| genome_ops_tests.rs (updated) | 7 | N_OUT/N_HID layout in W2 test, old-length (1031) and off-by-one lengths rejected with "weights length" |
+| fitness_tests.rs (new) | 11 | turtle < no-damage loss < trader, draw < no-damage loss, unseen-guard penalty (seen at 3 tiles gets 0), block-bit toggle no effect, punish cap (5 hits -> 1.8), 1 hit -> 0.6, status reward 2 distinct = 0.3, 6 distinct (Boss Mage) = 0.9, passivity ~0.833, determinism, config defaults |
+| screen_tests.rs (new) | 6 | turtle fails, aggressor passes, deterministic, from_dir drops newest turtle and keeps normal (keep=1), all-fail error contains "block_share" and "block_unseen_share", from_dir_opts(..., false) keeps turtle |
+| evolution_tests.rs (appended module `species_assignment`) | 4 | species_for deterministic, seed%4 mapping, rank cadence 8/32, boss species Warrior or Mage, counts over 64 seeds (2 boss, 6 elite, 56 grass); existing tests untouched |
+
+## APIs used (beyond existing)
+- `arena_sim::attacks::{Species, Rank}` (PartialEq, Debug), `status::Status` (`ALL`, Knock..Poison), `matchup::Match::{new_with_setup, result() -> MatchResult, apply_status(role, Status, dur:u32, mag:f32, source:Role), set_hp(role, f32)}`, `matchup::Outcome` unchanged.
+- `Action.attack_kind: u8`; `sense::idx::*`; `net::N_HID`.
+- `config.fitness` (FitnessTuning): `draw_penalty`, `punish_reward`, `punish_cap`, `status_reward`, `status_cap` (caps may be int or float; test casts to f32).
+- `evolve::score_result(role, &MatchResult, &ArenaConfig) -> f32`; `evolve::terms(...) -> Terms{punish_hits, statuses, punish_reward, status_reward, unseen_guard_share, passivity_share}`.
+- `evolve::screen(&Genome, Role, &[Genome], seeds:u64) -> Screen{block_unseen_share, block_share, draw_rate, statuses_per_fight}` (PartialEq, Debug).
+- `Library::from_dir` screens by default; `Library::from_dir_opts(dir, role, keep, screen:bool)`; errors list the numbers (contain "block_share" and "block_unseen_share").
+- `evolve::species_for(seed) -> (Species, Rank)`.
+
+## Assumptions to watch
+- Phase progress: test only requires (0,1] and a change after 2 more ticks, not a direction.
+- Guard states for the unseen-guard term: GuardRaise, Blocking, GuardRecover; dist <= 4 and seen is not penalised.
+- Punish test relies on `apply_status` Stagger bypassing poise and keeping the victim Staggered; hits at steps 5,18,31,44,57 (5 hits in 68 steps).
+- Status-reward tests rely on hits at 1.0 tile in range for Rogue Stab/Dash and Boss Mage Hex/Zap/Slam, all landing on an idle 10000-hp hero.
+- Screen aggressor test assumes the plan's panel (idler monster) behaves like the test panel; from_dir's internal panel must also pass the aggressor.
+- Compile check done: only missing-API errors (attacks, status, sense::idx, Setup, attack_kind, apply_status, result, set_hp, fitness, score_result/terms, screen, species_for, from_dir_opts). cargo is at ~/.cargo/bin (not on bash PATH).

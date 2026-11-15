@@ -2,3 +2,16 @@ CLAUDE.md
 .claude/
 .mcp.json
 prompts/
+
+plans/reports/
+plans/handoffs/
+sim/target/
+**/target/
+**/viewer/data/
+v2/runs/
+node_modules/
+dist/
+v3/runs/
+
+# Local scratch notes and logs
+scratch/

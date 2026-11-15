@@ -1,0 +1,85 @@
+## Goal
+Let the user run simulations from the viewer UI: seed + Run single (with Random seed), batch runs with a chosen size, and editable tuning knobs. Done through a std-only local HTTP server (`serve` command) in the Rust CLI. Also fix two viewer log bugs. Builds on the finished jungle sim (branch feat/jungle-sim; existing plans plans/2026-10-20_jungle-sim-build.md, jungle-sim.md). No earlier partial plan for this feature exists; reuse existing tests in sim/tests and tests/viewer_check.mjs (all 9 sim tests currently pass).
+
+## Standards and constraints
+- ALL workstreams: model sonnet (user restriction; low effort implementers).
+- Branch feat/jungle-sim, never main. One file per commit; `git add` and `git commit` as SEPARATE commands; check `git diff` before add; NO Co-Authored-By lines (CLAUDE.md overrides any attribution reminder).
+- Cargo: `export PATH="$PATH:/c/Users/enthu/.cargo/bin"`, run from `sim/`. Zero dependencies (std only; std::net, std::thread).
+- Determinism: same seed + same config => identical run. Defaults must reproduce current results exactly: `batch(2000)` default config = 53.8% win rate (1076 wins/2000 expected; record the exact current `wins`, `avg_deaths`, `avg_final_level`, `level_hist` BEFORE editing and assert equality afterward). `run_json(simulate(s))` bytes for seeds 1,7,42 must be unchanged (capture with `git stash`-free method: generate to scratchpad files before changes). Floating-point: with default values multipliers are 1.0 and per-level params equal today's constants, and the expression ORDER must keep today's arithmetic exactly (x*1.0 is exact).
+- Viewer must still work from file:// with existing data/run.js and data/stats.js; run controls are only shown/active when served over http (hidden otherwise). Existing element ids (tab-replay, tab-dashboard, play, speed, scrub, log, battle, timeline, hist) stay.
+- Server binds 127.0.0.1 ONLY. Validate and cap all inputs: runs 1..=20000, seed u64, each knob within its range (reject NaN/inf, unknown params, duplicates not required). GET only (else 405). Request line+headers read capped at 8 KiB with a 5 s read timeout. Reject a Host header that is not `127.0.0.1[:port]` or `localhost[:port]` (403). Static files: only `/` (index.html) and `/data/run.js`, `/data/stats.js` from the viewer root; no path traversal (any `..`, `\`, or other path => 404).
+- Plan commits as small as possible (listed per workstream).
+- Known viewer bugs to fix: (1) log pane does not scroll to the current event after scrubbing while paused (cause: `c.offsetTop` is relative to body since `#log` is not positioned; fix: CSS `#log{position:relative}` and set scrollTop from `c.offsetTop - L.clientHeight/2`); (2) at event 0 the log lists future events; it must list only events 0..=current (window = max(0,cur-150)..=cur; rebuild when cur moves backwards or jumps, append when stepping forward).
+
+## API contract (all workstreams rely on it)
+sim/src/config.rs (new), exported in lib.rs as `pub mod config; pub mod server;`:
+- `pub struct Config { monster_hp_mult:f32, monster_atk_mult:f32, boss_hp_mult:f32, boss_atk_mult:f32, hero_hp_base:i32, hero_hp_per_level:i32, hero_atk_per_level:f32, hero_def_per_level:f32, xp_mult:f32, gold_mult:f32, potion_cost:u32, boss_level:u32, boss_attempts:u32 }` (all pub), `derive(Clone, Debug, PartialEq)`.
+- `impl Default for Config` = today's values: 1.0,1.0,1.0,1.0, 50, 14, 3.0, 1.5, 1.0, 1.0, 25, 32, 8.
+- `pub struct Knob { pub key:&'static str, pub label:&'static str, pub min:f64, pub max:f64, pub default:f64 }`; `pub fn knobs() -> &'static [Knob]` with keys exactly the field names above and ranges: *_mult 0.1..=5.0 (xp_mult, gold_mult 0.1..=10.0); hero_hp_base 10..=500; hero_hp_per_level 1..=60; hero_atk_per_level 0.5..=12.0; hero_def_per_level 0.0..=8.0; potion_cost 1..=500; boss_level 5..=40; boss_attempts 1..=50.
+- `Config::set(&mut self, key:&str, value:&str) -> Result<(),String>` (parse error, unknown key, NaN/inf, out of range => Err with message naming the key). `Config::validate(&self) -> Result<(),String>`.
+sim/src/sim.rs: keep `simulate(seed)` (= `simulate_with(seed,&Config::default())`), add `pub fn simulate_with(seed:u64, cfg:&Config) -> Run`. Keep `xp_to_next`, `monster_stat` signatures unchanged. Replace constants BOSS_LEVEL, BOSS_ATTEMPTS, `Hero::max_hp_for` (50+14*level), atk 3.0/level, def 1.5/level, POTION_COST usage (data::POTION_COST may stay as the default source), xp/gold formulas with cfg values. Monster multipliers applied in `spawn` after monster_stat: hp*=monster_hp_mult (x boss_hp_mult if species==BOSS), atk likewise. xp: `(s.xp*(0.5+0.25*lvl)*xp_mult) as u32`, gold: `(s.gold*lvl*2.0*gold_mult) as u32`.
+sim/src/report.rs: add `pub fn run_body(run:&Run)->String` (pure JSON object) and `pub fn stats_body(s:&BatchStats)->String`; `run_json` = "window.RUN = "+body+";\n" and `stats_json` likewise (bytes unchanged). Add `pub fn batch_with(runs:u32, threads:usize, cfg:&Config)->BatchStats` (seeds 0..runs); `batch(r,t)` = batch_with default.
+sim/src/server.rs:
+- `pub struct Response { pub status:u16, pub content_type:&'static str, pub body:Vec<u8> }`
+- `pub fn route(root:&Path, method:&str, target:&str, host:Option<&str>) -> Response` (pure, testable).
+- `pub fn bind(port:u16) -> std::io::Result<TcpListener>` binding 127.0.0.1; `pub fn serve_listener(listener:TcpListener, root:PathBuf)` blocking, one thread per connection, `Connection: close`.
+- Endpoints: `GET /api/config` -> `{"knobs":[{"key","label","min","max","default"},...],"max_runs":20000}`. `GET /api/run?seed=N&<knob>=v...` -> 200 `application/json` body = run_body (seed default 1 if absent). `GET /api/batch?runs=N&<knob>=v...` -> stats_body (runs default 2000). Errors: JSON `{"error":"..."}` with 400 (bad/unknown param, out of range, runs 0 or >20000), 403 bad Host, 404, 405. Batch threads = available_parallelism.
+sim/src/main.rs: `serve [--port N] [--root DIR]` (default port 8080, root default `concat!(env!("CARGO_MANIFEST_DIR"),"/../viewer")`), prints `Serving http://127.0.0.1:PORT/`. Existing `run`/`batch` unchanged (optionally accept `--set key=value` repeated; not required).
+viewer/index.html: on load, if `location.protocol` is http/https, fetch `/api/config`; on success show `#run-controls` (hidden class by default) containing `#seed` (number input), `#run-btn`, `#random-seed`, `#batch-runs`, `#batch-btn`, `#knobs` (one number input per knob, generated from /api/config, id `knob-<key>`, with a `#knobs-reset` button restoring defaults), `#run-status` (shows errors/progress). Run: fetch `/api/run?seed=..&<knobs>`, replace run/ev, reset cur=0, set scrub max, render immediately. Batch: fetch `/api/batch`, set `window.STATS=json`, switch to dashboard and call dash(). Only send knobs that differ from default is NOT required; send all. Disable buttons while a request is pending. Expose test hook `window.__jv = { setRun(runObj), goto(i), logIndices() }` (logIndices returns the event indices currently in the log DOM, as numbers).
+
+## Workstreams
+Dependencies: A -> B -> C -> E; D is independent (can run in parallel with A-C); E needs C and D. All model sonnet.
+
+### A core-config (sonnet)
+Task: add Config + parametrise sim. Capture baseline first (batch 2000 stats and run.js for seeds 1,7,42 into the scratchpad) and compare after.
+Files / commits (one file each, in order): 1) sim/src/config.rs 2) sim/src/lib.rs (add `pub mod config;`) 3) sim/src/sim.rs (simulate_with, cfg threading).
+Tests: sim/tests/config_tests.rs (written), sim/tests/sim_tests.rs (must stay green).
+Acceptance: defaults reproduce baseline exactly; changing a knob changes results; same seed+cfg deterministic; invalid values rejected.
+Verify: `cargo test --release`; compare baseline.
+
+### B report-batch (sonnet)
+Task: run_body/stats_body/batch_with per contract.
+Files / commits: 1) sim/src/report.rs.
+Tests: sim/tests/report_tests.rs (existing, green) + sim/tests/report_cfg_tests.rs (written).
+Acceptance: run_json/stats_json bytes unchanged; batch_with default == batch; batch_with thread-independent for a non-default cfg.
+Verify: `cargo test --release`; `cargo run --release -- batch --runs 2000` shows 53.8%.
+
+### C server-cli (sonnet)
+Task: std-only server per contract plus `serve` command and README section.
+Files / commits: 1) sim/src/server.rs 2) sim/src/lib.rs (add `pub mod server;`) 3) sim/src/main.rs (serve command, usage text) 4) README.md (how to run `cargo run --release -- serve`, open http://127.0.0.1:8080/, knobs table, API, caps).
+Tests: sim/tests/server_tests.rs (written).
+Acceptance: all server tests pass; manual: `cargo run --release -- serve --port 8099`, `curl 127.0.0.1:8099/api/run?seed=1` byte-equal body to run_body(simulate(1)); `curl` with Host: evil.com gets 403; runs=20001 gets 400.
+Verify: `cargo test --release`; the curl checks.
+
+### D viewer-log-fixes (sonnet)
+Task: fix the two log bugs; add `window.__jv` hook (setRun/goto/logIndices) now so tests run.
+Files / commits: 1) viewer/index.html (css `#log{position:relative}` + log render logic + hook; may be split in two commits only if separable, otherwise one).
+Tests: tests/viewer_log_check.mjs (written; node vm with stub DOM) and tests/viewer_check.mjs (existing).
+Acceptance: at cur=0 logIndices() == [0]; at cur=k it ends with k and never exceeds k; backward scrub rebuilds correctly; static check that CSS contains `#log{...position:relative`.
+Verify: `node tests/viewer_log_check.mjs && node tests/viewer_check.mjs`; manual optional via file://.
+
+### E viewer-run-controls (sonnet)
+Task: run controls per contract in viewer/index.html; hidden under file://; update tests/viewer_check.mjs expectations if needed (it should only gain ids).
+Files / commits: 1) viewer/index.html (HTML+CSS controls markup, hidden by default) 2) viewer/index.html (JS: config fetch, run, random seed, batch, knobs). Same file twice is allowed because the two commits are separable steps.
+Tests: tests/viewer_controls_check.mjs (written; stub DOM + stub fetch).
+Acceptance: under stubbed non-http protocol controls stay hidden and no fetch is made; under http with stubbed fetch: knobs rendered from config, Run issues `/api/run?seed=..` with knob params and replaces the run (scrub max updated, log shows event 0 only), Random seed sets a numeric seed, Batch issues `/api/batch?runs=..`, error JSON shows in #run-status, buttons disabled while pending.
+Verify: `node tests/viewer_controls_check.mjs && node tests/viewer_log_check.mjs && node tests/viewer_check.mjs`; live check with the server running.
+
+## Test cases
+A (sim/tests/config_tests.rs): default_config_values; default_matches_baseline (simulate(1)/(7)/(42) event counts+final level equal constants captured from current build; batch(200) wins equals baseline); knob_changes_outcome (boss_hp_mult 0.1 vs 5.0 differ in win rate over 100 runs; hero_hp_per_level changes max_hp in first events); same_seed_same_cfg_identical; set_rejects_unknown_key / out_of_range / nan / garbage; set_accepts_bounds; knobs_cover_all_fields with defaults equal Config::default().
+B (sim/tests/report_cfg_tests.rs): body_wrappers_equal_json (run_json == "window.RUN = "+run_body+";\n", same for stats); batch_with_default_equals_batch; batch_with_thread_independent_nondefault; run_body starts with `{` and parses as balanced JSON (no `window`).
+C (sim/tests/server_tests.rs): route unit tests (config lists all knob keys; run seed=1 body == run_body(simulate(1)); run with knob equals simulate_with; batch runs=50 body == stats_body(batch(50)); bad seed 400; unknown param 400; out of range knob 400; runs=0 and runs=20001 400; POST 405; bad Host 403; `/..%2f` and `/../Cargo.toml` and `/data/../x` 404; `/` serves index.html; `/data/run.js` content type javascript); socket test binding port 0 verifying loopback address and a real HTTP GET /api/config round trip; oversized request line (>8 KiB) rejected.
+D (tests/viewer_log_check.mjs): at event 0 log shows only [0]; goto(50) ends at 50 with max index 50; goto back to 10 max index 10; scroll CSS check; stepping forward appends.
+E (tests/viewer_controls_check.mjs): see acceptance of E.
+Existing: sim/tests/sim_tests.rs, report_tests.rs, tests/viewer_check.mjs must stay green.
+
+## Acceptance criteria
+- `cargo test --release` all green; `node tests/*.mjs` green.
+- Defaults batch 2000 = 53.8% win rate, identical stats to baseline; run.js bytes unchanged for seeds 1,7,42.
+- `cargo run --release -- serve` then browser at 127.0.0.1:8080: set seed, Run, replay loads immediately; Random seed; batch of N updates dashboard; editing a knob changes results; invalid input shows an error, no crash.
+- file:// still shows replay and dashboard with no controls.
+- Server only on 127.0.0.1; caps enforced.
+- Commits one file each, no Co-Authored-By, not on main.
+
+## Open questions
+- sim/viewer/ (untracked) is a stray copy written when the CLI is run from sim/ (default `viewer/data` is cwd-relative). Out of scope; `serve` uses a manifest-relative root instead. Do not commit sim/viewer.

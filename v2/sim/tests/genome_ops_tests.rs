@@ -1,0 +1,85 @@
+use arena_sim::fighter::Role;
+use arena_sim::genome::{Genome, N_WEIGHTS};
+use arena_sim::net::{Net, N_HID, N_OUT, N_PARAMS};
+use arena_sim::rng::Rng;
+use arena_sim::sense::N_IN;
+
+fn g(seed: u64) -> Genome {
+    Genome::random(Role::Hero, &mut Rng::new(seed))
+}
+
+#[test]
+fn size_matches_layout() {
+    assert_eq!(g(1).weights.len(), N_WEIGHTS);
+    assert_eq!(N_WEIGHTS, N_PARAMS);
+    assert_eq!(N_WEIGHTS, N_HID * N_IN + N_HID * N_HID + N_HID + N_OUT * N_HID + N_OUT);
+}
+
+#[test]
+fn mutate_deterministic_and_changes() {
+    let (mut a, mut b) = (g(1), g(1));
+    a.mutate(&mut Rng::new(9), 0.3, 0.2);
+    b.mutate(&mut Rng::new(9), 0.3, 0.2);
+    assert_eq!(a.weights, b.weights);
+    assert_ne!(a.weights, g(1).weights);
+    assert!(a.weights.iter().all(|w| w.is_finite()));
+    let mut c = g(1);
+    c.mutate(&mut Rng::new(9), 1.0, 1e9);
+    assert!(c.weights.iter().all(|w| w.is_finite() && w.abs() <= 8.0));
+}
+
+#[test]
+fn crossover_from_parents_only() {
+    let (a, b) = (g(1), g(2));
+    let c = Genome::crossover(&a, &b, &mut Rng::new(3));
+    let d = Genome::crossover(&a, &b, &mut Rng::new(3));
+    assert_eq!(c.weights, d.weights);
+    assert_eq!(c.role, a.role);
+    assert!(c.generation >= 1);
+    assert_eq!(c.weights.len(), N_PARAMS);
+    for i in 0..c.weights.len() {
+        assert!(c.weights[i] == a.weights[i] || c.weights[i] == b.weights[i]);
+    }
+    assert!(c.weights != a.weights && c.weights != b.weights);
+}
+
+#[test]
+fn hidden_layer_influences_output() {
+    let base = g(4);
+    let x = [0.4f32; N_IN];
+    let mut z = base.clone();
+    let start = z.weights.len() - N_OUT - N_OUT * N_HID; // start of W2
+    for w in z.weights[start..start + N_OUT * N_HID].iter_mut() { *w = 0.0; }
+    let (a, b) = (Net::from_genome(&base).forward(&x), Net::from_genome(&z).forward(&x));
+    assert!(a.fwd != b.fwd || a.turn != b.turn);
+}
+
+#[test]
+fn json_roundtrip_new_size() {
+    let a = g(6);
+    assert_eq!(Genome::from_json(&a.to_json()).unwrap().weights, a.weights);
+}
+
+#[test]
+fn old_length_genome_is_rejected() {
+    // the pre-combat-depth layout: N_IN 40, N_HID 16, N_OUT 7
+    let old = 40 * 16 + 16 * 16 + 16 + 7 * 16 + 7;
+    assert_eq!(old, 1031);
+    let mut a = g(7);
+    a.weights = vec![0.1; old];
+    let err = Genome::from_json(&a.to_json()).unwrap_err();
+    assert!(err.contains("weights length"), "{err}");
+}
+
+#[test]
+fn off_by_one_lengths_are_rejected_without_resize() {
+    let mut short = g(8);
+    short.weights.pop();
+    assert!(Genome::from_json(&short.to_json()).unwrap_err().contains("weights length"));
+    let mut long = g(8);
+    long.weights.push(0.0);
+    assert!(Genome::from_json(&long.to_json()).unwrap_err().contains("weights length"));
+    let mut empty = g(8);
+    empty.weights.clear();
+    assert!(Genome::from_json(&empty.to_json()).is_err());
+}

@@ -1,0 +1,121 @@
+// W2 moves: chain timing, impact formula, health/balance factors, move requirements.
+mod common;
+use mech_sim::config::IMPACT_CAP;
+use mech_sim::moves::{alignment, balance_factor, chain_quality, health_factor, move_possible, raw_impact, required_joints, Move};
+use mech_sim::robot::{Joint, Part, Robot, Role};
+
+fn approx(a: f32, b: f32, tol: f32) {
+    assert!((a - b).abs() <= tol, "{} vs {}", a, b);
+}
+
+#[test]
+fn timing_in_order_is_1_reversed_is_0_6() {
+    approx(chain_quality(&[0.10, 0.20, 0.30, 0.40]), 1.0, 1e-5);
+    approx(chain_quality(&[0.40, 0.30, 0.20, 0.10]), 0.6, 1e-5);
+    approx(chain_quality(&[0.1, 0.2, 0.4, 0.3]), 0.6 + 0.4 * 2.0 / 3.0, 1e-5);
+}
+
+#[test]
+fn in_order_chain_gives_at_least_1_5x_impact_of_reversed() {
+    let good = raw_impact(25.0, 1.5, 1.0, chain_quality(&[0.1, 0.2, 0.3, 0.4]), 1.0, 1.0);
+    let bad = raw_impact(25.0, 1.5, 1.0, chain_quality(&[0.4, 0.3, 0.2, 0.1]), 1.0, 1.0);
+    assert!(good < IMPACT_CAP, "pick inputs below the cap");
+    assert!(good / bad >= 1.5, "{} / {}", good, bad);
+}
+
+#[test]
+fn raw_impact_formula_exact() {
+    // 0.5 * m_eff * v^2 * (0.5 + 0.5 A) * Tm * H * B
+    let i = raw_impact(25.0, 2.0, 0.8, 0.9, 0.875, 1.0);
+    approx(i, 0.5 * 25.0 * 4.0 * 0.9 * 0.9 * 0.875, 1e-3);
+}
+
+#[test]
+fn raw_impact_is_capped() {
+    approx(raw_impact(1000.0, 50.0, 1.0, 1.0, 1.0, 1.0), IMPACT_CAP, 1e-3);
+}
+
+#[test]
+fn damaged_elbow_lowers_health_factor_and_impact_by_chain_mean() {
+    // Section 2 formula: H = mean torque_scale over the chain joints; ElbowR at 25% hp (scale 0.5) in a 4-joint
+    // chain gives 0.875 (the W2 prose says "halves": see plan issues in tests-index.md).
+    let mut r = Robot::new(Role::Hero);
+    approx(health_factor(&r, Move::Slash), 1.0, 1e-5);
+    let m = r.max_hp(Part::FArmR);
+    r.set_hp(Part::FArmR, 0.25 * m);
+    let h = health_factor(&r, Move::Slash);
+    approx(h, 0.875, 1e-4);
+    let full = raw_impact(25.0, 1.5, 1.0, 1.0, 1.0, 1.0);
+    let worn = raw_impact(25.0, 1.5, 1.0, 1.0, h, 1.0);
+    approx(worn / full, 0.875, 1e-4);
+}
+
+#[test]
+fn alignment_is_clamped_cosine() {
+    approx(alignment([3.0, 0.0], [1.0, 0.0]), 1.0, 1e-5);
+    approx(alignment([1.0, 1.0], [1.0, 0.0]), 0.70710678, 1e-4);
+    approx(alignment([-2.0, 0.0], [1.0, 0.0]), 0.0, 1e-6);
+}
+
+#[test]
+fn balance_factor_for_kicks_and_stagger() {
+    approx(balance_factor(0.1, 0.0, true), 0.7, 1e-5);
+    approx(balance_factor(-1.0, 0.0, true), 0.5, 1e-5);
+    approx(balance_factor(1.0, 0.0, true), 1.0, 1e-5);
+    approx(balance_factor(-1.0, 0.0, false), 1.0, 1e-5);
+    approx(balance_factor(1.0, 80.0, false), 0.8, 1e-5);
+}
+
+#[test]
+fn required_joints_documented_per_move() {
+    assert_eq!(required_joints(Move::Slash), &[Joint::HipR, Joint::Waist, Joint::ShoulderR, Joint::ElbowR]);
+    assert_eq!(required_joints(Move::Thrust), &[Joint::HipR, Joint::Waist, Joint::ShoulderR, Joint::ElbowR]);
+    assert_eq!(required_joints(Move::ShieldBash), &[Joint::Waist, Joint::ShoulderL, Joint::ElbowL]);
+    assert_eq!(required_joints(Move::Guard), &[Joint::ShoulderL, Joint::ElbowL]);
+    assert_eq!(required_joints(Move::Parry), &[Joint::ShoulderR, Joint::ElbowR, Joint::Waist]);
+    assert_eq!(required_joints(Move::KickR), &[Joint::HipR, Joint::KneeR, Joint::AnkleR]);
+    assert_eq!(required_joints(Move::KickL), &[Joint::HipL, Joint::KneeL, Joint::AnkleL]);
+}
+
+#[test]
+fn healthy_robot_can_do_everything() {
+    let r = Robot::new(Role::Hero);
+    for m in [Move::Slash, Move::Thrust, Move::ShieldBash, Move::KickR, Move::KickL, Move::Guard, Move::Parry, Move::Dodge] {
+        assert!(move_possible(&r, m), "{:?}", m);
+    }
+}
+
+#[test]
+fn destroyed_right_shoulder_removes_sword_moves_but_not_kick() {
+    let mut r = Robot::new(Role::Hero);
+    r.set_hp(Part::UArmR, -0.5 * r.max_hp(Part::UArmR));
+    assert!(!move_possible(&r, Move::Slash));
+    assert!(!move_possible(&r, Move::Thrust));
+    assert!(!move_possible(&r, Move::Parry));
+    assert!(move_possible(&r, Move::KickR));
+    assert!(move_possible(&r, Move::Guard));
+}
+
+#[test]
+fn disabled_opposite_leg_makes_kick_impossible() {
+    let mut r = Robot::new(Role::Hero);
+    r.set_hp(Part::ThighL, 0.0);
+    assert!(!move_possible(&r, Move::KickR), "right kick needs the left leg grounded");
+    assert!(!move_possible(&r, Move::Dodge), "dodge needs both legs");
+}
+
+#[test]
+fn guard_needs_shield_and_energy_and_sword_moves_need_the_sword() {
+    let mut r = Robot::new(Role::Hero);
+    r.energy = 0.0;
+    assert!(!move_possible(&r, Move::Guard));
+    let mut s = Robot::new(Role::Hero);
+    s.set_hp(Part::FArmL, -0.5 * s.max_hp(Part::FArmL));
+    assert!(!move_possible(&s, Move::Guard));
+    assert!(!move_possible(&s, Move::ShieldBash));
+    assert!(move_possible(&s, Move::Slash));
+    let mut t = Robot::new(Role::Hero);
+    t.set_hp(Part::FArmR, -0.5 * t.max_hp(Part::FArmR));
+    assert!(!move_possible(&t, Move::Slash));
+    assert!(!move_possible(&t, Move::Parry));
+}

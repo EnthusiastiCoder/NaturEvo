@@ -1,0 +1,91 @@
+// W3 log format (plan section 6). The log is hand-rolled JSON, tests inspect it textually (no third-party crates).
+use mech_sim::duel::{Brain, Match};
+use mech_sim::log::fight_json;
+
+fn logged(a: Brain, b: Brain, seed: u64) -> (String, u32) {
+    let mut m = Match::new(seed, a, b);
+    m.enable_log();
+    let r = m.run_to_end();
+    (fight_json(&m), r.ticks)
+}
+
+/// The `{...}` object (no nesting assumed for events) containing `needle`.
+fn object_containing<'a>(json: &'a str, needle: &str) -> Option<&'a str> {
+    let at = json.find(needle)?;
+    let start = json[..at].rfind('{')?;
+    let end = at + json[at..].find('}')?;
+    Some(&json[start..=end])
+}
+
+#[test]
+fn header_and_result_fields() {
+    let (j, ticks) = logged(Brain::Dummy, Brain::Dummy, 1);
+    assert!(j.contains("\"version\":3"));
+    assert!(j.contains("\"dt\":0.0333"));
+    for k in ["\"arena\":{", "\"width\":", "\"obstacles\":[", "\"biome\":", "\"parts\":[", "\"frames\":[", "\"events\":[", "\"result\":{", "\"outcome\":", "\"defence\":"] {
+        assert!(j.contains(k), "missing {}", k);
+    }
+    assert!(j.contains(&format!("\"ticks\":{}", ticks)));
+    for name in ["Head", "Torso", "Pelvis", "UArmL", "UArmR", "FArmL", "FArmR", "ThighL", "ThighR", "ShinL", "ShinR", "FootL", "FootR"] {
+        assert!(j.contains(&format!("\"{}\"", name)), "part name {}", name);
+    }
+}
+
+#[test]
+fn frame_count_is_ticks_over_two_plus_the_final_state() {
+    let (j, ticks) = logged(Brain::Dummy, Brain::Dummy, 1);
+    assert!(ticks > 600);
+    assert_eq!(j.matches("\"f\":[").count() as u32, ticks / 2 + 1);
+}
+
+#[test]
+fn each_fighter_frame_has_13_parts_of_4_integer_cm_values() {
+    let (j, ticks) = logged(Brain::Dummy, Brain::Dummy, 1);
+    assert_eq!(j.matches("\"parts\":[[").count() as u32, 2 * (ticks / 2 + 1), "2 fighters per frame (the header parts list is names)");
+    let at = j.find("\"parts\":[[").unwrap() + "\"parts\":[".len();
+    let end = at + j[at..].find("]]").unwrap() + 2;
+    let body = &j[at + 1..end - 1]; // strip outer brackets
+    let groups: Vec<&str> = body.split("],[").map(|g| g.trim_matches(|c| c == '[' || c == ']')).collect();
+    assert_eq!(groups.len(), 13);
+    for g in groups {
+        let nums: Vec<&str> = g.split(',').collect();
+        assert_eq!(nums.len(), 4, "{}", g);
+        for n in nums {
+            assert!(n.parse::<i32>().is_ok(), "not an integer cm value: {}", n);
+        }
+    }
+    for k in ["\"sword\":[", "\"shield\":[", "\"hp\":[", "\"energy\":", "\"posture\":", "\"state\":\"idle\"", "\"fx\":", "\"facing\":"] {
+        assert!(j.contains(k), "missing {}", k);
+    }
+}
+
+#[test]
+fn events_carry_all_required_fields() {
+    let (j, _) = logged(Brain::Scripted, Brain::Dummy, 3);
+    let hit = object_containing(&j, "\"kind\":\"hit\"").expect("scripted attacker lands at least one hit");
+    for k in ["\"t\":", "\"victim\":", "\"part\":", "\"x\":", "\"y\":", "\"dx\":", "\"dy\":", "\"impact\":", "\"zone\":", "\"dmg\":"] {
+        assert!(hit.contains(k), "hit event missing {} in {}", k, hit);
+    }
+    let stop = object_containing(&j, "\"kind\":\"hitstop\"").expect("hit-stop logged");
+    assert!(stop.contains("\"ticks\":"));
+}
+
+#[test]
+fn block_and_clash_events_have_their_fields() {
+    let (j, _) = logged(Brain::Scripted, Brain::Fixed(mech_sim::robot::GUARD_TARGETS), 11);
+    let block = object_containing(&j, "\"kind\":\"block\"").expect("block event");
+    for k in ["\"x\":", "\"y\":", "\"impact\":"] {
+        assert!(block.contains(k), "{}", block);
+    }
+}
+
+#[test]
+fn result_moves_has_grace_arrays_and_usage_per_fighter() {
+    let (j, _) = logged(Brain::Skill(2), Brain::Skill(1), 3);
+    let at = j.find("\"moves\":{").expect("result.moves missing");
+    let m = &j[at..];
+    for k in ["\"whiff\":[", "\"punish\":[", "\"hits_per_swing\":[", "\"jerk\":[", "\"usage\":[[", "\"name\":\"", "\"count\":"] {
+        assert!(m.contains(k), "moves missing {}", k);
+    }
+    assert!(at > j.find("\"result\":{").unwrap());
+}

@@ -1,0 +1,131 @@
+// Assumed: Trainer::checkpoint(&self) -> String, Trainer::resume(&str) -> Result<Trainer, String>.
+use arena_sim::evolve::{TrainConfig, Trainer};
+use arena_sim::fighter::Role;
+
+fn cfg(seed: u64) -> TrainConfig {
+    TrainConfig { seed, generations: 3, pop: 8, k_opponents: 2, hof_sample: 1 }
+}
+
+#[test]
+fn run_generation_appends_stats() {
+    let mut t = Trainer::new(cfg(1));
+    assert_eq!(t.stats().len(), 0);
+    t.run_generation();
+    t.run_generation();
+    assert_eq!(t.stats().len(), 2);
+    assert_eq!(t.stats()[0].gen, 0);
+    assert_eq!(t.stats()[1].gen, 1);
+}
+
+#[test]
+fn stats_fields_sane() {
+    let mut t = Trainer::new(cfg(1));
+    t.run_generation();
+    let s = &t.stats()[0];
+    for i in 0..2 {
+        assert!(s.best_fitness[i] >= s.mean_fitness[i]);
+        assert!((0.0..=1.0).contains(&s.win_rate_vs_hof[i]));
+        for f in [s.action_freq[i].attack, s.action_freq[i].block, s.action_freq[i].dodge] {
+            assert!((0.0..=1.0).contains(&f));
+        }
+    }
+    assert!(s.avg_ticks > 0.0 && s.avg_ticks <= 1800.0);
+}
+
+#[test]
+fn champions_have_correct_roles_and_hof_grows() {
+    let mut t = Trainer::new(cfg(2));
+    t.run_generation();
+    t.run_generation();
+    assert_eq!(t.hero_champion().role, Role::Hero);
+    assert_eq!(t.monster_champion().role, Role::Monster);
+    assert!(t.hall_of_fame(Role::Hero).len() >= 2);
+    assert!(t.hall_of_fame(Role::Monster).len() >= 2);
+    assert!(t.hall_of_fame(Role::Hero).iter().all(|g| g.role == Role::Hero));
+}
+
+#[test]
+fn same_seed_is_deterministic() {
+    let run = |s| {
+        let mut t = Trainer::new(cfg(s));
+        t.run_generation();
+        t.run_generation();
+        (t.hero_champion().to_json(), t.monster_champion().to_json())
+    };
+    assert_eq!(run(5), run(5));
+    assert_ne!(run(5), run(6));
+}
+
+#[test]
+fn checkpoint_resume_matches_uninterrupted() {
+    let mut a = Trainer::new(cfg(7));
+    a.run_generation();
+    a.run_generation();
+    a.run_generation();
+    let mut b = Trainer::new(cfg(7));
+    b.run_generation();
+    let ck = b.checkpoint();
+    let mut c = Trainer::resume(&ck).unwrap();
+    c.run_generation();
+    c.run_generation();
+    assert_eq!(a.hero_champion().to_json(), c.hero_champion().to_json());
+    assert_eq!(a.stats().len(), c.stats().len());
+}
+
+#[test]
+fn resume_rejects_garbage() {
+    assert!(Trainer::resume("nope").is_err());
+}
+
+// WS3: species/rank assignment for training matches (seed % 4; every 8th Elite; every 32nd Boss).
+mod species_assignment {
+    use arena_sim::attacks::{Rank, Species};
+    use arena_sim::evolve::species_for;
+
+    #[test]
+    fn deterministic() {
+        for s in 0..200u64 {
+            assert_eq!(species_for(s), species_for(s));
+        }
+    }
+
+    #[test]
+    fn species_follows_seed_mod_4_for_non_boss() {
+        for s in 1..200u64 {
+            if s % 32 == 0 || s % 8 == 0 { continue; }
+            let want = [Species::Minion, Species::Rogue, Species::Warrior, Species::Mage][(s % 4) as usize];
+            assert_eq!(species_for(s).0, want, "seed {s}");
+        }
+    }
+
+    #[test]
+    fn elites_cover_all_four_species() {
+        let mut seen = std::collections::HashSet::new();
+        for s in (8..=256u64).step_by(8).filter(|s| s % 32 != 0) {
+            assert_eq!(species_for(s), species_for(s));
+            seen.insert(species_for(s).0 as u8);
+        }
+        assert_eq!(seen.len(), 4);
+    }
+
+    #[test]
+    fn rank_cadence_and_boss_species() {
+        for s in 1..200u64 {
+            let (sp, rank) = species_for(s);
+            let want = if s % 32 == 0 { Rank::Boss } else if s % 8 == 0 { Rank::Elite } else { Rank::Grass };
+            assert_eq!(rank, want, "seed {s}");
+            if rank == Rank::Boss {
+                assert!(sp == Species::Warrior || sp == Species::Mage, "boss seed {s} got {sp:?}");
+            }
+            assert_ne!(sp, Species::Hero);
+        }
+    }
+
+    #[test]
+    fn counts_over_64_seeds() {
+        let ranks: Vec<Rank> = (0..64u64).map(|s| species_for(s).1).collect();
+        assert_eq!(ranks.iter().filter(|r| **r == Rank::Boss).count(), 2);
+        assert_eq!(ranks.iter().filter(|r| **r == Rank::Elite).count(), 6);
+        assert_eq!(ranks.iter().filter(|r| **r == Rank::Grass).count(), 56);
+    }
+}

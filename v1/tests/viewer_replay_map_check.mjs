@@ -1,0 +1,177 @@
+// Replay on the map + shared attack animation (plans/2026-10-21_hero-map-walking.md, "Addendum: replay on the
+// map and shared attack animation"). Written first; fails until the feature exists.
+// Observable contract used here (from the plan): window.__mapAnim = {active, kind, from:[x,y], to:[x,y], t}.
+// ASSUMPTION (plan does not name a marker hook): __mapAnim also carries `pos:[x,y]`, the hero marker's current
+// tile position (fractional while animating), valid whenever the map has drawn a frame.
+import { html, load, makeRun, tick, runner, jsonResp } from './_viewer_harness.mjs';
+
+const { check, done } = runner('viewer_replay_map_check');
+const markup = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<style[\s\S]*?<\/style>/g, '');
+check(/<canvas\b[^>]*\bid\s*=\s*["']map["']/.test(markup), '#map canvas must exist');
+
+// ---- run with map data: x,y on hero, mon, walk paths, attack kinds ----
+function mapRun(n) {
+  const r = makeRun(n);
+  r.total = n;
+  r.events.forEach((e, i) => {
+    e.hero.x = 10 + (i % 20); e.hero.y = 5 + Math.floor(i / 20);
+    e.npcs = [{ id: 'e1', sp: 0, lv: 1, x: 30, y: 30 }];
+  });
+  const kinds = { 3: 'attack', 4: 'skill', 5: 'potion', 6: 'hit_taken' };
+  for (const [i, k] of Object.entries(kinds)) {
+    const e = r.events[i]; e.kind = k; e.mon = { name: 'x', hp: 5, max_hp: 5, x: e.hero.x + 1, y: e.hero.y };
+  }
+  const w = r.events[10]; w.kind = 'walk'; w.hero.x = 20; w.hero.y = 10; w.path = [[10, 10], [20, 10]];
+  const w2 = r.events[11]; w2.kind = 'walk'; w2.hero.x = 20; w2.hero.y = 14; w2.path = [[20, 10], [20, 14]];
+  return r;
+}
+
+function boot(opts = {}) {
+  const errors = [];
+  let now = 1e6; const raf = [];
+  const pre = w => {
+    w.devicePixelRatio = 1; w.innerWidth = 1280; w.innerHeight = 720;
+    w.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} };
+    w.requestAnimationFrame = f => { raf.push(f); return raf.length; };
+    w.cancelAnimationFrame = () => {};
+    w.performance = { now: () => now };
+    const RD = Date; w.Date = class extends RD { static now() { return now; } };
+  };
+  const origErr = console.error;
+  const v = load({ run: opts.run || mapRun(300), pre, protocol: opts.protocol || 'file:', fetchImpl: opts.fetchImpl });
+  const map = v.$('map');
+  if (map) { map.clientWidth = 640; map.clientHeight = 640; if (map.parent) { map.parent.clientWidth = 640; map.parent.clientHeight = 640; } }
+  const advance = async ms => { // advance fake clock in 16 ms frames, firing rAF callbacks and the play interval
+    for (let t = 0; t < ms; t += 16) { now += 16; const q = raf.splice(0); q.forEach(f => f(now)); }
+    await tick();
+  };
+  const anim = () => v.win.__mapAnim;
+  const pos = () => (anim() && anim().pos) || null;
+  const go = i => v.win.__jv.goto(i);
+  const setSpeed = s => { const n = v.$('speed-num'); n.value = String(s); n.fire('change'); };
+  const pump = async ms => { // play interval ticks
+    for (let t = 0; t < ms; t += 50) { now += 50; v.intervals.forEach(f => { try { f(); } catch (e) { errors.push(e); } }); const q = raf.splice(0); q.forEach(f => f(now)); }
+    await tick();
+  };
+  return { v, map, advance, anim, pos, go, setSpeed, pump, errors, raf };
+}
+const near = (p, x, y, eps = 1e-6) => p && Math.abs(p[0] - x) < eps && Math.abs(p[1] - y) < eps;
+const evOf = (r, i) => r.events[i];
+
+// ---------- seek moves the marker ----------
+{
+  const run = mapRun(300), h = boot({ run });
+  h.v.$('tab-replay').click();
+  for (const i of [0, 7, 150, 42, 150, 0, 299]) {
+    h.go(i); await h.advance(1000);
+    const e = evOf(run, i);
+    check(near(h.pos(), e.hero.x, e.hero.y), `seek ${i}: marker must be at hero (${e.hero.x},${e.hero.y}), got ${JSON.stringify(h.pos())}`);
+  }
+}
+
+// ---------- play advances cursor and marker; speed slider changes rate ----------
+{
+  const rate = async s => {
+    const run = mapRun(300), h = boot({ run }); h.go(0); h.setSpeed(s); h.v.$('play').click();
+    await h.pump(1000);
+    const p = h.pos(); h.v.$('play').click();
+    return { p, scrub: +h.v.$('scrub').value };
+  };
+  const a = await rate(1), b = await rate(8);
+  check(a.p !== null && a.scrub > 0, `play at 1x must advance cursor and marker, scrub=${a.scrub} pos=${JSON.stringify(a.p)}`);
+  check(b.scrub > a.scrub, `8x must advance further than 1x (${b.scrub} vs ${a.scrub})`);
+  const run = mapRun(300);
+  check(b.p && near(b.p, run.events[b.scrub].hero.x, run.events[b.scrub].hero.y), `8x: marker must sit at event ${b.scrub} tile, got ${JSON.stringify(b.p)}`);
+}
+
+// ---------- scrubbing ----------
+{
+  const run = mapRun(300), h = boot({ run });
+  for (const i of [60, 25, 199]) {
+    const s = h.v.$('scrub'); s.value = String(i); s.fire('input'); await h.advance(1000);
+    const e = evOf(run, i);
+    check(near(h.pos(), e.hero.x, e.hero.y), `scrub to ${i}: marker must be at (${e.hero.x},${e.hero.y}), got ${JSON.stringify(h.pos())}`);
+  }
+}
+
+// ---------- walk animation ----------
+{
+  const run = mapRun(300), h = boot({ run });
+  h.go(10); h.setSpeed(1);
+  await h.advance(100);
+  const p = h.pos(), onSeg = p && Math.abs(p[1] - 10) < 1e-6 && p[0] >= 10 - 1e-6 && p[0] <= 20 + 1e-6;
+  check(h.anim() && h.anim().active, 'walk at 1x must be animating (__mapAnim.active)');
+  check(onSeg, `mid-walk position must lie on path segment (10,10)-(20,10), got ${JSON.stringify(p)}`);
+  await h.advance(5000);
+  check(near(h.pos(), 20, 10), `walk must end at (20,10), got ${JSON.stringify(h.pos())}`);
+  check(h.anim() && h.anim().active === false, 'walk animation must end (active false)');
+  const h2 = boot({ run: mapRun(300) }); h2.setSpeed(4096); h2.go(10);
+  check(near(h2.pos(), 20, 10), `max speed: hero must snap to end tile at once, got ${JSON.stringify(h2.pos())}`);
+}
+
+// ---------- windowed run ----------
+{
+  const total = 6000, run = mapRun(300); run.total = total;
+  const fetchImpl = async url => {
+    const from = +/from=(\d+)/.exec(url)[1], count = +/count=(\d+)/.exec(url)[1];
+    const r = mapRun(Math.min(count, total - from)); r.from = from; r.total = total;
+    r.events.forEach((e, i) => { e.idx = from + i; e.hero.x = 3; e.hero.y = 4; });
+    return jsonResp(r);
+  };
+  const h = boot({ run, protocol: 'http:', fetchImpl });
+  try { h.go(5000); await h.advance(500); await tick(); } catch (e) { h.errors.push(e); }
+  check(h.v.fetchCalls.some(u => /\/api\/run\?/.test(u) && /from=\d+/.test(u)), 'crossing window must fetch a new window');
+  check(h.errors.length === 0, 'crossing a window must not throw: ' + h.errors.map(String));
+  check(near(h.pos(), 3, 4), `after window arrives the map must draw the event tile (3,4), got ${JSON.stringify(h.pos())}`);
+}
+
+// ---------- shared attack animation ----------
+{
+  const run = mapRun(300), h = boot({ run }), seen = {};
+  for (const i of [3, 4, 5, 6]) {
+    h.go(i);
+    const a = h.anim(), e = evOf(run, i);
+    check(a && a.active === true, `${e.kind}: __mapAnim.active must be true after seek`);
+    if (!a) continue;
+    seen[e.kind] = JSON.parse(JSON.stringify(a));
+    const hero = [e.hero.x, e.hero.y], mon = [e.mon.x, e.mon.y];
+    const [f, t] = e.kind === 'hit_taken' ? [mon, hero] : [hero, mon];
+    check(JSON.stringify(a.from) === JSON.stringify(f) && JSON.stringify(a.to) === JSON.stringify(t), `${e.kind}: from/to must be ${JSON.stringify(f)}->${JSON.stringify(t)}, got ${JSON.stringify(a.from)}->${JSON.stringify(a.to)}`);
+    check(typeof a.kind === 'string' && a.kind.length > 0, `${e.kind}: __mapAnim.kind must be a non-empty string`);
+    await h.advance(2000);
+    check(h.anim().active === false, `${e.kind}: animation must end`);
+    check(near(h.pos(), e.hero.x, e.hero.y), `${e.kind}: marker must return to hero tile, got ${JSON.stringify(h.pos())}`);
+  }
+  const kinds = new Set(Object.values(seen).map(a => a.kind));
+  check(kinds.size === 1, `all attack events must share one animation kind, got ${[...kinds]}`);
+  const durs = new Set(Object.values(seen).map(a => a.duration).filter(d => d !== undefined));
+  check(durs.size <= 1, 'attack animations must share one duration');
+  // single code path: only one attackAnim definition in source
+  check((html.match(/function\s+attackAnim\s*\(/g) || []).length === 1, 'exactly one attackAnim function must exist');
+  // skipped at highest speed
+  const h2 = boot({ run: mapRun(300) }); h2.setSpeed(4096); h2.go(3);
+  check(!h2.anim() || h2.anim().active === false, 'attack animation must be skipped at max speed');
+  check(h2.anim() !== undefined, '__mapAnim must exist after a map draw');
+  // rAF only while animating
+  const h3 = boot({ run: mapRun(300) }); h3.go(0); await h3.advance(500); h3.raf.length = 0;
+  h3.go(1); check(h3.raf.length === 0, 'requestAnimationFrame must not be scheduled when no animation is active');
+}
+
+// ---------- crisp, no scroll, themes, no console errors ----------
+for (const theme of ['dark', 'light']) {
+  const h = boot({ run: mapRun(300) });
+  h.v.root.dataset.theme = theme; h.v.win.dispatchEvent({ type: 'jv-themechange' });
+  h.go(3); await h.advance(100);
+  check(h.map && h.map.width === 640 && h.map.height === 640, `${theme}: map backing size must equal CSS size at dpr 1 during animation, got ${h.map && h.map.width}x${h.map && h.map.height}`);
+  check(h.errors.length === 0, `${theme}: no errors during animation`);
+  check(!/overflow\s*:\s*scroll/i.test(markup), 'no forced scroll');
+}
+{
+  const css = (html.match(/<style[^>]*>([\s\S]*?)<\/style>/) || [, ''])[1];
+  const mapSrc = (html.match(/function\s+attackAnim[\s\S]{0,2000}/) || [''])[0];
+  check(!/#[0-9a-fA-F]{3,8}\b/.test(mapSrc) && !/\b\d+px\s+\w/.test(mapSrc), 'attackAnim must use tokens: no hex literals or px fonts');
+  check(/imageSmoothingEnabled\s*=\s*false/.test(html), 'map must disable image smoothing');
+  void css;
+}
+
+done();

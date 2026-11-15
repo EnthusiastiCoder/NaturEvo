@@ -1,0 +1,164 @@
+// Downward-thrust finisher (plunge): Overhead and Thrust reach a fallen opponent when the executor knows the
+// target is down (Executor::set_target_down). Tests first: see plans/reports for the CTO decision.
+use mech_sim::combat::{resolve_tick_with, CombatEvent, Mods};
+use mech_sim::executor::Executor;
+use mech_sim::moveset::*;
+use mech_sim::robot::{Joint, Part, Role, Robot, DT};
+use mech_sim::rules;
+
+mod common;
+use common::*;
+
+fn fast() -> MoveParams { MoveParams { reach: 1.0, speed: 1.0, arc: 0.5, delay: 0.0 } }
+
+fn fallen_at(x: f32) -> Robot {
+    let mut d = standing(Role::Monster, x, -1.0);
+    d.knock_down();
+    d.fk();
+    d
+}
+
+/// Run `id` from a standing attacker at x=0 against a fallen defender; returns (hit parts, damage, plunge flag seen).
+fn run(id: MoveId, att: &mut Robot, d: &mut Robot, down_flag: bool) -> Vec<(Part, f32)> {
+    let mut ex = Executor::new();
+    let ar = arena();
+    let mut out = Vec::new();
+    for i in 0..160 {
+        ex.set_target_down(down_flag);
+        let a = ex.step(att, if i == 0 { Some((id, fast())) } else { None }, DT);
+        att.apply_targets(&a.targets, DT);
+        for ev in resolve_tick_with(att, d, &ar, &Mods::default()) {
+            if let CombatEvent::Hit(h) = ev {
+                out.push((h.part, h.damage));
+            }
+        }
+    }
+    out
+}
+
+#[test]
+fn standing_robot_hits_a_fallen_torso_with_the_plunge() {
+    for id in [MoveId::Overhead, MoveId::Thrust] {
+        let mut a = standing(Role::Hero, 0.0, 1.0);
+        let mut d = fallen_at(1.3);
+        let hits = run(id, &mut a, &mut d, true);
+        assert!(hits.iter().any(|(p, _)| *p == Part::Torso), "{:?} plunge never hit the torso: {:?}", id, hits);
+    }
+}
+
+#[test]
+fn plunge_drives_the_point_lower_than_the_ordinary_move() {
+    let mut lowest = [f32::MAX; 2];
+    for (k, down) in [false, true].into_iter().enumerate() {
+        let mut r = standing(Role::Hero, 0.0, 1.0);
+        let mut ex = Executor::new();
+        for i in 0..160 {
+            ex.set_target_down(down);
+            let a = ex.step(&r, if i == 0 { Some((MoveId::Overhead, fast())) } else { None }, DT);
+            r.apply_targets(&a.targets, DT);
+            lowest[k] = lowest[k].min(r.sword_capsule().b[1]);
+        }
+    }
+    assert!(lowest[1] < lowest[0] - 0.3, "ordinary {} plunge {}", lowest[0], lowest[1]);
+}
+
+#[test]
+fn plunge_needs_the_crouch_joints() {
+    for broken in [Part::ShinL, Part::ThighL, Part::ShinR] {
+        let mut a = standing(Role::Hero, 0.0, 1.0);
+        a.set_hp(broken, 0.0);
+        let mut ex = Executor::new();
+        ex.set_target_down(true);
+        ex.step(&a, Some((MoveId::Overhead, fast())), DT);
+        assert_eq!(ex.phase(), Phase::Idle, "plunge started with {:?} destroyed", broken);
+        // The ordinary Overhead (no down target) still needs only the arm chain: it starts unless a part it needs is gone.
+        let mut ex2 = Executor::new();
+        ex2.set_target_down(false);
+        ex2.step(&a, Some((MoveId::Overhead, fast())), DT);
+        if !spec(MoveId::Overhead).required.iter().any(|j| j.part() == broken) {
+            assert_eq!(ex2.phase(), Phase::Windup);
+        }
+    }
+    let mut a = standing(Role::Hero, 0.0, 1.0);
+    a.set_hp(Part::UArmR, 0.0);
+    let mut ex = Executor::new();
+    ex.set_target_down(true);
+    ex.step(&a, Some((MoveId::Overhead, fast())), DT);
+    assert_eq!(ex.phase(), Phase::Idle);
+}
+
+#[test]
+fn damaged_crouch_degrades_the_plunge() {
+    let mut healthy = standing(Role::Hero, 0.0, 1.0);
+    let mut hurt = standing(Role::Hero, 0.0, 1.0);
+    hurt.set_hp(Part::ShinR, hurt.max_hp(Part::ShinR) * 0.05);
+    hurt.set_hp(Part::ShinL, hurt.max_hp(Part::ShinL) * 0.05);
+    let mut lowest = [f32::MAX; 2];
+    for (k, r) in [&mut healthy, &mut hurt].into_iter().enumerate() {
+        let mut ex = Executor::new();
+        for i in 0..40 {
+            ex.set_target_down(true);
+            let a = ex.step(r, if i == 0 { Some((MoveId::Overhead, fast())) } else { None }, DT);
+            r.apply_targets(&a.targets, DT);
+            lowest[k] = lowest[k].min(r.sword_capsule().b[1]);
+        }
+    }
+    assert!(lowest[1] > lowest[0] + 0.02, "damaged legs should reach less low: healthy {} hurt {}", lowest[0], lowest[1]);
+}
+
+#[test]
+fn plunge_is_deterministic() {
+    let go = || {
+        let mut a = standing(Role::Hero, 0.0, 1.0);
+        let mut d = fallen_at(1.3);
+        let h = run(MoveId::Thrust, &mut a, &mut d, true);
+        (h, a.sword_capsule().b, d.hp(Part::Torso))
+    };
+    assert_eq!(go(), go());
+}
+
+#[test]
+fn plunge_has_windup_active_recovery_and_costs_energy() {
+    let a = standing(Role::Hero, 0.0, 1.0);
+    let mut ex = Executor::new();
+    ex.set_target_down(true);
+    ex.step(&a, Some((MoveId::Overhead, fast())), DT);
+    assert_eq!(ex.phase(), Phase::Windup);
+    assert!(ex.plunging());
+    assert!(ex.energy_spent() > 0.0);
+    let mut seen = [false; 3];
+    let mut r = a;
+    for _ in 0..200 {
+        let act = ex.step(&r, None, DT);
+        r.apply_targets(&act.targets, DT);
+        match ex.phase() {
+            Phase::Windup => seen[0] = true,
+            Phase::Active => seen[1] = true,
+            Phase::Recovery => seen[2] = true,
+            Phase::Idle => {}
+        }
+    }
+    assert_eq!(seen, [true; 3]);
+}
+
+#[test]
+fn rules_give_a_bonus_on_a_downed_target_for_the_finisher_only() {
+    let st = rules::RuleState::new();
+    let plain = rules::punish_mult(&st, false, true, false);
+    let fin = rules::punish_mult_downed(&st, false, true, false, true);
+    assert!(fin > plain, "finisher {} vs plain {}", fin, plain);
+    assert!(fin <= rules::MULT_CAP + 1e-6);
+    // Not downed, or not a finisher: no bonus.
+    assert_eq!(rules::punish_mult_downed(&st, false, false, false, true), rules::punish_mult(&st, false, false, false));
+    assert_eq!(rules::punish_mult_downed(&st, false, true, false, false), plain);
+}
+
+#[test]
+fn required_joints_of_the_plunge_include_the_crouch() {
+    for id in [MoveId::Overhead, MoveId::Thrust] {
+        let r = plunge_required(id);
+        for j in [Joint::KneeL, Joint::KneeR, Joint::HipL, Joint::HipR, Joint::Waist, Joint::ShoulderR, Joint::ElbowR] {
+            assert!(r.contains(&j), "{:?} plunge missing {:?}", id, j);
+        }
+    }
+}

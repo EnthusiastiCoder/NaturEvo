@@ -1,0 +1,249 @@
+//! Scripted opponents that fight through the same Executor as the net: three tiers for a curriculum.
+//! Tier 1 Brawler (attacks only), tier 2 Reactive (reads the telegraph, guards or parries, punishes Open),
+//! tier 3 Duellist (adds feints, drag, backstep, shield bash, riposte). Deterministic from the seed.
+use crate::moveset::{MoveId, MoveParams, Phase};
+use crate::rng::Rng;
+use crate::robot::{Robot, State};
+use crate::sense::MoveInfo;
+
+pub type Request = Option<(MoveId, MoveParams)>;
+
+const TORSO: [MoveId; 3] = [MoveId::Overhead, MoveId::DiagDown, MoveId::Thrust];
+/// Torso distance band a bot swings from, metres.
+const RANGE_LO: f32 = 1.9;
+const RANGE_HI: f32 = 2.2;
+/// Longest torso distance a swing still lands (measured: ~90% up to 2.5 m, none beyond 2.6 m).
+const SWING_MAX: f32 = 2.2;
+const CLOSE: f32 = 1.35;
+/// Swing from this far when an obstacle blocks the walk.
+const STUCK_RANGE: f32 = 2.55;
+/// Retreat briefly after a passive opponent staggers, to avoid its recoil sweep.
+const FLAIL_TIME: f32 = 1.0;
+const FLAIL_DIST: f32 = 3.5;
+const FLAIL_IDLE: f32 = 2.0;
+/// Chance a tier 1 or 2 bot swings DiagUp.
+const BRAWLER_UP_P: f32 = 0.55;
+/// A duellist steps back out of reach while the opponent winds up or swings.
+const EVADE_DIST: f32 = 2.9;
+
+pub fn is_attack(id: MoveId) -> bool {
+    !matches!(id, MoveId::Idle | MoveId::Feint | MoveId::Guard | MoveId::Parry | MoveId::Backstep)
+}
+
+fn p(reach: f32, speed: f32, arc: f32, delay: f32) -> MoveParams {
+    MoveParams { reach, speed, arc, delay }
+}
+
+pub struct SkillBot {
+    tier: u8,
+    rng: Rng,
+    wait: f32,
+    react: f32,
+    reacted: bool,
+    bait: Option<f32>,
+    follow: bool,
+    close_plan: f32,
+    down: bool,
+    was_stag: bool,
+    flail_t: f32,
+    opp_idle: f32,
+    last_x: f32,
+    stuck: f32,
+    bash_t: f32,
+    was_guard: bool,
+}
+
+impl SkillBot {
+    pub fn new(seed: u64, tier: u8) -> SkillBot {
+        let tier = tier.clamp(1, 3);
+        let mut rng = Rng::new(seed ^ 0x51C1_1B07 ^ ((tier as u64) << 32));
+        let wait = if tier == 3 { 0.0 } else { rng.range(0.1, 0.5) };
+        SkillBot { tier, rng, wait, react: -1.0, reacted: false, bait: None, follow: false, close_plan: 0.0, down: false, was_stag: false, flail_t: 0.0, opp_idle: 0.0, last_x: f32::NAN, stuck: 0.0, bash_t: 0.0, was_guard: false }
+    }
+
+    pub fn tier(&self) -> u8 {
+        self.tier
+    }
+
+    fn attack_params(&mut self, id: MoveId) -> MoveParams {
+        match self.tier {
+            1 => p(self.rng.range(0.9, 1.0), self.rng.range(0.8, 1.0), self.rng.range(0.4, 0.5), 0.0),
+            2 => p(self.rng.range(0.9, 1.0), self.rng.range(0.9, 1.0), self.rng.range(0.4, 0.5), 0.0),
+            _ => {
+                let delay = if id != MoveId::Thrust && self.rng.f32() < 0.1 { self.rng.range(0.4, 1.0) } else { 0.0 };
+                p(self.rng.range(0.9, 1.0), self.rng.range(0.92, 1.0), self.rng.range(0.4, 0.5), delay)
+            }
+        }
+    }
+
+    fn pick_attack(&mut self, dist: f32) -> MoveId {
+        // A fallen opponent: finish with the downward thrust (Overhead or Thrust become plunges).
+        if self.down {
+            let r = self.rng.f32();
+            return if r < 0.4 { MoveId::Overhead } else if r < 0.8 { MoveId::Thrust } else if r < 0.9 { MoveId::LowCut } else if dist < CLOSE { MoveId::Kick } else { MoveId::Overhead };
+        }
+        if dist < CLOSE && self.rng.f32() < 0.3 {
+            return MoveId::Kick;
+        }
+        // DiagUp is the best finisher (measured: lifts the guard and bites pelvis and torso). The brawler leans on it
+        // less than the duellist, who also mixes in LowCut and Sweep.
+        let r = self.rng.f32();
+        if self.tier == 3 {
+            if r < 0.74 { return MoveId::DiagUp; }
+            if r < 0.84 { return MoveId::LowCut; }
+            if r < 0.90 { return MoveId::Sweep; }
+        } else if r < BRAWLER_UP_P {
+            return MoveId::DiagUp;
+        } else if r < BRAWLER_UP_P + 0.06 {
+            return MoveId::Sweep;
+        } else if r < BRAWLER_UP_P + 0.1 {
+            return MoveId::LowCut;
+        }
+        TORSO[(self.rng.next_u64() % 3) as usize]
+    }
+
+    /// One tick. Returns the move request (the executor ignores what it cannot start) and the footwork drive.
+    pub fn act(&mut self, me: &Robot, opp: &Robot, mine: &MoveInfo, theirs: &MoveInfo, live_threat: bool, dt: f32) -> (Request, f32) {
+        let dx = opp.x - me.x;
+        let dist = dx.abs();
+        let dir = if dx >= 0.0 { 1.0 } else { -1.0 };
+        let idle = mine.phase == Phase::Idle;
+        self.wait = (self.wait - dt).max(0.0);
+
+        // Footwork: close to the swing band; the smarter tiers also give ground when crowded.
+        let down = opp.state() == State::Fallen;
+        self.down = down;
+        let lo = if self.close_plan > 0.0 || down { CLOSE } else { RANGE_LO };
+        let mut drive = if dist > if lo == RANGE_LO { SWING_MAX - 0.1 } else { lo + 0.4 } { dir } else { 0.0 };
+        if self.tier >= 2 && !down && dist < RANGE_LO - 0.5 && self.close_plan <= 0.0 && idle {
+            drive = -dir * 0.7;
+        }
+        self.close_plan = (self.close_plan - dt).max(0.0);
+        // Duellist: a raised guard is an invitation to step in and shield-bash it open.
+        let guard_up = theirs.id == MoveId::Guard && theirs.phase != Phase::Idle;
+        if self.tier == 3 && guard_up && !self.was_guard && !down && self.rng.f32() < 0.7 {
+            self.bash_t = 0.9;
+        }
+        self.was_guard = guard_up;
+        self.bash_t = (self.bash_t - dt).max(0.0);
+        if self.bash_t > 0.0 && !guard_up {
+            self.bash_t = 0.0;
+        }
+        if self.bash_t > 0.0 {
+            drive = if dist > CLOSE { dir } else { 0.0 };
+            if idle && dist <= CLOSE + 0.25 {
+                self.bash_t = 0.0;
+                self.wait = self.rng.range(0.3, 0.7);
+                return (Some((MoveId::ShieldBash, p(0.8, 0.9, 0.5, 0.0))), drive);
+            }
+        }
+        let evading = self.tier == 3 && is_attack(theirs.id) && matches!(theirs.phase, Phase::Windup | Phase::Active) && dist < EVADE_DIST;
+        if evading { drive = -dir; }
+        // Navigation: an obstacle stops the walk (there is no jump), so a bot that stops making progress swings across it.
+        if drive != 0.0 && (me.x - self.last_x).abs() < 1e-5 { self.stuck += dt } else { self.stuck = 0.0 }
+        self.last_x = me.x;
+        let stuck = self.stuck > 0.3;
+        let stag = opp.state() == State::Staggered;
+        if stag && !self.was_stag { self.flail_t = FLAIL_TIME; }
+        self.was_stag = stag;
+        if theirs.phase != Phase::Idle { self.opp_idle = 0.0 } else { self.opp_idle += dt }
+        self.flail_t = (self.flail_t - dt).max(0.0);
+        let flail = stag && self.opp_idle > FLAIL_IDLE && self.flail_t > 0.0 && dist < FLAIL_DIST;
+        if flail {
+            drive = -dir;
+        }
+
+        // Feint bait in progress: cancel the windup, then strike for real at once.
+        if let Some(at) = self.bait {
+            if mine.phase == Phase::Windup && mine.progress >= at {
+                self.bait = None;
+                self.follow = true;
+                self.wait = 0.0;
+                return (Some((MoveId::Feint, p(0.5, 0.5, 0.5, 0.0))), drive);
+            }
+            if idle {
+                self.bait = None;
+            }
+        }
+
+        if self.tier >= 2 {
+            // A blade only threatens when it belongs to an attack (a parry sweep is not a cut to answer).
+            let telegraph = theirs.id != MoveId::Parry && (is_attack(theirs.id) && matches!(theirs.phase, Phase::Windup | Phase::Active) || (live_threat && theirs.phase != Phase::Recovery));
+            if telegraph {
+                if !self.reacted {
+                    self.reacted = true;
+                    self.react = self.rng.range(0.03, 0.1);
+                }
+            } else {
+                self.reacted = false;
+                self.react = -1.0;
+            }
+            if self.react >= 0.0 {
+                self.react -= dt;
+                if self.react < 0.0 {
+                    if evading {
+                        // Mostly keep backing off; sometimes step back properly or stand and parry.
+                        let r = self.rng.f32();
+                        if r < 0.2 { return (Some((MoveId::Backstep, p(0.8, 0.9, 0.5, 0.0))), drive); }
+                        if r < 0.6 { return (None, drive); }
+                    }
+                    return (Some(self.defend(theirs)), drive);
+                }
+            }
+            // Punish an Open opponent with the fastest in-range attack.
+            if theirs.open && idle && dist <= RANGE_HI + 0.15 && dist >= RANGE_LO - 0.5 {
+                let id = if self.rng.f32() < 0.5 { MoveId::DiagUp } else { MoveId::Thrust };
+                return (Some((id, p(0.9, 1.0, 0.5, 0.0))), drive);
+            }
+        }
+        if self.tier == 3 && mine.riposte_remaining > 0.0 && idle && dist <= RANGE_HI + 0.3 {
+            return (Some((MoveId::Riposte, p(0.9, 1.0, 0.5, 0.0))), drive);
+        }
+
+        let in_range = dist <= if stuck { STUCK_RANGE } else if down { 1.85 } else { SWING_MAX };
+        if self.follow && idle {
+            self.follow = false;
+            if in_range {
+                let id = self.pick_attack(dist);
+                let pr = self.attack_params(id);
+                return (Some((id, pr)), drive);
+            }
+        }
+        if idle && (self.wait <= 0.0 || (self.tier == 3 && stag)) && self.react < 0.0 && !(flail) {
+            if self.tier == 3 && theirs.id == MoveId::Guard && theirs.phase == Phase::Active && self.rng.f32() < 0.6 {
+                // Shield bash from close in.
+                if dist <= CLOSE + 0.3 {
+                    self.wait = self.rng.range(0.3, 0.7);
+                    return (Some((MoveId::ShieldBash, p(0.8, 0.9, 0.5, 0.0))), drive);
+                }
+                self.close_plan = 0.6;
+            }
+            if in_range && (dist >= RANGE_LO - 0.5 || down || stuck) {
+                let id = self.pick_attack(dist);
+                let pr = self.attack_params(id);
+                let (w0, w1) = match self.tier {
+                    1 => (0.1, 0.45),
+                    2 => (0.7, 1.5),
+                    _ => (0.4, 1.1),
+                };
+                self.wait = self.rng.range(w0, w1);
+                if self.tier == 3 && id != MoveId::Kick && self.rng.f32() < 0.3 {
+                    self.bait = Some(self.rng.range(0.3, 0.55));
+                }
+                return (Some((id, pr)), drive);
+            }
+        }
+        (None, drive)
+    }
+
+    fn defend(&mut self, theirs: &MoveInfo) -> (MoveId, MoveParams) {
+        if self.tier == 3 && theirs.id == MoveId::Thrust && self.rng.f32() < 0.5 {
+            return (MoveId::Backstep, p(0.8, 0.9, 0.5, 0.0));
+        }
+        if self.rng.f32() < 0.2 {
+            (MoveId::Guard, p(0.5, 0.8, 0.5, 0.0))
+        } else {
+            (MoveId::Parry, p(0.5, 0.9, 0.5, 0.0))
+        }
+    }
+}

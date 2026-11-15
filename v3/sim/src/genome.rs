@@ -1,0 +1,122 @@
+//! Genome (WS2 minimal; WS4 owns JSON parsing and any richer encoding).
+use crate::robot::Role;
+use crate::net::N_PARAMS;
+use crate::rng::Rng;
+
+#[derive(Clone, Debug)]
+pub struct Genome {
+    pub role: Role,
+    pub weights: Vec<f32>,
+    pub generation: u32,
+    pub fitness: f32,
+}
+
+pub const N_WEIGHTS: usize = N_PARAMS;
+/// Large enough for distilled nets, whose first layer folds in input standardisation.
+pub const W_CLAMP: f32 = 40.0;
+
+impl Genome {
+    pub fn random(role: Role, rng: &mut Rng) -> Genome {
+        let weights = (0..N_WEIGHTS).map(|_| rng.range(-0.5, 0.5)).collect();
+        Genome { role, weights, generation: 0, fitness: 0.0 }
+    }
+
+    /// The same policy for the monster side: the net's drive output is a world-frame direction, so a net trained in
+    /// the fighter's own frame (forward = +) mirrors it by negating the drive unit's output weights.
+    pub fn mirrored_drive(&self, role: Role) -> Genome {
+        use crate::net::{N_CTX, N_HID, N_OUT};
+        use crate::sense::N_IN;
+        let mut g = self.clone();
+        g.role = role;
+        if role == crate::robot::Role::Hero {
+            return g;
+        }
+        let w2 = N_HID * (N_IN + N_CTX) + N_HID;
+        let row = w2 + (N_OUT - 1) * N_HID;
+        for v in g.weights[row..row + N_HID].iter_mut() {
+            *v = -*v;
+        }
+        let last = g.weights.len() - 1;
+        g.weights[last] = -g.weights[last];
+        g
+    }
+
+    /// Gaussian-ish (sum of uniforms) perturbation of each weight with probability `rate`.
+    pub fn mutate(&mut self, rng: &mut Rng, rate: f32, sigma: f32) {
+        for w in self.weights.iter_mut() {
+            if rng.f32() < rate {
+                let n = rng.f32() + rng.f32() + rng.f32() + rng.f32() - 2.0;
+                *w = (*w + n * 1.7320508 * sigma).clamp(-W_CLAMP, W_CLAMP);
+            }
+        }
+    }
+
+    /// Uniform crossover; child takes a's role and generation = max + 1.
+    pub fn crossover(a: &Genome, b: &Genome, rng: &mut Rng) -> Genome {
+        let n = a.weights.len().min(b.weights.len());
+        let weights = (0..n)
+            .map(|i| if rng.f32() < 0.5 { a.weights[i] } else { b.weights[i] })
+            .collect();
+        Genome {
+            role: a.role,
+            weights,
+            generation: a.generation.max(b.generation) + 1,
+            fitness: 0.0,
+        }
+    }
+
+    pub fn to_json(&self) -> String {
+        let w: Vec<String> = self.weights.iter().map(|v| format!("{}", v)).collect();
+        format!(
+            "{{\"role\":\"{}\",\"generation\":{},\"fitness\":{},\"weights\":[{}]}}",
+            self.role.as_str(),
+            self.generation,
+            self.fitness,
+            w.join(",")
+        )
+    }
+
+    pub fn from_json(s: &str) -> Result<Genome, String> {
+        let s = s.trim();
+        if !s.starts_with('{') || !s.ends_with('}') {
+            return Err("not a JSON object".into());
+        }
+        let role = match field(s, "role")?.trim_matches('"') {
+            "hero" => Role::Hero,
+            "monster" => Role::Monster,
+            r => return Err(format!("bad role {r}")),
+        };
+        let generation = field(s, "generation")?.parse::<u32>().map_err(|e| e.to_string())?;
+        let fitness = field(s, "fitness")?.parse::<f32>().map_err(|e| e.to_string())?;
+        let w = field(s, "weights")?;
+        let inner = w.strip_prefix('[').and_then(|x| x.strip_suffix(']')).ok_or("bad weights")?;
+        let weights = if inner.trim().is_empty() {
+            Vec::new()
+        } else {
+            inner
+                .split(',')
+                .map(|v| v.trim().parse::<f32>().map_err(|e| e.to_string()))
+                .collect::<Result<Vec<_>, _>>()?
+        };
+        if weights.iter().any(|w| !w.is_finite()) {
+            return Err("non-finite weight".into());
+        }
+        if weights.len() != N_WEIGHTS {
+            return Err(format!("weights length {} does not match expected {}", weights.len(), N_WEIGHTS));
+        }
+        Ok(Genome { role, weights, generation, fitness })
+    }
+}
+
+/// Raw value text of a top-level key (flat object, array values contain no nesting).
+fn field<'a>(s: &'a str, key: &str) -> Result<&'a str, String> {
+    let pat = format!("\"{key}\":");
+    let start = s.find(&pat).ok_or_else(|| format!("missing {key}"))? + pat.len();
+    let rest = s[start..].trim_start();
+    let end = if rest.starts_with('[') {
+        rest.find(']').ok_or("unterminated array")? + 1
+    } else {
+        rest.find(|c| c == ',' || c == '}').unwrap_or(rest.len())
+    };
+    Ok(rest[..end].trim())
+}

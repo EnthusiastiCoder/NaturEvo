@@ -1,0 +1,433 @@
+//! Walking hero, encounters, elites, moves, determinism and cap tests
+//! (plan 2026-10-21_hero-map-walking, workstream 2). Written from the plan before any implementation.
+//!
+//! Events are read through run_body() JSON (parsed by tests/common) so only these Rust names are assumed:
+//!   Run.steps (counter), Summary.steps, Config fields from the plan, jungle_sim::map::Map (see map_tests.rs).
+//! The map of a run is assumed to be Map::generate(seed, cfg.map_size).
+mod common;
+use common::{parse, J};
+use jungle_sim::config::Config;
+use jungle_sim::data::{stage_name, MAX_STAGE, MOVES, SPECIES, ZONES};
+use jungle_sim::map::{Map, Tile};
+use jungle_sim::report::{batch_with, run_body, run_window_body};
+use jungle_sim::sim::{simulate_summary, simulate_with, Run};
+use std::collections::{HashMap, HashSet};
+
+fn cfg(k: &[(&str, &str)]) -> Config {
+    let mut c = Config::default();
+    for (a, b) in k {
+        c.set(a, b).unwrap();
+    }
+    c
+}
+fn dist(a: (usize, usize), b: (usize, usize)) -> usize {
+    a.0.abs_diff(b.0) + a.1.abs_diff(b.1)
+}
+fn hero_xy(e: &J) -> (usize, usize) {
+    let h = e.get("hero").expect("hero");
+    (h.u("x"), h.u("y"))
+}
+fn kind(e: &J) -> &str {
+    e.get("kind").unwrap().str()
+}
+fn text(e: &J) -> &str {
+    e.get("text").unwrap().str()
+}
+fn mon(e: &J) -> Option<&J> {
+    e.get("mon").filter(|m| !m.is_null())
+}
+fn load(seed: u64, c: &Config) -> (Run, J, Map) {
+    let run = simulate_with(seed, c);
+    let j = parse(&run_body(&run)).expect("run_body must be valid JSON");
+    let m = Map::generate(seed, c.map_size as usize);
+    (run, j, m)
+}
+fn events(j: &J) -> &[J] {
+    j.get("events").unwrap().arr()
+}
+fn won_seed() -> u64 {
+    (1u64..=40).find(|s| simulate_with(*s, &Config::default()).won).expect("some seed in 1..=40 must win")
+}
+/// expand waypoints into unit steps; waypoints must be axis-aligned
+fn expand(path: &[(usize, usize)]) -> Vec<(usize, usize)> {
+    let mut out = vec![path[0]];
+    for w in path.windows(2) {
+        let (a, b) = (w[0], w[1]);
+        assert!(a.0 == b.0 || a.1 == b.1, "waypoints {:?}->{:?} differ in both axes", a, b);
+        let (mut x, mut y) = a;
+        while (x, y) != b {
+            if x < b.0 {
+                x += 1
+            } else if x > b.0 {
+                x -= 1
+            } else if y < b.1 {
+                y += 1
+            } else {
+                y -= 1
+            }
+            out.push((x, y));
+        }
+    }
+    out
+}
+
+#[test]
+fn hero_positions_are_in_map_and_on_floor() {
+    for seed in [1u64, 2, 3] {
+        let (_, j, m) = load(seed, &cfg(&[("event_cap", "6000")]));
+        for e in events(&j) {
+            let p = hero_xy(e);
+            assert!(p.0 < m.size() && p.1 < m.size(), "seed {} event out of map {:?}", seed, p);
+            assert!(m.passable(p.0, p.1), "seed {} hero on a wall at {:?}", seed, p);
+            assert_eq!(m.zone_of(p.0, p.1), e.get("hero").unwrap().u("zone"), "hero.zone must be the zone of the hero tile");
+        }
+    }
+}
+
+#[test]
+fn walk_events_have_valid_paths() {
+    let (_, j, m) = load(1, &cfg(&[("event_cap", "8000")]));
+    let ev = events(&j);
+    let mut walks = 0;
+    for (i, e) in ev.iter().enumerate() {
+        if kind(e) != "walk" {
+            continue;
+        }
+        walks += 1;
+        let path: Vec<(usize, usize)> = e.get("path").expect("walk event needs path").arr().iter().map(|p| p.xy()).collect();
+        assert!(!path.is_empty() && path.len() <= 64, "event {} path len {}", i, path.len());
+        assert_eq!(*path.last().unwrap(), hero_xy(e), "event {}: path must end at the hero tile", i);
+        if i > 0 && kind(&ev[i - 1]) != "travel" {
+            assert!(dist(path[0], hero_xy(&ev[i - 1])) <= 1, "event {}: path must start adjacent to the previous hero tile", i);
+        }
+        let tiles = expand(&path);
+        for w in tiles.windows(2) {
+            assert!(dist(w[0], w[1]) <= 1, "event {}: tiles {:?}->{:?} more than 1 apart", i, w[0], w[1]);
+        }
+        for t in &tiles {
+            assert!(m.passable(t.0, t.1), "event {}: path crosses a wall at {:?}", i, t);
+        }
+    }
+    assert!(walks > 20, "expected many walk events, got {}", walks);
+}
+
+#[test]
+fn only_walk_events_carry_a_path() {
+    let (_, j, _) = load(1, &cfg(&[("event_cap", "3000")]));
+    for e in events(&j) {
+        if kind(e) != "walk" {
+            assert!(e.get("path").is_none(), "{} event has a path", kind(e));
+        }
+    }
+}
+
+#[test]
+fn encounters_happen_on_the_hero_tile_and_on_grass() {
+    let (_, j, m) = load(2, &cfg(&[("event_cap", "8000")]));
+    let mut n = 0;
+    for e in events(&j).iter().filter(|e| kind(e) == "encounter") {
+        n += 1;
+        let mo = mon(e).expect("encounter has a mon");
+        let p = hero_xy(e);
+        assert_eq!((mo.u("x"), mo.u("y")), p, "encounter mon must stand on the hero tile");
+        assert_eq!(m.tile(p.0, p.1), Tile::Grass, "encounter at {:?} is not Grass", p);
+    }
+    assert!(n > 50, "encounters: {}", n);
+}
+
+#[test]
+fn elite_fights_are_adjacent_and_use_zone_species() {
+    let mut n = 0;
+    for seed in 1u64..=6 {
+        let (_, j, _) = load(seed, &cfg(&[("event_cap", "20000"), ("elites_per_zone", "3")]));
+        for e in events(&j).iter().filter(|e| kind(e) == "elite") {
+            n += 1;
+            let mo = mon(e).expect("elite has a mon");
+            assert!(dist((mo.u("x"), mo.u("y")), hero_xy(e)) <= 1, "elite not adjacent to hero");
+            let z = e.get("hero").unwrap().u("zone");
+            assert!(ZONES[z].species.iter().any(|s| s.0 == mo.u("species")), "elite species not in zone {} table", z);
+        }
+    }
+    assert!(n > 0, "no elite fights observed");
+}
+
+#[test]
+fn elites_disabled_gives_no_elite_events() {
+    let (_, j, _) = load(1, &cfg(&[("event_cap", "8000"), ("elites_per_zone", "0")]));
+    assert!(events(&j).iter().all(|e| kind(e) != "elite"));
+    for e in events(&j) {
+        for n in e.get("npcs").unwrap().arr() {
+            assert!(!n.get("id").unwrap().str().starts_with('e'), "elite npc present with elites_per_zone=0");
+        }
+    }
+}
+
+#[test]
+fn hero_starts_at_camp_and_camp_events_happen_there() {
+    let c = Config::default();
+    let (_, j, m) = load(1, &cfg(&[("event_cap", "20000"), ("permadeath", "false")]));
+    let camp = m.camp();
+    let ev = events(&j);
+    assert_eq!(hero_xy(&ev[0]), camp, "hero starts on the camp tile");
+    let (mut respawns, mut rests) = (0, 0);
+    for (i, e) in ev.iter().enumerate() {
+        match kind(e) {
+            "respawn" => {
+                respawns += 1;
+                assert_eq!(hero_xy(e), camp, "respawn {} not at camp", i);
+            }
+            "shop" => assert_eq!(hero_xy(e), camp, "shop event {} away from camp", i),
+            "rest" if mon(e).is_none() => {
+                rests += 1;
+                assert_eq!(hero_xy(e), camp, "rest event {} away from camp", i)
+            }
+            _ => {}
+        }
+    }
+    assert!(respawns > 0 && rests > 0, "respawns {} rests {}", respawns, rests);
+    let _ = c;
+}
+
+#[test]
+fn won_run_reaches_the_grove_and_fights_boss_near_the_boss_npc() {
+    let seed = won_seed();
+    let (run, j, m) = load(seed, &Config::default());
+    assert!(run.won);
+    let ev = events(&j);
+    assert!(ev.iter().any(|e| m.zone_of(hero_xy(e).0, hero_xy(e).1) == 8), "hero never reached zone 8");
+    let mut boss_fights = 0;
+    for e in ev.iter().filter(|e| kind(e) == "boss") {
+        boss_fights += 1;
+        let npc = e.get("npcs").unwrap().arr().iter().find(|n| n.get("id").unwrap().str() == "boss").expect("boss npc listed");
+        assert!(dist(hero_xy(e), (npc.u("x"), npc.u("y"))) <= 2, "boss fight farther than 2 tiles from the boss NPC");
+    }
+    assert!(boss_fights > 0);
+}
+
+#[test]
+fn npcs_are_valid_and_in_the_hero_zone() {
+    let (_, j, m) = load(1, &cfg(&[("event_cap", "10000"), ("elites_per_zone", "3")]));
+    let mut seen = 0;
+    for e in events(&j) {
+        let npcs = e.get("npcs").expect("npcs array on every event").arr();
+        assert!(npcs.len() <= 3, "{} npcs", npcs.len());
+        let z = e.get("hero").unwrap().u("zone");
+        for n in npcs {
+            seen += 1;
+            let (x, y) = (n.u("x"), n.u("y"));
+            assert!(x < m.size() && y < m.size() && m.passable(x, y), "npc {:?} off map or on wall", n);
+            assert_eq!(m.zone_of(x, y), z, "npc outside the hero zone");
+            assert!(!n.get("id").unwrap().str().is_empty());
+            assert!(n.get("sp").is_some() && n.get("lv").is_some());
+        }
+    }
+    assert!(seen > 100, "npcs seen: {}", seen);
+}
+
+#[test]
+fn encounter_rate_scales_steps_per_encounter() {
+    let avg = |rate: &str| {
+        let (mut steps, mut enc) = (0f64, 0f64);
+        for seed in 1u64..=10 {
+            let c = cfg(&[("encounter_rate", rate), ("event_cap", "4000"), ("elites_per_zone", "0")]);
+            let r = simulate_with(seed, &c);
+            steps += r.steps as f64;
+            enc += r.events.iter().filter(|e| e.kind == "encounter").count() as f64;
+        }
+        steps / enc
+    };
+    let ratio = avg("0.05") / avg("0.5");
+    // the 6-step fight cooldown (Addendum 4) compresses the ratio, so the old 5.0 floor is now 2.0
+    assert!((2.0..=20.0).contains(&ratio), "steps/encounter ratio {}", ratio);
+}
+
+#[test]
+fn steps_are_not_events() {
+    let r = simulate_with(1, &Config::default());
+    assert!(r.events.len() <= 65536);
+    assert!(r.steps as usize > r.events.len(), "steps {} events {}", r.steps, r.events.len());
+    let j = parse(&run_window_body(&r, 0, 10)).unwrap();
+    assert_eq!(j.u("steps") as u64, r.steps as u64);
+}
+
+#[test]
+fn max_steps_terminates_with_capped() {
+    let c = cfg(&[("encounter_rate", "0.01"), ("max_steps", "1000")]);
+    let r = simulate_with(1, &c);
+    assert!(r.capped, "max_steps must set capped");
+    assert!(r.steps as u64 <= 1000, "steps {}", r.steps);
+    assert!(r.events.len() < 65536);
+    let s = simulate_summary(1, &c);
+    assert!(s.capped);
+    assert_eq!(s.steps as u64, r.steps as u64);
+}
+
+#[test]
+fn event_cap_still_truncates() {
+    let r = simulate_with(1, &cfg(&[("event_cap", "100")]));
+    assert_eq!(r.events.len(), 100);
+    assert!(r.capped);
+    for (i, e) in r.events.iter().enumerate() {
+        assert_eq!(e.idx as usize, i);
+    }
+}
+
+#[test]
+fn same_seed_same_body_across_runs_and_threads() {
+    let c = cfg(&[("event_cap", "5000")]);
+    let a = run_body(&simulate_with(3, &c));
+    assert_eq!(a, run_body(&simulate_with(3, &c)));
+    assert_ne!(a, run_body(&simulate_with(4, &c)));
+    let hs: Vec<_> = (0..4)
+        .map(|_| {
+            let c = c.clone();
+            std::thread::spawn(move || run_body(&simulate_with(3, &c)))
+        })
+        .collect();
+    for h in hs {
+        assert_eq!(h.join().unwrap(), a);
+    }
+    // batch is order-independent of thread count
+    let b1 = batch_with(24, 1, &c);
+    let b4 = batch_with(24, 4, &c);
+    assert_eq!(b1, b4);
+}
+
+#[test]
+fn lean_summary_equals_full_summary() {
+    for seed in [1u64, 2, 7, 13] {
+        let c = cfg(&[("event_cap", "12000")]);
+        let r = simulate_with(seed, &c);
+        let s = simulate_summary(seed, &c);
+        assert_eq!(s.won, r.won, "seed {}", seed);
+        assert_eq!(s.deaths, r.deaths);
+        assert_eq!(s.final_level, r.final_level);
+        assert_eq!(s.events as usize, r.events.len());
+        assert_eq!(s.capped, r.capped);
+        assert_eq!(s.max_stage, r.max_stage);
+        assert_eq!(s.post_kills, r.post_kills);
+        assert_eq!(s.steps as u64, r.steps as u64, "steps differ between lean and full, seed {}", seed);
+        assert_eq!(s.first_win_event, r.first_win_event);
+    }
+}
+
+#[test]
+fn zone1_species_are_weighted() {
+    let table = ZONES[1].species;
+    let mut counts: HashMap<usize, u32> = HashMap::new();
+    let mut total = 0;
+    'outer: for seed in 1u64..=200 {
+        let c = cfg(&[("event_cap", "3000"), ("encounter_rate", "0.5"), ("elites_per_zone", "0")]);
+        let r = simulate_with(seed, &c);
+        for e in r.events.iter().filter(|e| e.kind == "encounter") {
+            if e.hero.zone == 1 {
+                *counts.entry(e.mon.as_ref().unwrap().species).or_default() += 1;
+                total += 1;
+                if total >= 5000 {
+                    break 'outer;
+                }
+            }
+        }
+    }
+    assert!(total >= 5000, "only {} zone-1 encounters", total);
+    let first = counts.get(&table[0].0).copied().unwrap_or(0);
+    let last = counts.get(&table[table.len() - 1].0).copied().unwrap_or(0);
+    assert!(first > last, "first species {} not more frequent than last {}", first, last);
+    for s in table {
+        assert!(counts.get(&s.0).copied().unwrap_or(0) > 0, "species {} never appeared", s.0);
+    }
+}
+
+#[test]
+fn monster_moves_appear_and_hero_skills_remain() {
+    let mut seen: HashSet<(usize, &'static str)> = HashSet::new();
+    let mut skills: HashSet<&str> = HashSet::new();
+    for seed in 1u64..=20 {
+        let c = cfg(&[("evolve_kills", "20"), ("permadeath", "false")]);
+        let r = simulate_with(seed, &c);
+        for e in &r.events {
+            for s in ["Power Strike", "Brace", "Stun", "Heal"] {
+                if e.text.contains(s) && e.text.starts_with("Hero") {
+                    skills.insert(s);
+                }
+            }
+            let Some(m) = &e.mon else { continue };
+            if !e.text.contains(" uses ") || e.text.starts_with("Hero") {
+                continue;
+            }
+            let sp = m.species;
+            let names_ok = std::iter::once(SPECIES[sp].name).chain((0..=MAX_STAGE).map(|s| stage_name(sp, s))).any(|n| e.text.starts_with(&format!("The {} uses ", n)));
+            assert!(names_ok, "monster text does not name the species: {}", e.text);
+            let mv = MOVES[sp].iter().find(|mv| e.text.contains(&format!("uses {}", mv.name))).unwrap_or_else(|| panic!("text {:?} uses a move not in MOVES[{}]", e.text, sp));
+            seen.insert((sp, mv.name));
+        }
+    }
+    for (sp, ms) in MOVES.iter().enumerate() {
+        for mv in ms.iter() {
+            assert!(seen.contains(&(sp, mv.name)), "move {} of species {} never observed in 20 runs", mv.name, sp);
+        }
+    }
+    for s in ["Power Strike", "Brace", "Stun", "Heal"] {
+        assert!(skills.contains(s), "hero skill {} no longer appears", s);
+    }
+}
+
+#[test]
+fn postgame_stages_still_work_with_the_map() {
+    let c = cfg(&[("evolve_kills", "20")]);
+    let seed = (1u64..=40).find(|s| simulate_with(*s, &c).max_stage >= 1).expect("some seed reaches stage 1");
+    let r = simulate_with(seed, &c);
+    assert!(r.won);
+    assert!(r.events.iter().any(|e| e.mon.as_ref().map(|m| m.stage >= 1).unwrap_or(false)));
+    let b = batch_with(40, 4, &c);
+    assert_eq!(b.stage_hist.len(), MAX_STAGE + 1);
+    assert_eq!(b.stage_hist.iter().sum::<u32>(), b.wins);
+    assert!(b.stage_hist.iter().skip(1).sum::<u32>() > 0);
+}
+
+#[test]
+fn json_schema_has_coordinates_npcs_and_head_fields() {
+    let r = simulate_with(1, &cfg(&[("event_cap", "6000")]));
+    let j = parse(&run_body(&r)).expect("valid JSON (escape check)");
+    // run_body is the head+events form; w/h/steps live in the head
+    assert_eq!(j.u("w"), 64);
+    assert_eq!(j.u("h"), 64);
+    assert_eq!(j.u("steps") as u64, r.steps as u64);
+    let mut walks = 0;
+    for e in events(&j) {
+        let h = e.get("hero").unwrap();
+        assert!(h.get("x").is_some() && h.get("y").is_some());
+        if let Some(m) = mon(e) {
+            assert!(m.get("x").is_some() && m.get("y").is_some(), "mon needs x,y");
+        }
+        for n in e.get("npcs").unwrap().arr() {
+            for k in ["id", "sp", "lv", "x", "y"] {
+                assert!(n.get(k).is_some(), "npc missing {}", k);
+            }
+        }
+        if kind(e) == "walk" {
+            walks += 1;
+            for p in e.get("path").unwrap().arr() {
+                assert_eq!(p.arr().len(), 2);
+            }
+        }
+    }
+    assert!(walks > 0);
+    // old fields untouched
+    for k in ["seed", "won", "deaths", "final_level", "first_win_event", "end_level", "post_kills", "post_deaths", "max_stage", "capped", "total"] {
+        assert!(j.get(k).is_some(), "head field {} missing", k);
+    }
+}
+
+#[test]
+fn windowed_run_still_works() {
+    let r = simulate_with(1, &Config::default());
+    let j = parse(&run_window_body(&r, 100, 50)).expect("valid JSON");
+    assert_eq!(j.u("from"), 100);
+    assert_eq!(events(&j).len(), 50);
+    assert_eq!(j.u("total"), r.events.len());
+    assert_eq!(j.u("w"), 64);
+    assert!(j.get("level_series").is_some());
+    assert_eq!(events(&j)[0].u("idx"), 100);
+    assert!(events(&j)[0].get("hero").unwrap().get("x").is_some());
+}

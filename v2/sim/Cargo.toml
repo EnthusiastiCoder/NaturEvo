@@ -1,0 +1,10 @@
+[package]
+name = "arena-sim"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "arena_sim"
+path = "src/lib.rs"
+
+[dependencies]

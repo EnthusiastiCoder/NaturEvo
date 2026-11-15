@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NaturEvo v2 viewer</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+<div id="app">
+  <header class="bar">
+    <h1>NaturEvo Arena</h1>
+    <a id="runs-link" class="btn" href="./" title="Back to the run list" aria-label="Back to the run list">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>Runs</a>
+    <button id="mode-walk" aria-pressed="true" title="Jungle campaign: hero walks the route, then duels">
+      <svg viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg>Campaign</button>
+    <button id="mode-duel" aria-pressed="false" title="Replay a single arena duel">
+      <svg viewBox="0 0 24 24"><path d="m14.5 17.5 6-6M14 6l4 4M3 21l6-6M4 4l9 9M20 4l-9 9"/></svg>Duel</button>
+    <select id="fight-select" aria-label="Choose fight" title="Choose which encounter or fight to replay"></select>
+    <button id="load" aria-label="Load log files" title="Load run.json or a fight log (.json)">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5-5 5 5M12 5v12"/></svg></button>
+    <input id="file" type="file" accept=".json" multiple hidden />
+    <span class="spacer"></span>
+    <button id="rays" aria-label="Toggle vision overlay" aria-pressed="false" title="Show what the fighters see (V)">
+      <svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
+    <input id="accent" type="color" aria-label="Accent colour" title="Accent colour" value="#2f9e44" />
+    <button id="theme-toggle" aria-label="Toggle light and dark theme" title="Toggle light and dark theme (T)">
+      <svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg></button>
+    <button id="help" aria-label="About this view" title="What am I looking at? (?)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></button>
+  </header>
+  <main id="stage">
+    <div class="hud"><span class="chip" id="hud-a"></span><span class="chip" id="hud-b"></span><span class="chip" id="hud-c" hidden></span></div>
+    <div id="landing"></div>
+    <div id="banner" role="alert" hidden></div>
+    <div id="view"></div>
+    <aside id="info" hidden role="dialog" aria-label="About this view">
+      <h2>Reading the replay</h2>
+      <ul>
+        <li>Green and red bars: health and stamina above each fighter.</li>
+        <li>Eye button: the cone and rays show what a fighter senses; red rays hit an opponent.</li>
+        <li>Learned behaviour: watch for blocks or dodges once a windup starts.</li>
+        <li>Keys: Space play, Left/Right step, T theme, V vision, ? help.</li>
+      </ul>
+    </aside>
+  </main>
+  <footer class="bar">
+    <button id="play" class="primary" aria-label="Play or pause" title="Play or pause (Space)">
+      <svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg></button>
+    <button id="restart" aria-label="Restart" title="Restart">
+      <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg></button>
+    <input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Timeline" title="Timeline" />
+    <select id="speed" aria-label="Speed" title="Playback speed">
+      <option value="0.5">0.5x</option><option value="1" selected>1x</option><option value="2">2x</option><option value="4">4x</option>
+    </select>
+    <span id="clock">0.0 / 0.0 s</span>
+  </footer>
+</div>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+// WS-C duel integration tests for the vocabulary (plan 2026-10-23_v3-sword-vocabulary.md, Test cases WS-C).
+//
+// INVENTED API (see skillbot_tests.rs for Brain::Skill, Brain::Spam, Brain::Cycle and Match::move_starts):
+//   Log contract (additive, version stays 3), produced by log.rs when Match::enable_log() is on:
+//     every fighter object in every frame gains `"mv":{"id":"Overhead","phase":0..3,"p":0..1,"open":bool,"gb":bool,"rip":bool}`
+//       (phase: 0 Idle, 1 Windup, 2 Active, 3 Recovery);
+//     events: {"t":..,"kind":"move","who":W,"name":"..","reach":..,"speed":..,"arc":..,"delay":..}
+//             {"kind":"whiff","who","name"}  {"kind":"punish","who","victim","name","mult"}  {"kind":"guard_break","who","victim"}
+//             {"kind":"feint","who"}  {"kind":"counter","who","name"}  {"kind":"riposte_open","who"}
+//   Fighters controlled by Brain::Net execute through the Executor (net outputs decode to a move plus params).
+use mech_sim::config::HARD_CAP_TICKS;
+use mech_sim::duel::{Brain, Match};
+use mech_sim::genome::Genome;
+use mech_sim::log::fight_json;
+use mech_sim::moveset::MoveId;
+use mech_sim::rng::Rng;
+use mech_sim::robot::{Part, Role};
+
+fn logged(a: Brain, b: Brain, seed: u64) -> String {
+    let mut m = Match::new(seed, a, b);
+    m.enable_log();
+    m.run_to_end();
+    fight_json(&m)
+}
+
+/// Every `{...}` event object of the given kind (events are flat objects).
+fn events_of<'a>(j: &'a str, kind: &str) -> Vec<&'a str> {
+    let key = format!("\"kind\":\"{}\"", kind);
+    let mut out = Vec::new();
+    let mut from = 0;
+    while let Some(i) = j[from..].find(&key) {
+        let at = from + i;
+        let start = j[..at].rfind('{').unwrap();
+        let end = at + j[at..].find('}').unwrap();
+        out.push(&j[start..=end]);
+        from = end;
+    }
+    out
+}
+
+#[test]
+fn every_frame_fighter_has_an_mv_object_with_id_phase_p_open() {
+    let j = logged(Brain::Skill(3), Brain::Skill(2), 3);
+    let a = j.find("\"frames\":[").expect("frames");
+    let b = j.find("\"events\":[").expect("events");
+    let frames = &j[a..b];
+    let n_frames = frames.matches("{\"t\":").count();
+    assert!(n_frames > 10);
+    assert_eq!(frames.matches("\"mv\":{").count(), 2 * n_frames, "one mv per fighter per frame");
+    for key in ["\"id\":\"", "\"phase\":", "\"p\":", "\"open\":", "\"gb\":", "\"rip\":"] {
+        assert!(frames.matches(key).count() >= 2 * n_frames, "mv key {} missing", key);
+    }
+    // At least one non-Idle id appears in a fight between two attackers.
+    assert!(["Overhead", "DiagDown", "DiagUp", "Sweep", "Thrust", "LowCut", "Parry", "Guard"].iter().any(|n| frames.contains(&format!("\"id\":\"{}\"", n))));
+}
+
+#[test]
+fn mv_ids_are_known_move_names_and_phase_in_0_to_3() {
+    let j = logged(Brain::Skill(3), Brain::Skill(2), 4);
+    let known = ["Idle", "Overhead", "DiagDown", "DiagUp", "Sweep", "Thrust", "LowCut", "Feint", "Parry", "Guard", "Riposte", "ShieldBash", "Kick", "Backstep"];
+    let mut from = 0;
+    while let Some(i) = j[from..].find("\"mv\":{\"id\":\"") {
+        let s = from + i + "\"mv\":{\"id\":\"".len();
+        let name = &j[s..s + j[s..].find('"').unwrap()];
+        assert!(known.contains(&name), "unknown id {}", name);
+        let rest = &j[s..s + 80];
+        let ph = rest.find("\"phase\":").map(|k| rest.as_bytes()[k + 8]).expect("phase after id");
+        assert!((b'0'..=b'3').contains(&ph), "phase digit {}", ph as char);
+        from = s;
+    }
+}
+
+#[test]
+fn new_event_kinds_appear_with_required_fields() {
+    let mut all = String::new();
+    for s in 0..30u64 {
+        all.push_str(&logged(Brain::Skill(3), Brain::Skill(2), s));
+        all.push_str(&logged(Brain::Skill(3), Brain::Skill(3), s + 100));
+        all.push_str(&logged(Brain::Skill(2), Brain::Skill(3), s + 200));
+    }
+    let required: [(&str, &[&str]); 7] = [
+        ("move", &["\"t\":", "\"who\":", "\"name\":", "\"reach\":", "\"speed\":", "\"arc\":", "\"delay\":"]),
+        ("whiff", &["\"t\":", "\"who\":", "\"name\":"]),
+        ("punish", &["\"t\":", "\"who\":", "\"victim\":", "\"name\":", "\"mult\":"]),
+        ("guard_break", &["\"t\":", "\"who\":", "\"victim\":"]),
+        ("feint", &["\"t\":", "\"who\":"]),
+        ("counter", &["\"t\":", "\"who\":", "\"name\":"]),
+        ("riposte_open", &["\"t\":", "\"who\":"]),
+    ];
+    for (kind, fields) in required {
+        let evs = events_of(&all, kind);
+        assert!(!evs.is_empty(), "no {} event in 90 skillbot fights", kind);
+        for e in evs { for f in fields { assert!(e.contains(f), "{} event lacks {}: {}", kind, f, e); } }
+    }
+}
+
+#[test]
+fn punish_mult_is_a_legal_multiplier() {
+    let all: String = (0..10u64).map(|s| logged(Brain::Skill(3), Brain::Spam(MoveId::Sweep), s)).collect();
+    let evs = events_of(&all, "punish");
+    assert!(!evs.is_empty());
+    for e in evs {
+        let i = e.find("\"mult\":").unwrap() + 7;
+        let v: f32 = e[i..].trim_end_matches('}').split(',').next().unwrap().parse().expect("mult number");
+        assert!((1.0..=1.75 + 1e-3).contains(&v), "mult {}", v);
+    }
+}
+
+#[test]
+fn byte_identical_logs_for_the_same_seed() {
+    assert_eq!(logged(Brain::Skill(3), Brain::Skill(2), 9), logged(Brain::Skill(3), Brain::Skill(2), 9));
+    let mut rng = Rng::new(5);
+    let g = Genome::random(Role::Hero, &mut rng);
+    assert_eq!(logged(Brain::Net(g.clone()), Brain::Skill(2), 9), logged(Brain::Net(g), Brain::Skill(2), 9));
+}
+
+#[test]
+fn different_seeds_give_different_logs() {
+    assert_ne!(logged(Brain::Skill(3), Brain::Skill(2), 1), logged(Brain::Skill(3), Brain::Skill(2), 2));
+}
+
+#[test]
+fn old_log_fields_are_still_present() {
+    let j = logged(Brain::Skill(1), Brain::Dummy, 1);
+    assert!(j.contains("\"version\":3"));
+    for k in ["\"arena\":{", "\"frames\":[", "\"events\":[", "\"result\":{", "\"outcome\":", "\"defence\":", "\"sword\":", "\"shield\":"] {
+        assert!(j.contains(k), "{}", k);
+    }
+}
+
+#[test]
+fn fuzz_200_random_genome_matches_are_finite_in_range_and_never_panic() {
+    for seed in 0..200u64 {
+        let mut rng = Rng::new(seed * 13 + 5);
+        let a = Genome::random(Role::Hero, &mut rng);
+        let b = match seed % 4 {
+            0 => Brain::Net(Genome::random(Role::Monster, &mut rng)),
+            1 => Brain::Skill(1),
+            2 => Brain::Skill(2),
+            _ => Brain::Skill(3),
+        };
+        let mut m = Match::new(seed, Brain::Net(a), b);
+        let r = m.run_to_end();
+        assert!(r.ticks <= HARD_CAP_TICKS, "seed {}", seed);
+        for who in 0..2 {
+            let rb = &m.robots[who];
+            assert!(rb.x.is_finite() && rb.com()[0].is_finite() && rb.com()[1].is_finite(), "seed {} pos", seed);
+            assert!(rb.x >= 0.0 && rb.x <= m.arena.width, "seed {} left the arena: {}", seed, rb.x);
+            assert!((0.0..=100.0).contains(&rb.energy), "seed {} energy {}", seed, rb.energy);
+            assert!((0.0..=100.0).contains(&rb.posture), "seed {} posture {}", seed, rb.posture);
+            for p in Part::ALL {
+                let hp = rb.hp(p);
+                assert!(hp.is_finite() && hp <= rb.max_hp(p) + 1e-3 && hp >= -rb.max_hp(p), "seed {} {:?} hp {}", seed, p, hp);
+            }
+        }
+    }
+}
+
+#[test]
+fn random_nets_actually_start_moves_through_the_executor() {
+    let mut any = false;
+    for seed in 0..20u64 {
+        let mut rng = Rng::new(seed + 1);
+        let mut m = Match::new(seed, Brain::Net(Genome::random(Role::Hero, &mut rng)), Brain::Dummy);
+        m.run_to_end();
+        any |= !m.move_starts(0).is_empty();
+    }
+    assert!(any, "no random net ever started a move: the Net brain does not drive the Executor");
+}
+
+fn mean_pool(spammer: impl Fn() -> Brain) -> f32 {
+    let n = 40u64;
+    (0..n).map(|s| {
+        let mut m = Match::new(s, spammer(), Brain::Skill(2));
+        m.run_to_end();
+        m.robots[0].pool_frac() - m.robots[1].pool_frac()
+    }).sum::<f32>() / n as f32
+}
+
+#[test]
+fn spamming_one_move_loses_more_hp_to_tier_2_than_mixing_moves() {
+    let spam = mean_pool(|| Brain::Spam(MoveId::Overhead));
+    let mix = mean_pool(|| Brain::Cycle(vec![MoveId::Thrust, MoveId::DiagDown, MoveId::Backstep, MoveId::Overhead, MoveId::DiagDown, MoveId::Backstep]));
+    assert!(spam < mix - 0.02, "spam hp-pool margin vs tier 2 {:.3}, mix margin {:.3}", spam, mix);
+}
+
+#[test]
+fn spamming_overhead_mostly_whiffs_against_tier_2() {
+    let j: String = (0..8u64).map(|s| logged(Brain::Spam(MoveId::Overhead), Brain::Skill(2), s)).collect();
+    let whiffs = events_of(&j, "whiff").iter().filter(|e| e.contains("\"who\":0")).count();
+    let moves = events_of(&j, "move").iter().filter(|e| e.contains("\"who\":0")).count();
+    assert!(moves > 8);
+    assert!(whiffs as f32 >= 0.3 * moves as f32, "{} whiffs of {} swings", whiffs, moves);
+}
+
+#[cfg(not(debug_assertions))]
+#[test]
+fn nine_hundred_ticks_of_skillbot_fight_run_under_25_ms_release() {
+    let mut best = f64::MAX;
+    for _ in 0..5 {
+        let mut m = Match::new(1, Brain::Skill(3), Brain::Skill(2));
+        let t = std::time::Instant::now();
+        for _ in 0..900 { if m.is_over() { break; } m.step(); }
+        best = best.min(t.elapsed().as_secs_f64() * 1000.0);
+    }
+    assert!(best < 25.0, "{:.1} ms", best);
+}
